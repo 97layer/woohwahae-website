@@ -8,6 +8,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 TASK_FILE = BASE_DIR / "task_status.json"
 
+# 에이전트 이름 → 키 매핑 (모듈 레벨 상수)
+AGENT_KEY_MAP = {
+    "Strategy_Analyst": "SA",
+    "Creative_Director": "CD",
+    "Technical_Director": "TD",
+    "Chief_Editor": "CE",
+    "Art_Director": "AD",
+}
+
 # libs/ 모듈 접근을 위해 프로젝트 루트를 sys.path에 추가
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
@@ -233,8 +242,11 @@ def execute_agent(task: dict) -> str:
     """
     실제 에이전트 LLM 호출
     """
+    # Special Handler for Skill Execution
+    if task.get("type") == "SKILL":
+        return _handle_skill_execution(task)
     # Special Handler for Consolidation
-    if task.get("type") == "CONSOLIDATION":
+    elif task.get("type") == "CONSOLIDATION":
         return _handle_consolidation(task)
     elif task.get("type") == "AUTONOMOUS_DEV":
         res = _handle_autonomous_dev(task)
@@ -245,18 +257,49 @@ def execute_agent(task: dict) -> str:
         if "❌" in res or "⚠️" in res:
             _broadcast_to_telegram(f"🛡️ 가디언 긴급 점검 리포트:\n\n{res}")
         return res
+    elif task.get("type") == "PUBLISH_CHECK":
+        res = _handle_publish_check(task)
+        if res and ("자동 폐기" in res or "CD 결정 필요" in res):
+            _broadcast_to_telegram(f"⏰ [72h Rule]\n\n{res}")
+        return res
+    elif task.get("type") == "INSTAGRAM_PUBLISH":
+        res = _handle_instagram_publish(task)
+        if res and "발행 완료" in res:
+            _broadcast_to_telegram(f"📸 [Instagram 발행]\n\n{res}")
+        return res
     elif task.get("type") == "INSIGHT":
         # Insight tasks are handled by standard execute_agent flow but generate a proactive report
         pass
 
-    agent_key_map = {
-        "Strategy_Analyst": "SA",
-        "Creative_Director": "CD",
-        "Technical_Director": "TD",
-        "Chief_Editor": "CE",
-        "Art_Director": "AD",
-    }
-    # (Rest of the execute_agent function continues here)
+    agent_name = task.get("agent", "CD")
+    agent_key = AGENT_KEY_MAP.get(agent_name, "CD")
+    instruction = task.get("instruction", "")
+
+    router = _get_router()
+    system_prompt = router.build_system_prompt(agent_key)
+    ai = _get_ai()
+
+    # Context Grounding (Hallucination 방지)
+    project_context = _get_project_context()
+    grounded_instruction = f"""
+    {project_context}
+
+    [Instruction]
+    {instruction}
+
+    위의 [Current Project Reality]를 참고하여 사실에 기반한 답변을 하십시오.
+    만약 현재 프로젝트와 관계없는 내용(예: Athena, Hermes 등 가공의 이름)을 지어내지 마십시오.
+    """
+
+    print(f"[{datetime.now()}] [{agent_key}] 태스크 실행: {instruction[:60]}...")
+
+    result = ai.generate_response(
+        prompt=grounded_instruction,
+        system_instruction=system_prompt
+    )
+
+    print(f"[{datetime.now()}] [{agent_key}] 완료.")
+    return result
 
 def _handle_autonomous_dev(task: dict) -> str:
     """Runs the autonomous_developer.py script."""
@@ -280,38 +323,92 @@ def _handle_diagnostic(task: dict) -> str:
     except Exception as e:
         return f"Diagnostic Failed: {e}"
 
-def _handle_consolidation(task: dict) -> str:
-    # Existing handler...
+def _handle_publish_check(task: dict) -> str:
+    """Runs auto_publisher to check 72h rule."""
+    try:
+        import sys
+        script_path = BASE_DIR / "execution" / "auto_publisher.py"
 
-    agent_name = task.get("agent", "CD")
-    agent_key = agent_key_map.get(agent_name, "CD")
-    instruction = task.get("instruction", "")
-    
-    router = _get_router()
-    system_prompt = router.build_system_prompt(agent_key)
-    ai = _get_ai()
-    
-    # Context Grounding (Hallucination 방지)
-    project_context = _get_project_context()
-    grounded_instruction = f"""
-    {project_context}
-    
-    [Instruction]
-    {instruction}
-    
-    위의 [Current Project Reality]를 참고하여 사실에 기반한 답변을 하십시오. 
-    만약 현재 프로젝트와 관계없는 내용(예: Athena, Hermes 등 가공의 이름)을 지어내지 마십시오.
-    """
+        # Import and run directly for better control
+        sys.path.insert(0, str(BASE_DIR / "execution"))
+        from auto_publisher import AutoPublisher
 
-    print(f"[{datetime.now()}] [{agent_key}] 태스크 실행: {instruction[:60]}...")
+        publisher = AutoPublisher()
+        violations = publisher.check_72h_rule()
 
-    result = ai.generate_response(
-        prompt=grounded_instruction,
-        system_instruction=system_prompt
-    )
+        if not violations:
+            return ""
 
-    print(f"[{datetime.now()}] [{agent_key}] 완료.")
-    return result
+        # Process violations
+        result_lines = []
+        for v in violations:
+            if v["status"] == "violation":
+                # 76h+ auto discard
+                publisher.auto_discard(v["path"])
+                result_lines.append(f"🚨 자동 폐기: {v['file']} ({v['elapsed_hours']}h)")
+            else:
+                # 72-76h warning
+                result_lines.append(f"⚠️ CD 결정 필요: {v['file']} ({v['elapsed_hours']}h)")
+
+        # Generate CD notification
+        notification = publisher.notify_cd(violations)
+        return "\n".join(result_lines) + "\n\n" + notification
+
+    except Exception as e:
+        return f"Publish Check Failed: {e}"
+
+def _handle_instagram_publish(task: dict) -> str:
+    """Runs instagram_publisher to publish scheduled content."""
+    try:
+        import subprocess
+        script_path = BASE_DIR / "execution" / "instagram_publisher.py"
+
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 min timeout
+        )
+
+        if result.returncode == 0:
+            return f"Instagram 발행 프로세스 완료.\n{result.stdout}"
+        else:
+            return f"Instagram 발행 실패: {result.stderr}"
+
+    except subprocess.TimeoutExpired:
+        return "Instagram 발행 타임아웃 (5분 초과)"
+    except Exception as e:
+        return f"Instagram Publish Failed: {e}"
+
+def _handle_skill_execution(task: dict) -> str:
+    """Executes a skill based on task specification."""
+    try:
+        from libs.skill_engine import SkillEngine
+        skill_engine = SkillEngine()
+
+        skill_id = task.get("skill_id")
+        context = task.get("context", {})
+
+        if not skill_id:
+            return "Skill execution failed: No skill_id provided"
+
+        print(f"[{datetime.now()}] [SKILL] Executing: {skill_id}")
+        result = skill_engine.execute_skill(skill_id, context)
+
+        if result.get("status") == "success":
+            output_msg = f"Skill [{skill_id}] executed successfully.\n"
+            if result.get("output_file"):
+                output_msg += f"Output: {result['output_file']}"
+            print(f"[{datetime.now()}] [SKILL] Success: {skill_id}")
+            return output_msg
+        else:
+            error_msg = f"Skill [{skill_id}] failed: {result.get('message')}"
+            print(f"[{datetime.now()}] [SKILL] Failed: {error_msg}")
+            return error_msg
+
+    except Exception as e:
+        return f"Skill Execution Error: {e}"
+
 
 def council_on_task(task: dict) -> str:
     """
@@ -329,6 +426,12 @@ def check_system_entropy():
         # Heartbeat for Dashboard
         syncer = _get_syncer()
         syncer.report_heartbeat(status="ACTIVE", current_task="시스템 상태 점검 및 태스크 스캔")
+
+        # -1. 72h Rule Check (Every Loop - Non-blocking)
+        try:
+            _handle_publish_check({})
+        except Exception as pc_e:
+            print(f"[Publish Check Error] {pc_e}")
 
         # 0. System Guardian: Self-Diagnostic
         try:

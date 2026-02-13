@@ -14,13 +14,42 @@ from typing import Optional, Dict
 logger = logging.getLogger(__name__)
 
 AGENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "directives", "agents")
+DIRECTIVES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "directives")
 
 AGENT_REGISTRY: Dict[str, Dict[str, str]] = {
-    "CD": {"file": "narrator.md", "name": "Narrator (Creative Director)", "label": "CD"},
-    "TD": {"file": "architect.md", "name": "Architect (Technical Director)", "label": "TD"},
-    "AD": {"file": "artisan.md", "name": "Artisan (Art Director)", "label": "AD"},
-    "CE": {"file": "narrator.md", "name": "Narrator (Chief Editor)", "label": "CE"},
-    "SA": {"file": "scout.md", "name": "Scout (Strategy Analyst)", "label": "SA"},
+    "CD": {"file": "creative_director.md", "name": "Creative Director", "label": "CD"},
+    "TD": {"file": "technical_director.md", "name": "Technical Director", "label": "TD"},
+    "AD": {"file": "art_director.md", "name": "Art Director", "label": "AD"},
+    "CE": {"file": "chief_editor.md", "name": "Chief Editor", "label": "CE"},
+    "SA": {"file": "strategy_analyst.md", "name": "Strategy Analyst", "label": "SA"},
+}
+
+# Core Directives 매핑 (에이전트별 필독 문서)
+AGENT_DIRECTIVES: Dict[str, list] = {
+    "CD": [
+        "97layer_identity.md",
+        "woohwahae_brand_source.md",
+        "imperfect_publish_protocol.md",
+        "aesop_benchmark.md"
+    ],
+    "SA": [
+        "cycle_protocol.md",
+        "junction_protocol.md",
+        "anti_algorithm_protocol.md"
+    ],
+    "TD": [
+        "cycle_protocol.md",
+        "imperfect_publish_protocol.md"
+    ],
+    "CE": [
+        "junction_protocol.md",
+        "aesop_benchmark.md",
+        "woohwahae_brand_source.md"
+    ],
+    "AD": [
+        "visual_identity_guide.md",
+        "aesop_benchmark.md"
+    ]
 }
 
 # 메시지 키워드 → 에이전트 매핑 (1차 필터)
@@ -42,6 +71,15 @@ class AgentRouter:
         self.active_agent: Optional[str] = None
         self._load_all_personas()
 
+        # Initialize SkillEngine for skill-based routing
+        try:
+            from libs.skill_engine import SkillEngine
+            self.skill_engine = SkillEngine()
+            logger.debug("SkillEngine initialized with %d skills", len(self.skill_engine.registry))
+        except Exception as e:
+            logger.warning("SkillEngine initialization failed: %s", e)
+            self.skill_engine = None
+
     def _load_all_personas(self) -> None:
         """디렉티브 마크다운에서 에이전트 페르소나 로드"""
         for key, info in AGENT_REGISTRY.items():
@@ -55,6 +93,25 @@ class AgentRouter:
                 logger.debug("Loaded agent persona: %s", key)
             except FileNotFoundError:
                 logger.error("Agent directive not found: %s", filepath)
+
+    def _load_core_directives(self, agent_key: str) -> str:
+        """에이전트별 Core Directives 로드"""
+        if agent_key not in AGENT_DIRECTIVES:
+            return ""
+
+        core_docs = []
+        for filename in AGENT_DIRECTIVES[agent_key]:
+            filepath = os.path.join(DIRECTIVES_DIR, filename)
+            try:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    # 요약: 처음 1000자만 (토큰 절약)
+                    summary = content[:1000] + "..." if len(content) > 1000 else content
+                    core_docs.append(f"### {filename}\n{summary}\n")
+            except FileNotFoundError:
+                logger.warning("Core directive not found: %s", filepath)
+
+        return "\n".join(core_docs) if core_docs else ""
 
     def get_persona(self, agent_key: str) -> str:
         """특정 에이전트의 페르소나 텍스트 반환"""
@@ -74,8 +131,33 @@ class AgentRouter:
         self.active_agent = None
         logger.info("Agent cleared. Auto-routing enabled.")
 
+    def detect_skill(self, text: str) -> Optional[Dict]:
+        """
+        Detects if input should trigger a skill instead of agent routing.
+        Returns skill info dict if detected, None otherwise.
+        """
+        if not self.skill_engine:
+            return None
+
+        skill_id = self.skill_engine.detect_skill_from_input(text)
+        if skill_id:
+            skill = self.skill_engine.get_skill(skill_id)
+            return {
+                "skill_id": skill_id,
+                "skill": skill,
+                "engine": self.skill_engine
+            }
+        return None
+
     def route(self, text: str) -> str:
         """메시지를 분석하여 적절한 에이전트 키 반환"""
+        # 0. Check if input triggers a skill (priority routing)
+        skill_info = self.detect_skill(text)
+        if skill_info:
+            logger.info("Skill detected: %s", skill_info["skill_id"])
+            # Return a special marker that indicates skill routing
+            return f"SKILL:{skill_info['skill_id']}"
+
         # 1. 수동 고정된 에이전트가 있으면 우선
         if self.active_agent:
             return self.active_agent
@@ -143,17 +225,23 @@ class AgentRouter:
         return None
 
     def build_system_prompt(self, agent_key: str) -> str:
-        """에이전트 페르소나를 포함한 system instruction 생성"""
+        """에이전트 페르소나 + Core Directives를 포함한 system instruction 생성"""
         persona = self.get_persona(agent_key)
         agent_name = AGENT_REGISTRY.get(agent_key, {}).get("name", "Unknown")
+
+        # Core Directives 로드
+        core_directives = self._load_core_directives(agent_key)
+
         return (
-            f"당신은 97LAYER의 {agent_name} ({agent_key})입니다.\n"
-            f"다음 디렉티브에 따라 행동하십시오:\n\n{persona}\n\n"
+            f"당신은 97LAYER의 {agent_name} ({agent_key})입니다.\n\n"
+            f"[Agent Persona]\n{persona}\n\n"
+            f"[Core Directives - 필독]\n{core_directives}\n\n"
             "응답 원칙:\n"
             "1. Zero Noise: 이모지, 감탄사, 가식적인 사과(죄송합니다 등)를 절대 금지하십시오. 즉시 본론으로 들어가십시오.\n"
             "2. Anti-Hallucination: '현재 팀 가동률이 높다'거나 '시스템을 구축 중이다'와 같이 실제 사실이 아닌 가상의 제약 사항을 만들어내지 마십시오. 당신은 실제 가동되는 시스템입니다.\n"
             "3. Cold Intelligence: 존댓말을 유지하되, 감정적인 공감 연산은 생략하고 냉철한 분석과 실행 위주로 답하십시오.\n"
-            "4. Reality Grounding: [Current Project Reality]로 주어지는 정보만을 사실로 간주하십시오. 모르는 것은 모른다고 하거나 리서치를 제안하십시오."
+            "4. Reality Grounding: [Current Project Reality]로 주어지는 정보만을 사실로 간주하십시오. 모르는 것은 모른다고 하거나 리서치를 제안하십시오.\n"
+            "5. Core Directives Compliance: 모든 결정 전 Core Directives를 참조하십시오. 특히 MBQ 기준, 72시간 규칙, Aesop 톤 등."
         )
 
     def get_status(self) -> str:

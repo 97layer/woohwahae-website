@@ -1,16 +1,16 @@
 {
   "system_status": "INITIALIZING",
-  "last_update": "2026-02-14 00:07:37.857121",
+  "last_update": "2026-02-14 08:08:54.102013",
   "agents": {
     "Telegram_Bot_Cloud": {
       "status": "ONLINE",
-      "last_heartbeat": "2026-02-14 00:07:37.857099",
+      "last_heartbeat": "2026-02-14 08:08:54.101924",
       "current_task": "메시지 수신 대기",
       "location": "Local(Mac)"
     },
     "Technical_Director": {
       "status": "ACTIVE",
-      "last_heartbeat": "2026-02-14 00:05:48.756813",
+      "last_heartbeat": "2026-02-14 08:04:25.134274",
       "current_task": "시스템 상태 점검 및 태스크 스캔",
       "location": "Local(Mac)"
     }

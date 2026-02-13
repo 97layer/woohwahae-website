@@ -1,6 +1,8 @@
 # 97layerOS Core Configuration & Mercenary Standard Recovery
 # Author: 97LAYER Mercenary Standard Applied
 
+import os
+
 SYSTEM_CONFIG = {
     "PROJECT_NAME": "97layerOS",
     "VERSION": "1.2.0 (Autonomous Guardian Ready)",
@@ -41,7 +43,7 @@ AGENT_CREW = {
 # 2. 텔레그램 인프라 자격 증명
 TELEGRAM_CONFIG = {
     "BOT_NAME": "studio_97layer_official_bot",
-    "BOT_TOKEN": "8271602365:AAE3zKgYnwg_C_lizxfZbXM5JtVymZfrNGk"
+    "BOT_TOKEN": "8271602365:AAGQwvDfmLv11_CShkeTMSQvnAkDYbDiTxA"
 }
 
 # 3. 97LAYER Mercenary Standard (코드 작성 원칙)
@@ -59,9 +61,35 @@ LOG_LEVEL = "WARNING" if MERCENARY_STANDARD["SILENT_MODE"] else "INFO"
 
 # 4. 차세대 스킬 아키텍처 (New)
 SKILLS_STRUCTURE = {
-    "PATH": ".agent/skills/",
+    "PATH": "skills/",
     "FORMAT": "YAML Front Matter + Markdown Description",
-    "OBJECTIVE": "토큰 소모 최적화 및 기능 단위 호출"
+    "OBJECTIVE": "토큰 소모 최적화 및 기능 단위 호출",
+    "REGISTRY": {
+        "skill-001": {
+            "name": "Unified Input Protocol (UIP)",
+            "executor": ["execution/youtube_parser.py", "execution/ontology_transform.py"],
+            "trigger_patterns": [r'youtube\.com', r'youtu\.be'],
+            "output_path": "knowledge/raw_signals/"
+        },
+        "signal_capture": {
+            "name": "Signal Capture",
+            "executor": ["execution/web_parser.py"],
+            "trigger_patterns": [r'https?://'],
+            "output_path": "knowledge/inbox/"
+        },
+        "data_curation": {
+            "name": "Data Curation",
+            "executor": ["execution/ontology_transform.py"],
+            "trigger_patterns": [],
+            "output_path": "knowledge/"
+        },
+        "instagram_content_curator": {
+            "name": "Instagram Content Curator",
+            "executor": ["execution/instagram_generator.py"],
+            "trigger_patterns": [r'instagram\.com'],
+            "output_path": "assets/instagram/"
+        }
+    }
 }
 
 # 5. 작업 상태 관리자 초기화 템플릿 (task_status.json)
@@ -98,7 +126,17 @@ SYNC_CONFIG = {
     "SYNC_DIRECTORIES": ["directives", "execution", "knowledge", "libs", "assets"]
 }
 
-# 9. 자율 의식 (Rituals) 설정 (New)
+# 9. Instagram API 설정 (New)
+INSTAGRAM_CONFIG = {
+    "ACCESS_TOKEN": os.getenv("INSTAGRAM_ACCESS_TOKEN", ""),
+    "BUSINESS_ACCOUNT_ID": os.getenv("INSTAGRAM_BUSINESS_ACCOUNT_ID", ""),
+    "API_VERSION": "v18.0",
+    "DEFAULT_PUBLISH_TIME": "next_monday_10am",
+    "MAX_CAPTION_LENGTH": 2200,
+    "PUBLISH_QUEUE_PATH": "knowledge/assets/ready_to_publish/publish_queue.json"
+}
+
+# 10. 자율 의식 (Rituals) 설정 (New)
 RITUALS_CONFIG = {
     "DAILY_BRIEFING": {
         "trigger_hour": 9,  # 09:00 AM
@@ -112,14 +150,14 @@ RITUALS_CONFIG = {
         "trigger_hour": 10,    # 10:00 AM
         "agent": "Creative_Director",
         "task_type": "COUNCIL",
-        "instruction": "주간 전략 회의(Weekly Council)를 소집합니다. 이번 주 브랜드 목표를 재설정하고, 각 에이전트의 R&D 진행 상황을 점검하십시오.",
+        "instruction": "주간 전략 회의(Weekly Council)를 소집합니다. [Cycle Protocol 기반] 안건: (1) 지난주 발행 회고, (2) 이번주 콘텐츠 후보 검토 (SA 제안), (3) 브랜드 일관성 점검 (MBQ 기준), (4) 사이클 병목 체크 (TD 리포트). WOOHWAHAE 브랜드 철학 5가지와 Aesop 벤치마크 준수 여부를 중점 검토하십시오.",
         "council": True
     },
     "NIGHTLY_CONSOLIDATION": {
         "trigger_hour": 23,  # 11:00 PM
-        "agent": "Technical_Director",
+        "agent": "Strategy_Analyst",
         "task_type": "CONSOLIDATION",
-        "instruction": "오늘 수집된 모든 Raw Signals(inbox -> raw_signals)를 분석하여 'Knowledge Patterns'를 업데이트하십시오. 주요 키워드와 인사이트를 요약하고, 내일의 전략적 행동 지침을 도출하십시오.",
+        "instruction": "[Junction Protocol - Connect 단계] 오늘 수집된 모든 Raw Signals(knowledge/raw_signals/)를 분석하여 연결 그래프를 생성하십시오. (1) 과거 기록과 유사성 탐색, (2) 반복 테마 식별, (3) 5가지 철학(Slow, 실용적 미학, 무언의 교감, 자기 긍정, 아카이브)과 연결, (4) 콘텐츠 후보 우선순위 제안. 97layer_identity.md와 연결 강도를 명시하십시오.",
         "council": False
     },
     "SYSTEM_HEALTH_CHECK": {
@@ -141,6 +179,20 @@ RITUALS_CONFIG = {
         "agent": "Technical_Director",
         "task_type": "AUTONOMOUS_DEV",
         "instruction": "현재 프로젝트 상황과 비전을 분석하여 시스템 고도화를 위한 차세대 태스크를 스스로 생성하십시오.",
+        "council": False
+    },
+    "DRAFT_72H_CHECK": {
+        "trigger_hour": None,  # Runs every loop
+        "agent": "Technical_Director",
+        "task_type": "PUBLISH_CHECK",
+        "instruction": "[Imperfect Publish Protocol] Draft 폴더에서 72시간 경과 파일을 체크하고, 76시간 초과 시 자동 폐기하십시오.",
+        "council": False
+    },
+    "INSTAGRAM_PUBLISH_CHECK": {
+        "trigger_hour": 10,  # 10:00 AM (Monday default publish time)
+        "agent": "Technical_Director",
+        "task_type": "INSTAGRAM_PUBLISH",
+        "instruction": "[Instagram 발행] 발행 큐에서 예약 시간이 도래한 콘텐츠를 Instagram에 자동 발행하십시오.",
         "council": False
     }
 }

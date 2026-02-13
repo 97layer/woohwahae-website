@@ -1,14 +1,29 @@
+# Python
 .venv/
-.tmp/
 __pycache__/
 *.pyc
+
+# Environment & Credentials
 .env
 token.json
 credentials.json
+
+# Temporary files
+.tmp/
+.tmp.driveupload/
+.tmp.drivedownload/
 *.log
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Archives & packages
 node_modules/
 *.zip
 *.dmg
-*.pkg
-*.app
-knowledge/inbox/
+97layerOS.zip
+
+# Project specific
+knowledge/inbox/외주 코드/
