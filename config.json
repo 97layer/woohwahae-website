@@ -1,0 +1,12 @@
+{
+  "project_name": "97layerOS",
+  "paths": {
+    "root": "./",
+    "libs": "./libs",
+    "directives": "./directives",
+    "execution": "./execution",
+    "knowledge": "./knowledge",
+    "memory": "./knowledge/memory",
+    "temp": "./.tmp"
+  }
+}

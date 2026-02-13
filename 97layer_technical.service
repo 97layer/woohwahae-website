@@ -1,0 +1,14 @@
+[Unit]
+Description=97LAYER Technical Daemon
+After=network.target
+
+[Service]
+User=skyto5339
+WorkingDirectory=/home/skyto5339/97layerOS
+Environment=PYTHONPATH=/home/skyto5339/97layerOS
+ExecStart=/home/skyto5339/97layerOS/.venv/bin/python /home/skyto5339/97layerOS/execution/technical_daemon.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

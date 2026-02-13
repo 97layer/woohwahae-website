@@ -1,0 +1,14 @@
+.venv/
+.tmp/
+__pycache__/
+*.pyc
+.env
+token.json
+credentials.json
+*.log
+node_modules/
+*.zip
+*.dmg
+*.pkg
+*.app
+knowledge/inbox/

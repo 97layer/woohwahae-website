@@ -1,0 +1,28 @@
+# 97layerOS Core Dependencies
+# Author: 97LAYER Mercenary
+# Updated: 2026-02-12
+
+# Google AI Platform
+google-generativeai>=0.3.0
+google-auth>=2.16.0
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.2.0
+google-api-python-client>=2.80.0
+
+# Telegram Bot
+python-telegram-bot>=20.0
+
+# Task Scheduling (for technical_daemon)
+schedule>=1.1.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# HTTP Requests
+requests>=2.28.0
+
+# Data Validation
+pydantic>=2.0.0
+
+# File System Watcher (for Real-time Sync)
+watchdog>=3.0.0

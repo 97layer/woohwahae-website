@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOOHWAHAE — Asynchronous Archive</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <p class="brand-title">WOOHWAHAE</p>
+            <h1>Asynchronous Archive</h1>
+        </header>
+
+        <main class="archive-list" id="archive-list">
+            <article class="archive-item">
+                <div class="item-meta">2026. 02. 12 / Archive</div>
+                <h2 class="item-title">미니멀라이프</h2>
+                <p class="item-excerpt">
+                    본 보고서는 Aesop과 WOOHWAHAE의 철학적 결을 공유하며, 5인 크루의 협업으로 정제된 통합 설계도입니다....
+                </p>
+            </article>
+            <!-- Initial Entry: The Philosophy -->
+            <article class="archive-item">
+                <div class="item-meta">2026. 02. 12 / Introduction</div>
+                <h2 class="item-title">정제된 안식에 대하여</h2>
+                <p class="item-excerpt">
+                    세상의 소란이 잦아든 자리에 남은 것은, 당신이 오랫동안 잊고 지냈던 고유한 리듬입니다. 
+                    우리는 기술이 배경으로 물러날 때 비로소 완성되는 사유의 여백을 기록합니다.
+                </p>
+            </article>
+
+            <!-- Entry 1: Minimalism -->
+            <article class="archive-item">
+                <div class="item-meta">2026. 02. 12 / Strategy</div>
+                <h2 class="item-title">미니멀라이프: 본질에 의한 환대</h2>
+                <p class="item-excerpt">
+                    2026년의 미니멀리즘은 '삭제'가 아닌 '정서적 안식'과 '감각적 환대'입니다. 
+                    인위적인 개입을 배제하고 평온하게 만나는 본질의 결을 탐구합니다.
+                </p>
+            </article>
+        </main>
+
+        <footer>
+            &copy; 2026 97LAYER — ALL RIGHTS RESERVED. BREATHE IN THE ESSENCE.
+        </footer>
+    </div>
+
+    <script>
+        // Simple Intersection Observer for Fade-in Effect
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.archive-item').forEach(item => {
+            observer.observe(item);
+        });
+    </script>
+</body>
+</html>

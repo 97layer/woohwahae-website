@@ -1,0 +1,59 @@
+# Drive Sync Exclusion List
+# Files/directories matching these patterns will NOT be synced to Google Drive
+
+# Virtual Environments (CRITICAL - prevents 100MB+ sync waste)
+venv/
+venv_old_broken/
+.venv/
+.venv_runtime/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Git
+.git/
+.gitignore
+
+# Temporary Files
+.tmp/
+.tmp.*/
+*.log
+*.bak
+*.cache
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Credentials (Security)
+.env
+token.json
+credentials.json
+*.pem
+*.key
+
+# Claude/Antigravity Local State
+.antigravity/
+.claude/
+
+# Google Drive Sync Internal
+.tmp.driveupload/
+.tmp.drivedownload/
+
+# Backups & Snapshots (stored separately in external storage)
+*_Backups/
+*_Snapshots/
+*.zip
+*.tar.gz
+*.tar
+snapshots/

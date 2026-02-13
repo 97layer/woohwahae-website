@@ -1,0 +1,131 @@
+:root {
+    /* Aesop & WOOHWAHAE Inspired Color Palette */
+    --bg-color: #F5F5F0;        /* Sand White: 따뜻한 여백 */
+    --text-primary: #2D2D2D;    /* Deep Charcoal: 정갈한 흔적 */
+    --text-secondary: #6B6B6B;  /* Muted Grey: 배경으로 잦아드는 설명 */
+    --accent-color: #8A9A5B;    /* Muted Sage: 절제된 배려 */
+    --border-color: #E2E2D9;    /* Subtle Line: 부드러운 경계 */
+    
+    /* Typography */
+    --font-serif: 'Georgia', 'Times New Roman', serif; /* 문학적 호흡 */
+    --font-sans: 'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif; /* 현대적 정돈 */
+    
+    /* Spacing & Transitions */
+    --spacing-unit: 1.5rem;
+    --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-serif);
+    line-height: 1.8;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Layout */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: calc(var(--spacing-unit) * 4) var(--spacing-unit);
+}
+
+/* Header */
+header {
+    margin-bottom: calc(var(--spacing-unit) * 6);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1.2s forwards 0.3s;
+}
+
+.brand-title {
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: normal;
+    font-style: italic;
+    letter-spacing: -0.02em;
+}
+
+/* Archive List */
+.archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing-unit) * 4);
+}
+
+.archive-item {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: calc(var(--spacing-unit) * 2);
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Reveal Effect */
+.archive-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: var(--transition-slow);
+}
+
+.item-meta {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.item-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: var(--transition-slow);
+}
+
+.item-title:hover {
+    color: var(--accent-color);
+}
+
+.item-excerpt {
+    color: var(--text-secondary);
+    max-width: 600px;
+    font-size: 1rem;
+}
+
+/* Footer */
+footer {
+    margin-top: calc(var(--spacing-unit) * 8);
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-align: center;
+    letter-spacing: 0.2em;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    .container { padding: calc(var(--spacing-unit) * 2) var(--spacing-unit); }
+}
