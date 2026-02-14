@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.venv
+venv
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# 임시 파일
+.tmp/
+*.log
+.DS_Store
+
+# 로컬 전용
+credentials.json
+token.json
+.env.local
+
+# 캐시
+*.cache

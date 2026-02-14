@@ -26,3 +26,13 @@ pydantic>=2.0.0
 
 # File System Watcher (for Real-time Sync)
 watchdog>=3.0.0
+
+# Web Framework (for Webhook Server)
+flask>=2.3.0
+
+# Machine Learning (for Long-term Memory)
+scikit-learn>=1.0.0
+numpy>=1.21.0
+
+# System Monitoring
+psutil>=5.9.0

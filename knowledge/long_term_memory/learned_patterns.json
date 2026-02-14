@@ -1,0 +1,88 @@
+{
+  "success_patterns": [
+    {
+      "category": "technical",
+      "context_keywords": [],
+      "successful_actions": [
+        "버그 수정",
+        "모니터링 추가",
+        "메모리 최적화"
+      ],
+      "metrics": {
+        "안정성": 0.9,
+        "성능": 0.85
+      },
+      "confidence": 0.8
+    },
+    {
+      "category": "technical",
+      "context_keywords": [
+        "에이전트"
+      ],
+      "successful_actions": [
+        "메시지 라우팅",
+        "합의 도출 메커니즘",
+        "작업 분배"
+      ],
+      "metrics": {
+        "효율성": 0.88,
+        "응답속도": 0.92
+      },
+      "confidence": 0.8
+    },
+    {
+      "category": "maintenance",
+      "context_keywords": [],
+      "successful_actions": [
+        "메모리 프로파일링",
+        "캐시 정리",
+        "가비지 컬렉션"
+      ],
+      "metrics": {
+        "메모리_절감": 0.5,
+        "성능_개선": 0.3
+      },
+      "confidence": 0.8
+    }
+  ],
+  "failure_patterns": [],
+  "optimization_rules": [
+    {
+      "category": "technical",
+      "condition": "시스템 안정성 개선",
+      "optimization": "순환 참조 방지가 핵심",
+      "source_memory": "c716fdbe647accaa"
+    },
+    {
+      "category": "technical",
+      "condition": "시스템 안정성 개선",
+      "optimization": "장기 기억이 학습 효율 개선",
+      "source_memory": "c716fdbe647accaa"
+    },
+    {
+      "category": "technical",
+      "condition": "5개 에이전트 실시간 통신",
+      "optimization": "비동기 통신이 성능 향상",
+      "source_memory": "392c661634795811"
+    },
+    {
+      "category": "technical",
+      "condition": "5개 에이전트 실시간 통신",
+      "optimization": "Hub 패턴이 효과적",
+      "source_memory": "392c661634795811"
+    },
+    {
+      "category": "maintenance",
+      "condition": "시스템 메모리 사용량 증가 문제",
+      "optimization": "주기적 캐시 정리 필요",
+      "source_memory": "4c060800b690b103"
+    },
+    {
+      "category": "maintenance",
+      "condition": "시스템 메모리 사용량 증가 문제",
+      "optimization": "객체 참조 관리 중요",
+      "source_memory": "4c060800b690b103"
+    }
+  ],
+  "learned_strategies": []
+}

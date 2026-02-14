@@ -1,0 +1,77 @@
+[
+  {
+    "task": "자가 순환 시스템 구축",
+    "category": "technical",
+    "agent": "TD",
+    "context": "시스템 안정성 개선",
+    "actions": [
+      "버그 수정",
+      "모니터링 추가",
+      "메모리 최적화"
+    ],
+    "result": "성공적으로 자가 순환 시스템 구축",
+    "success": true,
+    "metrics": {
+      "안정성": 0.9,
+      "성능": 0.85
+    },
+    "learnings": [
+      "순환 참조 방지가 핵심",
+      "장기 기억이 학습 효율 개선"
+    ],
+    "id": "c716fdbe647accaa",
+    "timestamp": "2026-02-15T02:54:59.565797",
+    "accessed_count": 0,
+    "last_accessed": null
+  },
+  {
+    "task": "에이전트 협업 시스템 개발",
+    "category": "technical",
+    "agent": "CD",
+    "context": "5개 에이전트 실시간 통신",
+    "actions": [
+      "메시지 라우팅",
+      "합의 도출 메커니즘",
+      "작업 분배"
+    ],
+    "result": "협업 시스템 구축 완료",
+    "success": true,
+    "metrics": {
+      "효율성": 0.88,
+      "응답속도": 0.92
+    },
+    "learnings": [
+      "비동기 통신이 성능 향상",
+      "Hub 패턴이 효과적"
+    ],
+    "id": "392c661634795811",
+    "timestamp": "2026-02-15T02:54:59.566263",
+    "accessed_count": 0,
+    "last_accessed": null
+  },
+  {
+    "task": "메모리 누수 해결",
+    "category": "maintenance",
+    "agent": "TD",
+    "context": "시스템 메모리 사용량 증가 문제",
+    "actions": [
+      "메모리 프로파일링",
+      "캐시 정리",
+      "가비지 컬렉션"
+    ],
+    "result": "메모리 사용량 50% 감소",
+    "success": true,
+    "metrics": {
+      "메모리_절감": 0.5,
+      "성능_개선": 0.3
+    },
+    "learnings": [
+      "주기적 캐시 정리 필요",
+      "객체 참조 관리 중요"
+    ],
+    "id": "4c060800b690b103",
+    "timestamp": "2026-02-15T02:54:59.566625",
+    "accessed_count": 0,
+    "last_accessed": null
+  }
+]

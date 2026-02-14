@@ -378,7 +378,7 @@ class AgentHub:
         keywords = defaultdict(int)
 
         for agent_response in responses.values():
-            response_text = str(response_response.get("response", ""))
+            response_text = str(agent_response.get("response", ""))
             # 키워드 추출 (간단한 구현)
             words = response_text.lower().split()
             for word in words:

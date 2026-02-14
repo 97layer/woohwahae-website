@@ -56,12 +56,17 @@ class StrategyAnalyst:
         self.hub = hub
         self.agent_key = "SA"
 
-    def analyze_signal(self, content: str, signal_id: str = None) -> Dict[str, Any]:
-        """신호 분석 및 패턴 탐지"""
-        print(f"[{self.name}] Analyzing signal...")
+    def analyze_signal(self, content: str, signal_id: str = None, memories: List[Dict] = None) -> Dict[str, Any]:
+        """신호 분석 및 패턴 탐지 (장기 기억 참조)"""
+        print(f"[{self.name}] Analyzing signal with memories...")
+        
+        memory_context = ""
+        if memories:
+            memory_context = "\n[과거 유사 사례 참조]:\n" + "\n".join([f"- {m['content_preview']}" for m in memories])
 
         # Context7 MCP로 최신 브랜딩 트렌드 참조 가능
-        prompt = f"""다음 텍스트를 97layer의 5대 철학 축 관점에서 분석하세요:
+        prompt = f"""다음 텍스트를 97layer의 5대 철학 축 관점에서 분석하세요.
+{memory_context}
 1. 고독 (Solitary Essence)
 2. 불완전 (Imperfection)
 3. 시간 (Time Archive)
@@ -405,6 +410,10 @@ class TechnicalDirector:
         from libs.notifier import Notifier
         self.notifier = Notifier()
 
+        # 장기 기억 엔진 초기화
+        from libs.memory_engine import MemoryEngine
+        self.memory = MemoryEngine(str(PROJECT_ROOT))
+
         # Anti-Gravity: 작업 큐 (우선순위 기반)
         self.task_queue = queue.PriorityQueue()
         self.active_signals = {}  # signal_id -> lock
@@ -427,8 +436,13 @@ class TechnicalDirector:
         if action == "analyze":
             content = message["data"].get("content")
             signal_id = message["data"].get("signal_id")
-            # chat_id는 TD에서 직접 관리하므로 더 이상 SA에게 넘길 필요 없음
-            return self.sa.analyze_signal(content, signal_id)
+            
+            # 장기 기억 참조 (유사 사례 조회)
+            relevant_memories = self.memory.retrieve_relevant(content)
+            
+            # SA에게 분석 요청 (기억 포함)
+            analysis = self.sa.analyze_signal(content, signal_id, memories=relevant_memories)
+            return analysis
         return None
 
     def _ad_handler(self, message: Dict) -> Any:
@@ -472,7 +486,11 @@ class TechnicalDirector:
             if judgment.get("approved"):
                 self._save_approved(content, judgment, signal_id)
                 self.stats["approved"] += 1
-                print(f"[{self.name}] Content APPROVED and saved: {signal_id}")
+                
+                # 장기 기억 아카이빙 (자가 순환)
+                self.memory.archive_experience(signal_id, content, judgment, status="success")
+                
+                print(f"[{self.name}] Content APPROVED and saved to Memory: {signal_id}")
                 
                 # 사용자에게 알림 전송 (active_signals에서 chat_id 조회)
                 signal_info = self.active_signals.get(signal_id, {})

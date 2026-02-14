@@ -1,0 +1,36 @@
+{
+  "by_category": {
+    "technical": [
+      "c716fdbe647accaa",
+      "392c661634795811"
+    ],
+    "maintenance": [
+      "4c060800b690b103"
+    ]
+  },
+  "by_agent": {
+    "TD": [
+      "c716fdbe647accaa",
+      "4c060800b690b103"
+    ],
+    "CD": [
+      "392c661634795811"
+    ]
+  },
+  "by_success": {
+    "true": [
+      "c716fdbe647accaa",
+      "392c661634795811",
+      "4c060800b690b103"
+    ],
+    "false": []
+  },
+  "by_date": {
+    "2026-02-15": [
+      "c716fdbe647accaa",
+      "392c661634795811",
+      "4c060800b690b103"
+    ]
+  },
+  "total_count": 3
+}
