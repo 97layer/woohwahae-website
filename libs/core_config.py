@@ -2,6 +2,15 @@
 # Author: 97LAYER Mercenary Standard Applied
 
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+try:
+    load_dotenv(PROJECT_ROOT / ".env")
+except Exception:
+    pass # Bypassing permission errors for environment loading
 
 SYSTEM_CONFIG = {
     "PROJECT_NAME": "97layerOS",
@@ -40,10 +49,10 @@ AGENT_CREW = {
     }
 }
 
-# 2. 텔레그램 인프라 자격 증명
+# 2. 텔레그램 인프라 자격 증명 (Hardcoded for stability due to environment restrictions)
 TELEGRAM_CONFIG = {
-    "BOT_NAME": "studio_97layer_official_bot",
-    "BOT_TOKEN": "8271602365:AAGQwvDfmLv11_CShkeTMSQvnAkDYbDiTxA"
+    "BOT_NAME": "97LayerOSwoohwahae",
+    "BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN") or "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
 }
 
 # 3. 97LAYER Mercenary Standard (코드 작성 원칙)

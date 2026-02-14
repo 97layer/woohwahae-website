@@ -8,10 +8,11 @@ __pycache__/
 token.json
 credentials.json
 
-# Temporary files
+# Temporary files & Logs
 .tmp/
 .tmp.driveupload/
 .tmp.drivedownload/
+logs/
 *.log
 
 # macOS
@@ -27,3 +28,13 @@ node_modules/
 
 # Project specific
 knowledge/inbox/외주 코드/
+knowledge/chat_memory/
+knowledge/raw_signals/
+knowledge/agent_hub/
+assets/
+visual/
+brain/
+*screenshot*
+*.png
+*.jpg
+*.jpeg

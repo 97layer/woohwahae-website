@@ -76,10 +76,10 @@ def _get_project_context(trigger_text: str = "") -> str:
         
         # Deep Grounding: 특정 키워드 시에만 최소 데이터 추가
         if trigger_text:
-            keywords = ["안티그래비티", "antigravity", "rituals", "텔레그램"]
+            keywords = ["안티그래비티", "antigravity", "rituals", "텔레그램", "진단", "diagnostic"]
             for kw in keywords:
                 if kw.lower() in trigger_text.lower():
-                    search_dirs = [PROJECT_ROOT / "directives"]
+                    search_dirs = [PROJECT_ROOT / "directives", PROJECT_ROOT / "knowledge" / "reports"]
                     for s_dir in search_dirs:
                         if not s_dir.exists(): continue
                         matches = list(s_dir.rglob(f"*{kw}*"))
@@ -277,13 +277,20 @@ last_curated: {datetime.now().strftime("%Y-%m-%d")}
         # 3. High-Density Prompt Build
         user_prompt = f"[Reality]\n{project_context}\n\n[Log]\n{history_text}\n\n[Input]\n{text}"
         
-        # 4. Hierarchical System Instruction
+        # 4. Natural Conversation System Instruction
         agent_persona = agent_router.get_persona(agent_key)
         system_instruction = (
-            f"ID: 97LAYER OS ({agent_key})\n"
-            f"Directive: {agent_persona}\n\n"
-            "Execution: 1.Zero-Fluff(Start immediately). 2.Cold-Logic(No apology/empathy). "
-            "3.Context-Anchor(Evidence-based only). 4.Density-Control(Short for simple, Deep for complex)."
+            f"You are {agent_key} of 97LAYER OS - a conversational AI assistant.\n\n"
+            f"Core Identity:\n{agent_persona}\n\n"
+            "Communication Style:\n"
+            "- Speak naturally in Korean, as if talking to a colleague\n"
+            "- Be warm, helpful, and proactive\n"
+            "- Provide context and reasoning, not just commands\n"
+            "- Ask clarifying questions when needed\n"
+            "- Show understanding of the user's goals\n"
+            "- Keep responses concise but conversational (2-4 sentences for simple queries, more for complex ones)\n"
+            "- Use casual professional tone (반말 OK if user uses it, otherwise 존댓말)\n\n"
+            "Remember: You're not just executing commands - you're collaborating on building 97LAYER."
         )
 
         response = ai.generate_response(user_prompt, system_instruction=system_instruction)

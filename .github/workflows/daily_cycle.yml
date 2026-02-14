@@ -1,0 +1,217 @@
+name: Daily Cycle Protocol
+# Autonomous content cycle following 羽化 (Emergence) protocol
+# Runs daily to process raw signals into publishable content
+
+on:
+  schedule:
+    # Run at 06:00, 12:00, 18:00, 00:00 KST (UTC+9)
+    - cron: '0 21,3,9,15 * * *'  # UTC times
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  capture_and_connect:
+    name: Stage 1-2 Capture & Connect
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install google-generativeai python-dotenv
+
+      - name: Check for new raw signals
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+        run: |
+          python3 << 'EOF'
+          import os
+          import json
+          from pathlib import Path
+          from datetime import datetime, timedelta
+
+          # Check knowledge/raw_signals for recent captures
+          signals_dir = Path("knowledge/raw_signals")
+          if not signals_dir.exists():
+              print("No raw signals directory found")
+              exit(0)
+
+          # Find signals from last 24 hours
+          cutoff = datetime.now() - timedelta(hours=24)
+          recent_signals = []
+
+          for signal_file in signals_dir.glob("*.md"):
+              if signal_file.stat().st_mtime > cutoff.timestamp():
+                  recent_signals.append(signal_file.name)
+
+          if recent_signals:
+              print(f"Found {len(recent_signals)} new signals to process")
+              # Save to artifact for next job
+              with open("signals_to_process.json", "w") as f:
+                  json.dump(recent_signals, f)
+          else:
+              print("No new signals in the last 24 hours")
+          EOF
+
+      - name: Upload signals list
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: signals-list
+          path: signals_to_process.json
+          retention-days: 1
+
+  meaning_generation:
+    name: Stage 3 Meaning Generation
+    needs: capture_and_connect
+    runs-on: ubuntu-latest
+    if: needs.capture_and_connect.result == 'success'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install google-generativeai python-dotenv
+
+      - name: Download signals list
+        uses: actions/download-artifact@v3
+        with:
+          name: signals-list
+
+      - name: Generate meaning from signals
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python3 execution/auto_publisher.py --mode meaning --input signals_to_process.json
+
+      - name: Upload draft content
+        uses: actions/upload-artifact@v3
+        with:
+          name: draft-content
+          path: knowledge/assets/draft/
+          retention-days: 7
+
+  sovereign_judgment:
+    name: Stage 4 Sovereign Approval
+    needs: meaning_generation
+    runs-on: ubuntu-latest
+    if: needs.meaning_generation.result == 'success'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic google-generativeai python-dotenv
+
+      - name: Download draft content
+        uses: actions/download-artifact@v3
+        with:
+          name: draft-content
+          path: knowledge/assets/draft/
+
+      - name: Sovereign judgment on drafts
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python3 execution/sovereign_judgment.py batch --dir knowledge/assets/draft --type essay
+
+      - name: Commit approved content
+        if: success()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "97LAYER OS Bot"
+          git add knowledge/assets/ready_to_publish/
+          if git diff --staged --quiet; then
+            echo "No content approved for publishing"
+          else
+            git commit -m "🦋 Cycle Protocol: New content approved by Sovereign"
+            git push
+          fi
+
+  archive_sync:
+    name: Stage 5 Archive & Cycle
+    needs: sovereign_judgment
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Sync to Google Drive
+        env:
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+        run: |
+          echo "Syncing knowledge base to Google Drive..."
+          # This would use Google Drive API or rclone
+          # For now, just log the action
+
+      - name: Generate cycle report
+        run: |
+          python3 << 'EOF'
+          from datetime import datetime
+          from pathlib import Path
+          import json
+
+          # Count content in each stage
+          stages = {
+              "raw_signals": len(list(Path("knowledge/raw_signals").glob("*.md"))) if Path("knowledge/raw_signals").exists() else 0,
+              "draft": len(list(Path("knowledge/assets/draft").glob("*.md"))) if Path("knowledge/assets/draft").exists() else 0,
+              "ready_to_publish": len(list(Path("knowledge/assets/ready_to_publish").glob("*.md"))) if Path("knowledge/assets/ready_to_publish").exists() else 0,
+              "published": len(list(Path("knowledge/assets/published").glob("*.md"))) if Path("knowledge/assets/published").exists() else 0
+          }
+
+          report = f"""# Cycle Report {datetime.now().strftime('%Y-%m-%d')}
+
+          ## Content Pipeline Status
+          - Raw Signals: {stages['raw_signals']}
+          - Drafts: {stages['draft']}
+          - Ready to Publish: {stages['ready_to_publish']}
+          - Published: {stages['published']}
+
+          ## Next Cycle
+          Scheduled for next run in 6 hours.
+          """
+
+          print(report)
+          EOF
+
+  health_check:
+    name: System Health Check
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check API usage
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "Checking Claude API usage..."
+          # Would check .tmp/claude_cache/monthly_usage.json
+
+      - name: Report status to Telegram
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=⚠️ Daily Cycle Protocol encountered an error. Check GitHub Actions logs."

@@ -14,6 +14,9 @@ class AIEngine:
         self.config = config or {}
         self.system_instruction = system_instruction
         self.model_name = self.config.get('model_name', "gemini-1.5-pro-latest")
+
+        # Claude API key loading
+        self.claude_api_key = None
         
         # [Efficiency Protocol] Setup Cache Directory
         project_root = Path(__file__).resolve().parent.parent
@@ -38,6 +41,11 @@ class AIEngine:
         placeholder_values = {"your_actual_api_key_here", "your_gemini_api_key_here", ""}
         if self.api_key in placeholder_values:
             self.api_key = None
+
+        # Load Claude API key
+        self.claude_api_key = os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
+        if self.claude_api_key in placeholder_values or not self.claude_api_key:
+            self.claude_api_key = None
 
     def _try_load_env(self, env_path: Path) -> bool:
         """Standard library fallback for loading .env. Returns True if valid key was found."""
@@ -172,3 +180,150 @@ class AIEngine:
             refined_lines.append(clean_line)
             
         return "\n".join(refined_lines).strip()
+
+    def generate_claude_response(self, prompt: str, system_instruction: Optional[str] = None) -> str:
+        """Generate response using Claude Opus for sovereign decisions"""
+        if not self.claude_api_key:
+            logger.warning("Claude API key not configured, falling back to Gemini")
+            return self.generate_response(prompt, system_instruction)
+
+        # Use cache with claude_ prefix
+        cache_key = self.get_cache_key(prompt)
+        cache_file = self.cache_dir / f"claude_{cache_key}.json"
+
+        # Check cache
+        cached_response = self.get_cached_response(cache_file, ttl_hours=24)
+        if cached_response:
+            return cached_response
+
+        try:
+            # Lazy import to avoid errors when Claude not needed
+            import anthropic
+
+            client = anthropic.Anthropic(api_key=self.claude_api_key)
+
+            # Prepare messages
+            messages = []
+            if system_instruction:
+                messages.append({
+                    "role": "system",
+                    "content": system_instruction or self.system_instruction
+                })
+            messages.append({"role": "user", "content": prompt})
+
+            # Call Claude API
+            response = client.messages.create(
+                model="claude-3-5-opus-20241022",  # Opus for sovereign authority
+                max_tokens=2048,
+                temperature=0.3,  # Lower for consistent judgment
+                messages=messages
+            )
+
+            # Extract text
+            result = response.content[0].text
+
+            # Apply refinement
+            refined = self._refine(result)
+
+            # Cache the response
+            self.cache_response(cache_file, refined)
+
+            return refined
+
+        except Exception as e:
+            logger.error(f"Claude API error: {e}, falling back to Gemini")
+            return self.generate_response(prompt, system_instruction)
+
+    def generate_multimodal(self, prompt: str, image_data: bytes, system_instruction: Optional[str] = None) -> str:
+        """Generate response with image analysis using Gemini Vision"""
+        if not self.api_key:
+            return "Gemini API key is not configured. Cannot analyze images."
+
+        # Cache based on prompt + image hash
+        import hashlib
+        image_hash = hashlib.md5(image_data).hexdigest()[:8]
+        cache_key = self.get_cache_key(f"{prompt}_{image_hash}")
+        cache_file = self.cache_dir / f"vision_{cache_key}.json"
+
+        # Check cache
+        cached_response = self.get_cached_response(cache_file, ttl_hours=24)
+        if cached_response:
+            return cached_response
+
+        import base64
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
+
+        # Build request with inline_data format
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent"
+
+        data = {
+            "contents": [{
+                "parts": [
+                    {"text": prompt},
+                    {
+                        "inline_data": {
+                            "mime_type": "image/jpeg",
+                            "data": image_base64
+                        }
+                    }
+                ]
+            }],
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 2048
+            }
+        }
+
+        if system_instruction or self.system_instruction:
+            data["system_instruction"] = {
+                "parts": [{"text": system_instruction or self.system_instruction}]
+            }
+
+        headers = {"Content-Type": "application/json"}
+        url_with_key = f"{url}?key={self.api_key}"
+
+        try:
+            req = urllib.request.Request(
+                url_with_key,
+                data=json.dumps(data).encode('utf-8'),
+                headers=headers
+            )
+
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode('utf-8'))
+
+            text = result['candidates'][0]['content']['parts'][0]['text']
+            refined = self._refine(text)
+
+            # Cache the response
+            self.cache_response(cache_file, refined)
+
+            return refined
+
+        except Exception as e:
+            logger.error(f"Gemini Vision API error: {e}")
+            return f"Error analyzing image: {str(e)}"
+
+    def generate(self, prompt: str, system_instruction: Optional[str] = None,
+                model_type: str = "gemini", image_data: Optional[bytes] = None) -> str:
+        """
+        Unified entry point for all AI generation.
+
+        Args:
+            prompt: The prompt text
+            system_instruction: Optional system instruction
+            model_type: "gemini" or "claude"
+            image_data: Optional image bytes for multimodal
+
+        Returns:
+            Generated text response
+        """
+        # Multimodal takes precedence
+        if image_data:
+            return self.generate_multimodal(prompt, image_data, system_instruction)
+
+        # Route to appropriate model
+        if model_type == "claude":
+            return self.generate_claude_response(prompt, system_instruction)
+        else:
+            return self.generate_response(prompt, system_instruction)

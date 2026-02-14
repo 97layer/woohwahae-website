@@ -1,0 +1,196 @@
+---
+// WOOHWAHAE Archive
+// 97LAYER OS Content Archive System
+// Following anti-algorithm protocol: depth over virality
+
+export const prerender = true;
+
+// Fetch recent content from knowledge/assets/published
+import fs from 'fs';
+import path from 'path';
+const publishedDir = path.join(process.cwd(), '..', 'knowledge', 'assets', 'published');
+let recentContent = [];
+
+if (fs.existsSync(publishedDir)) {
+  const files = fs.readdirSync(publishedDir)
+    .filter(f => f.endsWith('.md'))
+    .sort((a, b) => b.localeCompare(a))  // Recent first
+    .slice(0, 10);
+
+  recentContent = files.map(filename => {
+    const content = fs.readFileSync(path.join(publishedDir, filename), 'utf-8');
+    const lines = content.split('\n');
+    const title = lines.find(l => l.startsWith('#'))?.replace('#', '').trim() || filename;
+    const preview = lines.find(l => l && !l.startsWith('#'))?.slice(0, 200) || '';
+
+    return {
+      title,
+      preview,
+      filename: filename.replace('.md', ''),
+      date: filename.match(/\d{8}/)?.[0] || ''
+    };
+  });
+}
+---
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WOOHWAHAE — Remove the Noise, Reveal the Essence</title>
+  <style>
+    /* WOOHWAHAE Visual Identity: Monochrome, 60% whitespace, minimal */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #000;
+      background: #fff;
+      padding: 60px 20px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 120px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      font-size: 12px;
+      color: #666;
+      letter-spacing: 0.02em;
+    }
+
+    nav {
+      margin: 60px 0;
+      text-align: center;
+    }
+
+    nav a {
+      color: #000;
+      text-decoration: none;
+      margin: 0 20px;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    nav a:hover {
+      border-bottom-color: #000;
+    }
+
+    .content-grid {
+      margin-top: 80px;
+    }
+
+    .content-item {
+      margin-bottom: 60px;
+      padding-bottom: 60px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .content-item:last-child {
+      border-bottom: none;
+    }
+
+    .content-date {
+      font-size: 11px;
+      color: #999;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+
+    .content-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .content-preview {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .content-link {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #000;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      border-bottom: 1px solid #000;
+    }
+
+    footer {
+      margin-top: 120px;
+      padding-top: 40px;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+    }
+
+    /* Anti-algorithm: No animations, no popups, no tracking */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>WOOHWAHAE</h1>
+    <p class="tagline">Remove the Noise, Reveal the Essence</p>
+  </header>
+
+  <nav>
+    <a href="/archive">Archive</a>
+    <a href="/philosophy">Philosophy</a>
+    <a href="/about">About</a>
+  </nav>
+
+  <main>
+    <section class="content-grid">
+      {recentContent.length > 0 ? (
+        recentContent.map(item => (
+          <article class="content-item">
+            {item.date && <div class="content-date">{item.date}</div>}
+            <h2 class="content-title">{item.title}</h2>
+            <p class="content-preview">{item.preview}...</p>
+            <a href={`/archive/${item.filename}`} class="content-link">Read</a>
+          </article>
+        ))
+      ) : (
+        <article class="content-item">
+          <p class="content-preview">
+            The archive is being prepared. Content will emerge through the cycle protocol.
+          </p>
+        </article>
+      )}
+    </section>
+  </main>
+
+  <footer>
+    <p>97LAYER OS — A system for solitary philosophers</p>
+    <p>울산, 대한민국</p>
+  </footer>
+</body>
+</html>

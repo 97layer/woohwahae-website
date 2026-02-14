@@ -1,19 +1,51 @@
 {
-  "system_status": "INITIALIZING",
-  "last_update": "2026-02-14 08:08:54.102013",
+  "system_status": "OPERATIONAL",
+  "last_update": "2026-02-15 02:13:26.206732",
   "agents": {
-    "Telegram_Bot_Cloud": {
+    "SA": {
+      "status": "ACTIVE",
+      "last_heartbeat": "2026-02-14T23:46:56.854073"
+    },
+    "AD": {
+      "status": "ACTIVE",
+      "last_heartbeat": "2026-02-14T23:46:56.854075"
+    },
+    "CE": {
+      "status": "ACTIVE",
+      "last_heartbeat": "2026-02-14T23:46:56.854076"
+    },
+    "CD": {
+      "status": "ACTIVE",
+      "last_heartbeat": "2026-02-14T23:46:56.854077"
+    },
+    "TD": {
+      "status": "ACTIVE",
+      "last_heartbeat": "2026-02-14T23:46:56.854078"
+    },
+    "Async_Telegram_Bot": {
       "status": "ONLINE",
-      "last_heartbeat": "2026-02-14 08:08:54.101924",
-      "current_task": "메시지 수신 대기",
+      "last_heartbeat": "2026-02-15 02:12:22.829509",
+      "current_task": "Messages: 0",
       "location": "Local(Mac)"
     },
     "Technical_Director": {
       "status": "ACTIVE",
-      "last_heartbeat": "2026-02-14 08:04:25.134274",
+      "last_heartbeat": "2026-02-15 02:13:26.206648",
       "current_task": "시스템 상태 점검 및 태스크 스캔",
+      "location": "Local(Mac)"
+    },
+    "Telegram_Bot_Cloud": {
+      "status": "ONLINE",
+      "last_heartbeat": "2026-02-15 02:10:18.966641",
+      "current_task": "메시지 수신 대기",
       "location": "Local(Mac)"
     }
   },
-  "tasks": {}
+  "stats": {
+    "signals_captured": 11,
+    "images_analyzed": 1,
+    "content_generated": 0,
+    "approved": 0,
+    "rejected": 0
+  }
 }
