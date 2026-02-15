@@ -61,5 +61,6 @@ knowledge/content/
 knowledge/archive/
 
 # Old folders (archived, not needed in sync)
-execution/
-system/
+# NOTE: /system/ (root level only, not core/system/)
+/execution/
+/system/
