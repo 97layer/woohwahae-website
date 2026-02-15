@@ -1,6 +1,6 @@
 {
   "system_status": "OPERATIONAL",
-  "last_update": "2026-02-15 04:37:10.414013",
+  "last_update": "2026-02-15 16:38:00.319521",
   "agents": {
     "SA": {
       "status": "ACTIVE",
@@ -36,6 +36,12 @@
       "service_url": "https://telegram-bot-514569077225.asia-northeast3.run.app",
       "region": "asia-northeast3",
       "mode": "webhook"
+    },
+    "Async_Telegram_Bot": {
+      "status": "ONLINE",
+      "last_heartbeat": "2026-02-15 16:38:00.319460",
+      "current_task": "Messages: 0",
+      "location": "Local(Mac)"
     }
   },
   "stats": {

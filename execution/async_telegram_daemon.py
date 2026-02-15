@@ -196,14 +196,44 @@ class AsyncTelegramBot:
             await self._handle_command(chat_id, text)
             return
 
-        # 멀티모달 처리 (이미지 + 텍스트)
+        # 멀티모달 처리 (이미지 + 텍스트) 또는 기능적 텍스트 처리
+        is_functional = any(kw in text for kw in ["초안", "작성", "분석", "보고", "기획", "정리"])
+        
         if photo and self.async_td:
             await self._process_multimodal(chat_id, text, photo)
+        elif text and is_functional and self.async_td:
+            # 텍스트만 있지만 기능적 요청인 경우 (CE, SA 등 가동)
+            logger.info(f"Functional text request detected: {text[:50]}")
+            await self._process_functional_text(chat_id, text)
         elif text:
-            # 텍스트만 있는 경우 기존 방식
+            # 단순 대화인 경우 기존 방식
             detected_agent = self.agent_router.route(text)
             self.notifier.notify_telegram_received(str(chat_id), text, detected_agent)
             await self._generate_response(chat_id, text, detected_agent)
+
+    async def _process_functional_text(self, chat_id: int, text: str):
+        """텍스트 기반 기능 요청 처리 (SA-AD-CE-CD 워크포스 가동)"""
+        try:
+            await self.send_typing_action(chat_id)
+            
+            # Signal ID 생성
+            signal_id = f"text-{chat_id}-{datetime.now().timestamp()}"
+            
+            # AsyncTechnicalDirector로 병렬 처리 (이미지 없이 텍스트만 전달)
+            result = await self.async_td.process_multimodal_signal(
+                text=text,
+                image_bytes=None,
+                signal_id=signal_id
+            )
+            
+            self.stats["multimodal_processed"] += 1
+            
+            # 결과 전송
+            await self._send_multimodal_result(chat_id, result)
+            
+        except Exception as e:
+            logger.error(f"Functional text processing error: {e}")
+            await self.send_message(chat_id, f"⚠️ 작업 처리 중 오류가 발생했습니다: {str(e)}")
 
     async def _handle_command(self, chat_id: int, command: str):
         """명령어 처리"""

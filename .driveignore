@@ -50,6 +50,11 @@ credentials.json
 .tmp.driveupload/
 .tmp.drivedownload/
 
+# Project Specific Heavy Directories (Isolated in Containers)
+frontend/node_modules/
+google-cloud-sdk/
+frontend/.next/
+
 # Backups & Snapshots (stored separately in external storage)
 *_Backups/
 *_Snapshots/

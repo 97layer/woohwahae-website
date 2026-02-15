@@ -39,3 +39,14 @@ brain/
 *.jpg
 *.jpeg
 config.json
+
+# Google Cloud SDK documentation (external dependency)
+google-cloud-sdk/**/*.md
+google-cloud-sdk/**/README
+google-cloud-sdk/**/CHANGELOG
+google-cloud-sdk/**/CONTRIBUTING
+google-cloud-sdk/**/LICENSE
+google-cloud-sdk/**/SECURITY
+
+# Snapshots (backed up to Google Drive)
+97layerOS_Snapshots/
