@@ -101,14 +101,36 @@ def setup_webhook():
 def _get_project_context(trigger_text: str = "") -> str:
     """프로젝트 상태 요약 (토큰 최적화 버전)"""
     try:
+        # Task Status
         status_file = PROJECT_ROOT / "task_status.json"
         status = json.loads(status_file.read_text()) if status_file.exists() else {}
-
         pending = status.get("pending_tasks", [])
         top_task = pending[0]['instruction'] if pending and 'instruction' in pending[0] else 'None'
 
+        # System State (에이전트 상태)
+        system_state_file = PROJECT_ROOT / "knowledge" / "system_state.json"
+        system_state = json.loads(system_state_file.read_text()) if system_state_file.exists() else {}
+        agents_status = system_state.get("agents", {})
+        active_agents = [name for name, info in agents_status.items() if info.get("status") == "ACTIVE"]
+
+        # Sync State (맥북/VM 주권)
+        sync_state_file = PROJECT_ROOT / "knowledge" / "system" / "sync_state.json"
+        sync_state = json.loads(sync_state_file.read_text()) if sync_state_file.exists() else {}
+        active_node = sync_state.get("active_node", "unknown")
+
         vision_summary = "1인 기업 97LAYER의 고효율 자율 운영 시스템 (97LAYER OS)"
-        context = f"[Status] Pending: {len(pending)} | Top: {top_task} | Vision: {vision_summary}"
+
+        context = f"""[System Status]
+- Pending Tasks: {len(pending)}
+- Active Node: {active_node}
+- Active Agents: {", ".join(active_agents[:3])} ({len(active_agents)} total)
+- Last Update: {system_state.get("last_update", "N/A")}
+
+[Top Task]
+{top_task}
+
+[Vision]
+{vision_summary}"""
 
         # Deep Grounding: 특정 키워드 시에만 최소 데이터 추가
         if trigger_text:
@@ -299,10 +321,17 @@ last_curated: {datetime.now().strftime("%Y-%m-%d")}
         # 4. Neural Routing (AI Response)
         agent_key = agent_router.route(text)
 
-        is_complex = len(text) > 50 or any(k in text for k in ["분석", "보고", "설계", "구현", "정리"])
+        is_complex = (
+            len(text) > 30 or
+            any(k in text for k in [
+                "분석", "보고", "설계", "구현", "정리",
+                "진단", "확인", "문제", "플로우", "구조",
+                "어떻게", "왜", "뭐", "상태", "현황"
+            ])
+        )
         project_context = _get_project_context(text if is_complex else "")
 
-        chat_history = memory.load_chat(str(chat_id), limit=3 if not is_complex else 5)
+        chat_history = memory.load_chat(str(chat_id), limit=10 if not is_complex else 20)
         history_text = "\n".join([f"{m['role'][0].upper()}: {m['content'][:200]}" for m in chat_history])
 
         user_prompt = f"[Reality]\n{project_context}\n\n[Log]\n{history_text}\n\n[Input]\n{text}"
