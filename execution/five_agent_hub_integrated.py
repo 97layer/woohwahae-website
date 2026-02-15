@@ -29,7 +29,7 @@ sys.path.append(str(PROJECT_ROOT))
 from libs.agent_hub import AgentHub, MessageType
 
 # Configuration
-BOT_TOKEN = "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 GEMINI_KEY = "AIzaSyBHpQRFjdZRzzkYGR6eqBezyPteaHX_uMQ"
 CLAUDE_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"

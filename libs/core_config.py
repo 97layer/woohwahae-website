@@ -52,7 +52,7 @@ AGENT_CREW = {
 # 2. 텔레그램 인프라 자격 증명 (Hardcoded for stability due to environment restrictions)
 TELEGRAM_CONFIG = {
     "BOT_NAME": "97LayerOSwoohwahae",
-    "BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN") or "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+    "BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN")  # Fallback 제거 (보안)
 }
 
 # 3. 97LAYER Mercenary Standard (코드 작성 원칙)

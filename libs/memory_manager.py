@@ -7,6 +7,7 @@ from pathlib import Path
 class MemoryManager:
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
+        # Unified path: knowledge/chat_memory
         self.memory_dir = self.project_root / "knowledge" / "chat_memory"
         self.memory_dir.mkdir(parents=True, exist_ok=True)
         self.knowledge_dir = self.project_root / "knowledge"
@@ -23,23 +24,27 @@ class MemoryManager:
             "content": text
         }
         
-        history = self.load_chat(chat_id)
+        # Load all history for saving, but limit for generation
+        history = self._load_all_chat(chat_id)
         history.append(log_entry)
         with open(chat_file, "w", encoding="utf-8") as f:
             json.dump(history, f, indent=4, ensure_ascii=False)
 
-    def load_chat(self, chat_id: str, limit: int = 10) -> list:
-        """Loads the last N messages of chat history."""
+    def _load_all_chat(self, chat_id: str) -> list:
+        """Helper to load all chat history from file."""
         chat_file = self.memory_dir / f"{chat_id}.json"
         if not chat_file.exists():
             return []
         try:
             with open(chat_file, "r", encoding="utf-8") as f:
-                history = json.load(f)
-                return history[-limit:]
-        except Exception as e:
-            print(f"Memory Load Error: {e}")
+                return json.load(f)
+        except:
             return []
+
+    def load_chat(self, chat_id: str, limit: int = 20) -> list:
+        """Loads the last N messages of chat history. Default increased for better context."""
+        history = self._load_all_chat(chat_id)
+        return history[-limit:]
 
     def get_relevant_knowledge(self, query: str, top_n: int = 3) -> list:
         """

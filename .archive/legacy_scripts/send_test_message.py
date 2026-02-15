@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """
 새 봇으로 테스트 메시지 전송
 """
@@ -9,7 +10,7 @@ import urllib.parse
 from datetime import datetime
 
 # 새 봇 토큰
-NEW_TOKEN = "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+NEW_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 API_URL = f"https://api.telegram.org/bot{NEW_TOKEN}"
 
 # 사용자 채팅 ID (이전 대화 기록에서)

@@ -5,12 +5,13 @@ Runs in foreground with clear output
 """
 
 import time
+import os
 import json
 import urllib.request
 import urllib.error
 from datetime import datetime
 
-BOT_TOKEN = "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 def get_updates(offset=None):

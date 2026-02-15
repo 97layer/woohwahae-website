@@ -38,3 +38,4 @@ brain/
 *.png
 *.jpg
 *.jpeg
+config.json

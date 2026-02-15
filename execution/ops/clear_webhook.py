@@ -2,8 +2,9 @@
 """Clear Telegram webhook to use polling mode"""
 
 import requests
+import os
 
-BOT_TOKEN = "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 # Delete webhook
 url = f"https://api.telegram.org/bot{BOT_TOKEN}/deleteWebhook"

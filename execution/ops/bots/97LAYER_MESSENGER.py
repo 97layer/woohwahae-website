@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """
 97LAYER 회사 메신저 - 최종 버전
 새 토큰으로 409 에러 없이 작동
@@ -15,7 +16,7 @@ from pathlib import Path
 import urllib.request
 
 # ===== 설정 =====
-NEW_TOKEN = "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"  # 새 토큰!
+NEW_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # 새 토큰!
 API_URL = f"https://api.telegram.org/bot{NEW_TOKEN}"
 
 PROJECT_ROOT = Path.home() / "97layerOS"

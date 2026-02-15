@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """
 새 봇 토큰 테스트 및 링크 생성
 """
@@ -7,7 +8,7 @@ import json
 import urllib.request
 
 # 새 봇 토큰
-NEW_TOKEN = "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+NEW_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 API_URL = f"https://api.telegram.org/bot{NEW_TOKEN}"
 
 def get_bot_info():

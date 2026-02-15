@@ -5,11 +5,12 @@ Sends a test message to verify bot is working
 """
 
 import requests
+import os
 import json
 import sys
 
 # Bot token from config
-BOT_TOKEN = "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 def get_bot_info():
     """Get bot information"""

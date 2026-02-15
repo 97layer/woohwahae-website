@@ -331,31 +331,37 @@ last_curated: {datetime.now().strftime("%Y-%m-%d")}
         )
         project_context = _get_project_context(text if is_complex else "")
 
-        chat_history = memory.load_chat(str(chat_id), limit=10 if not is_complex else 20)
-        history_text = "\n".join([f"{m['role'][0].upper()}: {m['content'][:200]}" for m in chat_history])
+        # Increased history limit for better continuity
+        chat_history = memory.load_chat(str(chat_id), limit=30 if is_complex else 15)
+        history_text = "\n".join([f"{m['role'][0].upper()}: {m['content']}" for m in chat_history])
 
-        user_prompt = f"[Reality]\n{project_context}\n\n[Log]\n{history_text}\n\n[Input]\n{text}"
+        user_prompt = f"""[System Context]
+{project_context}
+
+[Recent Conversation Log]
+{history_text}
+
+[Current User Input]
+{text}
+"""
 
         agent_persona = agent_router.get_persona(agent_key)
         system_instruction = (
-            f"You are {agent_key} of 97LAYER OS - a conversational AI assistant.\n\n"
-            f"Core Identity:\n{agent_persona}\n\n"
-            "Communication Style:\n"
-            "- Speak naturally in Korean, as if talking to a colleague\n"
-            "- Be warm, helpful, and proactive\n"
-            "- Provide context and reasoning, not just commands\n"
-            "- Ask clarifying questions when needed\n"
-            "- Show understanding of the user's goals\n"
-            "- Keep responses concise but conversational (2-4 sentences for simple queries, more for complex ones)\n"
-            "- Use casual professional tone (반말 OK if user uses it, otherwise 존댓말)\n\n"
-            "Remember: You're not just executing commands - you're collaborating on building 97LAYER."
+            f"You are {agent_key} of 97LAYER OS. Maintain your core identity and collaborate with the user.\n\n"
+            f"Core Persona:\n{agent_persona}\n\n"
+            "Communication Protocol:\n"
+            "- Acknowledge the context in [Log] to maintain conversation continuity.\n"
+            "- Speak naturally in Korean (Professional but casual).\n"
+            "- Be precise and insightful. Don't repeat yourself.\n"
+            "- If the user's input refers to previous messages, explicitly reference the context found in the [Log].\n"
+            "- Focus on the user's ultimate goal of building 97LAYER."
         )
 
         response = ai.generate_response(user_prompt, system_instruction=system_instruction)
         clean_response = response.replace("**", "").replace("◈", "").strip()
 
         notifier.send_message(chat_id, clean_response)
-        memory.save_chat(str(chat_id), response, role="assistant")
+        memory.save_chat(str(chat_id), clean_response, role="assistant")
 
     except Exception as e:
         logger.error(f"Processing error: {e}")

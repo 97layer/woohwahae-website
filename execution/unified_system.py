@@ -41,9 +41,9 @@ class UnifiedBridge:
     def _load_api_keys(self) -> Dict[str, str]:
         """Load all API keys from environment"""
         keys = {
-            "gemini": os.getenv("GEMINI_API_KEY", "AIzaSyBHpQRFjdZRzzkYGR6eqBezyPteaHX_uMQ"),
-            "anthropic": os.getenv("ANTHROPIC_API_KEY", ""),
-            "telegram": "8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+            "gemini": os.getenv("GEMINI_API_KEY"),
+            "anthropic": os.getenv("ANTHROPIC_API_KEY"),
+            "telegram": os.getenv("TELEGRAM_BOT_TOKEN")
         }
         logger.info(f"API Keys loaded: Gemini={bool(keys['gemini'])}, Claude={bool(keys['anthropic'] and 'your_' not in keys['anthropic'])}")
         return keys

@@ -16,7 +16,7 @@ import urllib.parse
 from dotenv import load_dotenv
 load_dotenv()
 
-BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI')
+BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 CHAT_ID = 7565534667  # 97layer 사용자
 

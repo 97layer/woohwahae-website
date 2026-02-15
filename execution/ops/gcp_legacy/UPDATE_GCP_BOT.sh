@@ -6,7 +6,7 @@ echo "🔧 GCP 봇 토큰 업데이트 스크립트"
 echo "========================================"
 
 # 새 봇 토큰
-NEW_TOKEN="8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI"
+NEW_TOKEN="${TELEGRAM_BOT_TOKEN}"  # 환경변수에서 읽기
 GCP_IP="35.184.30.182"
 GCP_USER="skyto5339"
 SSH_KEY="$HOME/.ssh/id_ed25519_gcp"
@@ -21,8 +21,8 @@ cd ~/97layerOS
 echo "현재 토큰 확인:"
 grep TELEGRAM_BOT_TOKEN .env
 
-# 새 토큰으로 교체
-sed -i 's/TELEGRAM_BOT_TOKEN=.*/TELEGRAM_BOT_TOKEN=8501568801:AAE-3fBl-p6uZcmrdsWSRQuz_eg8yDADwjI/' .env
+# 새 토큰으로 교체 (환경변수에서 읽음)
+sed -i "s/TELEGRAM_BOT_TOKEN=.*/TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}/" .env
 
 echo ""
 echo "업데이트 후:"

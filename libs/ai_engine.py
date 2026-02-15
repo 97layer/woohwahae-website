@@ -9,6 +9,14 @@ from typing import Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
 
+# Token Optimization Integration
+try:
+    from execution.system.token_optimizer import TokenOptimizer
+    TOKEN_OPTIMIZER_AVAILABLE = True
+except ImportError:
+    TOKEN_OPTIMIZER_AVAILABLE = False
+    logger.debug("TokenOptimizer not available, using basic caching only")
+
 class AIEngine:
     def __init__(self, config: Optional[Dict[str, Any]] = None, system_instruction: Optional[str] = None):
         self.config = config or {}
@@ -17,11 +25,18 @@ class AIEngine:
 
         # Claude API key loading
         self.claude_api_key = None
-        
+
         # [Efficiency Protocol] Setup Cache Directory
         project_root = Path(__file__).resolve().parent.parent
         self.cache_dir = project_root / ".tmp" / "ai_cache"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+
+        # [Token Optimization] Initialize optimizer if available
+        if TOKEN_OPTIMIZER_AVAILABLE:
+            self.optimizer = TokenOptimizer(str(project_root))
+            logger.debug("TokenOptimizer integrated successfully")
+        else:
+            self.optimizer = None
         
         # Search for GEMINI_API_KEY or GOOGLE_API_KEY
         # .env 파일을 환경변수보다 우선 로드 (쉘 환경에 플레이스홀더가 설정된 경우 대비)
@@ -79,12 +94,20 @@ class AIEngine:
         if not self.api_key:
             return "Error: [AIEngine] Gemini API Key Missing. Please set GEMINI_API_KEY in .env."
 
-        # [Efficiency Protocol] Cache Check
+        # [Token Optimization] Use advanced optimizer if available
+        if self.optimizer:
+            full_prompt = str(self.system_instruction) + prompt
+            cached = self.optimizer.get_cached_response(full_prompt, max_age_hours=24)
+            if cached:
+                logger.info(f"✓ Token Optimizer Cache Hit")
+                return cached
+
+        # [Efficiency Protocol] Fallback to basic cache check
         import hashlib
         prompt_hash = hashlib.md5((str(self.system_instruction) + prompt).encode()).hexdigest()
         cache_file = self.cache_dir / f"{prompt_hash}.json"
-        
-        if cache_file.exists():
+
+        if cache_file.exists() and not self.optimizer:
             try:
                 with open(cache_file, "r", encoding="utf-8") as f:
                     cached_data = json.load(f)
@@ -124,17 +147,26 @@ class AIEngine:
                     if candidates:
                         text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
                         refined_text = self._refine(text)
-                        
-                        # [Efficiency Protocol] Save to Cache
-                        try:
-                            with open(cache_file, "w", encoding="utf-8") as f:
-                                json.dump({
-                                    "timestamp": time.time(),
-                                    "prompt_hash": prompt_hash,
-                                    "response": refined_text
-                                }, f, ensure_ascii=False, indent=4)
-                        except: pass
-                        
+
+                        # [Token Optimization] Save with advanced optimizer
+                        if self.optimizer:
+                            full_prompt = str(self.system_instruction) + prompt
+                            self.optimizer.cache_response(
+                                full_prompt,
+                                refined_text,
+                                metadata={'model': self.model_name, 'context': 'ai_engine'}
+                            )
+                        else:
+                            # [Efficiency Protocol] Fallback to basic cache
+                            try:
+                                with open(cache_file, "w", encoding="utf-8") as f:
+                                    json.dump({
+                                        "timestamp": time.time(),
+                                        "prompt_hash": prompt_hash,
+                                        "response": refined_text
+                                    }, f, ensure_ascii=False, indent=4)
+                            except: pass
+
                         return refined_text
                     return "Error: Empty response from Gemini API."
             except urllib.error.HTTPError as e:
