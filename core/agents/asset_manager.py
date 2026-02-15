@@ -12,10 +12,17 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 import sys
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from system.libs.core_config import KNOWLEDGE_PATHS
+# Knowledge paths
+KNOWLEDGE_PATHS = {
+    'signals': PROJECT_ROOT / 'knowledge' / 'signals',
+    'insights': PROJECT_ROOT / 'knowledge' / 'insights',
+    'content': PROJECT_ROOT / 'knowledge' / 'content',
+    'system': PROJECT_ROOT / 'knowledge' / 'system',
+    'archive': PROJECT_ROOT / 'knowledge' / 'archive',
+}
 
 
 class AssetManager:

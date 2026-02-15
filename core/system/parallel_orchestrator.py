@@ -16,7 +16,8 @@ import sys
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from system.libs.engines.ai_engine import AIEngine
+# Legacy AI engine not used in current workflow
+# from system.libs.engines.ai_engine import AIEngine
 from core.agents.async_agent_hub import AsyncAgentHub
 from core.system.handoff import HandoffEngine
 from core.system.ralph_loop import RalphLoop
@@ -35,7 +36,7 @@ class ParallelOrchestrator:
     """
 
     def __init__(self):
-        self.ai = AIEngine()
+        # self.ai = AIEngine()  # Legacy - not needed for agent coordination
         self.agent_hub = AsyncAgentHub(str(PROJECT_ROOT))
         self.handoff = HandoffEngine()
         self.ralph_loop = RalphLoop()

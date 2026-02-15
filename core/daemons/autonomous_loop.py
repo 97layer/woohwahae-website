@@ -4,8 +4,18 @@ import json
 import logging
 from pathlib import Path
 from datetime import datetime
-from system.libs.engines.ai_engine import AIEngine
-from system.libs.core_config import KNOWLEDGE_PATHS
+# Legacy imports - autonomous_loop not actively used
+# from system.libs.engines.ai_engine import AIEngine
+# from system.libs.core_config import KNOWLEDGE_PATHS
+
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+KNOWLEDGE_PATHS = {
+    'signals': PROJECT_ROOT / 'knowledge' / 'signals',
+    'insights': PROJECT_ROOT / 'knowledge' / 'insights',
+    'content': PROJECT_ROOT / 'knowledge' / 'content',
+    'system': PROJECT_ROOT / 'knowledge' / 'system',
+    'archive': PROJECT_ROOT / 'knowledge' / 'archive',
+}
 
 # Logging setup
 logging.basicConfig(
@@ -22,8 +32,7 @@ class AutonomousLoop:
     신호 포착 -> 에이전트 협업 -> 결과물 생성 사이클을 자동화함.
     """
     def __init__(self):
-        from system.libs.core_config import PROJECT_ROOT
-        self.ai = AIEngine()
+        # self.ai = AIEngine()  # Legacy - not used
         self.signal_inbox = Path(KNOWLEDGE_PATHS["signals"])
         self.bridge_path = PROJECT_ROOT / "knowledge" / "agent_hub" / "synapse_bridge.json"
         self.signal_inbox.mkdir(parents=True, exist_ok=True)

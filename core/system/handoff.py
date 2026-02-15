@@ -20,7 +20,14 @@ import subprocess
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from system.libs.core_config import PROJECT_ROOT, KNOWLEDGE_PATHS
+# Knowledge paths (formerly from system.libs.core_config)
+KNOWLEDGE_PATHS = {
+    'signals': PROJECT_ROOT / 'knowledge' / 'signals',
+    'insights': PROJECT_ROOT / 'knowledge' / 'insights',
+    'content': PROJECT_ROOT / 'knowledge' / 'content',
+    'system': PROJECT_ROOT / 'knowledge' / 'system',
+    'archive': PROJECT_ROOT / 'knowledge' / 'archive',
+}
 
 
 class HandoffEngine:
