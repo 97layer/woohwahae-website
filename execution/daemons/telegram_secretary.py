@@ -38,6 +38,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from execution.system.handoff import HandoffEngine
 from execution.system.parallel_orchestrator import ParallelOrchestrator
+from execution.system.daily_routine import DailyRoutine
 from system.libs.agents.asset_manager import AssetManager
 
 # Logging setup
@@ -72,6 +73,7 @@ class TelegramSecretary:
         self.handoff = HandoffEngine()
         self.orchestrator = ParallelOrchestrator()
         self.asset_manager = AssetManager()
+        self.daily_routine = DailyRoutine()
 
         # Session setup
         logger.info("🤖 Telegram Secretary 초기화 중...")
@@ -102,7 +104,9 @@ class TelegramSecretary:
             "/status - 시스템 현재 상태\n"
             "/report - 오늘의 작업 보고\n"
             "/analyze - 신호 멀티에이전트 분석\n"
-            "/signal <텍스트> - 새 신호 입력\n\n"
+            "/signal <텍스트> - 새 신호 입력\n"
+            "/morning - 아침 브리핑 (09:00 권장)\n"
+            "/evening - 저녁 리포트 (21:00 권장)\n\n"
             "**자동 포착**:\n"
             "메시지, 이미지, 링크를 보내면 자동으로 분류하고 처리합니다."
         )
@@ -298,6 +302,96 @@ class TelegramSecretary:
             f"분석하려면 /analyze를 입력하세요."
         )
 
+    async def morning_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """
+        /morning - 아침 브리핑 (09:00 권장)
+        """
+        user = update.effective_user
+        logger.info(f"🌅 /morning from {user.first_name} ({user.id})")
+
+        await update.message.reply_text(
+            "🌅 아침 브리핑을 생성하는 중입니다...\n"
+            "잠시만 기다려주세요."
+        )
+
+        try:
+            briefing = self.daily_routine.morning_briefing()
+
+            # 요약 메시지 구성
+            summary = briefing['summary']
+            response = f"🌅 **좋은 아침입니다**\n\n"
+            response += f"📊 현황:\n"
+            response += f"   • 대기 중: {summary['pending_count']}개\n"
+            response += f"   • 재작업 필요: {summary['refined_count']}개\n"
+            response += f"   • 어제 완료: {summary['completed_yesterday']}개\n\n"
+
+            if summary['pending_count'] > 0:
+                response += f"🎯 오늘은 Pending 자산 처리에 집중해보세요.\n\n"
+
+            response += f"💡 **슬로우 라이프 리마인더**\n"
+            response += f"속도보다 방향, 효율보다 본질을 기억하세요.\n"
+            response += f"오늘도 나다운 속도로 나아갑니다.\n\n"
+
+            # 보고서 경로
+            date_str = datetime.now().strftime('%Y%m%d')
+            report_path = f"knowledge/reports/daily/morning_{date_str}.json"
+            response += f"📄 상세 브리핑: `{report_path}`"
+
+            await update.message.reply_text(response)
+
+        except Exception as e:
+            logger.error(f"❌ 아침 브리핑 오류: {e}")
+            await update.message.reply_text(
+                f"❌ 브리핑 생성 중 오류 발생:\n{str(e)}"
+            )
+
+    async def evening_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """
+        /evening - 저녁 리포트 (21:00 권장)
+        """
+        user = update.effective_user
+        logger.info(f"🌙 /evening from {user.first_name} ({user.id})")
+
+        await update.message.reply_text(
+            "🌙 저녁 리포트를 생성하는 중입니다...\n"
+            "잠시만 기다려주세요."
+        )
+
+        try:
+            report = self.daily_routine.evening_report()
+
+            # 요약 메시지 구성
+            summary = report['summary']
+            ralph_stats = summary.get('ralph_stats', {})
+
+            response = f"🌙 **하루를 마무리합니다**\n\n"
+            response += f"📊 오늘의 성과:\n"
+            response += f"   • 완료: {summary['approved_today']}개\n"
+            response += f"   • 아카이브: {summary['archived_today']}개\n\n"
+
+            if ralph_stats:
+                response += f"🔍 품질 관리:\n"
+                response += f"   • 총 검증: {ralph_stats.get('total', 0)}회\n"
+                response += f"   • 통과율: {ralph_stats.get('pass_rate', 0)}%\n"
+                response += f"   • 평균 점수: {ralph_stats.get('avg_score', 0)}/100\n\n"
+
+            response += f"💭 **하루 마무리**\n"
+            response += f"완벽하지 않아도 괜찮습니다.\n"
+            response += f"과정의 흔적을 남긴 것만으로도 충분합니다.\n\n"
+
+            # 보고서 경로
+            date_str = datetime.now().strftime('%Y%m%d')
+            report_path = f"knowledge/reports/daily/evening_{date_str}.json"
+            response += f"📄 상세 리포트: `{report_path}`"
+
+            await update.message.reply_text(response)
+
+        except Exception as e:
+            logger.error(f"❌ 저녁 리포트 오류: {e}")
+            await update.message.reply_text(
+                f"❌ 리포트 생성 중 오류 발생:\n{str(e)}"
+            )
+
     async def handle_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         이미지 자동 포착
@@ -352,6 +446,8 @@ class TelegramSecretary:
         application.add_handler(CommandHandler("report", self.report_command))
         application.add_handler(CommandHandler("analyze", self.analyze_command))
         application.add_handler(CommandHandler("signal", self.signal_command))
+        application.add_handler(CommandHandler("morning", self.morning_command))
+        application.add_handler(CommandHandler("evening", self.evening_command))
 
         # Message handlers
         application.add_handler(
