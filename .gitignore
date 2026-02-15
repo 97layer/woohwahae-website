@@ -38,6 +38,9 @@ brain/
 *.jpg
 *.jpeg
 config.json
+*COMPLETE.md
+*REPORT.md
+PLAN-*.md
 
 # Google Cloud SDK documentation (external dependency)
 google-cloud-sdk/**/*.md
@@ -46,3 +49,9 @@ google-cloud-sdk/**/CHANGELOG
 google-cloud-sdk/**/CONTRIBUTING
 google-cloud-sdk/**/LICENSE
 google-cloud-sdk/**/SECURITY
+
+# Container-only data (generated at runtime)
+.container_data/
+knowledge/signals/
+knowledge/content/
+knowledge/archive/

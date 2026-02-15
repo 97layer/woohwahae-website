@@ -1,0 +1,22 @@
+{
+  "date": "2026-02-16T00:19:01.076791",
+  "type": "evening_report",
+  "summary": {
+    "approved_today": 0,
+    "archived_today": 0,
+    "ralph_stats": {
+      "total": 1,
+      "pass_rate": 0.0,
+      "avg_score": 45.5,
+      "by_decision": {
+        "archive": 1
+      }
+    }
+  },
+  "completed_assets": [],
+  "archived_assets": [],
+  "quality_insights": [
+    "⚠️ 품질 개선 필요 (통과율 0.0%)",
+    "💡 품질 향상 기회 (45.5/100)"
+  ]
+}

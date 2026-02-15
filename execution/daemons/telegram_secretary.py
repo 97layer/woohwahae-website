@@ -40,6 +40,7 @@ from execution.system.handoff import HandoffEngine
 from execution.system.parallel_orchestrator import ParallelOrchestrator
 from execution.system.daily_routine import DailyRoutine
 from execution.system.gdrive_sync import GDriveSync
+from execution.system.youtube_analyzer import YouTubeAnalyzer
 from system.libs.agents.asset_manager import AssetManager
 
 # Logging setup
@@ -75,6 +76,7 @@ class TelegramSecretary:
         self.orchestrator = ParallelOrchestrator()
         self.asset_manager = AssetManager()
         self.daily_routine = DailyRoutine()
+        self.youtube_analyzer = YouTubeAnalyzer()
 
         # Google Drive sync (optional - only if credentials exist)
         try:
@@ -292,13 +294,36 @@ class TelegramSecretary:
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         일반 메시지 자동 포착 및 분류
+
+        특수 패턴 자동 감지:
+        - YouTube URL → Anti-Gravity 분석 자동 실행
+        - 일반 텍스트 → Signal로 저장
         """
         user = update.effective_user
         text = update.message.text
 
         logger.info(f"💬 Message from {user.first_name}: {text[:50]}...")
 
-        # 신호로 자동 저장
+        # YouTube URL 자동 감지
+        youtube_patterns = [
+            'youtube.com/watch?v=',
+            'youtu.be/',
+            'm.youtube.com/watch?v='
+        ]
+
+        if any(pattern in text.lower() for pattern in youtube_patterns):
+            logger.info(f"🛸 YouTube URL 자동 감지: {text}")
+            await update.message.reply_text(
+                "🛸 YouTube URL 감지!\n"
+                "Anti-Gravity 프로토콜을 자동 실행합니다..."
+            )
+
+            # YouTube command로 위임
+            context.args = [text.strip()]
+            await self.youtube_command(update, context)
+            return
+
+        # 일반 신호로 자동 저장
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         signal_path = PROJECT_ROOT / 'knowledge' / 'signals' / f'auto_{timestamp}.md'
         signal_path.parent.mkdir(parents=True, exist_ok=True)
@@ -571,6 +596,178 @@ class TelegramSecretary:
                 f"❌ 동기화 중 오류 발생:\n{str(e)}"
             )
 
+    async def youtube_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """
+        /youtube <URL> - Anti-Gravity YouTube 분석
+
+        3가지 Multi-modal 자산 생성:
+        1. Audio Overview (Podcast Script)
+        2. Visual Deck (Slide Presentation)
+        3. Mind Map (Mermaid Diagram)
+        """
+        user = update.effective_user
+        url = ' '.join(context.args) if context.args else None
+
+        if not url:
+            await update.message.reply_text(
+                "🛸 **Anti-Gravity YouTube Analyzer**\n\n"
+                "사용법: /youtube <YouTube URL>\n\n"
+                "예시:\n"
+                "  /youtube https://youtu.be/xxxxx\n"
+                "  /youtube https://www.youtube.com/watch?v=xxxxx\n\n"
+                "📦 생성 결과:\n"
+                "  🎙️  Audio Overview (Podcast 스크립트)\n"
+                "  🎨 Visual Deck (슬라이드 프레젠테이션)\n"
+                "  🗺️  Mind Map (Mermaid 다이어그램)\n\n"
+                "💡 Source Grounding 원칙:\n"
+                "  모든 분석은 실제 Transcript 기반\n"
+                "  환각(Hallucination) 제로"
+            )
+            return
+
+        logger.info(f"🛸 /youtube from {user.first_name}: {url}")
+
+        # 진행 상황 알림
+        progress_message = await update.message.reply_text(
+            "🛸 **Anti-Gravity 프로토콜 시작**\n\n"
+            "⏳ [1/5] Transcript 추출 중...\n"
+            "⏳ [2/5] Audio Overview 생성 대기\n"
+            "⏳ [3/5] Visual Deck 생성 대기\n"
+            "⏳ [4/5] Mind Map 생성 대기\n"
+            "⏳ [5/5] Asset 등록 대기\n\n"
+            "예상 소요 시간: 1-2분"
+        )
+
+        try:
+            # Step 1: Transcript 추출
+            await progress_message.edit_text(
+                "🛸 **Anti-Gravity 프로토콜 진행 중**\n\n"
+                "✅ [1/5] Transcript 추출 중...\n"
+                "⏳ [2/5] Audio Overview 생성 대기\n"
+                "⏳ [3/5] Visual Deck 생성 대기\n"
+                "⏳ [4/5] Mind Map 생성 대기\n"
+                "⏳ [5/5] Asset 등록 대기"
+            )
+
+            # Anti-Gravity 분석 실행
+            results = await asyncio.to_thread(
+                self.youtube_analyzer.analyze,
+                url
+            )
+
+            if not results:
+                await progress_message.edit_text(
+                    "❌ **분석 실패**\n\n"
+                    "YouTube Transcript 추출에 실패했습니다.\n\n"
+                    "가능한 원인:\n"
+                    "  • 잘못된 URL\n"
+                    "  • 자막이 없는 영상\n"
+                    "  • 비공개/삭제된 영상\n\n"
+                    "다른 영상으로 시도해보세요."
+                )
+                return
+
+            # Step 2-4: 자산 생성 (이미 youtube_analyzer.analyze()에서 완료)
+            await progress_message.edit_text(
+                "🛸 **Anti-Gravity 프로토콜 진행 중**\n\n"
+                "✅ [1/5] Transcript 추출 완료\n"
+                "✅ [2/5] Audio Overview 생성 완료\n"
+                "✅ [3/5] Visual Deck 생성 완료\n"
+                "✅ [4/5] Mind Map 생성 완료\n"
+                "✅ [5/5] Asset 등록 완료\n\n"
+                "결과 전송 중..."
+            )
+
+            # 최종 결과 전송
+            response = "✅ **Anti-Gravity 분석 완료**\n\n"
+            response += f"🔗 Source: `{url}`\n\n"
+            response += "📦 생성된 자산:\n\n"
+
+            # Audio Overview
+            audio_path = results.get('audio')
+            if audio_path:
+                audio_rel = str(audio_path).replace(str(PROJECT_ROOT), '')
+                response += f"🎙️  **Audio Overview**\n"
+                response += f"   `{audio_rel}`\n"
+                response += f"   Format: 2-Host Podcast (5-7분)\n\n"
+
+            # Visual Deck
+            deck_path = results.get('deck')
+            if deck_path:
+                deck_rel = str(deck_path).replace(str(PROJECT_ROOT), '')
+                response += f"🎨 **Visual Deck**\n"
+                response += f"   `{deck_rel}`\n"
+                response += f"   Format: 8-12 Slides + Image Prompts\n\n"
+
+            # Mind Map
+            map_path = results.get('map')
+            if map_path:
+                map_rel = str(map_path).replace(str(PROJECT_ROOT), '')
+                response += f"🗺️  **Mind Map**\n"
+                response += f"   `{map_rel}`\n"
+                response += f"   Format: Mermaid.js Diagram\n\n"
+
+            # Source
+            source_path = results.get('source')
+            if source_path:
+                source_rel = str(source_path).replace(str(PROJECT_ROOT), '')
+                response += f"📄 **Source Transcript**\n"
+                response += f"   `{source_rel}`\n\n"
+
+            response += "💡 **Anti-Gravity 원칙**:\n"
+            response += "   ✅ Source Grounding (실제 Transcript 기반)\n"
+            response += "   ✅ Multi-modal Synthesis (3종 자산)\n"
+            response += "   ✅ Brand Alignment (5 Pillars 연결)\n\n"
+
+            response += "📂 파일 위치:\n"
+            response += "   `knowledge/assets/audio/`\n"
+            response += "   `knowledge/assets/decks/`\n"
+            response += "   `knowledge/assets/maps/`\n"
+            response += "   `knowledge/sources/youtube/`"
+
+            await progress_message.edit_text(response)
+
+            # Google Drive 동기화 (선택적)
+            if self.gdrive:
+                await update.message.reply_text(
+                    "☁️  Google Drive 동기화 중...\n"
+                    "잠시만 기다려주세요."
+                )
+
+                try:
+                    sync_count = 0
+                    for asset_path in [audio_path, deck_path, map_path, source_path]:
+                        if asset_path:
+                            folder = "assets" if "assets" in str(asset_path) else "sources"
+                            file_id = self.gdrive.upload_file(asset_path, drive_folder=folder)
+                            if file_id:
+                                sync_count += 1
+
+                    await update.message.reply_text(
+                        f"☁️  **Drive 동기화 완료**\n\n"
+                        f"   ✅ {sync_count}/4 파일 업로드 성공\n\n"
+                        f"이제 Claude Desktop, Gemini, NotebookLM에서\n"
+                        f"이 자산들에 접근할 수 있습니다."
+                    )
+
+                except Exception as e:
+                    logger.warning(f"⚠️  Drive 동기화 실패: {e}")
+                    await update.message.reply_text(
+                        f"⚠️  Drive 동기화 실패\n"
+                        f"로컬 저장은 완료되었습니다."
+                    )
+
+        except Exception as e:
+            logger.error(f"❌ YouTube 분석 오류: {e}")
+            await progress_message.edit_text(
+                f"❌ **분석 중 오류 발생**\n\n"
+                f"오류: {str(e)}\n\n"
+                f"💡 문제 해결:\n"
+                f"  • URL 형식 확인\n"
+                f"  • Container에 youtube-transcript-api 설치 확인\n"
+                f"  • 로그 확인: logs/telegram_secretary.log"
+            )
+
     async def handle_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         이미지 자동 포착
@@ -632,6 +829,9 @@ class TelegramSecretary:
         application.add_handler(CommandHandler("search", self.search_command))
         application.add_handler(CommandHandler("memo", self.memo_command))
         application.add_handler(CommandHandler("sync", self.sync_command))
+
+        # Phase 3: Anti-Gravity Protocol (YouTube Analyzer)
+        application.add_handler(CommandHandler("youtube", self.youtube_command))
 
         # Message handlers
         application.add_handler(

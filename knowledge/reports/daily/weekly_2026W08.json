@@ -1,0 +1,24 @@
+{
+  "date": "2026-02-16T00:19:01.077187",
+  "type": "weekly_summary",
+  "period": {
+    "start": "2026-02-09T00:19:01.077117",
+    "end": "2026-02-16T00:19:01.077190"
+  },
+  "summary": {
+    "total_assets": 2,
+    "by_status": {
+      "captured": 1,
+      "analyzed": 1
+    },
+    "avg_quality": 75.0,
+    "ralph_stats": {
+      "total": 1,
+      "pass_rate": 0.0,
+      "avg_score": 45.5,
+      "by_decision": {
+        "archive": 1
+      }
+    }
+  }
+}

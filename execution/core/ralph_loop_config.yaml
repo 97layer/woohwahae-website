@@ -1,0 +1,136 @@
+# Ralph Loop Self-Validation Configuration
+# STAP (Stop, Task, Assess, Process) validation engine
+# Author: 97LAYER Mercenary Standard Applied
+
+# Maximum validation iterations before failure
+max_iterations: 5
+
+# Verification rules - which checks to run
+verification_rules:
+  build: true              # Verify build process (npm/Python)
+  skill_compliance: true   # Check directive and skill adherence
+  logs: true              # Scan logs for errors
+  syntax: true            # Verify syntax of all modified files
+
+# Banned patterns that trigger validation failure
+banned_patterns:
+  # Code quality markers
+  - 'TODO\s*:'
+  - 'FIXME\s*:'
+  - 'HACK\s*:'
+  - 'XXX\s*:'
+  - 'BUG\s*:'
+
+  # Security risks
+  - 'hardcoded.*token'
+  - 'hardcoded.*password'
+  - 'hardcoded.*secret'
+  - 'hardcoded.*key'
+  - 'TELEGRAM_BOT_TOKEN\s*=\s*["''][0-9]+'
+  - 'INSTAGRAM_ACCESS_TOKEN\s*=\s*["''][A-Za-z0-9]+'
+
+  # Debug/development code
+  - 'print\s*\('          # No print statements in production
+  - 'console\.log\s*\('   # No console.log in production
+  - 'debugger;'           # No debugger statements
+  - '\.only\('            # No test.only() in commits
+
+  # Placeholder content
+  - 'PLACEHOLDER'
+  - 'REPLACE_ME'
+  - 'FILL_IN'
+
+# Error keywords to detect in logs
+error_keywords:
+  - 'error'
+  - 'exception'
+  - 'failed'
+  - 'failure'
+  - 'traceback'
+  - 'critical'
+  - 'fatal'
+  - 'segfault'
+  - 'panic'
+  - 'crash'
+
+# Completion token - only issued when ALL checks pass
+completion_token: '[SYSTEM_STABLE]'
+
+# Timeout per validation iteration (seconds)
+timeout_seconds: 300
+
+# Task-specific validation requirements
+task_requirements:
+  frontend:
+    - 'npm build must succeed'
+    - 'No TypeScript errors'
+    - 'No console.log statements'
+    - 'Components follow naming convention'
+    - 'No inline styles (use CSS modules)'
+
+  backend:
+    - 'Python syntax valid'
+    - 'No import errors'
+    - 'Tests pass (if exists)'
+    - 'Type hints present on all functions'
+    - 'Docstrings on public functions'
+    - 'Encoding utf-8 specified'
+
+  system:
+    - 'Core files intact'
+    - 'No environment corruption'
+    - 'Services functional'
+    - 'Permissions preserved'
+    - 'Git status clean (no unintended changes)'
+
+  content:
+    - 'Output file exists'
+    - 'Proper markdown format'
+    - 'No placeholder text'
+    - 'Front matter valid (if required)'
+    - 'Links functional'
+
+# Critical files that must never be corrupted
+critical_files:
+  - 'SYSTEM.md'
+  - 'AGENT_QUICKSTART.md'
+  - 'directives/CORE.md'
+  - 'directives/IDENTITY.md'
+  - 'directives/OPERATIONS.md'
+  - 'libs/core_config.py'
+  - '.env'
+  - 'knowledge/system/task_board.json'
+
+# Auto-retry configuration
+retry:
+  enabled: true
+  delay_seconds: 2        # Wait 2 seconds between retries
+  exponential_backoff: false
+
+# Notification settings
+notifications:
+  on_failure: true
+  on_success: false       # Silent success (mercenary standard)
+  log_path: 'knowledge/system/ralph_loop.json'
+
+# Integration with Task Manager
+task_manager:
+  enabled: true
+  board_path: 'knowledge/system/task_board.json'
+  update_on_completion: true
+
+# Quality gate thresholds
+quality_thresholds:
+  max_syntax_errors: 0
+  max_banned_patterns: 0
+  max_log_errors: 0
+  min_type_hint_coverage: 80  # Percentage
+
+# Mercenary Standard compliance
+mercenary_standard:
+  enforce_type_hints: true
+  enforce_lazy_logging: true
+  enforce_utf8_encoding: true
+  enforce_zero_noise: true
+  forbid_emojis: true
+  forbid_bold_markdown: false  # Allow in docs
