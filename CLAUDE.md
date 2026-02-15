@@ -69,8 +69,47 @@ Errors are learning opportunities. When something breaks:
 
 **Key principle:** Local files are only for processing. Deliverables live in cloud services (Google Sheets, Slides, etc.) where the user can access them. Everything in `.tmp/` can be deleted and regenerated.
 
+## Token Optimization (Critical)
+
+**Before any development task, follow these rules to minimize token consumption:**
+
+**Rule 1: Query Before Read**
+- NEVER read entire files blindly
+- Use `Glob` to find candidates first
+- Use `Grep` to locate exact sections
+- Use `Read` with offset/limit for large files
+
+**Rule 2: Cache Everything**
+- Check `execution/system/token_optimizer.py` for cached responses
+- Never repeat identical AI queries
+- Cache all analysis results for 24 hours
+
+**Rule 3: Snippet-First**
+- Extract relevant code sections only
+- Use `token_optimizer.extract_relevant_snippets()`
+- Include only 3-5 lines of context around target code
+
+**Rule 4: Dependency-Aware**
+- Use `execution/system/dependency_analyzer.py` for refactoring
+- Get file summaries instead of full content
+- Only read files that are directly affected
+
+**Example workflow:**
+```bash
+# ❌ BAD: Read entire file (20,000 tokens)
+Read(file_path="large_module.py")
+
+# ✅ GOOD: Query → Snippet → Read (1,500 tokens)
+Grep(pattern="target_function", output_mode="content", -n=True)
+Read(file_path="module.py", offset=145, limit=30)
+```
+
+**Expected savings:** 60-80% token reduction per task
+
+**See:** `directives/token_optimization_protocol.md` for detailed strategies
+
 ## Summary
 
 You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
 
-Be pragmatic. Be reliable. Self-anneal.
+Be pragmatic. Be reliable. Self-anneal. **Optimize tokens.**

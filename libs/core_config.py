@@ -203,6 +203,89 @@ RITUALS_CONFIG = {
         "task_type": "INSTAGRAM_PUBLISH",
         "instruction": "[Instagram 발행] 발행 큐에서 예약 시간이 도래한 콘텐츠를 Instagram에 자동 발행하십시오.",
         "council": False
+    },
+    "WEEKLY_SECURITY_UPDATE": {
+        "trigger_weekday": 6,  # Sunday
+        "trigger_hour": 2,  # 02:00 AM
+        "agent": "Technical_Director",
+        "task_type": "SECURITY_UPDATE",
+        "instruction": "[Self-Maintenance] 주간 보안 업데이트를 실행하십시오. (1) pip 패키지 취약점 검사 (pip-audit), (2) 보안 업데이트 적용, (3) 시스템 무결성 테스트 (import/environment/critical files), (4) requirements.txt 갱신. 실패 시 Telegram 알림.",
+        "council": False
+    },
+    "DAILY_AUTO_UPDATE": {
+        "trigger_hour": 3,  # 03:00 AM (with AUTONOMOUS_DEV)
+        "agent": "Technical_Director",
+        "task_type": "AUTO_UPDATE",
+        "instruction": "[Self-Maintenance] Google Drive Core 폴더에서 신규/수정 스크립트를 감지하여 시스템에 자동 반영하십시오. (1) Drive 스캔 (SHA256 해시 비교), (2) 기존 파일 Archive 백업, (3) 즉시 적용, (4) update_log.json 기록.",
+        "council": False
+    },
+    "ENVIRONMENT_CHECK": {
+        "trigger_hour": None,  # Runs before every major operation
+        "agent": "Technical_Director",
+        "task_type": "ENV_CHECK",
+        "instruction": "[Self-Maintenance] 환경 정합성 검사를 실행하십시오. (1) Python 버전, (2) 필수 패키지, (3) 필수 디렉토리, (4) 환경변수, (5) 시스템 리소스. 누락 시 Silent Install 수행.",
+        "council": False
     }
 }
+
+# ===========================================
+# 하이브리드 지능망: 환경 감지 및 Low-Power Mode
+# ===========================================
+
+def detect_environment() -> str:
+    """
+    현재 실행 환경 감지
+
+    Returns:
+        "GCP_VM": Google Cloud VM
+        "CLOUD_CONTAINER": Cloud Run Container
+        "MACBOOK": 맥북 로컬
+    """
+    import subprocess
+
+    # GCP VM 감지 (방법 1: 파일 존재)
+    if Path("/etc/google_compute_engine").exists():
+        return "GCP_VM"
+
+    # GCP VM 감지 (방법 2: 메타데이터 서버)
+    try:
+        result = subprocess.run(
+            ["curl", "-s", "-H", "Metadata-Flavor: Google",
+             "http://metadata.google.internal/computeMetadata/v1/instance/id"],
+            capture_output=True,
+            timeout=2
+        )
+        if result.returncode == 0 and result.stdout:
+            return "GCP_VM"
+    except:
+        pass
+
+    # Docker/Podman Container 감지
+    if Path("/.dockerenv").exists() or Path("/run/.containerenv").exists():
+        return "CLOUD_CONTAINER"
+
+    # 맥북 로컬 (기본값)
+    return "MACBOOK"
+
+# 현재 환경
+ENVIRONMENT = os.getenv("ENVIRONMENT", detect_environment())
+
+# Low-Power Mode 설정 (GCP_VM 전용)
+if ENVIRONMENT == "GCP_VM":
+    # Night Guard 모드: RAM 1GB 최적화
+    PROCESSING_MODE = "sequential"          # 순차 처리 (병렬 비활성화)
+    MAX_CONCURRENT_AGENTS = 1               # 동시 실행 Agent 1개만
+    ENABLE_MULTIMODAL = False               # 이미지 분석 비활성화
+    MEMORY_LIMIT_MB = 700                   # 메모리 제한 (1GB 중 300MB는 OS용)
+    AI_MODEL_PREFERENCE = "gemini-1.5-flash"  # 경량 모델
+    print(f"[Low-Power Mode] GCP_VM 환경 감지 → RAM 1GB 최적화 활성화")
+else:
+    # Full Power 모드: 맥북 또는 Cloud Run
+    PROCESSING_MODE = "parallel"            # 병렬 처리
+    MAX_CONCURRENT_AGENTS = 5               # 5-agent 동시 실행
+    ENABLE_MULTIMODAL = True                # 이미지 분석 활성화
+    MEMORY_LIMIT_MB = None                  # 메모리 제한 없음
+    AI_MODEL_PREFERENCE = "gemini-1.5-pro"  # 고성능 모델
+    if ENVIRONMENT == "MACBOOK":
+        print(f"[Full Power Mode] 맥북 환경 감지 → 5-Agent 병렬 처리 활성화")
 

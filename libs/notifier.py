@@ -60,3 +60,7 @@ class Notifier:
                 self.send_message(cid, text)
         except Exception as e:
             self.logger.error(f"Broadcast Error: {e}")
+
+    def send_message_to_admin(self, text: str):
+        """Sends a message to admin (broadcasts to all registered chat IDs)."""
+        self.broadcast(text)

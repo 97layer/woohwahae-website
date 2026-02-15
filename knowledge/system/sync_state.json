@@ -1,0 +1,13 @@
+{
+  "last_sync": "2026-02-15T15:46:40.172581",
+  "location": "LOCAL_MAC",
+  "pending_changes": [],
+  "active_node": "macbook",
+  "last_heartbeat": "2026-02-15T15:45:05.246926",
+  "pending_handover": false,
+  "node_history": [],
+  "health": {
+    "macbook": "online",
+    "gcp_vm": "unknown"
+  }
+}
