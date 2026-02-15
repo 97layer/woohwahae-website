@@ -40,7 +40,7 @@ from execution.system.handoff import HandoffEngine
 from execution.system.parallel_orchestrator import ParallelOrchestrator
 from execution.system.daily_routine import DailyRoutine
 from execution.system.gdrive_sync import GDriveSync
-from execution.system.youtube_analyzer import YouTubeAnalyzer
+from execution.system.notebooklm_bridge import NotebookLMBridge, anti_gravity_youtube
 from system.libs.agents.asset_manager import AssetManager
 
 # Logging setup
@@ -76,7 +76,6 @@ class TelegramSecretary:
         self.orchestrator = ParallelOrchestrator()
         self.asset_manager = AssetManager()
         self.daily_routine = DailyRoutine()
-        self.youtube_analyzer = YouTubeAnalyzer()
 
         # Google Drive sync (optional - only if credentials exist)
         try:
@@ -598,30 +597,31 @@ class TelegramSecretary:
 
     async def youtube_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
-        /youtube <URL> - Anti-Gravity YouTube 분석
+        /youtube <URL> - Anti-Gravity YouTube 분석 (NotebookLM)
 
-        3가지 Multi-modal 자산 생성:
-        1. Audio Overview (Podcast Script)
-        2. Visual Deck (Slide Presentation)
-        3. Mind Map (Mermaid Diagram)
+        NotebookLM 기반 RAG 분석:
+        1. 3줄 요약
+        2. 핵심 인사이트 (Aesop 스타일)
+        3. 브랜드 연결 (5 Pillars)
+        4. Audio Overview (Deep Dive Podcast)
         """
         user = update.effective_user
         url = ' '.join(context.args) if context.args else None
 
         if not url:
             await update.message.reply_text(
-                "🛸 **Anti-Gravity YouTube Analyzer**\n\n"
+                "🛸 **Anti-Gravity YouTube Analyzer** (NotebookLM)\n\n"
                 "사용법: /youtube <YouTube URL>\n\n"
                 "예시:\n"
                 "  /youtube https://youtu.be/xxxxx\n"
                 "  /youtube https://www.youtube.com/watch?v=xxxxx\n\n"
                 "📦 생성 결과:\n"
-                "  🎙️  Audio Overview (Podcast 스크립트)\n"
-                "  🎨 Visual Deck (슬라이드 프레젠테이션)\n"
-                "  🗺️  Mind Map (Mermaid 다이어그램)\n\n"
-                "💡 Source Grounding 원칙:\n"
-                "  모든 분석은 실제 Transcript 기반\n"
-                "  환각(Hallucination) 제로"
+                "  📝 3줄 요약\n"
+                "  💡 핵심 인사이트 (Aesop 스타일)\n"
+                "  🎯 브랜드 연결 (5 Pillars)\n"
+                "  🎙️  Audio Overview (Google Gemini)\n\n"
+                "💡 Source Grounding:\n"
+                "  실제 YouTube Transcript 기반, 환각 제로"
             )
             return
 
@@ -629,133 +629,84 @@ class TelegramSecretary:
 
         # 진행 상황 알림
         progress_message = await update.message.reply_text(
-            "🛸 **Anti-Gravity 프로토콜 시작**\n\n"
-            "⏳ [1/5] Transcript 추출 중...\n"
-            "⏳ [2/5] Audio Overview 생성 대기\n"
-            "⏳ [3/5] Visual Deck 생성 대기\n"
-            "⏳ [4/5] Mind Map 생성 대기\n"
-            "⏳ [5/5] Asset 등록 대기\n\n"
-            "예상 소요 시간: 1-2분"
+            "🛸 **Anti-Gravity 프로토콜 시작** (NotebookLM)\n\n"
+            "⏳ [1/4] 노트북 생성 중...\n"
+            "⏳ [2/4] YouTube 소스 추가 대기\n"
+            "⏳ [3/4] RAG 분석 대기\n"
+            "⏳ [4/4] Audio Overview 생성 대기\n\n"
+            "예상 소요 시간: 2-3분"
         )
 
         try:
-            # Step 1: Transcript 추출
+            # Step 1: 노트북 생성
             await progress_message.edit_text(
                 "🛸 **Anti-Gravity 프로토콜 진행 중**\n\n"
-                "✅ [1/5] Transcript 추출 중...\n"
-                "⏳ [2/5] Audio Overview 생성 대기\n"
-                "⏳ [3/5] Visual Deck 생성 대기\n"
-                "⏳ [4/5] Mind Map 생성 대기\n"
-                "⏳ [5/5] Asset 등록 대기"
+                "✅ [1/4] 노트북 생성 중...\n"
+                "⏳ [2/4] YouTube 소스 추가 대기\n"
+                "⏳ [3/4] RAG 분석 대기\n"
+                "⏳ [4/4] Audio Overview 생성 대기"
             )
 
-            # Anti-Gravity 분석 실행
-            results = await asyncio.to_thread(
-                self.youtube_analyzer.analyze,
+            # Anti-Gravity 분석 실행 (NotebookLM)
+            result = await asyncio.to_thread(
+                anti_gravity_youtube,
                 url
             )
 
-            if not results:
+            if not result or not result.get('notebook_id'):
                 await progress_message.edit_text(
                     "❌ **분석 실패**\n\n"
-                    "YouTube Transcript 추출에 실패했습니다.\n\n"
+                    "NotebookLM 분석에 실패했습니다.\n\n"
                     "가능한 원인:\n"
-                    "  • 잘못된 URL\n"
+                    "  • 잘못된 YouTube URL\n"
                     "  • 자막이 없는 영상\n"
-                    "  • 비공개/삭제된 영상\n\n"
+                    "  • NotebookLM 인증 만료\n\n"
                     "다른 영상으로 시도해보세요."
                 )
                 return
 
-            # Step 2-4: 자산 생성 (이미 youtube_analyzer.analyze()에서 완료)
+            # Step 2-4: 소스 추가 및 분석 완료
             await progress_message.edit_text(
                 "🛸 **Anti-Gravity 프로토콜 진행 중**\n\n"
-                "✅ [1/5] Transcript 추출 완료\n"
-                "✅ [2/5] Audio Overview 생성 완료\n"
-                "✅ [3/5] Visual Deck 생성 완료\n"
-                "✅ [4/5] Mind Map 생성 완료\n"
-                "✅ [5/5] Asset 등록 완료\n\n"
+                "✅ [1/4] 노트북 생성 완료\n"
+                "✅ [2/4] YouTube 소스 추가 완료\n"
+                "✅ [3/4] RAG 분석 완료\n"
+                "✅ [4/4] Audio Overview 생성 중...\n\n"
                 "결과 전송 중..."
             )
 
             # 최종 결과 전송
-            response = "✅ **Anti-Gravity 분석 완료**\n\n"
-            response += f"🔗 Source: `{url}`\n\n"
-            response += "📦 생성된 자산:\n\n"
+            response = "✅ **Anti-Gravity 분석 완료** (NotebookLM)\n\n"
+            response += f"🔗 Source: `{url}`\n"
+            response += f"📓 Notebook: https://notebooklm.google.com/notebook/{result['notebook_id']}\n\n"
+
+            # 3줄 요약
+            if result.get('summary'):
+                response += f"📝 **3줄 요약**:\n{result['summary']}\n\n"
+
+            # 핵심 인사이트
+            if result.get('insights'):
+                response += f"💡 **핵심 인사이트** (Aesop 스타일):\n{result['insights']}\n\n"
+
+            # 브랜드 연결
+            if result.get('brand_connection'):
+                response += f"🎯 **브랜드 연결** (5 Pillars):\n{result['brand_connection']}\n\n"
 
             # Audio Overview
-            audio_path = results.get('audio')
-            if audio_path:
-                audio_rel = str(audio_path).replace(str(PROJECT_ROOT), '')
-                response += f"🎙️  **Audio Overview**\n"
-                response += f"   `{audio_rel}`\n"
-                response += f"   Format: 2-Host Podcast (5-7분)\n\n"
-
-            # Visual Deck
-            deck_path = results.get('deck')
-            if deck_path:
-                deck_rel = str(deck_path).replace(str(PROJECT_ROOT), '')
-                response += f"🎨 **Visual Deck**\n"
-                response += f"   `{deck_rel}`\n"
-                response += f"   Format: 8-12 Slides + Image Prompts\n\n"
-
-            # Mind Map
-            map_path = results.get('map')
-            if map_path:
-                map_rel = str(map_path).replace(str(PROJECT_ROOT), '')
-                response += f"🗺️  **Mind Map**\n"
-                response += f"   `{map_rel}`\n"
-                response += f"   Format: Mermaid.js Diagram\n\n"
-
-            # Source
-            source_path = results.get('source')
-            if source_path:
-                source_rel = str(source_path).replace(str(PROJECT_ROOT), '')
-                response += f"📄 **Source Transcript**\n"
-                response += f"   `{source_rel}`\n\n"
+            response += f"🎙️  **Audio Overview**: 생성 중 (비동기)\n"
+            response += f"   위 Notebook 링크에서 확인 가능\n\n"
 
             response += "💡 **Anti-Gravity 원칙**:\n"
-            response += "   ✅ Source Grounding (실제 Transcript 기반)\n"
-            response += "   ✅ Multi-modal Synthesis (3종 자산)\n"
-            response += "   ✅ Brand Alignment (5 Pillars 연결)\n\n"
+            response += "   ✅ Source Grounding (YouTube Transcript)\n"
+            response += "   ✅ Multi-modal Synthesis (Text + Audio)\n"
+            response += "   ✅ MCP Connector (NotebookLM)\n\n"
 
-            response += "📂 파일 위치:\n"
-            response += "   `knowledge/assets/audio/`\n"
-            response += "   `knowledge/assets/decks/`\n"
-            response += "   `knowledge/assets/maps/`\n"
-            response += "   `knowledge/sources/youtube/`"
+            response += "📂 NotebookLM에서 추가 질문 가능:\n"
+            response += "   • 화자의 주요 주장은?\n"
+            response += "   • 실용적 적용 방법은?\n"
+            response += "   • 다른 개념과의 연결점은?"
 
             await progress_message.edit_text(response)
-
-            # Google Drive 동기화 (선택적)
-            if self.gdrive:
-                await update.message.reply_text(
-                    "☁️  Google Drive 동기화 중...\n"
-                    "잠시만 기다려주세요."
-                )
-
-                try:
-                    sync_count = 0
-                    for asset_path in [audio_path, deck_path, map_path, source_path]:
-                        if asset_path:
-                            folder = "assets" if "assets" in str(asset_path) else "sources"
-                            file_id = self.gdrive.upload_file(asset_path, drive_folder=folder)
-                            if file_id:
-                                sync_count += 1
-
-                    await update.message.reply_text(
-                        f"☁️  **Drive 동기화 완료**\n\n"
-                        f"   ✅ {sync_count}/4 파일 업로드 성공\n\n"
-                        f"이제 Claude Desktop, Gemini, NotebookLM에서\n"
-                        f"이 자산들에 접근할 수 있습니다."
-                    )
-
-                except Exception as e:
-                    logger.warning(f"⚠️  Drive 동기화 실패: {e}")
-                    await update.message.reply_text(
-                        f"⚠️  Drive 동기화 실패\n"
-                        f"로컬 저장은 완료되었습니다."
-                    )
 
         except Exception as e:
             logger.error(f"❌ YouTube 분석 오류: {e}")
@@ -764,7 +715,7 @@ class TelegramSecretary:
                 f"오류: {str(e)}\n\n"
                 f"💡 문제 해결:\n"
                 f"  • URL 형식 확인\n"
-                f"  • Container에 youtube-transcript-api 설치 확인\n"
+                f"  • NotebookLM 인증 확인 (macOS에서 nlm login)\n"
                 f"  • 로그 확인: logs/telegram_secretary.log"
             )
 
