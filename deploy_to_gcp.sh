@@ -91,7 +91,7 @@ gcloud compute ssh $GCP_VM_NAME --zone=$GCP_ZONE --command="
     username=\$(whoami)
 
     # Replace placeholder in service file
-    sed \"s/USERNAME_PLACEHOLDER/\$username/g\" ~/$REMOTE_DIR/.infra/systemd/97layer-telegram.service > /tmp/97layer-telegram.service
+    sed \"s/USERNAME_PLACEHOLDER/\$username/g\" ~/$REMOTE_DIR/deployment/97layer-telegram.service > /tmp/97layer-telegram.service
 
     # Install service
     sudo mv /tmp/97layer-telegram.service /etc/systemd/system/97layer-telegram.service
