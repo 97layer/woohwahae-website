@@ -1,0 +1,23 @@
+[Unit]
+Description=97layerOS Telegram Executive Secretary
+After=network.target
+
+[Service]
+Type=simple
+User=USERNAME_PLACEHOLDER
+WorkingDirectory=/home/USERNAME_PLACEHOLDER/97layerOS
+Environment="PATH=/home/USERNAME_PLACEHOLDER/97layerOS/.venv/bin"
+ExecStart=/home/USERNAME_PLACEHOLDER/97layerOS/.venv/bin/python3 core/daemons/telegram_secretary.py
+Restart=always
+RestartSec=10
+
+# Resource limits (for e2-micro 1GB RAM)
+MemoryMax=200M
+MemoryHigh=150M
+
+# Logging
+StandardOutput=append:/home/USERNAME_PLACEHOLDER/97layerOS/logs/telegram.log
+StandardError=append:/home/USERNAME_PLACEHOLDER/97layerOS/logs/telegram.error.log
+
+[Install]
+WantedBy=multi-user.target
