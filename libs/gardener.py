@@ -28,7 +28,14 @@ logger = logging.getLogger(__name__)
 
 class Gardener:
     """The Gardener: Self-evolution engine for 97LAYER OS."""
-    
+
+    # 브랜드 헌법은 자동 수정 금지 (사령부 지침)
+    READ_ONLY_DIRECTIVES = [
+        "woohwahae_identity.md",
+        "brand_constitution.md",
+        "97layer_identity.md"
+    ]
+
     def __init__(self, ai_engine: AIEngine, memory_manager: MemoryManager, workspace_root: str):
         self.ai = ai_engine
         self.memory = memory_manager
@@ -118,7 +125,12 @@ class Gardener:
         
         # Extract filename from path (e.g., directives/agents/strategy_analyst.md -> strategy_analyst.md)
         filename = Path(directive_path).name
-        
+
+        # 🔒 브랜드 헌법 보호 (사령부 지침)
+        if filename in self.READ_ONLY_DIRECTIVES:
+            logger.warning(f"🔒 Evolution BLOCKED: {filename} is Read-Only (Brand Constitution)")
+            return f"Evolution Denied: {filename} is protected by Brand Constitution. Only 97layer can modify."
+
         if MERCENARY_STANDARD.get("SILENT_MODE"):
             logger.info(f"Evolving {target_agent} ({filename}) - Silent Update")
         else:

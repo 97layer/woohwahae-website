@@ -4,9 +4,14 @@ import time
 from datetime import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from pathlib import Path
+
+# 동적 경로 설정 (포드맨 호환)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 # 설정
-SOURCE_DIR = "/Users/97layer/97layerOS"
+SOURCE_DIR = str(PROJECT_ROOT)
 INDEX_HTML = os.path.join(SOURCE_DIR, "archive/index.html")
 
 def extract_metadata_from_md(file_path):

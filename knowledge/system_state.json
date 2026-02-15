@@ -1,6 +1,6 @@
 {
   "system_status": "OPERATIONAL",
-  "last_update": "2026-02-15 02:52:28.694409",
+  "last_update": "2026-02-15 04:37:10.414013",
   "agents": {
     "SA": {
       "status": "ACTIVE",
@@ -27,6 +27,15 @@
       "last_heartbeat": "2026-02-15 02:52:28.694364",
       "current_task": "시스템 상태 점검 및 태스크 스캔",
       "location": "Local(Mac)"
+    },
+    "Telegram_Bot_Cloud": {
+      "status": "ONLINE",
+      "last_heartbeat": "2026-02-15 04:43:28",
+      "current_task": "Webhook mode - Cloud Run",
+      "location": "Cloud(GCP)",
+      "service_url": "https://telegram-bot-514569077225.asia-northeast3.run.app",
+      "region": "asia-northeast3",
+      "mode": "webhook"
     }
   },
   "stats": {

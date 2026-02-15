@@ -3,6 +3,11 @@ import os
 import sys
 import subprocess
 from datetime import datetime
+from pathlib import Path
+
+# 동적 경로 설정 (포드맨 호환)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 # 프로젝트 루트를 sys.path에 추가
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -12,7 +17,7 @@ if root_dir not in sys.path:
 try:
     from execution.create_snapshot import create_snapshot
 except ImportError:
-    sys.path.append("/Users/97layer/97layerOS")
+    sys.path.append(str(PROJECT_ROOT))
     from execution.create_snapshot import create_snapshot
 
 def continuous_sanitization():
@@ -28,7 +33,7 @@ def continuous_sanitization():
     # 2. 강력한 소거 집행
     purged_count = 0
     for target in targets:
-        path = os.path.join("/Users/97layer/97layerOS", target)
+        path = os.path.join(str(PROJECT_ROOT), target)
         if os.path.exists(path):
             try:
                 if os.path.isdir(path):
@@ -44,7 +49,7 @@ def continuous_sanitization():
     try:
         # find 명령어로 node_modules 폴더 탐색 후 삭제
         subprocess.run(
-            "find /Users/97layer/97layerOS -name 'node_modules' -type d -exec rm -rf {} +",
+            f"find {PROJECT_ROOT} -name 'node_modules' -type d -exec rm -rf {{}} +",
             shell=True, capture_output=True
         )
     except Exception as e:

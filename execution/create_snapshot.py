@@ -4,10 +4,14 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 
+# 동적 경로 설정 (포드맨 호환)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
 # 설정
-SOURCE_DIR = "/Users/97layer/97layerOS"
+SOURCE_DIR = str(PROJECT_ROOT)
 PRIMARY_DEST_DIR = "/Users/97layer/내 드라이브/97layerOS_Snapshots"
-FALLBACK_DEST_DIR = "/Users/97layer/97layerOS_Backups"
+FALLBACK_DEST_DIR = f"{PROJECT_ROOT}_Backups"
 TMP_DEST_DIR = "/tmp/97layerOS_Snapshots"
 TEMP_WORK_DIR = "/tmp/97layer_snapshot_work"
 SHADOW_DIR = "/tmp/97layer_shadow_copy"

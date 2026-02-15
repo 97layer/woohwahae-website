@@ -4,6 +4,11 @@ import re
 import json
 import execution.youtube_parser as youtube_parser
 import execution.ontology_transform as ontology_transform
+from pathlib import Path
+
+# 동적 경로 설정 (포드맨 호환)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 # 설정
 CHECK_INTERVAL = 1.0  # 초 단위
@@ -52,7 +57,7 @@ def process_url(url):
         rs_id, markdown_content = ontology_transform.transform(data)
         
         # 파일 저장
-        file_path = f"/Users/97layer/97layerOS/knowledge/raw_signals/{rs_id}_youtube_sentinel.md"
+        file_path = ff"{PROJECT_ROOT}/knowledge/raw_signals/{rs_id}_youtube_sentinel.md"
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(markdown_content)
             
