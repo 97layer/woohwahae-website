@@ -26,8 +26,8 @@ import json
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from system.libs.agents.asset_manager import AssetManager
-from execution.system.ralph_loop import RalphLoop
+from core.agents.asset_manager import AssetManager
+from core.system.ralph_loop import RalphLoop
 
 
 class DailyRoutine:

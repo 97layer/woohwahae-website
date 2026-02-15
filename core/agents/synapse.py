@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import List, Dict, Optional
 from libs.core_config import AGENT_CREW, SYNAPSE_CONFIG
-from execution.system.manage_directive import DirectiveManager
+from core.system.manage_directive import DirectiveManager
 from libs.notifier import Notifier
 
 

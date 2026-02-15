@@ -14,8 +14,8 @@ from datetime import datetime
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from execution.system.handoff import HandoffEngine
-from system.libs.agents.asset_manager import AssetManager
+from core.system.handoff import HandoffEngine
+from core.agents.asset_manager import AssetManager
 
 
 def test_1_handoff_onboard():

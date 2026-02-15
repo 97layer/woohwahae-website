@@ -56,7 +56,7 @@ echo "🚀 Starting Telegram Executive Secretary..."
 echo "   Press Ctrl+C to stop"
 echo ""
 
-python3 execution/daemons/telegram_secretary.py &
+python3 core/daemons/telegram_secretary.py &
 BOT_PID=$!
 echo $BOT_PID > /tmp/telegram_bot.pid
 

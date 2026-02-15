@@ -17,8 +17,8 @@ if str(project_root) not in sys.path:
 
 from libs.ai_engine import AIEngine
 from libs.memory_manager import MemoryManager
-from execution.system.manage_directive import DirectiveManager
-from execution.system.log_error import ErrorLogger
+from core.system.manage_directive import DirectiveManager
+from core.system.log_error import ErrorLogger
 from libs.core_config import SYSTEM_CONFIG, AGENT_CREW, MERCENARY_STANDARD, INITIAL_TASK_STATUS
 
 # Silence configuration

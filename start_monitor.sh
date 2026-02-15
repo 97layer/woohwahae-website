@@ -10,4 +10,4 @@ echo "   Refresh Interval: ${REFRESH_INTERVAL} seconds"
 echo "   Press Ctrl+C to stop"
 echo ""
 
-python3 execution/system/monitor_dashboard.py --refresh "$REFRESH_INTERVAL"
+python3 core/system/monitor_dashboard.py --refresh "$REFRESH_INTERVAL"

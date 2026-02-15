@@ -15,6 +15,10 @@ credentials.json
 knowledge/logs/
 *.log
 
+# Infrastructure (Container-only, not for Google Drive sync)
+.infra/
+logs/
+
 # macOS
 .DS_Store
 .AppleDouble
@@ -55,3 +59,7 @@ google-cloud-sdk/**/SECURITY
 knowledge/signals/
 knowledge/content/
 knowledge/archive/
+
+# Old folders (archived, not needed in sync)
+execution/
+system/

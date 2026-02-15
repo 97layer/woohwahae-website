@@ -25,7 +25,7 @@ if system_path not in sys.path:
 
 # Imports
 try:
-    from execution.system.hybrid_sync import HybridSync
+    from core.system.hybrid_sync import HybridSync
     from libs.ai_engine import AIEngine
     from libs.notifier import Notifier
     from libs.core_config import ENVIRONMENT, PROCESSING_MODE

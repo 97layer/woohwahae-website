@@ -17,10 +17,10 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from system.libs.engines.ai_engine import AIEngine
-from system.libs.agents.async_agent_hub import AsyncAgentHub
-from execution.system.handoff import HandoffEngine
-from execution.system.ralph_loop import RalphLoop
-from system.libs.agents.asset_manager import AssetManager
+from core.agents.async_agent_hub import AsyncAgentHub
+from core.system.handoff import HandoffEngine
+from core.system.ralph_loop import RalphLoop
+from core.agents.asset_manager import AssetManager
 
 
 class ParallelOrchestrator:

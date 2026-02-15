@@ -36,12 +36,12 @@ from telegram.ext import (
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from execution.system.handoff import HandoffEngine
-from execution.system.parallel_orchestrator import ParallelOrchestrator
-from execution.system.daily_routine import DailyRoutine
-from execution.system.gdrive_sync import GDriveSync
-from execution.system.notebooklm_bridge import NotebookLMBridge, anti_gravity_youtube
-from system.libs.agents.asset_manager import AssetManager
+from core.system.handoff import HandoffEngine
+from core.system.parallel_orchestrator import ParallelOrchestrator
+from core.system.daily_routine import DailyRoutine
+from core.bridges.gdrive_sync import GDriveSync
+from core.bridges.notebooklm_bridge import NotebookLMBridge, anti_gravity_youtube
+from core.agents.asset_manager import AssetManager
 
 # Logging setup
 log_dir = PROJECT_ROOT / 'logs'
