@@ -39,6 +39,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from execution.system.handoff import HandoffEngine
 from execution.system.parallel_orchestrator import ParallelOrchestrator
 from execution.system.daily_routine import DailyRoutine
+from execution.system.gdrive_sync import GDriveSync
 from system.libs.agents.asset_manager import AssetManager
 
 # Logging setup
@@ -75,6 +76,14 @@ class TelegramSecretary:
         self.asset_manager = AssetManager()
         self.daily_routine = DailyRoutine()
 
+        # Google Drive sync (optional - only if credentials exist)
+        try:
+            self.gdrive = GDriveSync()
+            logger.info("✅ Google Drive sync enabled")
+        except Exception as e:
+            self.gdrive = None
+            logger.warning(f"⚠️  Google Drive sync disabled: {e}")
+
         # Session setup
         logger.info("🤖 Telegram Secretary 초기화 중...")
         self.handoff.onboard()  # 세션 연속성 복구
@@ -107,6 +116,10 @@ class TelegramSecretary:
             "/signal <텍스트> - 새 신호 입력\n"
             "/morning - 아침 브리핑 (09:00 권장)\n"
             "/evening - 저녁 리포트 (21:00 권장)\n\n"
+            "**비서 기능** (Phase 2.4):\n"
+            "/search <검색어> - 과거 지식 베이스 검색\n"
+            "/memo <메모> - 빠른 메모 저장\n"
+            "/sync - 클라우드 동기화 (수동)\n\n"
             "**자동 포착**:\n"
             "메시지, 이미지, 링크를 보내면 자동으로 분류하고 처리합니다."
         )
@@ -392,6 +405,172 @@ class TelegramSecretary:
                 f"❌ 리포트 생성 중 오류 발생:\n{str(e)}"
             )
 
+    async def search_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """
+        /search <검색어> - 과거 지식 베이스 검색 (Google Drive)
+        """
+        user = update.effective_user
+        query = ' '.join(context.args) if context.args else None
+
+        if not query:
+            await update.message.reply_text(
+                "사용법: /search <검색어>\n"
+                "예: /search 슬로우 라이프 전략"
+            )
+            return
+
+        logger.info(f"🔍 /search from {user.first_name}: {query}")
+
+        if not self.gdrive:
+            await update.message.reply_text(
+                "⚠️  Google Drive 연동이 비활성화되어 있습니다.\n"
+                "credentials/gdrive_auth.json 및 .env 설정을 확인하세요."
+            )
+            return
+
+        await update.message.reply_text(
+            f"🔍 '{query}' 검색 중...\n"
+            "Google Drive 지식 베이스를 검색합니다."
+        )
+
+        try:
+            # Search in Google Drive
+            results = self.gdrive.search_files(f"name contains '{query}'")
+
+            if not results:
+                await update.message.reply_text(
+                    f"🤷 '{query}'에 대한 결과를 찾지 못했습니다.\n\n"
+                    f"💡 Tip: 다른 키워드를 시도하거나 NotebookLM에 직접 질문해보세요."
+                )
+                return
+
+            # Format results
+            response = f"🔍 **검색 결과**: '{query}'\n\n"
+            response += f"총 {len(results)}개 파일 발견:\n\n"
+
+            for idx, file in enumerate(results[:10], 1):  # 최대 10개
+                modified = file.get('modifiedTime', 'Unknown')[:10]
+                response += f"{idx}. {file['name']}\n"
+                response += f"   📅 {modified} | ID: {file['id'][:8]}...\n\n"
+
+            if len(results) > 10:
+                response += f"... 외 {len(results) - 10}개 더 있습니다.\n\n"
+
+            response += "💡 특정 파일 내용이 필요하면 알려주세요."
+
+            await update.message.reply_text(response)
+
+        except Exception as e:
+            logger.error(f"❌ 검색 오류: {e}")
+            await update.message.reply_text(
+                f"❌ 검색 중 오류 발생:\n{str(e)}"
+            )
+
+    async def memo_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """
+        /memo <메모> - 빠른 메모 저장 및 Drive 동기화
+        """
+        user = update.effective_user
+        memo_text = ' '.join(context.args) if context.args else None
+
+        if not memo_text:
+            await update.message.reply_text(
+                "사용법: /memo <메모 내용>\n"
+                "예: /memo 내일 WOOHWAHAE 미팅 준비"
+            )
+            return
+
+        logger.info(f"📝 /memo from {user.first_name}: {memo_text[:50]}...")
+
+        # 메모 파일 저장
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        memo_dir = PROJECT_ROOT / 'knowledge' / 'memos'
+        memo_dir.mkdir(parents=True, exist_ok=True)
+
+        memo_path = memo_dir / f'memo_{timestamp}.md'
+        with open(memo_path, 'w', encoding='utf-8') as f:
+            f.write(f"# Memo {timestamp}\n\n")
+            f.write(f"**From**: {user.first_name} (@{user.username or 'unknown'})\n")
+            f.write(f"**Time**: {datetime.now().isoformat()}\n")
+            f.write(f"**Via**: Telegram\n\n")
+            f.write(f"## Content\n\n{memo_text}\n")
+
+        response = f"✅ 메모가 저장되었습니다.\n"
+        response += f"ID: `memo_{timestamp}`\n\n"
+
+        # Google Drive 동기화 (선택적)
+        if self.gdrive:
+            try:
+                file_id = self.gdrive.upload_file(memo_path, drive_folder="memos")
+                if file_id:
+                    response += f"☁️  Google Drive 동기화 완료\n"
+                    response += f"Drive ID: `{file_id[:12]}...`"
+                else:
+                    response += f"⚠️  Drive 동기화 실패 (로컬 저장은 완료)"
+            except Exception as e:
+                logger.error(f"❌ Drive 동기화 오류: {e}")
+                response += f"⚠️  Drive 동기화 실패 (로컬 저장은 완료)"
+        else:
+            response += f"ℹ️  로컬 저장만 완료 (Drive 연동 비활성화)"
+
+        await update.message.reply_text(response)
+
+    async def sync_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """
+        /sync - 수동 클라우드 동기화 (INTELLIGENCE_QUANTA + 리포트)
+        """
+        user = update.effective_user
+        logger.info(f"☁️  /sync from {user.first_name} ({user.id})")
+
+        if not self.gdrive:
+            await update.message.reply_text(
+                "⚠️  Google Drive 연동이 비활성화되어 있습니다.\n"
+                "credentials/gdrive_auth.json 및 .env 설정을 확인하세요."
+            )
+            return
+
+        await update.message.reply_text(
+            "☁️  클라우드 동기화 시작...\n"
+            "잠시만 기다려주세요."
+        )
+
+        try:
+            results = []
+
+            # 1. INTELLIGENCE_QUANTA.md 동기화
+            await update.message.reply_text("📤 1/2: INTELLIGENCE_QUANTA.md 동기화 중...")
+            quanta_success = self.gdrive.sync_intelligence_quanta()
+            results.append(("INTELLIGENCE_QUANTA.md", quanta_success))
+
+            # 2. 일일 리포트 동기화
+            await update.message.reply_text("📤 2/2: 일일 리포트 동기화 중...")
+            report_results = self.gdrive.sync_daily_reports()
+            results.append(("Daily Reports", len(report_results) > 0))
+
+            # 결과 요약
+            response = "☁️  **클라우드 동기화 완료**\n\n"
+            response += "📊 동기화 결과:\n"
+
+            for item, success in results:
+                status = "✅" if success else "❌"
+                response += f"   {status} {item}\n"
+
+            if report_results:
+                success_count = sum(report_results.values())
+                total_count = len(report_results)
+                response += f"\n   • 리포트: {success_count}/{total_count}개 성공\n"
+
+            response += f"\n💡 슬로우 라이프 리마인더:\n"
+            response += f"과정의 흔적이 클라우드에도 보존되었습니다."
+
+            await update.message.reply_text(response)
+
+        except Exception as e:
+            logger.error(f"❌ 동기화 오류: {e}")
+            await update.message.reply_text(
+                f"❌ 동기화 중 오류 발생:\n{str(e)}"
+            )
+
     async def handle_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         이미지 자동 포착
@@ -448,6 +627,11 @@ class TelegramSecretary:
         application.add_handler(CommandHandler("signal", self.signal_command))
         application.add_handler(CommandHandler("morning", self.morning_command))
         application.add_handler(CommandHandler("evening", self.evening_command))
+
+        # Phase 2.4: Secretary functions (Google Drive integration)
+        application.add_handler(CommandHandler("search", self.search_command))
+        application.add_handler(CommandHandler("memo", self.memo_command))
+        application.add_handler(CommandHandler("sync", self.sync_command))
 
         # Message handlers
         application.add_handler(

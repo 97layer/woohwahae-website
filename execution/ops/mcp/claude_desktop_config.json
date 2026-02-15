@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "97layer-mcp-gdrive": {
+      "command": "podman",
+      "args": [
+        "run", "-i", "--rm",
+        "--env-file", "/Users/97layer/97layerOS/.env",
+        "-v", "/Users/97layer/97layerOS/credentials:/app/credentials:ro",
+        "97layer-mcp-gdrive:latest"
+      ]
+    }
+  }
+}
