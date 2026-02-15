@@ -12,7 +12,7 @@ credentials.json
 .tmp/
 .tmp.driveupload/
 .tmp.drivedownload/
-logs/
+knowledge/logs/
 *.log
 
 # macOS
@@ -31,7 +31,6 @@ knowledge/inbox/외주 코드/
 knowledge/chat_memory/
 knowledge/raw_signals/
 knowledge/agent_hub/
-assets/
 visual/
 brain/
 *screenshot*
@@ -47,6 +46,3 @@ google-cloud-sdk/**/CHANGELOG
 google-cloud-sdk/**/CONTRIBUTING
 google-cloud-sdk/**/LICENSE
 google-cloud-sdk/**/SECURITY
-
-# Snapshots (backed up to Google Drive)
-97layerOS_Snapshots/

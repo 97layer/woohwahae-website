@@ -70,7 +70,7 @@ LOG_LEVEL = "WARNING" if MERCENARY_STANDARD["SILENT_MODE"] else "INFO"
 
 # 4. 차세대 스킬 아키텍처 (New)
 SKILLS_STRUCTURE = {
-    "PATH": "skills/",
+    "PATH": "libs/skills/",
     "FORMAT": "YAML Front Matter + Markdown Description",
     "OBJECTIVE": "토큰 소모 최적화 및 기능 단위 호출",
     "REGISTRY": {

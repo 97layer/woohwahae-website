@@ -16,6 +16,7 @@
 5. 해당 역할 MD 파일 + 필수 directive 읽기
 
 온보딩 자동화:
+
 ```bash
 python3 execution/onboard_agent.py --role SA
 ```
@@ -30,31 +31,35 @@ python3 execution/onboard_agent.py --role SA
 6. 멀티모달 시스템 파일 수정 금지
 7. 하드코딩 경로 사용 금지 (포드맨 호환성)
 
-### 3. 표준 폴더 구조
+### 3. 표준 폴더 구조 (v3.0 통합 아키텍처)
 
 ```
 97layerOS/
-├── directives/          ← 규범 (Normative) - 어떻게 해야 하는가
-│   ├── README.md       ← 신규 에이전트 시작점
-│   ├── agents/         ← 역할별 매뉴얼
-│   └── *.md            ← 27개 프로토콜
-├── knowledge/          ← 기록 (Descriptive) - 무엇이 일어났는가
-│   ├── system/         ← 시스템 상태
-│   ├── agent_hub/      ← 멀티모달 협업
-│   └── sessions/       ← 작업 기록
-├── execution/          ← Python 도구들
-│   ├── launchers/      ← 런처 스크립트
-│   ├── ops/            ← 운영 스크립트
-│   └── system/         ← 시스템 유틸리티
-├── libs/               ← 공유 라이브러리 (멀티모달 포함)
-├── deployment/         ← 배포 스크립트
-├── docs/               ← 문서
-│   ├── milestones/     ← 완료 보고서
-│   └── dashboard/      ← 대시보드
-├── skills/             ← 재사용 가능 스킬
-└── .tmp/               ← 임시 파일만
-    ├── cache/          ← AI 캐시
-    └── drive/          ← Drive 동기화
+├── SYSTEM.md            ← 통합 시스템 매뉴얼 (Single Entry Point)
+├── directives/          ← 📜 지침 (5대 핵심 문서만)
+│   ├── CORE.md          ← 에이전트 + 프로토콜 통합
+│   ├── IDENTITY.md      ← 브랜드 + 철학 통합
+│   ├── OPERATIONS.md    ← 운영 프로토콜 통합
+│   ├── PUBLISHING.md    ← 퍼블리싱 전략 통합
+│   ├── DEVELOPMENT.md   ← 개발 지침 통합
+│   └── MANIFESTO.md     ← 운영 헌법 v3.0
+├── execution/           ← ⚙️ 실행 (구조화됨)
+│   ├── system/          ← 핵심 시스템 (task_manager, quality_gate, shadow_logic)
+│   ├── agents/          ← 에이전트 실행 파일
+│   ├── workflows/       ← 워크플로우 관리
+│   ├── parsers/         ← 파서 모음
+│   ├── api/             ← API 서버
+│   ├── ops/             ← 운영 도구
+│   └── plans/           ← PLAN-XXX.md (증분)
+├── knowledge/           ← 📚 지식 (5개 폴더만)
+│   ├── system/          ← 시스템 상태 (task_board.json)
+│   ├── signals/         ← 입력 신호 + 패턴
+│   ├── content/         ← 생성된 콘텐츠
+│   ├── archive/         ← 과거 기록 (연/월/일)
+│   └── .cache/          ← 캐시 (임시)
+├── libs/                ← 📦 라이브러리
+│   └── skills/          ← 재사용 가능 스킬
+└── .tmp/                ← 🗑️ 임시 파일
 ```
 
 ### 4. Directive vs Knowledge 구분
@@ -69,6 +74,7 @@ python3 execution/onboard_agent.py --role SA
 ### 5. 브랜드 헌법 보호 (사령부 지침)
 
 다음 파일은 AI 수정 절대 금지:
+
 - `woohwahae_identity.md` 🔒
 - `brand_constitution.md` 🔒
 - `97layer_identity.md` 🔒
@@ -79,6 +85,7 @@ Gardener가 자동 수정 시도 시 차단됨.
 ### 6. 경로 추상화 (포드맨 호환)
 
 모든 Python 스크립트는 상대 경로 사용:
+
 ```python
 from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -94,6 +101,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 **역할**: 패턴 감지, Directive 승격, 파편화 방지
 
 실행:
+
 ```python
 from libs.gardener import Gardener
 gardener.run_cycle(days=7)

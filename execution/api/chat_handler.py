@@ -140,35 +140,26 @@ class ChatHandler:
             # 에이전트 페르소나 + 최근 대화 기록 결합
             persona = self.agent_router.personas.get(agent_key, "")
 
-            # 컨텍스트 구성
-            context_messages = []
+            # 프롬프트 구성
+            context_prompt = ""
 
-            # 시스템 프롬프트 (에이전트 페르소나)
-            context_messages.append({
-                "role": "system",
-                "content": persona[:2000]  # 토큰 최적화
-            })
-
-            # 최근 대화 기록
-            for msg in history[-5:]:  # 최근 5개만
-                role = "user" if msg["role"] == "user" else "assistant"
-                context_messages.append({
-                    "role": role,
-                    "content": msg["content"][:500]  # 각 메시지 최대 500자
-                })
+            # 최근 대화 기록 추가
+            if history:
+                context_prompt += "최근 대화 내용:\n"
+                for msg in history[-3:]:  # 최근 3개만
+                    role = "사용자" if msg["role"] == "user" else "에이전트"
+                    context_prompt += f"{role}: {msg['content'][:300]}\n"
+                context_prompt += "\n"
 
             # 현재 메시지
-            context_messages.append({
-                "role": "user",
-                "content": message
-            })
+            context_prompt += f"사용자의 새로운 메시지: {message}\n\n"
+            context_prompt += "위 대화 내용을 참고하여 적절한 응답을 생성하세요."
 
-            # AI 호출 (스트리밍 가능)
+            # AI 호출
             response = await asyncio.to_thread(
                 self.ai.generate,
-                context_messages,
-                temperature=0.7,
-                max_tokens=1000
+                context_prompt,
+                system_instruction=persona[:2000]  # 토큰 최적화
             )
 
             return response

@@ -1,2 +1,0 @@
-{"id": "1771087689.064787", "timestamp": "2026-02-15T01:48:09.064805", "agent": "TD", "priority": 2, "data": {"type": "telegram_received", "chat_id": "7565534667", "text": "오류분석", "detected_agent": "TD", "source": "telegram_daemon"}}
-{"id": "1771087818.229574", "timestamp": "2026-02-15T01:50:18.229592", "agent": "TD", "priority": 2, "data": {"type": "telegram_received", "chat_id": "7565534667", "text": "복구해", "detected_agent": "TD", "source": "telegram_daemon"}}
