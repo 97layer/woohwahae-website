@@ -343,68 +343,96 @@ JSON으로만 응답:
 
     def _search_knowledge(self, query: str) -> str:
         """
-        지식 검색 우선순위:
-        1. Signal Archive (순호가 쌓은 인사이트들) — NotebookLM RAG
-        2. Brand Guide (WOOHWAHAE 브랜드/아이덴티티) — NotebookLM RAG
-        3. Fallback: 로컬 마크다운 파일 키워드 검색
+        로컬 지식 검색 (즉시 응답, <1초)
+        NotebookLM은 저장소로만 사용 — 대화 중 실시간 쿼리 안 함 (12초+ 지연)
+
+        검색 순서:
+        1. signals/ JSON (순호가 보낸 인사이트 + SA 분석 결과)
+        2. long_term_memory.json (누적 개념 및 경험)
+        3. directives/ 마크다운 (브랜드/아이덴티티)
         """
         try:
-            if self.notebooklm and self.notebooklm.authenticated:
-                logger.info(f"NotebookLM RAG: {query[:40]}...")
-                results = []
+            keywords = [w.lower() for w in query.split() if len(w) > 1]
+            if not keywords:
+                return ""
+            results = []
 
-                # 1. Signal Archive — 순호의 인사이트 누적본
-                try:
-                    from core.bridges.notebooklm_bridge import NB_SIGNAL_ARCHIVE, NB_BRAND_GUIDE
-                    nb_signal_id = self.notebooklm.get_or_create_notebook(NB_SIGNAL_ARCHIVE)
-                    signal_answer = self.notebooklm.query_notebook(nb_signal_id, query)
-                    _no_info = ["직접적인 언급", "포함되어 있지 않", "no information", "not found"]
-                    if signal_answer and not any(p in signal_answer for p in _no_info):
-                        results.append(f"[Signal Archive]\n{signal_answer}")
-                except Exception as e:
-                    logger.debug("Signal Archive 쿼리 실패: %s", e)
-
-                # 2. Brand Guide — 브랜드/아이덴티티 컨텍스트
-                try:
-                    nb_brand_id = self.notebooklm.get_or_create_notebook(NB_BRAND_GUIDE)
-                    brand_answer = self.notebooklm.query_notebook(nb_brand_id, query)
-                    _no_info = ["직접적인 언급", "포함되어 있지 않", "no information", "not found"]
-                    if brand_answer and not any(p in brand_answer for p in _no_info):
-                        results.append(f"[Brand Guide]\n{brand_answer}")
-                except Exception as e:
-                    logger.debug("Brand Guide 쿼리 실패: %s", e)
-
-                if results:
-                    return "\n\n".join(results)
-
-            # Fallback: 로컬 마크다운 검색 (docs + agent_hub + directives)
-            relevant_docs = []
-            keywords = [w.lower() for w in query.split() if len(w) > 2]
-
-            search_dirs = [
-                self.docs_dir,
-                self.knowledge_dir / 'agent_hub',
-                self.directives_dir,
-            ]
-            for search_dir in search_dirs:
-                if not search_dir.exists():
-                    continue
-                for md_file in sorted(search_dir.glob('**/*.md')):
+            # 1. signals/ JSON — 순호 인사이트 + SA 분석 결과
+            signals_dir = self.knowledge_dir / 'signals'
+            if signals_dir.exists():
+                signal_files = sorted(
+                    signals_dir.glob('**/*.json'),
+                    key=lambda f: f.stat().st_mtime,
+                    reverse=True  # 최신순
+                )
+                matched = []
+                for sf in signal_files[:200]:  # 최근 200개만 검색
                     try:
-                        content = md_file.read_text(encoding='utf-8')
+                        data = json.loads(sf.read_text(encoding='utf-8'))
+                        content = data.get('content', '') + ' ' + json.dumps(
+                            data.get('analysis', {}), ensure_ascii=False
+                        )
                         if any(kw in content.lower() for kw in keywords):
-                            preview = content[:500]
-                            relevant_docs.append(f"**[{md_file.name}]**:\n{preview}...\n")
-                            if len(relevant_docs) >= 3:
+                            summary = data.get('analysis', {}).get('summary', '')
+                            score = data.get('analysis', {}).get('strategic_score', '')
+                            text = data.get('content', '')[:200]
+                            entry = f"[signal/{sf.stem}]"
+                            if score:
+                                entry += f" score:{score}"
+                            if summary:
+                                entry += f"\n요약: {summary}"
+                            else:
+                                entry += f"\n{text}"
+                            matched.append(entry)
+                            if len(matched) >= 5:
                                 break
                     except Exception:
                         pass
-                if len(relevant_docs) >= 3:
-                    break
+                if matched:
+                    results.append("**[저장된 인사이트]**\n" + "\n\n".join(matched))
 
-            if relevant_docs:
-                return '\n\n'.join(relevant_docs)
-            return ""
+            # 2. long_term_memory — 누적 개념/패턴
+            lm_path = self.knowledge_dir / 'long_term_memory.json'
+            if lm_path.exists():
+                try:
+                    lm = json.loads(lm_path.read_text(encoding='utf-8'))
+                    # 개념 노드에서 키워드 매칭
+                    concepts = lm.get('concepts', {})
+                    matched_concepts = [
+                        f"{k}({v}회)" for k, v in concepts.items()
+                        if any(kw in k.lower() for kw in keywords)
+                    ]
+                    # 경험에서 키워드 매칭
+                    experiences = lm.get('experiences', [])
+                    matched_exp = []
+                    for exp in reversed(experiences[-50:]):
+                        s = exp.get('summary', '')
+                        if any(kw in s.lower() for kw in keywords):
+                            matched_exp.append(f"- {s[:120]}")
+                            if len(matched_exp) >= 3:
+                                break
+                    if matched_concepts or matched_exp:
+                        lm_text = ""
+                        if matched_concepts:
+                            lm_text += "개념: " + ", ".join(matched_concepts[:5]) + "\n"
+                        if matched_exp:
+                            lm_text += "\n".join(matched_exp)
+                        results.append(f"**[장기 기억]**\n{lm_text}")
+                except Exception:
+                    pass
+
+            # 3. directives/ 마크다운 — 브랜드/아이덴티티
+            for md_file in sorted(self.directives_dir.glob('**/*.md')):
+                try:
+                    content = md_file.read_text(encoding='utf-8')
+                    if any(kw in content.lower() for kw in keywords):
+                        results.append(f"**[{md_file.name}]**\n{content[:400]}...")
+                        if len(results) >= 5:
+                            break
+                except Exception:
+                    pass
+
+            return "\n\n".join(results) if results else ""
 
         except Exception as e:
             logger.error(f"Knowledge search error: {e}")
