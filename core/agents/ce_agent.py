@@ -92,7 +92,7 @@ class ChiefEditor:
         except Exception as e:
             logger.warning("NotebookLM 초기화 실패: %s", e)
 
-        print(f"✅ {self.agent_id}: Chief Editor initialized (Gemini 2.5 Pro)")
+        print(f"Ray: 준비됨.")
 
     def _get_brand_voice(self) -> str:
         """
@@ -133,7 +133,7 @@ class ChiefEditor:
             Final content draft
         """
         signal_id = analysis.get('signal_id', 'unknown')
-        print(f"✍️  {self.agent_id}: Writing content for {signal_id}...")
+        print(f"Ray: {signal_id} 초안 작업.")
 
         # 브랜드 보이스 참조 (NotebookLM 또는 fallback)
         brand_voice = self._get_brand_voice()
@@ -201,7 +201,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
                 'status': 'draft_for_cd',
             })
 
-            print(f"✅ {self.agent_id}: 콘텐츠 초안 완료 (브랜드 보이스: {brand_source})")
+            print(f"Ray: 초안 완료.")
             return content
 
         except Exception as e:
@@ -225,7 +225,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
     def start_watching(self, interval: int = 5):
         watcher = AgentWatcher(agent_type=self.agent_type, agent_id=self.agent_id)
         nlm_status = "연결됨" if self.nlm else "fallback"
-        print(f"👁️  {self.agent_id}: 자율 운영 시작...")
+        print(f"Ray: 큐 감시 시작.")
         print(f"   LLM: Gemini 2.5 Pro")
         print(f"   Brand Voice: NotebookLM RAG ({nlm_status})")
         print(f"   Tasks: write_content")

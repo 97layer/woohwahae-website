@@ -71,7 +71,10 @@ class StrategyAnalyst:
         self.client = genai.Client(api_key=api_key)
         self._model_name = 'gemini-2.5-flash'
 
-        print(f"✅ {self.agent_id}: Strategy Analyst initialized (Gemini 2.5 Flash)")
+        # Joon의 인격 지침 로드
+        self._persona = self._load_persona()
+
+        print(f"Joon: 준비됨.")
 
     def analyze_signal(self, signal_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -94,7 +97,7 @@ class StrategyAnalyst:
         content = signal_data.get('content', '')
         source = signal_data.get('source', 'unknown')
 
-        print(f"🔍 {self.agent_id}: Analyzing signal {signal_id}...")
+        print(f"Joon: 신호 {signal_id} 분석 시작.")
 
         # Construct prompt for strategic analysis
         prompt = self._build_analysis_prompt(content, source)
@@ -119,7 +122,10 @@ class StrategyAnalyst:
                 'source': source
             })
 
-            print(f"✅ {self.agent_id}: Analysis complete (score: {analysis.get('strategic_score', 0)})")
+            score = analysis.get('strategic_score', 0)
+            category = analysis.get('category', '')
+            themes = ', '.join(analysis.get('themes', [])[:3])
+            print(f"Joon: 완료. 점수 {score}. 카테고리: {category}. 테마: {themes}.")
 
             # 자가발전: SA 분석 완료 → long_term_memory 피드백
             try:
@@ -130,12 +136,22 @@ class StrategyAnalyst:
             return analysis
 
         except Exception as e:
-            print(f"❌ {self.agent_id}: Analysis failed: {e}")
+            print(f"Joon: 분석 실패. {e}")
             return {
                 'signal_id': signal_id,
                 'error': str(e),
                 'status': 'failed'
             }
+
+    def _load_persona(self) -> str:
+        """JOON.md 인격 지침 로드"""
+        persona_path = PROJECT_ROOT / 'directives' / 'agents' / 'JOON.md'
+        try:
+            if persona_path.exists():
+                return persona_path.read_text(encoding='utf-8')
+        except Exception:
+            pass
+        return "냉정하게 분석하라. 필요한 것만 말해라."
 
     def _feedback_to_memory(self, analysis: Dict[str, Any], original_content: str):
         """
@@ -200,43 +216,46 @@ class StrategyAnalyst:
         print(f"📝 Memory updated: score={score}, themes={analysis.get('themes', [])[:3]}")
 
     def _build_analysis_prompt(self, content: str, source: str) -> str:
-        """Build analysis prompt for Gemini"""
-        return f"""You are a Strategy Analyst for 97layer, a creative collective focused on slow living and meaningful work.
+        """Joon의 시각으로 신호 분석 프롬프트 구성"""
+        return f"""너는 Joon이다. 97layer 크루의 전략 분석가.
 
-Analyze the following signal and provide strategic insights:
+{self._persona[:600]}
 
-**Signal Content:**
+---
+
+다음 신호를 분석하라. 97layer의 방향과 얼마나 정렬되어 있는지 냉정하게 판단한다.
+
+**신호 내용:**
 {content}
 
-**Source:** {source}
+**출처:** {source}
 
-Provide your analysis in the following JSON format:
+JSON 형식으로만 응답:
 {{
-  "strategic_score": <0-100, how strategic/valuable is this signal>,
+  "strategic_score": <0-100, 97layer 방향 정렬도 + 전략 가치>,
   "category": "<trend|insight|opportunity|question|noise>",
-  "themes": ["theme1", "theme2", "theme3"],
+  "themes": ["테마1", "테마2", "테마3"],
   "key_insights": [
-    "Insight 1 (one sentence)",
-    "Insight 2 (one sentence)",
-    "Insight 3 (one sentence)"
+    "인사이트 1 (한 문장, 직접적으로)",
+    "인사이트 2",
+    "인사이트 3"
   ],
   "action_items": [
-    "Suggested action 1",
-    "Suggested action 2"
+    "구체적인 다음 행동 1",
+    "구체적인 다음 행동 2"
   ],
   "recommended_agents": ["AD", "CE", "CD"],
-  "summary": "One-sentence summary of the signal"
+  "summary": "한 문장 요약 — 핵심만"
 }}
 
-**Guidelines:**
-- Strategic score 80+: High-value, actionable insights
-- Strategic score 50-80: Interesting patterns, worth exploring
-- Strategic score <50: Low signal, noise, or needs clarification
-- Themes: Identify recurring patterns or topics
-- Action items: Concrete next steps
-- Recommended agents: Which agents should handle this (AD for visual, CE for content, CD for big decisions)
+**판단 기준:**
+- 80+: 97layer 방향과 정렬. 행동할 가치 있음.
+- 50-79: 탐색할 만함. 패턴 주시.
+- 50 미만: 노이즈. 알고리즘 추종 또는 방향 불일치.
+- 슬로우라이프·본질·여백·진정성 관련 신호는 높게 평가.
+- 빠른 트렌드·과도한 장식·알고리즘 추종 신호는 낮게 평가.
 
-Return ONLY valid JSON, no additional text.
+JSON만 출력. 설명 없이.
 """
 
     def _parse_analysis(self, analysis_text: str) -> Dict[str, Any]:

@@ -61,9 +61,25 @@ class CreativeDirector:
             raise ValueError("ANTHROPIC_API_KEY not found")
         
         self.client = anthropic.Anthropic(api_key=api_key)
-        
-        print(f"✅ {self.agent_id}: Creative Director initialized (Claude Sonnet 4.5)")
-        print(f"   💰 Budget: $10/month (~300 calls)")
+
+        # 순호의 판단 기준 + IDENTITY 로드
+        self._criteria = self._load_criteria()
+
+        print(f"CD: 준비됨. 브랜드 기준 로드 완료.")
+
+    def _load_criteria(self) -> str:
+        """CD_SUNHO.md + IDENTITY.md 브랜드 판단 기준 로드"""
+        parts = []
+        for path in [
+            PROJECT_ROOT / 'directives' / 'agents' / 'CD_SUNHO.md',
+            PROJECT_ROOT / 'directives' / 'IDENTITY.md',
+        ]:
+            try:
+                if path.exists():
+                    parts.append(path.read_text(encoding='utf-8')[:2000])
+            except Exception:
+                pass
+        return '\n\n---\n\n'.join(parts) if parts else "Remove the Noise, Reveal the Essence."
 
     def review_content(self, content_draft: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -76,37 +92,35 @@ class CreativeDirector:
             Decision: approve/revise/reject + feedback
         """
         signal_id = content_draft.get('signal_id', 'unknown')
-        print(f"👔 {self.agent_id}: Reviewing content for {signal_id}...")
+        print(f"CD: {signal_id} 검토 중.")
 
-        prompt = f"""You are the Creative Director of 97layer, responsible for final strategic decisions and brand stewardship.
+        prompt = f"""다음은 97layer 브랜드 판단 기준과 IDENTITY 문서다.
 
-Review this content draft and provide your decision:
+{self._criteria[:2500]}
 
-**Content Draft:**
-- Headline: {content_draft.get('headline', '')}
-- Subheadline: {content_draft.get('subheadline', '')}
-- Body (excerpt): {content_draft.get('body', '')[:200]}...
-- Social Caption: {content_draft.get('social_caption', '')}
-- Tone: {content_draft.get('tone', '')}
+---
 
-**97layer Brand Criteria:**
-1. Slow Living: Does it encourage slowness, depth, reflection?
-2. Authenticity: Is it genuine, human, not corporate?
-3. Meaning: Does it address what truly matters?
-4. Questions: Does it invite exploration, not just answers?
-5. Quality: Is the craft excellent?
+이 콘텐츠 초안을 검토하고 최종 결정을 내려라.
+판단은 단 하나의 질문으로 귀결된다: "내가 이걸 보고 싶은가? 이게 진짜 97layer인가?"
 
-Provide decision in JSON format:
+**콘텐츠 초안:**
+- 헤드라인: {content_draft.get('headline', '')}
+- 서브헤드라인: {content_draft.get('subheadline', '')}
+- 본문 (일부): {content_draft.get('body', '')[:300]}
+- 소셜 캡션: {content_draft.get('social_caption', '')}
+- 톤: {content_draft.get('tone', '')}
+
+JSON 형식으로 결정:
 {{
   "decision": "approve|revise|reject",
-  "brand_score": <0-100, how well it aligns with 97layer>,
-  "strengths": ["strength 1", "strength 2"],
-  "concerns": ["concern 1", "concern 2"] or [],
-  "revision_notes": "Specific suggestions if 'revise'" or null,
-  "strategic_rationale": "Why this decision?"
+  "brand_score": <0-100, 97layer 정렬도>,
+  "strengths": ["강점 1", "강점 2"],
+  "concerns": ["우려사항 1"] 또는 [],
+  "revision_notes": "수정 방향 (revise일 때만, 구체적으로)" 또는 null,
+  "strategic_rationale": "결정 이유 — 한두 문장, 직접적으로"
 }}
 
-Return ONLY valid JSON.
+JSON만 출력.
 """
 
         try:
@@ -139,11 +153,14 @@ Return ONLY valid JSON.
                 }
             })
             
-            print(f"✅ {self.agent_id}: Decision: {decision['decision'].upper()} (score: {decision.get('brand_score', 0)})")
+            d = decision.get('decision', '').upper()
+            score = decision.get('brand_score', 0)
+            rationale = decision.get('strategic_rationale', '')[:60]
+            print(f"CD: {d}. 점수 {score}. {rationale}")
             return decision
             
         except Exception as e:
-            print(f"❌ {self.agent_id}: Review failed: {e}")
+            print(f"CD: 검토 실패. {e}")
             return {'signal_id': signal_id, 'error': str(e), 'status': 'failed'}
 
     def process_task(self, task: Task) -> Dict[str, Any]:
