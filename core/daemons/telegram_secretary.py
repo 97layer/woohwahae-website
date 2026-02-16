@@ -149,22 +149,47 @@ class TelegramSecretaryV6:
                 pass
 
     async def process_image(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """이미지 처리"""
+        """이미지 처리 — Gemini Vision 분석 + signals 저장 + 텍스트 메시지 함께 처리"""
+        caption = update.message.caption or ""
         status_msg = await update.message.reply_text("🖼️ 이미지 분석 중...")
         try:
             photo = update.message.photo[-1]
             file = await context.bot.get_file(photo.file_id)
             import tempfile
             with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
-                await file.download_to_drive(tmp.name)
-                result = self.image.analyze_image(tmp.name)
-            os.unlink(tmp.name)
+                tmp_path = tmp.name
+                await file.download_to_drive(tmp_path)
 
-            if result.get('success'):
-                response_text = result.get('analysis', '분석 완료')
-                await status_msg.edit_text(response_text)
+            # analyze_image()는 {'description', 'full_analysis', 'insights', ...} 반환
+            result = self.image.analyze_image(tmp_path)
+
+            # signals에 저장 (caption 포함)
+            try:
+                self.image.save_image_and_analysis(tmp_path, {**result, 'caption': caption})
+            except Exception:
+                pass
+            os.unlink(tmp_path)
+
+            full_analysis = result.get('full_analysis') or result.get('description', '')
+            if full_analysis and '분석 실패' not in full_analysis:
+                # caption이 있으면 함께 처리
+                combined = full_analysis
+                if caption:
+                    combined = f"📝 **메모**: {caption}\n\n{full_analysis}"
+
+                # 4096자 제한
+                if len(combined) > 4000:
+                    combined = combined[:4000] + "\n\n..."
+
+                await status_msg.edit_text(combined)
+
+                # caption을 insight로도 저장
+                if caption:
+                    self._save_insight(f"[이미지 메모] {caption}", update.effective_user)
             else:
-                await status_msg.edit_text(f"❌ 이미지 분석 실패: {_escape_html(str(result.get('error', '')))}", parse_mode=constants.ParseMode.HTML)
+                err = result.get('description', '알 수 없는 오류')
+                await status_msg.edit_text(f"❌ 이미지 분석 실패: {_escape_html(err)}", parse_mode=constants.ParseMode.HTML)
+
         except Exception as e:
             logger.error("Image processing error: %s", e)
             try:

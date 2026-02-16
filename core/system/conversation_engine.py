@@ -18,6 +18,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional
+from datetime import datetime
 
 # Load .env
 try:
@@ -140,6 +141,12 @@ class ConversationEngine:
             if len(context['history']) > 5:
                 context['history'] = context['history'][-5:]
 
+            # 자가발전: 대화 완료 후 long_term_memory 비동기 업데이트
+            try:
+                self._update_long_term_memory(message, answer)
+            except Exception as mem_e:
+                logger.debug(f"Memory update skipped: {mem_e}")
+
             return answer
 
         except Exception as e:
@@ -211,6 +218,82 @@ class ConversationEngine:
         except Exception:
             return ""
 
+    def _update_long_term_memory(self, user_message: str, assistant_answer: str):
+        """
+        대화 완료 후 long_term_memory.json 자동 업데이트 — 자가발전 핵심 고리
+
+        Gemini로 대화에서 핵심 개념/패턴을 추출해 누적 저장.
+        대화가 쌓일수록 비서의 개인화 품질이 향상된다.
+        """
+        if not self.model:
+            return
+
+        lm_path = self.knowledge_dir / 'long_term_memory.json'
+
+        # 현재 메모리 로드
+        try:
+            if lm_path.exists():
+                data = json.loads(lm_path.read_text(encoding='utf-8'))
+            else:
+                data = {
+                    'metadata': {'created_at': datetime.now().isoformat(), 'total_entries': 0},
+                    'experiences': [],
+                    'concepts': {},
+                    'error_patterns': []
+                }
+        except Exception:
+            return
+
+        # Gemini로 개념 추출
+        extract_prompt = f"""다음 대화에서 97layer 개인의 관심사, 패턴, 핵심 개념을 추출하라.
+
+사용자: {user_message[:300]}
+비서: {assistant_answer[:300]}
+
+JSON으로만 응답:
+{{
+  "concepts": ["개념1", "개념2"],
+  "summary": "한 문장 요약",
+  "category": "브랜드/개인/기술/비즈니스/라이프스타일 중 하나"
+}}"""
+
+        try:
+            resp = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[extract_prompt]
+            )
+            import re
+            json_match = re.search(r'\{.*\}', resp.text, re.DOTALL)
+            if not json_match:
+                return
+            extracted = json.loads(json_match.group())
+        except Exception:
+            return
+
+        # concepts 카운트 누적 (빈도 = 중요도)
+        for concept in extracted.get('concepts', []):
+            concept = concept.strip()
+            if concept:
+                data['concepts'][concept] = data['concepts'].get(concept, 0) + 1
+
+        # experiences 추가
+        data['experiences'].append({
+            'summary': extracted.get('summary', '')[:100],
+            'category': extracted.get('category', 'unknown'),
+            'timestamp': datetime.now().isoformat()[:16]
+        })
+
+        # 최근 100개만 유지
+        if len(data['experiences']) > 100:
+            data['experiences'] = data['experiences'][-100:]
+
+        data['metadata']['total_entries'] = len(data['experiences'])
+        data['metadata']['last_updated'] = datetime.now().isoformat()[:16]
+
+        # 저장
+        lm_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
+        logger.debug(f"Memory updated: +{len(extracted.get('concepts', []))} concepts")
+
     def _build_prompt(self, message: str, context: Dict, knowledge: str) -> str:
         """프롬프트 구성"""
 
@@ -229,31 +312,32 @@ class ConversationEngine:
 {knowledge}
 """
 
-        prompt = f"""당신은 97layer(순호)의 전용 AI 비서 — 97layerOS입니다.
+        prompt = f"""너는 97layer(순호)의 개인 비서야. 이름은 97layerOS.
 
-=== 브랜드 정체성 & 운영 원칙 ===
-{self.brand_philosophy}
+순호에 대해 알고 있는 것:
+{self.brand_philosophy[:1500]}
 
-=== 최근 기록된 신호 (내가 저장한 인사이트/메모) ===
+최근 순호가 기록한 것들:
 {context.get('recent_signals', '없음')}
 
-=== 장기 기억 ===
+지금까지 쌓인 기억:
 {context.get('long_term_memory', '없음')}
 
 {knowledge_text}
 
-=== 최근 대화 ===
+이전 대화:
 {history_text if history_text else "없음"}
 
-=== 현재 질문 ===
-{message}
+순호: {message}
 
-지침:
-1. 본론부터. 인사·감탄사·미사여구 없이.
-2. 위의 신호·기억·지식을 실제로 참조해서 개인화된 답변을 구성하라.
-3. 모르는 것은 추측 말고 "데이터 없음"을 명시 후 대안 제시.
-4. 수석 오케스트레이터 스탠스 유지 — 전략적 조언 우선.
-5. 마크다운(리스트, 볼드) 활용해 가독성 극대화."""
+대화 방식 지침:
+- 비서답게 자연스럽게 말해. 딱딱한 경어보다는 친근하되 존중하는 톤.
+- 위의 기록과 기억을 실제로 참고해서 개인화된 답변을 줘.
+- 모르는 건 솔직하게 말하고 대안을 제시해.
+- 필요할 때만 마크다운 사용. 짧은 답변엔 그냥 자연어로.
+- 감탄사("오!", "와!" 등)는 쓰지 마. 자연스럽게 이어가면 돼.
+
+97layerOS:"""
 
         return prompt
 
