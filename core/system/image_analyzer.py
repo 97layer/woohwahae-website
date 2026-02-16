@@ -23,7 +23,7 @@ except ImportError:
     pass
 
 try:
-    import google.generativeai as genai
+    import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -55,10 +55,12 @@ class ImageAnalyzer:
 
         # Initialize Gemini Vision
         if GEMINI_AVAILABLE and self.api_key:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
+            self.client = genai.Client(api_key=self.api_key)
+            self._model_name = 'gemini-2.5-flash'
+            self.model = True  # flag: LLM available
             logger.info("✅ Gemini Vision initialized")
         else:
+            self.client = None
             self.model = None
             logger.warning("⚠️  Gemini not available")
 
@@ -106,13 +108,24 @@ class ImageAnalyzer:
 간결하고 명확하게 답변해주세요.
 """
 
-            # Create image part
-            image_part = {
-                'mime_type': self._get_mime_type(image_path),
-                'data': image_data
-            }
+            # Create image part for new SDK
+            mime_type = self._get_mime_type(image_path)
+            import base64
+            image_b64 = base64.b64encode(image_data).decode('utf-8')
+            contents = [
+                {
+                    "role": "user",
+                    "parts": [
+                        {"text": prompt},
+                        {"inline_data": {"mime_type": mime_type, "data": image_b64}}
+                    ]
+                }
+            ]
 
-            response = self.model.generate_content([prompt, image_part])
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=contents
+            )
             text = response.text
 
             return {

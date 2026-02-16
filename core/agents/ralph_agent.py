@@ -29,7 +29,7 @@ from core.system.agent_watcher import AgentWatcher
 from core.system.queue_manager import Task
 
 try:
-    import google.generativeai as genai
+    import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -43,14 +43,14 @@ class RalphLoop:
         self.agent_type = "Ralph"
         
         if not GEMINI_AVAILABLE:
-            raise ImportError("google-generativeai required")
-        
+            raise ImportError("google-genai required")
+
         api_key = api_key or os.getenv('GOOGLE_API_KEY')
         if not api_key:
             raise ValueError("GOOGLE_API_KEY not found")
-        
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+
+        self.client = genai.Client(api_key=api_key)
+        self._model_name = 'gemini-2.5-flash'
         
         print(f"✅ {self.agent_id}: Ralph Loop initialized (Gemini 2.5 Flash)")
 
@@ -92,7 +92,10 @@ Return ONLY valid JSON.
 """
 
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[prompt]
+            )
             text = response.text
             
             if '```json' in text:

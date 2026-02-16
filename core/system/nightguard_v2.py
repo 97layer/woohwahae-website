@@ -142,7 +142,7 @@ class NightguardV2:
             critical: If True, prepend 🚨, else ⚠️
         """
         emoji = "🚨" if critical else "⚠️"
-        full_message = f"{emoji} **Nightguard Alert**\n\n{message}\n\n🕐 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        full_message = f"{emoji} 나이트가드 알림\n\n{message}\n\n🕐 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
 
         logger.warning(full_message)
 
@@ -459,17 +459,17 @@ class NightguardV2:
             if result.returncode == 0:
                 logger.info("✅ Telegram bot restarted successfully")
                 self._log_incident('telegram_bot', 'service_down', 'auto_restarted')
-                await self.send_alert("✅ Telegram bot was down and has been auto-restarted", critical=False)
+                await self.send_alert("✅ 텔레그램 봇이 중단되어 자동으로 재시작했습니다", critical=False)
                 return True
             else:
                 logger.error(f"Failed to restart Telegram bot: {result.stderr}")
                 self._log_incident('telegram_bot', 'service_down', 'restart_failed')
-                await self.send_alert(f"❌ Telegram bot down - auto-restart FAILED\n\nError: {result.stderr}", critical=True)
+                await self.send_alert(f"❌ 텔레그램 봇 중단 — 자동 재시작 실패\n\n오류: {result.stderr}", critical=True)
                 return False
 
         except Exception as e:
             logger.error(f"Exception during Telegram bot restart: {e}")
-            await self.send_alert(f"❌ Telegram bot down - restart exception: {str(e)}", critical=True)
+            await self.send_alert(f"❌ 텔레그램 봇 중단 — 재시작 중 오류 발생: {str(e)}", critical=True)
             return False
 
     # ========================
@@ -526,11 +526,11 @@ class NightguardV2:
         cookie_status = components['notebooklm_cookie']
         if cookie_status['status'] == 'critical':
             await self.send_alert(
-                f"🍪 **NotebookLM Cookie Issue**\n\n{cookie_status['message']}\n\n"
-                "**Action Required**: Update cookie manually\n"
-                "1. Open Chrome DevTools\n"
-                "2. Copy cookie from notebooklm.google.com\n"
-                "3. Update knowledge/system/notebooklm_cookie.json",
+                f"🍪 노트북LM 로그인 만료\n\n{cookie_status['message']}\n\n"
+                "조치 방법: 쿠키를 수동으로 갱신해주세요\n"
+                "1. Chrome → notebooklm.google.com 접속\n"
+                "2. DevTools(F12) → Application → Cookies 복사\n"
+                "3. knowledge/system/notebooklm_cookie.json 업데이트",
                 critical=True
             )
             actions_taken.append('alerted_admin_cookie_expiry')
@@ -551,8 +551,8 @@ class NightguardV2:
         mcp_status = components['mcp_server']
         if mcp_status['status'] == 'critical':
             await self.send_alert(
-                f"🐳 **MCP Server Down**\n\n{mcp_status['message']}\n\n"
-                "**Action Required**: Start Podman container\n"
+                f"🐳 맥북 연결 끊김\n\n{mcp_status['message']}\n\n"
+                "조치 방법: 맥북에서 포드맨을 재시작해주세요\n"
                 "`podman start 97layer-os`",
                 critical=True
             )
@@ -562,9 +562,9 @@ class NightguardV2:
         disk_status = components['disk_space']
         if disk_status['status'] == 'critical':
             await self.send_alert(
-                f"💾 **Disk Space Critical**\n\n{disk_status['message']}\n\n"
-                "**Action Required**: Clean up disk space\n"
-                "Check: knowledge/signals/, logs/",
+                f"💾 서버 저장공간 부족\n\n{disk_status['message']}\n\n"
+                "조치 방법: 불필요한 파일을 정리해주세요\n"
+                "확인 위치: knowledge/signals/, logs/",
                 critical=True
             )
             actions_taken.append('alerted_admin_disk_space')

@@ -27,7 +27,7 @@ except ImportError:
     pass
 
 try:
-    import google.generativeai as genai
+    import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -57,35 +57,34 @@ class ConversationEngine:
 
         # Initialize Gemini
         if GEMINI_AVAILABLE and self.api_key:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
+            self.client = genai.Client(api_key=self.api_key)
+            self._model_name = 'gemini-2.5-flash'
+            self.model = True  # flag: LLM available
             logger.info("✅ Conversation Engine (LLM-powered)")
         else:
-            # Initialize NotebookLM
+            self.client = None
+            self.model = None
+            logger.info("⚠️ Gemini unavailable — LLM disabled")
+
+        # Always initialize NotebookLM bridge (used in _search_knowledge)
+        try:
             self.notebooklm = get_bridge()
-            logger.info(f"✅ NotebookLM Bridge {'ready' if self.notebooklm.authenticated else 'standby'}")
+            logger.info("✅ NotebookLM Bridge standby")
+        except Exception as e:
+            self.notebooklm = None
+            logger.warning("⚠️ NotebookLM Bridge unavailable: %s", e)
 
         # Knowledge base
         self.knowledge_dir = PROJECT_ROOT / 'knowledge'
         self.signals_dir = self.knowledge_dir / 'signals'
         self.docs_dir = self.knowledge_dir / 'docs'
+        self.directives_dir = PROJECT_ROOT / 'directives'
 
         # User conversation contexts
         self.user_contexts = {}
 
-        # 97layer 브랜드 철학
-        self.brand_philosophy = """
-97layer 브랜드 철학:
-- **본질 (Essence)**: 핵심만 남기고 불필요한 것은 제거
-- **절제 (Restraint)**: 과도함을 피하고 균형 추구
-- **자기긍정 (Self-affirmation)**: 자신만의 가치 발견
-
-톤앤매너:
-- 냉철하고 고지능적인 사고 기반의 정제된 언어
-- 가식적인 공감과 불필요한 수식어(감탄사 등) 완전 배제
-- 구조적 필연성을 도출하는 오케스트레이터의 위엄 유지
-- 한국어 존댓말을 사용하되 지극히 실용적이고 건조한 문체
-"""
+        # 브랜드 철학: IDENTITY.md에서 동적 로드
+        self.brand_philosophy = self._load_identity()
 
     def chat(self, user_id: str, message: str, use_knowledge: bool = True) -> str:
         """
@@ -112,7 +111,11 @@ class ConversationEngine:
 
             context = self.user_contexts[user_id]
 
-            # 지식 베이스 검색 (간단한 버전)
+            # 로컬 컨텍스트 주입 (매 대화마다 최신 상태 반영)
+            context['recent_signals'] = self._load_recent_signals(limit=10)
+            context['long_term_memory'] = self._load_long_term_memory()
+
+            # 지식 베이스 검색
             relevant_knowledge = ""
             if use_knowledge:
                 relevant_knowledge = self._search_knowledge(message)
@@ -121,7 +124,10 @@ class ConversationEngine:
             prompt = self._build_prompt(message, context, relevant_knowledge)
 
             # LLM 호출
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[prompt]
+            )
             answer = response.text.strip()
 
             # 컨텍스트 업데이트
@@ -139,6 +145,71 @@ class ConversationEngine:
         except Exception as e:
             logger.error(f"Conversation error: {e}")
             return f"죄송합니다. 응답 생성 중 오류가 발생했습니다: {str(e)}"
+
+    def _load_identity(self) -> str:
+        """IDENTITY.md + SYSTEM.md에서 브랜드 철학 로드"""
+        sections = []
+        for path in [
+            self.directives_dir / 'IDENTITY.md',
+            self.directives_dir / 'system' / 'SYSTEM.md',
+        ]:
+            try:
+                if path.exists():
+                    content = path.read_text(encoding='utf-8')
+                    sections.append(content[:3000])  # 각 최대 3000자
+            except Exception:
+                pass
+        if sections:
+            return '\n\n---\n\n'.join(sections)
+        # fallback
+        return """97layer 브랜드 철학: 본질만 남기고 소음을 제거한다.
+톤: 냉철하고 건조하며 실용적인 한국어 존댓말. 감탄사·미사여구 배제."""
+
+    def _load_recent_signals(self, limit: int = 10) -> str:
+        """최근 저장된 signals 로드 — 내가 뭘 기록했는지 비서가 알 수 있도록"""
+        try:
+            files = sorted(
+                self.signals_dir.glob('**/*.json'),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True
+            )[:limit]
+            if not files:
+                return ""
+            lines = []
+            for f in files:
+                try:
+                    data = json.loads(f.read_text(encoding='utf-8'))
+                    captured = data.get('captured_at', '')[:10]
+                    content = data.get('content', data.get('transcript', ''))[:200]
+                    signal_type = data.get('type', 'unknown')
+                    lines.append(f"[{captured}][{signal_type}] {content}")
+                except Exception:
+                    pass
+            return '\n'.join(lines)
+        except Exception:
+            return ""
+
+    def _load_long_term_memory(self) -> str:
+        """long_term_memory.json 로드"""
+        try:
+            lm_path = self.knowledge_dir / 'long_term_memory.json'
+            if not lm_path.exists():
+                return ""
+            data = json.loads(lm_path.read_text(encoding='utf-8'))
+            experiences = data.get('experiences', [])
+            concepts = data.get('concepts', {})
+            parts = []
+            if experiences:
+                recent = experiences[-5:]
+                parts.append("경험: " + " | ".join(
+                    e.get('summary', str(e))[:80] for e in recent
+                ))
+            if concepts:
+                top = list(concepts.items())[:10]
+                parts.append("개념: " + ", ".join(f"{k}({v})" for k, v in top))
+            return '\n'.join(parts)
+        except Exception:
+            return ""
 
     def _build_prompt(self, message: str, context: Dict, knowledge: str) -> str:
         """프롬프트 구성"""
@@ -158,60 +229,70 @@ class ConversationEngine:
 {knowledge}
 """
 
-        prompt = f"""당신은 97layer의 AI 비서입니다.
+        prompt = f"""당신은 97layer(순호)의 전용 AI 비서 — 97layerOS입니다.
 
+=== 브랜드 정체성 & 운영 원칙 ===
 {self.brand_philosophy}
 
-**역할**:
-- 97layer 팀의 업무를 지원하는 친근한 AI 비서
-- 질문에 답하고, 인사이트를 제공하며, 작업을 돕습니다
-- 우리의 지식 베이스를 참고하여 정확한 답변을 제공합니다
+=== 최근 기록된 신호 (내가 저장한 인사이트/메모) ===
+{context.get('recent_signals', '없음')}
+
+=== 장기 기억 ===
+{context.get('long_term_memory', '없음')}
 
 {knowledge_text}
 
-**최근 대화**:
+=== 최근 대화 ===
 {history_text if history_text else "없음"}
 
-**현재 질문**:
-사용자: {message}
+=== 현재 질문 ===
+{message}
 
-**지침**:
-1. 불필요한 인사나 미사여구를 생략하고 본론부터 간결하게 답하십시오.
-2. 지식 베이스(Deep RAG)의 데이터를 논리적으로 연결하여 통찰력 있는 결론을 도출하십시오.
-3. 모르는 데이터에 대해 추측하지 말고, 데이터 부재를 명확히 밝히고 대안을 제시하십시오.
-4. 97layer의 수석 오케스트레이터로서 사령관에게 전략적 조언을 건네는 스탠스를 유지하십시오.
-5. 마크다운 구조(리스트, 볼드 등)를 사용하여 가독성을 극대화하십시오.
-
-조수:[(냉철하고 정제된 응답 시작)]"""
+지침:
+1. 본론부터. 인사·감탄사·미사여구 없이.
+2. 위의 신호·기억·지식을 실제로 참조해서 개인화된 답변을 구성하라.
+3. 모르는 것은 추측 말고 "데이터 없음"을 명시 후 대안 제시.
+4. 수석 오케스트레이터 스탠스 유지 — 전략적 조언 우선.
+5. 마크다운(리스트, 볼드) 활용해 가독성 극대화."""
 
         return prompt
 
     def _search_knowledge(self, query: str) -> str:
         try:
             # NotebookLM Deep RAG 우선 사용
-            if self.notebooklm.authenticated:
+            if self.notebooklm and self.notebooklm.authenticated:
                 logger.info(f"Deep RAG searching for: {query[:30]}...")
                 answer = self.notebooklm.query_knowledge_base(query)
                 if answer and "no information found" not in answer.lower():
                     return f"**지식 베이스 응답**:\n{answer}\n"
 
-            # Fallback: 로컬 마크다운 검색
+            # Fallback: 로컬 마크다운 검색 (docs + agent_hub + directives)
             relevant_docs = []
             keywords = [w.lower() for w in query.split() if len(w) > 2]
 
-            if self.docs_dir.exists():
-                for md_file in self.docs_dir.glob('**/*.md'):
+            search_dirs = [
+                self.docs_dir,
+                self.knowledge_dir / 'agent_hub',
+                self.directives_dir,
+            ]
+            for search_dir in search_dirs:
+                if not search_dir.exists():
+                    continue
+                for md_file in sorted(search_dir.glob('**/*.md')):
                     try:
-                        with open(md_file, 'r', encoding='utf-8') as f:
-                            content = f.read()
-                            if any(kw in content.lower() for kw in keywords):
-                                preview = content[:300]
-                                relevant_docs.append(f"**{md_file.name}**:\n{preview}...\n")
-                                if len(relevant_docs) >= 1: break
-                    except Exception: pass
+                        content = md_file.read_text(encoding='utf-8')
+                        if any(kw in content.lower() for kw in keywords):
+                            preview = content[:500]
+                            relevant_docs.append(f"**[{md_file.name}]**:\n{preview}...\n")
+                            if len(relevant_docs) >= 3:
+                                break
+                    except Exception:
+                        pass
+                if len(relevant_docs) >= 3:
+                    break
 
             if relevant_docs:
-                return ''.join(relevant_docs)
+                return '\n\n'.join(relevant_docs)
             return ""
 
         except Exception as e:

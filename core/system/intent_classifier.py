@@ -25,7 +25,7 @@ except ImportError:
     pass
 
 try:
-    import google.generativeai as genai
+    import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -54,11 +54,12 @@ class IntentClassifier:
 
         # Initialize Gemini
         if GEMINI_AVAILABLE and self.api_key:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
+            self.client = genai.Client(api_key=self.api_key)
+            self._model_name = 'gemini-2.5-flash'
             self.use_ai = True
             logger.info("✅ Intent Classifier (AI-powered)")
         else:
+            self.client = None
             self.use_ai = False
             logger.warning("⚠️  Intent Classifier (rule-based fallback)")
 
@@ -115,7 +116,10 @@ class IntentClassifier:
 JSON만 출력하세요.
 """
 
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[prompt]
+            )
             text_response = response.text.strip()
 
             # JSON 파싱

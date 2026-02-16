@@ -2,7 +2,7 @@
 
 > **목적**: AI 세션이 바뀌어도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지)
-> **마지막 갱신**: 2026-02-16 (PHASE 9 완료 + SDK 마이그레이션 + systemd 서비스 파일)
+> **마지막 갱신**: 2026-02-16 (GCP VM 배포 완료 + IAP SSH 확립 + SDK 마이그레이션 전체 완료)
 
 ---
 
@@ -160,9 +160,17 @@ google.generativeai → google.genai SDK 마이그레이션 ✅ 완료.
   ✅ Nightguard V2 systemd 서비스 파일 작성 완료
   ✅ ADMIN_TELEGRAM_ID 설정됨 → 에이전트 완료 알림 즉시 활성
 
-[다음 목표] GCP 24/7 배포
-  로컬 동작 검증 완료 → GCP VM에서 systemd enable/start (DEPLOY.md §6 참고)
-  → ./start_telegram.sh + ./start_ecosystem.sh 실행 → 텔레그램 메시지 → 알림 수신
+[현재 목표] 텔레그램 봇 정상 동작 확인 + THE CYCLE 실 동작 검증
+  ✅ GCP VM active (running) — layer97-nightguard, us-west1-b
+  ✅ IAP SSH 확립 — deploy_vm.sh로 파일 배포 자동화
+  ✅ SDK 마이그레이션 VM 반영 완료
+  → 텔레그램 메시지 → SA 분석 → ADMIN_TELEGRAM_ID 알림 수신 확인 필요
+
+[VM 배포 명령]
+  ./deploy_vm.sh --all       # 전체 코드 배포
+  ./deploy_vm.sh [파일]      # 특정 파일 배포
+  ./deploy_vm.sh --restart   # 서비스 재시작
+  ./deploy_vm.sh --log       # 로그 확인
 ```
 
 ## 🚀 실행 명령

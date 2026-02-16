@@ -107,7 +107,7 @@ def route_signal(signal_path: Path, queue: QueueManager) -> Optional[str]:
     """
     try:
         signal = json.loads(signal_path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, IOError) as e:
+    except (json.JSONDecodeError, IOError, UnicodeDecodeError) as e:
         logger.warning("신호 파일 읽기 실패 (%s): %s", signal_path.name, e)
         return None
 
@@ -155,6 +155,8 @@ def process_pending_signals(queue: Optional[QueueManager] = None) -> int:
 
     signal_files = sorted(SIGNALS_DIR.glob("*.json"))
     for path in signal_files:
+        if path.name.startswith("._"):
+            continue  # macOS 메타데이터 파일 skip
         if path.name in processed:
             continue  # 이미 처리됨
 

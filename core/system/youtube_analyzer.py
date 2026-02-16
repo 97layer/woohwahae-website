@@ -23,7 +23,7 @@ except ImportError:
     pass
 
 try:
-    import google.generativeai as genai
+    import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -62,10 +62,12 @@ class YouTubeAnalyzer:
 
         # Initialize Gemini
         if GEMINI_AVAILABLE and self.api_key:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
+            self.client = genai.Client(api_key=self.api_key)
+            self._model_name = 'gemini-2.5-flash'
+            self.model = True  # flag: LLM available
             logger.info("✅ Gemini initialized for YouTube analysis")
         else:
+            self.client = None
             self.model = None
             logger.warning("⚠️  Gemini not available")
 
@@ -173,7 +175,10 @@ class YouTubeAnalyzer:
 """
 
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[prompt]
+            )
             text = response.text
 
             # Parse response (simple parsing)

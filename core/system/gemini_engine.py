@@ -55,8 +55,8 @@ class GeminiEngine:
             # Initialize client
             self.client = genai.Client(api_key=self.api_key)
 
-            # Default model (use stable version)
-            self.model_name = "gemini-1.5-flash"
+            # Default model
+            self.model_name = "gemini-2.5-flash"
 
             logger.info(f"✅ Gemini 2.0 Engine initialized ({self.model_name})")
 
