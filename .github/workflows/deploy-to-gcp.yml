@@ -1,0 +1,151 @@
+name: Deploy to GCP VM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'core/**'
+      - 'directives/**'
+      - 'knowledge/**'
+      - 'requirements.txt'
+      - 'deployment/**'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    name: Deploy to GCP VM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Add VM to known_hosts
+          ssh-keyscan -H ${{ secrets.GCP_VM_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: 📦 Create deployment package
+        run: |
+          tar -czf 97layer-deploy-ci.tar.gz \
+            core/ \
+            directives/ \
+            knowledge/docs/ \
+            knowledge/agent_hub/ \
+            requirements.txt \
+            start_telegram.sh \
+            start_monitor.sh \
+            deployment/ \
+            --exclude='*.pyc' \
+            --exclude='__pycache__' \
+            --exclude='.git' \
+            --exclude='.env' \
+            2>&1 | grep -v "Ignoring unknown extended header" || true
+
+          ls -lh 97layer-deploy-ci.tar.gz
+
+      - name: 🚀 Upload to GCP VM
+        run: |
+          scp -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
+              97layer-deploy-ci.tar.gz \
+              ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}:~/
+
+      - name: 📂 Extract and deploy on VM
+        run: |
+          ssh -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
+              ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} << 'ENDSSH'
+            set -e
+            cd ~/97layerOS
+
+            # Backup current version
+            if [ -d "core/" ]; then
+              echo "📦 Backing up current version..."
+              tar -czf ~/97layer-backup-$(date +%Y%m%d-%H%M%S).tar.gz \
+                  core/ directives/ knowledge/ 2>/dev/null || true
+            fi
+
+            # Extract new version
+            echo "📂 Extracting new version..."
+            tar -xzf ~/97layer-deploy-ci.tar.gz 2>&1 | grep -v "Ignoring unknown extended header" || true
+
+            # Clean up
+            rm ~/97layer-deploy-ci.tar.gz
+
+            echo "✅ Extraction complete"
+          ENDSSH
+
+      - name: ♻️  Restart service
+        run: |
+          ssh -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
+              ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} << 'ENDSSH'
+            set -e
+            echo "♻️  Restarting Telegram bot service..."
+            sudo systemctl restart 97layer-telegram
+            sleep 3
+            sudo systemctl status 97layer-telegram --no-pager || true
+          ENDSSH
+
+      - name: ✅ Verify deployment
+        run: |
+          ssh -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
+              ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} << 'ENDSSH'
+            set -e
+
+            echo "🔍 Verifying deployment..."
+
+            # Check if bot process is running
+            if pgrep -f "telegram_secretary" > /dev/null; then
+              echo "✅ Bot process: Running"
+            else
+              echo "❌ Bot process: NOT running"
+              exit 1
+            fi
+
+            # Check systemd service status
+            if systemctl is-active --quiet 97layer-telegram; then
+              echo "✅ Systemd service: Active"
+            else
+              echo "❌ Systemd service: Inactive"
+              exit 1
+            fi
+
+            # Show memory usage
+            MEMORY_MB=$(ps aux | grep telegram_secretary | grep -v grep | awk '{print $6/1024}' | head -1)
+            if [ -n "$MEMORY_MB" ]; then
+              echo "💾 Memory usage: ${MEMORY_MB}MB"
+            fi
+
+            echo "🎉 Deployment verified successfully!"
+          ENDSSH
+
+      - name: 📊 Deployment summary
+        if: success()
+        run: |
+          echo "### 🎉 Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **VM**: ${{ secrets.GCP_VM_HOST }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Bot is now running with the latest code!" >> $GITHUB_STEP_SUMMARY
+
+      - name: ❌ Deployment failed
+        if: failure()
+        run: |
+          echo "### ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please check the logs and verify manually:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}" >> $GITHUB_STEP_SUMMARY
+          echo "sudo journalctl -u 97layer-telegram -n 50" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

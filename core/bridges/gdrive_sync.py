@@ -238,6 +238,23 @@ class GDriveSync:
 
         return results
 
+    def sync_execution_context(self) -> bool:
+        """
+        Sync execution_context.json to Google Drive (intelligence/ 폴더).
+
+        Mac↔GCP 공유 상태 파일 — heartbeat.py가 갱신, GCP가 감시.
+        Drive 동기화로 양쪽이 항상 최신 상태를 볼 수 있음.
+        """
+        ctx_path = PROJECT_ROOT / 'knowledge' / 'system' / 'execution_context.json'
+
+        if not ctx_path.exists():
+            print("⚠️  execution_context.json not found")
+            return False
+
+        print("📤 Syncing execution_context.json to Google Drive...")
+        file_id = self.upload_file(ctx_path, drive_folder="intelligence")
+        return file_id is not None
+
     def _get_or_create_folder(self, folder_name: str, parent_id: str) -> str:
         """
         Get existing folder ID or create new folder
@@ -311,6 +328,7 @@ def main():
 
         elif args.intelligence or args.all:
             sync.sync_intelligence_quanta()
+            sync.sync_execution_context()  # execution_context.json도 함께 동기화
 
         elif args.reports or args.all:
             sync.sync_daily_reports()

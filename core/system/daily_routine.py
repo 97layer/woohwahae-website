@@ -365,6 +365,81 @@ class DailyRoutine:
         return insights
 
 
+def run_scheduler() -> None:
+    """
+    APScheduler 기반 자율 스케줄러 데몬.
+
+    스케줄:
+      - 09:00 KST → morning_briefing()
+      - 21:00 KST → evening_report()
+      - 일요일 21:00 KST → weekly_summary()
+
+    실행 방법:
+      python core/system/daily_routine.py --scheduler
+
+    참고:
+      - apscheduler==3.10.4 필요 (requirements.txt에 포함됨)
+      - GCP VM 또는 Podman 컨테이너에서 상시 실행 권장
+      - 타임존: Asia/Seoul (TZ 환경변수 또는 .env에서 설정)
+    """
+    try:
+        from apscheduler.schedulers.blocking import BlockingScheduler
+        from apscheduler.triggers.cron import CronTrigger
+    except ImportError:
+        print("APScheduler가 설치되지 않았습니다.")
+        print("컨테이너 내부에서 실행: pip install apscheduler==3.10.4")
+        return
+
+    import logging as _logging
+    _logging.basicConfig(
+        level=_logging.INFO,
+        format="%(asctime)s [Scheduler] %(levelname)s: %(message)s",
+    )
+    _log = _logging.getLogger(__name__)
+
+    routine = DailyRoutine()
+    scheduler = BlockingScheduler(timezone="Asia/Seoul")
+
+    # 아침 브리핑: 매일 09:00
+    scheduler.add_job(
+        func=routine.morning_briefing,
+        trigger=CronTrigger(hour=9, minute=0, timezone="Asia/Seoul"),
+        id="morning_briefing",
+        name="Morning Briefing",
+        misfire_grace_time=300,   # 5분 내 지연 허용
+    )
+
+    # 저녁 리포트: 매일 21:00
+    scheduler.add_job(
+        func=routine.evening_report,
+        trigger=CronTrigger(hour=21, minute=0, timezone="Asia/Seoul"),
+        id="evening_report",
+        name="Evening Report",
+        misfire_grace_time=300,
+    )
+
+    # 주간 요약: 일요일 21:00 (저녁 리포트와 동시, 10분 후 실행)
+    scheduler.add_job(
+        func=routine.weekly_summary,
+        trigger=CronTrigger(day_of_week="sun", hour=21, minute=10, timezone="Asia/Seoul"),
+        id="weekly_summary",
+        name="Weekly Summary",
+        misfire_grace_time=600,
+    )
+
+    _log.info("Daily Routine 스케줄러 시작")
+    _log.info("  - Morning Briefing: 매일 09:00 KST")
+    _log.info("  - Evening Report:   매일 21:00 KST")
+    _log.info("  - Weekly Summary:   일요일 21:10 KST")
+    _log.info("Ctrl+C로 종료")
+
+    try:
+        scheduler.start()
+    except KeyboardInterrupt:
+        _log.info("스케줄러 종료.")
+        scheduler.shutdown()
+
+
 def main():
     """CLI 인터페이스"""
     import argparse
@@ -374,8 +449,13 @@ def main():
     parser.add_argument('--evening', action='store_true', help='Run evening report')
     parser.add_argument('--weekly', action='store_true', help='Run weekly summary')
     parser.add_argument('--all', action='store_true', help='Run all routines (test mode)')
+    parser.add_argument('--scheduler', action='store_true', help='APScheduler 데몬 실행 (09:00/21:00 자동)')
 
     args = parser.parse_args()
+
+    if args.scheduler:
+        run_scheduler()
+        return
 
     routine = DailyRoutine()
 
@@ -388,7 +468,7 @@ def main():
     if args.weekly or args.all:
         routine.weekly_summary()
 
-    if not (args.morning or args.evening or args.weekly or args.all):
+    if not (args.morning or args.evening or args.weekly or args.all or args.scheduler):
         parser.print_help()
 
 

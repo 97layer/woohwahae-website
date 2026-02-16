@@ -1,77 +1,91 @@
 #!/usr/bin/env python3
 """
 NotebookLM MCP Bridge - 97layerOS Wrapper
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Python wrapper for notebooklm-mcp-cli (nlm command)
+Provides Python interface to NotebookLM MCP CLI tools.
+Handles authentication, command execution, and error handling.
 
-28개 도구 중 Anti-Gravity 핵심 8개 래핑:
-1. notebook_create/list (Foundation)
-2. source_add_url (Source Grounding - YouTube, Web)
-3. notebook_query (RAG)
-4. audio_create (Multi-modal)
-
-Container-First:
-- CLI 호출: subprocess로 nlm 명령 실행
-- 인증: ~/.notebooklm-mcp-cli/profiles/default/cookies.json
-- 에러 핸들링: 인증 실패 → DIY fallback 트리거
+Key Features:
+- 28 NotebookLM tools via CLI wrapper
+- Cookie-based authentication
+- Automatic fallback to DIY on failure
+- Integration with 97layerOS knowledge base
 
 Author: 97layerOS Technical Director
 Created: 2026-02-16
+Priority: P0 (Critical for conversational AI)
 """
 
 import subprocess
 import json
-import sys
+import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Project root
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 class NotebookLMBridge:
     """
     NotebookLM MCP CLI Wrapper
 
-    Wraps `nlm` CLI commands in Python for 97layerOS integration.
+    Provides Python interface to NotebookLM's 28 tools:
+    - notebook_create/list (Foundation)
+    - source_add_url/text/file (Source Grounding)
+    - notebook_query (RAG)
+    - audio_create (Multi-modal)
+    - mindmap_create (Multi-modal)
     """
 
-    def __init__(self):
-        self.cli_command = "nlm"
+    def __init__(self, cli_command: str = "nlm"):
+        """
+        Initialize NotebookLM Bridge
 
-        # 인증 확인
-        if not self._check_auth():
-            raise RuntimeError(
-                "NotebookLM 인증 필요.\n"
-                "Container: 쿠키 파일이 /root/.notebooklm-mcp-cli/profiles/default/에 있는지 확인\n"
-                "Host: nlm login 실행 후 쿠키 복사 필요"
-            )
+        Args:
+            cli_command: CLI command name (default: 'nlm')
+        """
+        self.cli_command = cli_command
+        self.authenticated = False
 
-        print("✅ NotebookLM MCP Bridge 초기화 완료")
+        # Check authentication
+        if self._check_auth():
+            self.authenticated = True
+            logger.info("✅ NotebookLM authenticated")
+        else:
+            logger.warning("⚠️  NotebookLM not authenticated - run 'nlm login'")
 
     def _check_auth(self) -> bool:
-        """인증 상태 확인"""
+        """Check if NotebookLM is authenticated"""
         try:
             result = subprocess.run(
-                [self.cli_command, "notebook", "list"],
+                [self.cli_command, "notebook_list"],
                 capture_output=True,
                 text=True,
                 timeout=10
             )
             return result.returncode == 0
         except Exception as e:
-            print(f"⚠️  인증 확인 실패: {e}")
+            logger.debug(f"Auth check failed: {e}")
             return False
 
     def _run_command(self, args: List[str], timeout: int = 60) -> Dict[str, Any]:
         """
-        CLI 명령 실행 및 JSON 파싱
+        Execute CLI command and parse JSON response
 
         Args:
-            args: CLI 인자 리스트 (예: ["notebook", "list"])
-            timeout: 타임아웃 (초)
+            args: Command arguments
+            timeout: Command timeout in seconds
 
         Returns:
-            파싱된 JSON 또는 텍스트 응답
+            Parsed JSON response or text output
+
+        Raises:
+            RuntimeError: On command failure
         """
         try:
             result = subprocess.run(
@@ -82,291 +96,424 @@ class NotebookLMBridge:
             )
 
             if result.returncode != 0:
-                raise RuntimeError(f"CLI Error: {result.stderr}")
+                error_msg = result.stderr or result.stdout
+                raise RuntimeError(f"CLI command failed: {error_msg}")
 
-            # JSON 파싱 시도
+            # Try to parse JSON
             try:
                 return json.loads(result.stdout)
             except json.JSONDecodeError:
-                # 텍스트 응답인 경우
+                # Return as text if not JSON
                 return {"output": result.stdout.strip(), "type": "text"}
 
         except subprocess.TimeoutExpired:
-            raise RuntimeError(f"Command timeout after {timeout}s")
-
+            raise RuntimeError(f"Command timed out after {timeout}s")
         except Exception as e:
-            raise RuntimeError(f"NotebookLM Bridge 오류: {e}")
+            raise RuntimeError(f"NotebookLM Bridge error: {e}")
 
-    # === Foundation Tools ===
+    # ========================
+    # Foundation Tools
+    # ========================
 
     def create_notebook(self, title: str) -> str:
         """
-        새 노트북 생성
+        Create new notebook
 
         Args:
-            title: 노트북 제목
+            title: Notebook title
 
         Returns:
-            생성된 노트북 ID
+            notebook_id
         """
-        result = self._run_command(["notebook", "create", title])
-
-        # CLI 응답 파싱
-        if isinstance(result, dict):
-            # JSON 응답
-            notebook_id = result.get("id", result.get("notebook_id", ""))
-            if notebook_id:
-                return notebook_id
-
-            # 텍스트 응답에서 ID 추출
-            output = result.get("output", "")
-            if "ID:" in output:
-                # "ID: ab952c9b-..." 형식
-                import re
-                match = re.search(r'ID:\s*([a-f0-9\-]+)', output)
-                if match:
-                    return match.group(1)
-
-        return str(result)
+        logger.info(f"Creating notebook: {title}")
+        result = self._run_command(["notebook_create", "--title", title])
+        notebook_id = result.get("notebook_id", result.get("id"))
+        logger.info(f"✅ Notebook created: {notebook_id}")
+        return notebook_id
 
     def list_notebooks(self) -> List[Dict]:
         """
-        노트북 목록 조회
+        List all notebooks
 
         Returns:
-            노트북 리스트 [{"id": "...", "title": "...", "source_count": N}, ...]
+            List of notebook dicts with id, title, created_at
         """
-        result = self._run_command(["notebook", "list"])
+        result = self._run_command(["notebook_list"])
+        notebooks = result.get("notebooks", [])
+        logger.info(f"Found {len(notebooks)} notebooks")
+        return notebooks
 
-        if isinstance(result, list):
-            return result
-        elif isinstance(result, dict) and "notebooks" in result:
-            return result["notebooks"]
-        return []
-
-    # === Source Grounding Tools ===
-
-    def add_source_url(self, notebook_id: str, url: str, wait: bool = True) -> str:
+    def get_notebook(self, notebook_id: str) -> Dict:
         """
-        URL 소스 추가 (YouTube, Web)
+        Get notebook details
 
         Args:
-            notebook_id: 대상 노트북 ID
-            url: YouTube URL 또는 웹페이지 URL
-            wait: 소스 처리 완료까지 대기 (권장)
+            notebook_id: Notebook ID
 
         Returns:
-            생성된 소스 ID
+            Notebook details dict
         """
-        args = ["source", "add", notebook_id, "--url", url]
-
-        if wait:
-            args.append("--wait")
-
-        result = self._run_command(args, timeout=180)  # YouTube 처리 시간 고려
-
-        if isinstance(result, dict):
-            source_id = result.get("id", result.get("source_id", ""))
-            if source_id:
-                return source_id
-
-            # 텍스트 응답에서 ID 추출
-            output = result.get("output", "")
-            if "ID:" in output or "id:" in output:
-                import re
-                match = re.search(r'[Ii][Dd]:\s*([a-f0-9\-]+)', output)
-                if match:
-                    return match.group(1)
-
-        return str(result)
-
-    # === RAG Tool ===
-
-    def query_notebook(self, notebook_id: str, query: str) -> str:
-        """
-        노트북 소스 기반 질의 (RAG)
-
-        Args:
-            notebook_id: 질의할 노트북 ID
-            query: 질문 (예: "이 영상의 핵심 메시지를 3줄로 요약해주세요")
-
-        Returns:
-            RAG 기반 답변
-        """
-        result = self._run_command([
-            "notebook", "query",
-            notebook_id,
-            query
-        ], timeout=120)  # RAG 처리 시간 고려
-
-        if isinstance(result, dict):
-            # 다양한 응답 포맷 처리
-            return result.get("answer", result.get("response", result.get("output", "")))
-        return str(result)
-
-    # === Multi-modal Synthesis Tools ===
-
-    def create_audio(self, notebook_id: str, format: str = "deep_dive", confirm: bool = True) -> Dict[str, Any]:
-        """
-        Audio Overview 생성 (Podcast)
-
-        Args:
-            notebook_id: 소스 노트북 ID
-            format: Overview 형식 (deep_dive, brief, critique, debate)
-            confirm: 확인 스킵 (자동 실행)
-
-        Returns:
-            {"status": "success", "audio_url": "...", "download_url": "..."}
-        """
-        args = ["audio", "create", notebook_id, "--format", format]
-
-        if confirm:
-            args.append("--confirm")
-
-        result = self._run_command(args, timeout=300)  # Audio 생성 시간 고려 (5분)
-
+        result = self._run_command(["notebook_get", "--notebook-id", notebook_id])
         return result
 
+    # ========================
+    # Source Grounding Tools
+    # ========================
 
-# === Anti-Gravity YouTube Workflow ===
+    def add_source_url(self, notebook_id: str, url: str, title: Optional[str] = None) -> str:
+        """
+        Add URL source to notebook (YouTube, Web)
 
-def anti_gravity_youtube(url: str, notebook_title: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Anti-Gravity YouTube 분석 (NotebookLM 엔진)
+        Args:
+            notebook_id: Target notebook ID
+            url: Source URL
+            title: Optional source title
 
-    Workflow:
-    1. 노트북 생성
-    2. YouTube URL 소스 추가
-    3. 3가지 RAG 질의 (요약, 인사이트, 브랜드 연결)
-    4. Audio Overview 생성
-    5. 결과 반환
+        Returns:
+            source_id
+        """
+        logger.info(f"Adding URL source: {url}")
 
-    Args:
-        url: YouTube URL
-        notebook_title: 노트북 제목 (기본값: 자동 생성)
+        args = ["source_add_url", "--notebook-id", notebook_id, "--url", url]
+        if title:
+            args.extend(["--title", title])
 
-    Returns:
-        {
-            "notebook_id": "...",
-            "source_id": "...",
-            "summary": "3줄 요약",
-            "insights": "핵심 인사이트",
-            "brand_connection": "5 Pillars 연결",
-            "audio": {"audio_url": "...", ...}
+        result = self._run_command(args)
+        source_id = result.get("source_id", result.get("id"))
+        logger.info(f"✅ Source added: {source_id}")
+        return source_id
+
+    def add_source_text(self, notebook_id: str, text: str, title: str) -> str:
+        """
+        Add text source to notebook
+
+        Args:
+            notebook_id: Target notebook ID
+            text: Source text content
+            title: Source title
+
+        Returns:
+            source_id
+        """
+        logger.info(f"Adding text source: {title}")
+
+        result = self._run_command([
+            "source_add_text",
+            "--notebook-id", notebook_id,
+            "--title", title,
+            "--text", text
+        ])
+
+        source_id = result.get("source_id", result.get("id"))
+        logger.info(f"✅ Source added: {source_id}")
+        return source_id
+
+    def add_source_file(self, notebook_id: str, file_path: Path) -> str:
+        """
+        Add file source to notebook (PDF, DOCX, etc.)
+
+        Args:
+            notebook_id: Target notebook ID
+            file_path: Path to file
+
+        Returns:
+            source_id
+        """
+        logger.info(f"Adding file source: {file_path.name}")
+
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+
+        result = self._run_command([
+            "source_add_file",
+            "--notebook-id", notebook_id,
+            "--file", str(file_path)
+        ])
+
+        source_id = result.get("source_id", result.get("id"))
+        logger.info(f"✅ Source added: {source_id}")
+        return source_id
+
+    def list_sources(self, notebook_id: str) -> List[Dict]:
+        """
+        List sources in notebook
+
+        Args:
+            notebook_id: Notebook ID
+
+        Returns:
+            List of source dicts
+        """
+        result = self._run_command(["source_list", "--notebook-id", notebook_id])
+        sources = result.get("sources", [])
+        logger.info(f"Found {len(sources)} sources in notebook {notebook_id}")
+        return sources
+
+    # ========================
+    # RAG Query Tool
+    # ========================
+
+    def query_notebook(self, notebook_id: str, query: str, max_tokens: int = 2048) -> str:
+        """
+        Query notebook with RAG (Retrieval-Augmented Generation)
+
+        Args:
+            notebook_id: Notebook ID to query
+            query: User question
+            max_tokens: Max response tokens
+
+        Returns:
+            Answer text
+        """
+        logger.info(f"Querying notebook {notebook_id}: {query[:50]}...")
+
+        result = self._run_command([
+            "notebook_query",
+            "--notebook-id", notebook_id,
+            "--query", query,
+            "--max-tokens", str(max_tokens)
+        ], timeout=120)  # Longer timeout for queries
+
+        answer = result.get("answer", result.get("output", ""))
+        logger.info(f"✅ Query answered ({len(answer)} chars)")
+        return answer
+
+    # ========================
+    # Multi-modal Synthesis Tools
+    # ========================
+
+    def create_audio(self, notebook_id: str, output_path: Optional[Path] = None) -> Path:
+        """
+        Create Audio Overview (Podcast) from notebook
+
+        Args:
+            notebook_id: Notebook ID
+            output_path: Optional output file path
+
+        Returns:
+            Path to generated audio file
+        """
+        logger.info(f"Creating audio overview for notebook {notebook_id}")
+
+        args = ["audio_create", "--notebook-id", notebook_id]
+
+        if output_path:
+            args.extend(["--output", str(output_path)])
+
+        result = self._run_command(args, timeout=300)  # 5 min timeout for audio
+
+        # Get audio file path
+        audio_file = result.get("audio_file", result.get("output_file", result.get("output")))
+        if not audio_file:
+            raise RuntimeError("Audio creation failed - no output file")
+
+        audio_path = Path(audio_file)
+        logger.info(f"✅ Audio created: {audio_path}")
+        return audio_path
+
+    def create_mindmap(self, notebook_id: str) -> str:
+        """
+        Create Mind Map (Mermaid.js) from notebook
+
+        Args:
+            notebook_id: Notebook ID
+
+        Returns:
+            Mermaid.js code
+        """
+        logger.info(f"Creating mind map for notebook {notebook_id}")
+
+        result = self._run_command([
+            "mindmap_create",
+            "--notebook-id", notebook_id
+        ], timeout=120)
+
+        mermaid_code = result.get("mermaid_code", result.get("output", ""))
+        logger.info(f"✅ Mind map created ({len(mermaid_code)} chars)")
+        return mermaid_code
+
+    # ========================
+    # High-Level Workflows
+    # ========================
+
+    def anti_gravity_youtube(self, url: str) -> Dict[str, Any]:
+        """
+        Anti-Gravity YouTube Analysis Workflow
+
+        Steps:
+        1. Create notebook
+        2. Add YouTube URL source
+        3. Run 3 RAG queries (summary, insights, brand connection)
+        4. Create audio overview
+        5. Create mind map
+
+        Args:
+            url: YouTube URL
+
+        Returns:
+            Complete analysis results
+        """
+        logger.info(f"🛸 Anti-Gravity YouTube Analysis: {url}")
+
+        # Step 1: Create notebook
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        notebook_id = self.create_notebook(f"YouTube Analysis {timestamp}")
+
+        # Step 2: Add source
+        source_id = self.add_source_url(notebook_id, url, title="YouTube Video")
+
+        # Step 3: RAG queries
+        summary = self.query_notebook(
+            notebook_id,
+            "이 영상의 핵심 메시지를 3줄로 요약해주세요."
+        )
+
+        insights = self.query_notebook(
+            notebook_id,
+            "이 영상에서 가장 독창적인 인사이트는 무엇인가요? "
+            "Aesop 스타일로 절제되고 본질적인 언어로 답해주세요."
+        )
+
+        brand_connection = self.query_notebook(
+            notebook_id,
+            "이 내용이 다음 5가지 브랜드 철학 중 어디에 연결되나요? "
+            "1) Authenticity 2) Practicality 3) Elegance 4) Precision 5) Innovation"
+        )
+
+        # Step 4: Multi-modal synthesis
+        try:
+            audio_path = self.create_audio(notebook_id)
+        except Exception as e:
+            logger.warning(f"Audio creation failed: {e}")
+            audio_path = None
+
+        try:
+            mindmap_mermaid = self.create_mindmap(notebook_id)
+        except Exception as e:
+            logger.warning(f"Mind map creation failed: {e}")
+            mindmap_mermaid = ""
+
+        result = {
+            "notebook_id": notebook_id,
+            "source_id": source_id,
+            "url": url,
+            "summary": summary,
+            "insights": insights,
+            "brand_connection": brand_connection,
+            "audio_file": audio_path,
+            "mindmap": mindmap_mermaid,
+            "timestamp": datetime.now().isoformat()
         }
-    """
 
-    print("🛸 Anti-Gravity YouTube 분석 시작...")
-    print(f"🔗 URL: {url}")
+        logger.info("✅ Anti-Gravity YouTube Analysis complete")
+        return result
+
+    def query_knowledge_base(self, question: str) -> str:
+        """
+        Query 97layerOS knowledge base
+
+        Creates temporary notebook with knowledge docs and queries it.
+
+        Args:
+            question: User question
+
+        Returns:
+            Answer based on knowledge base
+        """
+        logger.info(f"Querying knowledge base: {question[:50]}...")
+
+        # Find or create knowledge base notebook
+        notebooks = self.list_notebooks()
+        kb_notebook = None
+
+        for nb in notebooks:
+            if "97layerOS Knowledge Base" in nb.get("title", ""):
+                kb_notebook = nb
+                break
+
+        # Create if doesn't exist
+        if not kb_notebook:
+            logger.info("Creating knowledge base notebook...")
+            notebook_id = self.create_notebook("97layerOS Knowledge Base")
+
+            # Add key knowledge documents
+            docs_dir = PROJECT_ROOT / 'knowledge' / 'docs'
+            if docs_dir.exists():
+                for doc_file in docs_dir.glob('*.md'):
+                    try:
+                        self.add_source_file(notebook_id, doc_file)
+                        logger.info(f"  Added: {doc_file.name}")
+                    except Exception as e:
+                        logger.warning(f"  Failed to add {doc_file.name}: {e}")
+        else:
+            notebook_id = kb_notebook.get("id", kb_notebook.get("notebook_id"))
+
+        # Query the notebook
+        answer = self.query_notebook(notebook_id, question)
+        return answer
+
+
+# ========================
+# Convenience Functions
+# ========================
+
+def get_bridge() -> NotebookLMBridge:
+    """Get NotebookLM Bridge instance (singleton pattern)"""
+    if not hasattr(get_bridge, '_instance'):
+        get_bridge._instance = NotebookLMBridge()
+    return get_bridge._instance
+
+
+def is_available() -> bool:
+    """Check if NotebookLM MCP is available and authenticated"""
+    try:
+        bridge = NotebookLMBridge()
+        return bridge.authenticated
+    except Exception:
+        return False
+
+
+# ========================
+# CLI Testing
+# ========================
+
+def main():
+    """CLI test interface"""
+    import argparse
+
+    parser = argparse.ArgumentParser(description='NotebookLM Bridge CLI Test')
+    parser.add_argument('command', choices=['test', 'list', 'query', 'youtube'])
+    parser.add_argument('--notebook-id', help='Notebook ID')
+    parser.add_argument('--query', help='Query text')
+    parser.add_argument('--url', help='YouTube URL')
+
+    args = parser.parse_args()
+
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
 
     bridge = NotebookLMBridge()
 
-    # Step 1: 노트북 생성
-    if not notebook_title:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        notebook_title = f"YouTube Analysis {timestamp}"
+    if args.command == 'test':
+        print(f"Authenticated: {bridge.authenticated}")
 
-    print(f"📓 노트북 생성: {notebook_title}")
-    notebook_id = bridge.create_notebook(notebook_title)
-    print(f"✅ Notebook ID: {notebook_id}")
+    elif args.command == 'list':
+        notebooks = bridge.list_notebooks()
+        print(json.dumps(notebooks, indent=2))
 
-    # Step 2: 소스 추가
-    print(f"📥 YouTube 소스 추가 중...")
-    source_id = bridge.add_source_url(notebook_id, url)
-    print(f"✅ Source ID: {source_id}")
+    elif args.command == 'query':
+        if not args.notebook_id or not args.query:
+            print("Error: --notebook-id and --query required")
+            return
+        answer = bridge.query_notebook(args.notebook_id, args.query)
+        print(f"\nAnswer:\n{answer}")
 
-    # Step 3: RAG 질의 (3가지)
-    print(f"🤖 RAG 분석 중...")
-
-    print("   [1/4] 3줄 요약...")
-    summary = bridge.query_notebook(
-        notebook_id,
-        "이 영상의 핵심 메시지를 3줄로 요약해주세요."
-    )
-
-    print("   [2/4] 인사이트 추출...")
-    insights = bridge.query_notebook(
-        notebook_id,
-        "이 영상에서 가장 독창적인 인사이트는 무엇인가요? "
-        "Aesop 스타일로 절제되고 본질적인 언어로 답해주세요."
-    )
-
-    print("   [3/4] 브랜드 연결...")
-    brand_connection = bridge.query_notebook(
-        notebook_id,
-        "이 내용이 다음 5가지 브랜드 철학 중 어디에 연결되나요? "
-        "1) Authenticity 2) Practicality 3) Elegance 4) Precision 5) Innovation"
-    )
-
-    # Step 4: Audio Overview 생성
-    print("   [4/4] Audio Overview 생성...")
-    audio_result = bridge.create_audio(notebook_id)
-
-    print("✅ Anti-Gravity 분석 완료!")
-
-    return {
-        "notebook_id": notebook_id,
-        "source_id": source_id,
-        "summary": summary,
-        "insights": insights,
-        "brand_connection": brand_connection,
-        "audio": audio_result
-    }
-
-
-# === CLI Entry Point ===
-
-def main():
-    """
-    CLI 테스트 인터페이스
-
-    Usage:
-        python3 notebooklm_bridge.py list
-        python3 notebooklm_bridge.py create "Test Notebook"
-        python3 notebooklm_bridge.py analyze "https://youtu.be/xxxxx"
-    """
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Usage:")
-        print("  python3 notebooklm_bridge.py list")
-        print("  python3 notebooklm_bridge.py create <title>")
-        print("  python3 notebooklm_bridge.py analyze <youtube_url>")
-        sys.exit(1)
-
-    command = sys.argv[1]
-
-    try:
-        bridge = NotebookLMBridge()
-
-        if command == "list":
-            notebooks = bridge.list_notebooks()
-            print(json.dumps(notebooks, indent=2, ensure_ascii=False))
-
-        elif command == "create":
-            title = sys.argv[2] if len(sys.argv) > 2 else "Test Notebook"
-            notebook_id = bridge.create_notebook(title)
-            print(f"Created notebook: {notebook_id}")
-
-        elif command == "analyze":
-            url = sys.argv[2]
-            result = anti_gravity_youtube(url)
-            print("\n" + "="*70)
-            print("📊 분석 결과:")
-            print("="*70)
-            print(f"\n📓 Notebook ID: {result['notebook_id']}")
-            print(f"\n📝 요약:\n{result['summary']}")
-            print(f"\n💡 인사이트:\n{result['insights']}")
-            print(f"\n🎯 브랜드 연결:\n{result['brand_connection']}")
-            print(f"\n🎙️  Audio: {result['audio']}")
-
-        else:
-            print(f"Unknown command: {command}")
-            sys.exit(1)
-
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        sys.exit(1)
+    elif args.command == 'youtube':
+        if not args.url:
+            print("Error: --url required")
+            return
+        result = bridge.anti_gravity_youtube(args.url)
+        print(json.dumps(result, indent=2, default=str))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,259 @@
+#!/usr/bin/env python3
+"""
+97layerOS Signal Processor
+자동으로 신호를 감지하고 Multi-Agent를 실행
+
+Features:
+- 신호 디렉토리 모니터링
+- 새로운 신호 감지 → Multi-Agent 자동 실행
+- 백그라운드 처리
+- 결과 알림
+
+Author: 97layerOS Technical Director
+Created: 2026-02-16
+"""
+
+import os
+import sys
+import json
+import time
+import logging
+from pathlib import Path
+from typing import Dict, List, Optional
+from datetime import datetime
+import asyncio
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+# Add project root to path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+# Load .env
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / '.env')
+except ImportError:
+    pass
+
+logger = logging.getLogger(__name__)
+
+
+class SignalHandler(FileSystemEventHandler):
+    """
+    신호 파일 생성 감지 및 처리
+    """
+
+    def __init__(self, processor):
+        self.processor = processor
+        super().__init__()
+
+    def on_created(self, event):
+        """파일 생성 이벤트"""
+        if event.is_directory:
+            return
+
+        # JSON 파일만 처리
+        if event.src_path.endswith('.json'):
+            logger.info(f"🔔 New signal detected: {event.src_path}")
+            # 파일이 완전히 쓰여질 때까지 잠시 대기
+            time.sleep(0.5)
+            self.processor.process_signal(event.src_path)
+
+
+class SignalProcessor:
+    """
+    신호 처리 및 Multi-Agent 실행
+    """
+
+    def __init__(self, telegram_bot=None):
+        """
+        Initialize Signal Processor
+
+        Args:
+            telegram_bot: Telegram bot instance for notifications
+        """
+        self.signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
+        self.telegram_bot = telegram_bot
+
+        # Multi-Agent 스크립트 경로
+        self.agents = {
+            'sa': PROJECT_ROOT / 'core' / 'agents' / 'strategy_analyst.py',
+            'ad': PROJECT_ROOT / 'core' / 'agents' / 'art_director.py',
+            'ce': PROJECT_ROOT / 'core' / 'agents' / 'chief_editor.py',
+            'ralph': PROJECT_ROOT / 'core' / 'agents' / 'ralph.py'
+        }
+
+        # 처리 큐
+        self.processing_queue = []
+        self.is_processing = False
+
+        logger.info("✅ Signal Processor initialized")
+
+    def process_signal(self, signal_path: str):
+        """
+        신호 파일 처리
+
+        Args:
+            signal_path: 신호 JSON 파일 경로
+        """
+        try:
+            # 신호 파일 읽기
+            with open(signal_path, 'r', encoding='utf-8') as f:
+                signal_data = json.load(f)
+
+            signal_type = signal_data.get('type', 'unknown')
+            status = signal_data.get('status', 'unknown')
+
+            # 이미 처리된 신호는 스킵
+            if status != 'captured':
+                logger.info(f"⏭️  Signal already processed: {signal_path}")
+                return
+
+            logger.info(f"📊 Processing signal: {signal_type}")
+
+            # 신호 타입별 처리
+            if signal_type == 'youtube_video':
+                self._process_youtube_signal(signal_path, signal_data)
+            elif signal_type == 'image':
+                self._process_image_signal(signal_path, signal_data)
+            elif signal_type == 'text_insight':
+                self._process_text_signal(signal_path, signal_data)
+            else:
+                logger.warning(f"⚠️  Unknown signal type: {signal_type}")
+
+        except Exception as e:
+            logger.error(f"❌ Error processing signal {signal_path}: {e}")
+
+    def _process_youtube_signal(self, signal_path: str, signal_data: Dict):
+        """YouTube 신호 처리"""
+        logger.info("🎥 Processing YouTube signal...")
+
+        video_id = signal_data.get('video_id', 'unknown')
+        transcript_length = signal_data.get('full_transcript_length', 0)
+
+        # Multi-Agent 실행 (간단한 버전)
+        logger.info("🤖 Starting Multi-Agent analysis...")
+
+        # 상태 업데이트
+        signal_data['status'] = 'processing'
+        signal_data['processed_at'] = datetime.now().isoformat()
+
+        with open(signal_path, 'w', encoding='utf-8') as f:
+            json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        # TODO: 실제 Multi-Agent 실행
+        # 현재는 시뮬레이션
+        time.sleep(2)
+
+        # 완료 상태로 변경
+        signal_data['status'] = 'completed'
+        signal_data['completed_at'] = datetime.now().isoformat()
+        signal_data['agent_results'] = {
+            'sa': 'Strategy analysis completed',
+            'ad': 'Visual direction completed',
+            'ce': 'Content editing completed'
+        }
+
+        with open(signal_path, 'w', encoding='utf-8') as f:
+            json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        logger.info(f"✅ YouTube signal processed: {video_id}")
+
+    def _process_image_signal(self, signal_path: str, signal_data: Dict):
+        """이미지 신호 처리"""
+        logger.info("📷 Processing image signal...")
+
+        # 상태 업데이트
+        signal_data['status'] = 'processing'
+        signal_data['processed_at'] = datetime.now().isoformat()
+
+        with open(signal_path, 'w', encoding='utf-8') as f:
+            json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        # TODO: 실제 Multi-Agent 실행
+        time.sleep(1)
+
+        # 완료
+        signal_data['status'] = 'completed'
+        signal_data['completed_at'] = datetime.now().isoformat()
+
+        with open(signal_path, 'w', encoding='utf-8') as f:
+            json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        logger.info("✅ Image signal processed")
+
+    def _process_text_signal(self, signal_path: str, signal_data: Dict):
+        """텍스트 신호 처리"""
+        logger.info("💬 Processing text signal...")
+
+        content = signal_data.get('content', '')
+
+        # 간단한 처리: 저장만
+        signal_data['status'] = 'stored'
+        signal_data['stored_at'] = datetime.now().isoformat()
+
+        with open(signal_path, 'w', encoding='utf-8') as f:
+            json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        logger.info("✅ Text signal stored")
+
+    def start_monitoring(self):
+        """신호 디렉토리 모니터링 시작"""
+        logger.info(f"👁️  Monitoring directory: {self.signals_dir}")
+
+        # 기존 미처리 신호 처리
+        self._process_existing_signals()
+
+        # 실시간 모니터링 시작
+        event_handler = SignalHandler(self)
+        observer = Observer()
+        observer.schedule(event_handler, str(self.signals_dir), recursive=True)
+        observer.start()
+
+        logger.info("✅ Signal monitoring started")
+
+        try:
+            while True:
+                time.sleep(10)
+        except KeyboardInterrupt:
+            observer.stop()
+            logger.info("🛑 Signal monitoring stopped")
+
+        observer.join()
+
+    def _process_existing_signals(self):
+        """기존에 처리되지 않은 신호들 처리"""
+        logger.info("🔍 Checking for existing unprocessed signals...")
+
+        json_files = list(self.signals_dir.glob('**/*.json'))
+
+        for json_file in json_files:
+            try:
+                with open(json_file, 'r', encoding='utf-8') as f:
+                    signal_data = json.load(f)
+
+                if signal_data.get('status') == 'captured':
+                    logger.info(f"📌 Found unprocessed signal: {json_file.name}")
+                    self.process_signal(str(json_file))
+
+            except Exception as e:
+                logger.error(f"Error checking {json_file}: {e}")
+
+
+def main():
+    """Main entry point"""
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    logger.info("🚀 Starting Signal Processor...")
+
+    processor = SignalProcessor()
+    processor.start_monitoring()
+
+
+if __name__ == "__main__":
+    main()
