@@ -353,11 +353,7 @@ JSON만 출력. 설명 없이.
             agent_id=self.agent_id
         )
 
-        print(f"👁️  {self.agent_id}: Starting autonomous operation...")
-        print(f"   LLM: Gemini 2.5 Flash (google.genai SDK)")
-        print(f"   Tasks: analyze_signal, batch_analyze")
-        print(f"   Queue: .infra/queue/tasks/pending/")
-        print()
+        print(f"Joon: 큐 감시 시작.")
 
         # Start watching (blocking)
         watcher.watch(

@@ -178,10 +178,7 @@ JSON만 출력.
 
     def start_watching(self, interval: int = 5):
         watcher = AgentWatcher(agent_type=self.agent_type, agent_id=self.agent_id)
-        print(f"👁️  {self.agent_id}: Starting autonomous operation...")
-        print(f"   LLM: Claude Sonnet 4.5 ($10/month budget)")
-        print(f"   Tasks: review_content")
-        print()
+        print(f"CD: 큐 감시 시작.")
         watcher.watch(callback=self.process_task, interval=interval)
 
 
