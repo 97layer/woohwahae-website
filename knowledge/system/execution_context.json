@@ -1,9 +1,0 @@
-{
-  "active_executor": "local",
-  "last_heartbeat": "2026-02-16T18:01:50.052906",
-  "mac_status": "online",
-  "gcp_status": "standby",
-  "current_task": null,
-  "failover_threshold_seconds": 120,
-  "notes": "이 파일은 heartbeat.py가 30초마다 갱신. Mac OFF 감지 시 active_executor가 cloud로 전환됨."
-}

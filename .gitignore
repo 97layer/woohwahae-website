@@ -56,11 +56,15 @@ google-cloud-sdk/**/CONTRIBUTING
 google-cloud-sdk/**/LICENSE
 google-cloud-sdk/**/SECURITY
 
-# Container-only data (generated at runtime)
+# Runtime-generated data (not for version control)
 .container_data/
 knowledge/signals/
 knowledge/content/
 knowledge/archive/
+knowledge/reports/
+knowledge/system/signal_router_processed.json
+knowledge/system/execution_context.json
+knowledge/system/asset_registry.json
 
 # Old folders (archived, not needed in sync)
 # NOTE: /system/ (root level only, not core/system/)
