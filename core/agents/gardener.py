@@ -1,165 +1,469 @@
-# Filename: libs/gardener.py
-# Author: 97LAYER Mercenary
-# Date: 2026-02-12 (Recovered & Enhanced)
+#!/usr/bin/env python3
+"""
+Gardener — 97layerOS 자가진화 에이전트
+
+매일 새벽 3시 실행. 데이터를 분석하고 시스템을 진화시킨다.
+
+수정 권한 3단계:
+  FROZEN  — 절대 불가 (IDENTITY.md, CD_SUNHO.md)
+  PROPOSE — 순호 승인 후 적용 (JOON/MIA/RAY.md, intent 기준)
+  AUTO    — 자동 갱신 (long_term_memory, QUANTA)
+
+Author: 97layerOS
+Updated: 2026-02-16
+"""
 
 import os
 import sys
 import json
 import logging
+import asyncio
 from pathlib import Path
-from datetime import datetime
-from typing import List, Dict, Optional
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
 
-# Add project root to sys.path
-project_root = Path(__file__).resolve().parent.parent
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
-from libs.ai_engine import AIEngine
-from libs.memory_manager import MemoryManager
-from core.system.manage_directive import DirectiveManager
-from core.system.log_error import ErrorLogger
-from libs.core_config import SYSTEM_CONFIG, AGENT_CREW, MERCENARY_STANDARD, INITIAL_TASK_STATUS
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / '.env')
+except ImportError:
+    pass
 
-# Silence configuration
-from libs.core_config import LOG_LEVEL, MERCENARY_STANDARD
-logging.basicConfig(level=getattr(logging, LOG_LEVEL))
+import google.genai as genai
+
 logger = logging.getLogger(__name__)
 
+# ── 권한 정의 ─────────────────────────────────────
+FROZEN = {
+    # 순호의 본질 — 절대 불가
+    "IDENTITY.md",
+    "CD_SUNHO.md",
+}
+
+PROPOSE = {
+    # 에이전트 행동 지침 — 순호 승인 필요
+    "JOON.md",
+    "MIA.md",
+    "RAY.md",
+}
+
+# AUTO: long_term_memory.json, INTELLIGENCE_QUANTA.md → 기존 SA/CE가 이미 처리
+# Gardener는 분석 + 제안만 담당
+
+
 class Gardener:
-    """The Gardener: Self-evolution engine for 97LAYER OS."""
+    """
+    24시간 주기 자가진화 에이전트.
+    데이터 분석 → AUTO 갱신 → PROPOSE 텔레그램 전송 → 승인 대기
+    """
 
-    # 브랜드 헌법은 자동 수정 금지 (사령부 지침)
-    READ_ONLY_DIRECTIVES = [
-        "woohwahae_identity.md",
-        "brand_constitution.md",
-        "97layer_identity.md"
-    ]
+    def __init__(self):
+        api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY 또는 GEMINI_API_KEY 필요")
 
-    def __init__(self, ai_engine: AIEngine, memory_manager: MemoryManager, workspace_root: str):
-        self.ai = ai_engine
-        self.memory = memory_manager
-        self.workspace = Path(workspace_root)
-        self.status_file = self.workspace / "knowledge" / "system" / "task_status.json"
-        
-        try:
-            self.directive_manager = DirectiveManager(workspace_root)
-            self.error_logger = ErrorLogger()
-            logger.debug("Gardener initialized with meta-tools")
-        except Exception as e:
-            logger.error(f"Gardener init error: {e}")
-            self.directive_manager = None
-            self.error_logger = None
+        self.client = genai.Client(api_key=api_key)
+        self._model = 'gemini-2.5-flash'
 
-    def _read_status(self) -> Dict:
-        """Reads current system entropy and task status."""
-        if not self.status_file.exists():
-            return INITIAL_TASK_STATUS
-        try:
-            with open(self.status_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception:
-            return INITIAL_TASK_STATUS
+        self.knowledge_dir = PROJECT_ROOT / 'knowledge'
+        self.directives_dir = PROJECT_ROOT / 'directives'
+        self.pending_file = self.knowledge_dir / 'system' / 'gardener_pending.json'
 
-    def run_cycle(self, days: int = 7) -> str:
-        """Runs the evolution cycle (Reflection -> Insight -> Evolve)."""
-        logger.debug("Starting evolution cycle...")
-        context = self.memory.get_recent_context(hours=days*24)
-        status = self._read_status()
-        
-        prompt = f"""
-        당신은 97LAYER OS의 정원사입니다.
-        현재 상태: {json.dumps(status, indent=2, ensure_ascii=False)}
-        
-        최근 대화 맥락:
-        {context}
-        
-        임무:
-        1. 시스템의 엔트로피를 분석하십시오.
-        2. 어떤 에이전트의 지침(Directive)이 업데이트 되어야 하는지 판단하십시오.
-        3. 변경이 필요하다면 구체적인 섹션과 내용을 JSON 형식으로 제안하십시오.
-        
-        형식 예시:
-        {{
-            "insight": "전략 분석가의 리포팅 포맷이 너무 복잡함",
-            "target_agent": "Strategy_Analyst",
-            "section": "Reporting Format",
-            "content": "- 간결함을 위해 Insight와 Relevance를 병합한다."
-        }}
-        
-        **모든 분석과 제안은 한국어로 작성되어야 합니다.**
+        # 대기 중인 제안 로드
+        self.pending: List[Dict] = self._load_pending()
+
+        logger.info("🌱 Gardener 초기화 완료")
+
+    # ── 데이터 수집 ───────────────────────────────
+
+    def _collect_stats(self, days: int = 7) -> Dict:
+        """지난 N일 데이터 통계 수집"""
+        cutoff = datetime.now() - timedelta(days=days)
+        stats = {
+            'period_days': days,
+            'signal_count': 0,
+            'sa_analyzed': 0,
+            'avg_score': 0,
+            'top_themes': [],
+            'top_concepts': [],
+            'low_score_patterns': [],
+        }
+
+        # signals/ 분석
+        signals_dir = self.knowledge_dir / 'signals'
+        scores = []
+        theme_counter: Dict[str, int] = {}
+
+        if signals_dir.exists():
+            for sf in signals_dir.glob('**/*.json'):
+                try:
+                    data = json.loads(sf.read_text(encoding='utf-8'))
+                    captured = data.get('captured_at', '')
+                    if captured:
+                        try:
+                            dt = datetime.fromisoformat(captured[:19])
+                            if dt < cutoff:
+                                continue
+                        except Exception:
+                            pass
+
+                    stats['signal_count'] += 1
+                    analysis = data.get('analysis', {})
+                    if analysis:
+                        stats['sa_analyzed'] += 1
+                        score = analysis.get('strategic_score', 0)
+                        if score:
+                            scores.append(score)
+                        for theme in analysis.get('themes', []):
+                            theme_counter[theme] = theme_counter.get(theme, 0) + 1
+                except Exception:
+                    pass
+
+        if scores:
+            stats['avg_score'] = round(sum(scores) / len(scores), 1)
+            stats['low_score_patterns'] = [s for s in scores if s < 50]
+
+        stats['top_themes'] = sorted(
+            theme_counter.items(), key=lambda x: x[1], reverse=True
+        )[:8]
+
+        # long_term_memory 개념
+        lm_path = self.knowledge_dir / 'long_term_memory.json'
+        if lm_path.exists():
+            try:
+                lm = json.loads(lm_path.read_text(encoding='utf-8'))
+                concepts = lm.get('concepts', {})
+                stats['top_concepts'] = sorted(
+                    concepts.items(), key=lambda x: x[1], reverse=True
+                )[:10]
+            except Exception:
+                pass
+
+        return stats
+
+    def _load_directive(self, filename: str) -> str:
+        """에이전트 지시어 로드"""
+        path = self.directives_dir / 'agents' / filename
+        if path.exists():
+            return path.read_text(encoding='utf-8')
+        return ""
+
+    # ── 분석 + 제안 생성 ──────────────────────────
+
+    def _analyze_and_propose(self, stats: Dict) -> List[Dict]:
         """
-        response = self.ai.generate_response(prompt)
-        
+        Gemini로 데이터 분석 → PROPOSE 목록 생성
+        각 제안: {target_file, section, current, proposed, reason}
+        """
+        proposals = []
+
+        # JOON.md 분석 — SA 집중 테마 업데이트 제안
+        joon_content = self._load_directive('JOON.md')
+        if joon_content and stats['top_themes']:
+            themes_str = ', '.join(f"{t}({c}회)" for t, c in stats['top_themes'][:5])
+            prompt = f"""너는 97layerOS Gardener다.
+
+지난 {stats['period_days']}일 데이터:
+- 신호 수: {stats['signal_count']}개
+- SA 분석: {stats['sa_analyzed']}개
+- 평균 점수: {stats['avg_score']}
+- 상위 테마: {themes_str}
+- 상위 개념: {', '.join(k for k, _ in stats['top_concepts'][:5])}
+
+현재 JOON.md 일부:
+{joon_content[:800]}
+
+질문: 이 데이터를 보면 JOON.md에서 어떤 부분을 미세조정하면 좋을까?
+- 집중할 테마/카테고리 업데이트가 필요한가?
+- 분석 기준에서 놓치고 있는 패턴이 있는가?
+
+응답 형식 (JSON):
+{{
+  "needs_update": true/false,
+  "section": "업데이트할 섹션명",
+  "reason": "왜 필요한지 한 문장",
+  "proposed_addition": "추가/수정할 내용 (2-3줄)"
+}}
+
+개선이 불필요하면 needs_update: false.
+JSON만 출력."""
+
+            try:
+                resp = self.client.models.generate_content(
+                    model=self._model, contents=[prompt]
+                )
+                text = resp.text.strip()
+                import re
+                m = re.search(r'\{.*\}', text, re.DOTALL)
+                if m:
+                    result = json.loads(m.group())
+                    if result.get('needs_update'):
+                        proposals.append({
+                            'id': f"joon_{datetime.now().strftime('%Y%m%d')}",
+                            'target_file': 'JOON.md',
+                            'section': result.get('section', '분석 집중 영역'),
+                            'reason': result.get('reason', ''),
+                            'proposed_addition': result.get('proposed_addition', ''),
+                            'status': 'pending',
+                            'created_at': datetime.now().isoformat(),
+                        })
+            except Exception as e:
+                logger.warning("JOON.md 분석 실패: %s", e)
+
+        return proposals
+
+    # ── AUTO 갱신 ─────────────────────────────────
+
+    def _auto_update_quanta(self, stats: Dict):
+        """INTELLIGENCE_QUANTA.md 자동 업데이트"""
+        quanta_path = self.knowledge_dir / 'agent_hub' / 'INTELLIGENCE_QUANTA.md'
+        if not quanta_path.exists():
+            return
+
         try:
-            # Simple heuristic to extract JSON if AI wraps it in markdown
-            if "```json" in response:
-                json_str = response.split("```json")[1].split("```")[0].strip()
-            elif "{" in response:
-                json_str = response[response.find("{"):response.rfind("}")+1]
+            content = quanta_path.read_text(encoding='utf-8')
+            now = datetime.now().strftime('%Y-%m-%d %H:%M')
+            themes_str = ', '.join(t for t, _ in stats['top_themes'][:5])
+            concepts_str = ', '.join(k for k, _ in stats['top_concepts'][:5])
+
+            # Gardener 업데이트 섹션 찾아서 갱신
+            marker = "## 🌱 Gardener 자동 업데이트"
+            new_section = (
+                f"{marker}\n"
+                f"최종 실행: {now}\n"
+                f"분석 기간: {stats['period_days']}일\n"
+                f"신호 수집: {stats['signal_count']}개 / SA 분석: {stats['sa_analyzed']}개\n"
+                f"평균 전략점수: {stats['avg_score']}\n"
+                f"부상 테마: {themes_str}\n"
+                f"핵심 개념: {concepts_str}\n"
+            )
+
+            if marker in content:
+                # 기존 섹션 교체
+                import re
+                content = re.sub(
+                    rf"{re.escape(marker)}.*?(?=\n##|\Z)",
+                    new_section,
+                    content,
+                    flags=re.DOTALL
+                )
             else:
-                return f"Evolution Analysis: {response[:100]}... (No actionable JSON)"
-            
-            plan = json.loads(json_str)
-            return self._evolve_system(plan)
-            
+                content += f"\n\n{new_section}"
+
+            quanta_path.write_text(content, encoding='utf-8')
+            logger.info("✅ INTELLIGENCE_QUANTA.md 자동 업데이트")
         except Exception as e:
-            logger.error(f"Evolution failed: {e}")
-            return f"Evolution Error: {str(e)}"
+            logger.warning("QUANTA 업데이트 실패: %s", e)
 
-    def _evolve_system(self, plan: Dict) -> str:
-        """Applies evolutionary changes to the system."""
-        target_agent = plan.get('target_agent')
-        section = plan.get('section')
-        content = plan.get('content')
-        insight = plan.get('insight', 'No insight provided')
-        
-        if not all([target_agent, section, content]):
-            return "Evolution Skipped: Missing required fields in plan."
-            
-        if target_agent not in AGENT_CREW:
-            return f"Evolution Skipped: Unknown agent '{target_agent}'"
-            
-        agent_config = AGENT_CREW[target_agent]
-        directive_path = agent_config['directive_path']
-        
-        # Extract filename from path (e.g., directives/agents/strategy_analyst.md -> strategy_analyst.md)
-        filename = Path(directive_path).name
+    # ── 제안 관리 ─────────────────────────────────
 
-        # 🔒 브랜드 헌법 보호 (사령부 지침)
-        if filename in self.READ_ONLY_DIRECTIVES:
-            logger.warning(f"🔒 Evolution BLOCKED: {filename} is Read-Only (Brand Constitution)")
-            return f"Evolution Denied: {filename} is protected by Brand Constitution. Only 97layer can modify."
+    def _load_pending(self) -> List[Dict]:
+        if self.pending_file.exists():
+            try:
+                return json.loads(self.pending_file.read_text(encoding='utf-8'))
+            except Exception:
+                pass
+        return []
 
-        if MERCENARY_STANDARD.get("SILENT_MODE"):
-            logger.info(f"Evolving {target_agent} ({filename}) - Silent Update")
+    def _save_pending(self):
+        self.pending_file.parent.mkdir(parents=True, exist_ok=True)
+        self.pending_file.write_text(
+            json.dumps(self.pending, ensure_ascii=False, indent=2),
+            encoding='utf-8'
+        )
+
+    def approve_proposal(self, proposal_id: str) -> Tuple[bool, str]:
+        """순호 승인 → 실제 파일 수정"""
+        proposal = next((p for p in self.pending if p['id'] == proposal_id), None)
+        if not proposal:
+            return False, "제안을 찾을 수 없음"
+
+        filename = proposal['target_file']
+
+        # FROZEN 이중 체크
+        if filename in FROZEN:
+            return False, f"🔒 {filename}은 수정 불가 (FROZEN)"
+
+        if filename not in PROPOSE:
+            return False, f"알 수 없는 파일: {filename}"
+
+        # 실제 파일 수정
+        path = self.directives_dir / 'agents' / filename
+        try:
+            content = path.read_text(encoding='utf-8')
+            section = proposal['section']
+            addition = proposal['proposed_addition']
+            now = datetime.now().strftime('%Y-%m-%d')
+
+            # 섹션 찾아서 추가, 없으면 끝에 추가
+            if f"## {section}" in content:
+                insert_point = content.find(f"## {section}") + len(f"## {section}")
+                # 다음 ## 앞에 삽입
+                next_section = content.find('\n##', insert_point)
+                if next_section > 0:
+                    content = (
+                        content[:next_section]
+                        + f"\n\n<!-- Gardener {now} -->\n{addition}"
+                        + content[next_section:]
+                    )
+                else:
+                    content += f"\n\n<!-- Gardener {now} -->\n{addition}"
+            else:
+                content += f"\n\n## {section}\n<!-- Gardener {now} -->\n{addition}"
+
+            path.write_text(content, encoding='utf-8')
+
+            # pending에서 제거
+            self.pending = [p for p in self.pending if p['id'] != proposal_id]
+            self._save_pending()
+
+            logger.info("✅ 승인 적용: %s / %s", filename, section)
+            return True, f"✅ {filename} — {section} 업데이트 완료"
+
+        except Exception as e:
+            return False, f"적용 실패: {e}"
+
+    def reject_proposal(self, proposal_id: str) -> bool:
+        """순호 거절 → pending에서 제거"""
+        self.pending = [p for p in self.pending if p['id'] != proposal_id]
+        self._save_pending()
+        return True
+
+    # ── 메인 사이클 ───────────────────────────────
+
+    def run_cycle(self, days: int = 7) -> Dict:
+        """
+        Gardener 메인 사이클
+        Returns: {stats, proposals, auto_updates}
+        """
+        logger.info("🌱 Gardener 사이클 시작 (지난 %d일)", days)
+
+        # 1. 데이터 수집
+        stats = self._collect_stats(days)
+        logger.info(
+            "📊 신호:%d / SA분석:%d / 평균점수:%s",
+            stats['signal_count'], stats['sa_analyzed'], stats['avg_score']
+        )
+
+        # 2. AUTO 갱신
+        self._auto_update_quanta(stats)
+
+        # 3. PROPOSE 생성 (신호가 10개 이상일 때만)
+        new_proposals = []
+        if stats['signal_count'] >= 10:
+            new_proposals = self._analyze_and_propose(stats)
+            if new_proposals:
+                self.pending.extend(new_proposals)
+                self._save_pending()
+                logger.info("📝 새 제안 %d개 생성", len(new_proposals))
         else:
-            logger.info(f"Evolving {target_agent} ({filename})...")
-        success = self.directive_manager.update_directive(filename, section, content)
-        
-        if success:
-            return f"Evolution Success: Updated {target_agent}'s {section}. Insight: {insight}"
-        else:
-            return f"Evolution Failed: Could not update {filename}."
+            logger.info("⏭️  신호 부족 (%d개) — 제안 생략", stats['signal_count'])
 
-    def analyze_and_heal(self):
-        """Analyzes error patterns and heals directives."""
-        if not self.error_logger: return
-        
-        patterns = self.error_logger.analyze_patterns()
-        for pattern_key, count in patterns.items():
-            logger.debug(f"Self-healing pattern detected: {pattern_key} ({count}x)")
-            
-            # Pattern 1: Lint Error - MD036
-            if "MD036" in pattern_key:
-                logger.debug("Auto-Healing: Fixing MD036 (Emphasis used as heading)...")
-                # In a real scenario, this would parse the file and replace **text** with ### text
-                # For now, we simulate the fix by notifying via Synapse
-                prompt = f"Detected repeated lint error MD036. Suggest a modification to the Mercenary Standard to prevent this."
-                insight = self.ai.generate_response(prompt)
-                logger.debug(f"Healer Insight: {insight}")
-                
-            # Pattern 2: API Connection Failures
-            elif "HttpError" in pattern_key:
-                 logger.warning("Network instability detected. Suggesting increase in retry intervals.")
+        return {
+            'stats': stats,
+            'new_proposals': new_proposals,
+            'pending_count': len(self.pending),
+        }
 
+    def format_telegram_report(self, result: Dict) -> str:
+        """텔레그램 전송용 리포트 포맷"""
+        stats = result['stats']
+        proposals = result['new_proposals']
+
+        themes = ', '.join(f"{t}" for t, _ in stats['top_themes'][:4]) or '없음'
+        concepts = ', '.join(k for k, _ in stats['top_concepts'][:4]) or '없음'
+
+        lines = [
+            f"🌱 <b>Gardener 주간 리포트</b>",
+            f"",
+            f"<b>지난 {stats['period_days']}일 현황</b>",
+            f"신호 수집: {stats['signal_count']}개",
+            f"SA 분석: {stats['sa_analyzed']}개",
+            f"평균 전략점수: {stats['avg_score']}",
+            f"",
+            f"<b>부상 테마</b>",
+            f"{themes}",
+            f"",
+            f"<b>핵심 개념</b>",
+            f"{concepts}",
+        ]
+
+        if proposals:
+            lines += ["", f"<b>시스템 개선 제안 {len(proposals)}건</b>"]
+            for p in proposals:
+                lines.append(f"• {p['target_file']}: {p['reason']}")
+            lines.append("")
+            lines.append("승인하려면 /approve, 거절하려면 /reject")
+
+        return "\n".join(lines)
+
+
+# ── 스케줄러 (GCP systemd에서 실행) ──────────────
+
+async def run_scheduled(hour: int = 3):
+    """매일 지정 시각에 실행"""
+    from core.agents.gardener import Gardener
+
+    gardener = Gardener()
+
+    while True:
+        now = datetime.now()
+        # 다음 실행 시각 계산
+        next_run = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+        if next_run <= now:
+            next_run += timedelta(days=1)
+
+        wait_seconds = (next_run - now).total_seconds()
+        logger.info("🌱 Gardener 대기 중 — 다음 실행: %s (%.0f초 후)",
+                    next_run.strftime('%m/%d %H:%M'), wait_seconds)
+
+        await asyncio.sleep(wait_seconds)
+
+        try:
+            result = gardener.run_cycle(days=7)
+
+            # 텔레그램 리포트 전송
+            admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+            bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+            if admin_id and bot_token and result['stats']['signal_count'] > 0:
+                import httpx
+                msg = gardener.format_telegram_report(result)
+                httpx.post(
+                    f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                    json={
+                        'chat_id': admin_id,
+                        'text': msg,
+                        'parse_mode': 'HTML'
+                    },
+                    timeout=10
+                )
+                logger.info("📨 텔레그램 리포트 전송 완료")
+
+        except Exception as e:
+            logger.error("Gardener 사이클 실패: %s", e)
+
+
+if __name__ == '__main__':
+    import argparse
+
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+
+    parser = argparse.ArgumentParser(description='97layerOS Gardener')
+    parser.add_argument('--run-now', action='store_true', help='즉시 1회 실행')
+    parser.add_argument('--days', type=int, default=7, help='분석 기간 (기본: 7일)')
+    parser.add_argument('--schedule', action='store_true', help='24시간 스케줄 모드')
+    parser.add_argument('--hour', type=int, default=3, help='실행 시각 (기본: 3시)')
+    args = parser.parse_args()
+
+    if args.run_now:
+        g = Gardener()
+        result = g.run_cycle(days=args.days)
+        print(g.format_telegram_report(result))
+
+    elif args.schedule:
+        asyncio.run(run_scheduled(hour=args.hour))
+
+    else:
+        parser.print_help()

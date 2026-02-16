@@ -73,6 +73,14 @@ class TelegramSecretaryV6:
         self.youtube = YouTubeAnalyzer()
         self.image = ImageAnalyzer()
 
+        # Gardener (선택적 — 없어도 봇 동작)
+        try:
+            from core.agents.gardener import Gardener
+            self.gardener = Gardener()
+        except Exception as e:
+            self.gardener = None
+            logger.warning("Gardener 비활성: %s", e)
+
         # UI Settings
         self.loading_emojis = ["🔘", "⚪", "⚫"]
 
@@ -347,10 +355,69 @@ class TelegramSecretaryV6:
         except Exception as q_e:
             logger.warning("SA 큐 전달 실패 (signals/ 저장은 완료): %s", q_e)
 
+    async def approve_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Gardener 제안 승인 — /approve [id]"""
+        if not self.gardener:
+            await update.message.reply_text("Gardener가 비활성 상태입니다.")
+            return
+
+        pending = self.gardener.pending
+        if not pending:
+            await update.message.reply_text("대기 중인 제안이 없습니다.")
+            return
+
+        # ID 지정 없으면 첫 번째 제안
+        args = context.args
+        proposal_id = args[0] if args else pending[0]['id']
+
+        success, msg = self.gardener.approve_proposal(proposal_id)
+        await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
+
+    async def reject_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Gardener 제안 거절 — /reject [id]"""
+        if not self.gardener:
+            await update.message.reply_text("Gardener가 비활성 상태입니다.")
+            return
+
+        pending = self.gardener.pending
+        if not pending:
+            await update.message.reply_text("대기 중인 제안이 없습니다.")
+            return
+
+        args = context.args
+        proposal_id = args[0] if args else pending[0]['id']
+        proposal = next((p for p in pending if p['id'] == proposal_id), None)
+        label = f"{proposal['target_file']} — {proposal['reason']}" if proposal else proposal_id
+
+        self.gardener.reject_proposal(proposal_id)
+        await update.message.reply_text(f"❌ 거절됨: {label}")
+
+    async def pending_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """대기 중인 Gardener 제안 목록 — /pending"""
+        if not self.gardener or not self.gardener.pending:
+            await update.message.reply_text("대기 중인 제안이 없습니다.")
+            return
+
+        lines = ["<b>📋 대기 중인 제안</b>", ""]
+        for p in self.gardener.pending:
+            lines.append(
+                f"<code>{p['id']}</code>\n"
+                f"파일: {p['target_file']}\n"
+                f"이유: {p['reason']}\n"
+                f"내용: {p['proposed_addition'][:80]}...\n"
+            )
+        lines.append("/approve [id] 또는 /reject [id]")
+        await update.message.reply_text(
+            "\n".join(lines), parse_mode=constants.ParseMode.HTML
+        )
+
     def run(self):
         application = Application.builder().token(self.bot_token).build()
         application.add_handler(CommandHandler("start", self.start_command))
         application.add_handler(CommandHandler("growth", self.growth_command))
+        application.add_handler(CommandHandler("approve", self.approve_command))
+        application.add_handler(CommandHandler("reject", self.reject_command))
+        application.add_handler(CommandHandler("pending", self.pending_command))
         application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO, self.handle_message))
         logger.info("🚀 V6 Secretary Service Started")
         application.run_polling()
