@@ -134,23 +134,71 @@ GitHub Secrets 필요: `VM_EXTERNAL_IP`, `SSH_PRIVATE_KEY`
 
 ---
 
-## 6. 서비스 관리 (VM 내부)
+## 6. systemd 서비스 등록 (GCP VM)
+
+### 6-1. 서비스 파일 복사 (USERNAME_PLACEHOLDER 치환)
 
 ```bash
-# 상태 확인
-sudo systemctl status 97layer-telegram
-sudo journalctl -u 97layer-telegram -f
+# GCP VM에서 실행
+GCP_USER=$(whoami)  # e.g. skyto5339_gmail_com
+
+# 서비스 파일 복사 + 사용자명 치환
+for f in telegram nightguard ecosystem; do
+    sed "s/USERNAME_PLACEHOLDER/$GCP_USER/g" \
+        ~/97layerOS/knowledge/docs/deployment/97layer-${f}.service \
+        | sudo tee /etc/systemd/system/97layer-${f}.service > /dev/null
+done
+
+# systemd 리로드
+sudo systemctl daemon-reload
+```
+
+### 6-2. Telegram 봇 서비스 활성화 (기존)
+
+```bash
+sudo systemctl enable 97layer-telegram
+sudo systemctl start 97layer-telegram
+sudo systemctl status 97layer-telegram --no-pager
+```
+
+### 6-3. Nightguard V2 서비스 활성화
+
+```bash
+sudo systemctl enable 97layer-nightguard
+sudo systemctl start 97layer-nightguard
+sudo systemctl status 97layer-nightguard --no-pager
+```
+
+### 6-4. (선택) Ecosystem 전체 서비스 활성화
+
+```bash
+# SA/AD/CE 에이전트 포함 전체 스택
+sudo systemctl enable 97layer-ecosystem
+sudo systemctl start 97layer-ecosystem
+sudo systemctl status 97layer-ecosystem --no-pager
+```
+
+### 6-5. 서비스 관리 명령
+
+```bash
+# 상태 확인 (전체)
+sudo systemctl status 97layer-telegram 97layer-nightguard
+
+# 로그 실시간 확인
+sudo journalctl -u 97layer-nightguard -f
 
 # 재시작
 sudo systemctl restart 97layer-telegram
+sudo systemctl restart 97layer-nightguard
 
-# Nightguard V2 실행
-nohup python3 core/system/nightguard_v2.py --interval 30 \
-    --admin-id YOUR_TELEGRAM_USER_ID \
-    >> knowledge/system/nightguard.log 2>&1 &
-
-# 시간대 설정
+# 시간대 설정 (한국 표준시)
 sudo timedatectl set-timezone Asia/Seoul
+```
+
+### 6-6. .infra/logs 디렉토리 생성 (최초 1회)
+
+```bash
+mkdir -p ~/97layerOS/.infra/logs
 ```
 
 ---

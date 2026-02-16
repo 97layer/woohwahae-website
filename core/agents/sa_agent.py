@@ -9,12 +9,12 @@ Role:
 - Pattern recognition across signals
 - Strategic recommendations
 
-LLM: Gemini 1.5 Flash (Free tier, fast)
+LLM: Gemini 2.5 Flash (Free tier, fast)
 Queue: Autonomous task claiming via AgentWatcher
 Output: Structured analysis → passed to AD/CE
 
 Author: 97layerOS Technical Director
-Created: 2026-02-16
+Updated: 2026-02-16 (google.genai SDK 마이그레이션)
 """
 
 import os
@@ -32,11 +32,11 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from core.system.agent_watcher import AgentWatcher
 from core.system.queue_manager import Task
 
-# Gemini API imports
+# Gemini API imports (google.genai — 신규 SDK)
 try:
-    import google.generativeai as genai
+    import google.genai as genai
 except ImportError:
-    print("⚠️  google-generativeai not installed. Run: pip install google-generativeai")
+    print("⚠️  google-genai not installed. Run: pip install google-genai")
     sys.exit(1)
 
 
@@ -62,15 +62,13 @@ class StrategyAnalyst:
         self.agent_id = agent_id
         self.agent_type = "SA"
 
-        # Initialize Gemini API
+        # Initialize Gemini API (google.genai 신규 SDK)
         api_key = api_key or os.getenv('GOOGLE_API_KEY')
         if not api_key:
             raise ValueError("GOOGLE_API_KEY not found in environment")
 
-        genai.configure(api_key=api_key)
-
-        # Use Gemini 2.5 Flash (fast, free)
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+        self.client = genai.Client(api_key=api_key)
+        self._model_name = 'gemini-2.5-flash'
 
         print(f"✅ {self.agent_id}: Strategy Analyst initialized (Gemini 2.5 Flash)")
 
@@ -101,8 +99,11 @@ class StrategyAnalyst:
         prompt = self._build_analysis_prompt(content, source)
 
         try:
-            # Call Gemini API
-            response = self.model.generate_content(prompt)
+            # Call Gemini API (google.genai 신규 SDK)
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[prompt]
+            )
             analysis_text = response.text
 
             # Parse structured response
@@ -113,7 +114,7 @@ class StrategyAnalyst:
                 'signal_id': signal_id,
                 'analyzed_by': self.agent_id,
                 'analyzed_at': datetime.now().isoformat(),
-                'model': 'gemini-1.5-flash',
+                'model': self._model_name,
                 'source': source
             })
 
@@ -265,7 +266,7 @@ Return ONLY valid JSON, no additional text.
         )
 
         print(f"👁️  {self.agent_id}: Starting autonomous operation...")
-        print(f"   LLM: Gemini 1.5 Flash (Free)")
+        print(f"   LLM: Gemini 2.5 Flash (google.genai SDK)")
         print(f"   Tasks: analyze_signal, batch_analyze")
         print(f"   Queue: .infra/queue/tasks/pending/")
         print()

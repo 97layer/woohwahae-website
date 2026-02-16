@@ -33,13 +33,13 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from core.system.agent_watcher import AgentWatcher
 from core.system.queue_manager import Task
 
-# Gemini API (optional, for actual execution)
+# Gemini API (optional, for actual execution) — google.genai 신규 SDK
 GEMINI_AVAILABLE = False
 try:
-    import google.generativeai as genai
+    import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
-    print("⚠️  google-generativeai not installed (mock mode)")
+    print("⚠️  google-genai not installed (mock mode)")
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +76,8 @@ class ArtDirector:
         if GEMINI_AVAILABLE:
             api_key = api_key or os.getenv('GOOGLE_API_KEY')
             if api_key:
-                genai.configure(api_key=api_key)
-                self.model = genai.GenerativeModel('gemini-2.5-pro')
+                self.client = genai.Client(api_key=api_key)
+                self._model_name = 'gemini-2.5-pro'
                 self.mock_mode = False
                 print(f"✅ {self.agent_id}: Art Director initialized (Gemini 2.5 Pro)")
             else:
@@ -155,14 +155,17 @@ class ArtDirector:
         prompt = self._build_concept_prompt(themes, insights, summary, visual_ref, ref_source)
 
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[prompt]
+            )
             concept = self._parse_concept(response.text)
 
             concept.update({
                 'signal_id': signal_id,
                 'created_by': self.agent_id,
                 'created_at': datetime.now().isoformat(),
-                'model': 'gemini-2.5-pro',
+                'model': self._model_name,
                 'visual_ref_source': ref_source,
                 'based_on': 'SA analysis',
             })

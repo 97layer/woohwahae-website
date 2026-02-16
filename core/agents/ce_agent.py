@@ -34,7 +34,7 @@ from core.system.agent_watcher import AgentWatcher
 from core.system.queue_manager import Task
 
 try:
-    import google.generativeai as genai
+    import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -77,8 +77,8 @@ class ChiefEditor:
         if not api_key:
             raise ValueError("GOOGLE_API_KEY not found")
 
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-2.5-pro')
+        self.client = genai.Client(api_key=api_key)
+        self._model_name = 'gemini-2.5-pro'
 
         # NotebookLM 브릿지 (선택적 — 없어도 동작)
         self.nlm = None
@@ -172,7 +172,10 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
 """
 
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self._model_name,
+                contents=[prompt]
+            )
             content_text = response.text
 
             # JSON 파싱
@@ -193,7 +196,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
                 'signal_id': signal_id,
                 'written_by': self.agent_id,
                 'written_at': datetime.now().isoformat(),
-                'model': 'gemini-2.5-pro',
+                'model': self._model_name,
                 'brand_voice_source': brand_source,
                 'status': 'draft_for_cd',
             })

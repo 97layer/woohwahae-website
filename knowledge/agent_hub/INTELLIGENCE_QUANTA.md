@@ -2,7 +2,7 @@
 
 > **목적**: AI 세션이 바뀌어도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지)
-> **마지막 갱신**: 2026-02-16 (PHASE 9 — THE CYCLE 마지막 25% 완성)
+> **마지막 갱신**: 2026-02-16 (PHASE 9 완료 + SDK 마이그레이션 + systemd 서비스 파일)
 
 ---
 
@@ -124,20 +124,22 @@
 
 THE CYCLE 발행 단계 완전 활성화를 위해:
 ```
-ADMIN_TELEGRAM_ID=<텔레그램 사용자 ID>
-GOOGLE_DRIVE_FOLDER_ID=<Drive 폴더 ID>
-ANTHROPIC_API_KEY=<올바른 키>
+ADMIN_TELEGRAM_ID=✅ 설정됨 (에이전트 완료 알림 활성화됨)
+GOOGLE_DRIVE_FOLDER_ID=❌ 미설정 — gdrive_sync.py를 위해 필요
+ANTHROPIC_API_KEY=⚠️ 손상된 패턴 — 실제 키로 교체 필요
 ```
 
-### 중기: Nightguard V2 GCP systemd 등록
+### 중기: Nightguard V2 GCP systemd 등록 (서비스 파일 완성)
 
-`core/system/nightguard_v2.py` 구현 완료, GCP VM에서 상시 실행 미설정.
-`knowledge/docs/deployment/97layer-telegram.service` 참고하여 서비스 파일 작성 후 등록.
+`knowledge/docs/deployment/97layer-nightguard.service` ✅ 작성 완료.
+`97layer-ecosystem.service`도 작성 완료 (THE CYCLE 전체 스택용).
+GCP VM에서 USERNAME_PLACEHOLDER 치환 후 `systemctl enable/start` 실행만 남음.
+→ `DEPLOY.md` 6번 섹션 참고.
 
-### 장기: google.generativeai → google.genai SDK 마이그레이션
+### 장기: Python 3.9 → 3.11 컨테이너 업그레이드
 
-CE/AD/SA 에이전트가 deprecated SDK 사용 중. 경고 발생은 하지만 동작은 함.
-컨테이너 Python 버전 3.9 → 3.11 업그레이드 시 함께 처리 권장.
+google.generativeai → google.genai SDK 마이그레이션 ✅ 완료.
+남은 FutureWarning은 Python 3.9 EOL 문제. GCP VM .venv 재생성 시 python3.11 사용 권장.
 
 ---
 
@@ -153,11 +155,14 @@ CE/AD/SA 에이전트가 deprecated SDK 사용 중. 경고 발생은 하지만 �
       - agent_watcher: 완료 시 텔레그램 알림 (_notify_admin + _build_summary)
       - start_ecosystem.sh: SA+AD+CE 에이전트 자동 시작 포함
 
-[현재 상태] THE CYCLE 코드 완전 연결 ✅
-  남은 것: ADMIN_TELEGRAM_ID 환경변수 설정 (사용자 직접) → 즉시 완전 가동
+[현재 상태] THE CYCLE 코드 완전 연결 ✅ + SDK 마이그레이션 ✅
+  ✅ google.generativeai → google.genai (SA/AD/CE 전체)
+  ✅ Nightguard V2 systemd 서비스 파일 작성 완료
+  ✅ ADMIN_TELEGRAM_ID 설정됨 → 에이전트 완료 알림 즉시 활성
 
 [다음 목표] GCP 24/7 배포
-  로컬에서 동작 검증 → Podman 컨테이너 → GCP VM systemd 등록
+  로컬 동작 검증 완료 → GCP VM에서 systemd enable/start (DEPLOY.md §6 참고)
+  → ./start_telegram.sh + ./start_ecosystem.sh 실행 → 텔레그램 메시지 → 알림 수신
 ```
 
 ## 🚀 실행 명령
@@ -198,6 +203,8 @@ python core/agents/ce_agent.py --test
 | Mac↔GCP 하트비트 | `core/system/heartbeat.py` |
 | 신호→큐 라우팅 | `core/system/signal_router.py --watch` |
 | 배포 가이드 | `knowledge/docs/deployment/DEPLOY.md` |
+| Nightguard systemd | `knowledge/docs/deployment/97layer-nightguard.service` |
+| Ecosystem systemd | `knowledge/docs/deployment/97layer-ecosystem.service` |
 | 실행 컨텍스트 | `knowledge/system/execution_context.json` |
 
 ---
