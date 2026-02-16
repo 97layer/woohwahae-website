@@ -133,6 +133,12 @@ class StrategyAnalyst:
             except Exception as mem_e:
                 print(f"⚠️  Memory feedback skipped: {mem_e}")
 
+            # 자가발전: SA 분석 완료 → NotebookLM Signal Archive 저장
+            try:
+                self._save_to_notebooklm(analysis, content, source)
+            except Exception as nlm_e:
+                print(f"⚠️  NotebookLM skipped: {nlm_e}")
+
             return analysis
 
         except Exception as e:
@@ -214,6 +220,31 @@ class StrategyAnalyst:
 
         lm_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
         print(f"📝 Memory updated: score={score}, themes={analysis.get('themes', [])[:3]}")
+
+    def _save_to_notebooklm(self, analysis: Dict[str, Any], content: str, source: str):
+        """
+        SA 분석 완료 후 NotebookLM Signal Archive에 저장.
+        score 60+ 만 저장 (노이즈 제외).
+        """
+        score = analysis.get('strategic_score', 0)
+        if score < 60:
+            return
+
+        try:
+            from core.bridges.notebooklm_bridge import get_bridge, is_available
+            if not is_available():
+                return
+
+            bridge = get_bridge()
+            bridge.add_signal_to_archive({
+                'signal_id': analysis.get('signal_id', ''),
+                'content': content,
+                'source': source,
+                'analysis': analysis,
+            })
+            print(f"📚 NotebookLM 저장: score={score}")
+        except ImportError:
+            pass  # 브릿지 없으면 조용히 스킵
 
     def _build_analysis_prompt(self, content: str, source: str) -> str:
         """Joon의 시각으로 신호 분석 프롬프트 구성"""
