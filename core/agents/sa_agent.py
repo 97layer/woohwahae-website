@@ -21,6 +21,7 @@ import os
 import sys
 import json
 import time
+import re
 from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
@@ -120,6 +121,12 @@ class StrategyAnalyst:
 
             print(f"✅ {self.agent_id}: Analysis complete (score: {analysis.get('strategic_score', 0)})")
 
+            # 자가발전: SA 분석 완료 → long_term_memory 피드백
+            try:
+                self._feedback_to_memory(analysis, content)
+            except Exception as mem_e:
+                print(f"⚠️  Memory feedback skipped: {mem_e}")
+
             return analysis
 
         except Exception as e:
@@ -129,6 +136,68 @@ class StrategyAnalyst:
                 'error': str(e),
                 'status': 'failed'
             }
+
+    def _feedback_to_memory(self, analysis: Dict[str, Any], original_content: str):
+        """
+        SA 분석 완료 후 long_term_memory.json에 인사이트 누적 — 자가발전 고리
+
+        themes → concepts 카운트 누적
+        key_insights + summary → experiences 추가
+        strategic_score 80+ 만 저장 (노이즈 필터)
+        """
+        score = analysis.get('strategic_score', 0)
+        if score < 50:
+            return  # 노이즈는 기록 안 함
+
+        lm_path = PROJECT_ROOT / 'knowledge' / 'long_term_memory.json'
+
+        try:
+            if lm_path.exists():
+                data = json.loads(lm_path.read_text(encoding='utf-8'))
+            else:
+                data = {
+                    'metadata': {'created_at': datetime.now().isoformat(), 'total_entries': 0},
+                    'experiences': [],
+                    'concepts': {},
+                    'error_patterns': []
+                }
+        except Exception:
+            return
+
+        # themes → concepts 카운트 (빈도 = 중요도)
+        for theme in analysis.get('themes', []):
+            theme = theme.strip()
+            if theme:
+                data['concepts'][theme] = data['concepts'].get(theme, 0) + 1
+
+        # category 도 concepts에 반영
+        category = analysis.get('category', '')
+        if category and category not in ('noise', 'unknown'):
+            data['concepts'][f'SA:{category}'] = data['concepts'].get(f'SA:{category}', 0) + 1
+
+        # experiences: summary + top insight 기록
+        insights = analysis.get('key_insights', [])
+        insight_preview = insights[0][:80] if insights else ''
+        summary = analysis.get('summary', '')[:100]
+        combined = f"[SA score:{score}] {summary}" + (f" | {insight_preview}" if insight_preview else '')
+
+        data['experiences'].append({
+            'summary': combined[:150],
+            'category': 'SA분석',
+            'timestamp': datetime.now().isoformat()[:16],
+            'source': 'sa_agent',
+            'score': score
+        })
+
+        # 최근 100개 유지
+        if len(data['experiences']) > 100:
+            data['experiences'] = data['experiences'][-100:]
+
+        data['metadata']['total_entries'] = len(data['experiences'])
+        data['metadata']['last_updated'] = datetime.now().isoformat()[:16]
+
+        lm_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
+        print(f"📝 Memory updated: score={score}, themes={analysis.get('themes', [])[:3]}")
 
     def _build_analysis_prompt(self, content: str, source: str) -> str:
         """Build analysis prompt for Gemini"""

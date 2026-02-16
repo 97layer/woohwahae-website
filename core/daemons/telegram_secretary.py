@@ -81,16 +81,68 @@ class TelegramSecretaryV6:
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
         welcome_msg = (
-            f"<b>97layer Executive Secretary V6</b>\n\n"
-            f"안녕하세요, {_escape_html(user.first_name)}님. 전략적 의사결정을 돕는 JARVIS Plus입니다.\n\n"
-            f"<b>핵심 인터페이스</b>:\n"
-            f"- <code>자연어 질문</code>: NotebookLM Deep RAG 기반 답변\n"
-            f"- <code>YouTube 링크</code>: 심층 분석 및 멀티모달 자산 생성\n"
-            f"- <code>이미지 콘텐츠</code>: 브랜드 비전 기반 통찰 추출\n"
-            f"- <code>아이디어 텍스트</code>: 인사이트 자동 분류 및 영구 저장\n\n"
-            f"사령관의 의도를 분석하여 최적의 결과를 도출하겠습니다."
+            f"<b>97layerOS</b>\n\n"
+            f"안녕하세요, {_escape_html(user.first_name)}님.\n\n"
+            f"- 자연어로 뭐든 물어보면 됩니다\n"
+            f"- YouTube 링크 → 영상 분석\n"
+            f"- 이미지 → 브랜드 인사이트 추출\n"
+            f"- 아이디어 텍스트 → 자동 저장\n"
+            f"- /growth → 시스템 성장 지표"
         )
         await update.message.reply_text(welcome_msg, parse_mode=constants.ParseMode.HTML)
+
+    async def growth_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """자가발전 성장 지표 리포트"""
+        knowledge_dir = PROJECT_ROOT / 'knowledge'
+        lm_path = knowledge_dir / 'long_term_memory.json'
+        signals_dir = knowledge_dir / 'signals'
+
+        try:
+            # long_term_memory 통계
+            if lm_path.exists():
+                data = json.loads(lm_path.read_text(encoding='utf-8'))
+                total_exp = len(data.get('experiences', []))
+                total_concepts = len(data.get('concepts', {}))
+                top_concepts = sorted(
+                    data.get('concepts', {}).items(),
+                    key=lambda x: x[1], reverse=True
+                )[:5]
+                last_updated = data.get('metadata', {}).get('last_updated', 'N/A')
+
+                # SA 분석 경험만 필터
+                sa_experiences = [e for e in data.get('experiences', []) if e.get('source') == 'sa_agent']
+                sa_scores = [e.get('score', 0) for e in sa_experiences if e.get('score')]
+                avg_score = int(sum(sa_scores) / len(sa_scores)) if sa_scores else 0
+            else:
+                total_exp = total_concepts = avg_score = 0
+                top_concepts = []
+                last_updated = 'N/A'
+
+            # signals 누적수
+            signal_count = len(list(signals_dir.glob('**/*.json'))) if signals_dir.exists() else 0
+
+            # 리포트 구성
+            concepts_text = "\n".join(
+                f"  {k}: {v}회" for k, v in top_concepts
+            ) if top_concepts else "  아직 없음"
+
+            msg = (
+                f"<b>📈 97layerOS 성장 지표</b>\n\n"
+                f"<b>지식 축적</b>\n"
+                f"누적 signals: {signal_count}개\n"
+                f"경험 기록: {total_exp}개\n"
+                f"개념 노드: {total_concepts}개\n\n"
+                f"<b>상위 개념</b>\n{concepts_text}\n\n"
+                f"<b>SA 분석</b>\n"
+                f"분석 완료: {len(sa_experiences)}건\n"
+                f"평균 전략점수: {avg_score}/100\n\n"
+                f"마지막 업데이트: {_escape_html(last_updated)}"
+            )
+            await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
+
+        except Exception as e:
+            logger.error("growth_command error: %s", e)
+            await update.message.reply_text("지표 조회 중 오류가 발생했습니다.")
 
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         message = update.message
@@ -250,6 +302,7 @@ class TelegramSecretaryV6:
     def run(self):
         application = Application.builder().token(self.bot_token).build()
         application.add_handler(CommandHandler("start", self.start_command))
+        application.add_handler(CommandHandler("growth", self.growth_command))
         application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO, self.handle_message))
         logger.info("🚀 V6 Secretary Service Started")
         application.run_polling()
