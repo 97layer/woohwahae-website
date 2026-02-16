@@ -111,7 +111,7 @@ Return ONLY valid JSON.
 
         try:
             message = self.client.messages.create(
-                model="claude-sonnet-4-5-20250929",
+                model="claude-sonnet-4-5",
                 max_tokens=1024,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -132,7 +132,7 @@ Return ONLY valid JSON.
                 'signal_id': signal_id,
                 'reviewed_by': self.agent_id,
                 'reviewed_at': datetime.now().isoformat(),
-                'model': 'claude-sonnet-4.5',
+                'model': 'claude-sonnet-4-5',
                 'api_usage': {
                     'input_tokens': message.usage.input_tokens,
                     'output_tokens': message.usage.output_tokens
