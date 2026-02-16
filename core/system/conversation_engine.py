@@ -342,13 +342,40 @@ JSON으로만 응답:
         return prompt
 
     def _search_knowledge(self, query: str) -> str:
+        """
+        지식 검색 우선순위:
+        1. Signal Archive (순호가 쌓은 인사이트들) — NotebookLM RAG
+        2. Brand Guide (WOOHWAHAE 브랜드/아이덴티티) — NotebookLM RAG
+        3. Fallback: 로컬 마크다운 파일 키워드 검색
+        """
         try:
-            # NotebookLM Deep RAG 우선 사용
             if self.notebooklm and self.notebooklm.authenticated:
-                logger.info(f"Deep RAG searching for: {query[:30]}...")
-                answer = self.notebooklm.query_knowledge_base(query)
-                if answer and "no information found" not in answer.lower():
-                    return f"**지식 베이스 응답**:\n{answer}\n"
+                logger.info(f"NotebookLM RAG: {query[:40]}...")
+                results = []
+
+                # 1. Signal Archive — 순호의 인사이트 누적본
+                try:
+                    from core.bridges.notebooklm_bridge import NB_SIGNAL_ARCHIVE, NB_BRAND_GUIDE
+                    nb_signal_id = self.notebooklm.get_or_create_notebook(NB_SIGNAL_ARCHIVE)
+                    signal_answer = self.notebooklm.query_notebook(nb_signal_id, query)
+                    _no_info = ["직접적인 언급", "포함되어 있지 않", "no information", "not found"]
+                    if signal_answer and not any(p in signal_answer for p in _no_info):
+                        results.append(f"[Signal Archive]\n{signal_answer}")
+                except Exception as e:
+                    logger.debug("Signal Archive 쿼리 실패: %s", e)
+
+                # 2. Brand Guide — 브랜드/아이덴티티 컨텍스트
+                try:
+                    nb_brand_id = self.notebooklm.get_or_create_notebook(NB_BRAND_GUIDE)
+                    brand_answer = self.notebooklm.query_notebook(nb_brand_id, query)
+                    _no_info = ["직접적인 언급", "포함되어 있지 않", "no information", "not found"]
+                    if brand_answer and not any(p in brand_answer for p in _no_info):
+                        results.append(f"[Brand Guide]\n{brand_answer}")
+                except Exception as e:
+                    logger.debug("Brand Guide 쿼리 실패: %s", e)
+
+                if results:
+                    return "\n\n".join(results)
 
             # Fallback: 로컬 마크다운 검색 (docs + agent_hub + directives)
             relevant_docs = []
