@@ -1,6 +1,6 @@
 # 97layerOS AI Agent Constitution
 # Priority: 0 (MAXIMUM - All AI models MUST obey)
-# Last Updated: 2026-02-15
+# Last Updated: 2026-02-16
 
 ## 🔴 MANDATORY SESSION PROTOCOL
 
@@ -39,7 +39,7 @@ If already exists in cache → DO NOT CREATE AGAIN.
 After creating ANY content (insight, document, code, visual):
 
 ```bash
-python execution/system/handoff.py --register-asset <path> <type> <source>
+python core/system/handoff.py --register-asset <path> <type> <source>
 ```
 
 ---
@@ -52,6 +52,48 @@ python execution/system/handoff.py --register-asset <path> <type> <source>
 4. **❌ Untracked assets** - All outputs MUST be registered
 5. **❌ Hallucinating past context** - Only trust written records
 6. **❌ Overconfident completion** - Ralph Loop validation required
+
+---
+
+## 🚫 FORBIDDEN FILE LOCATIONS
+
+**루트(/) 에 .md 파일 생성 절대 금지.**
+
+금지 파일명 패턴:
+- SESSION_SUMMARY_*.md
+- WAKEUP_REPORT.md
+- DEEP_WORK_PROGRESS.md
+- DEPLOY_*.md
+- NEXT_STEPS.md
+- DEPLOYMENT_CHECKLIST.md
+- *_GUIDE.md (지식 문서 외)
+
+허용 위치:
+- 세션 기록 → `knowledge/docs/sessions/`에만 저장
+- 배포 문서 → `knowledge/docs/deployment/`에만 저장
+- 아침/저녁 보고서 → `knowledge/reports/morning_YYYYMMDD.md`, `knowledge/reports/evening_YYYYMMDD.md`
+
+---
+
+## 📁 FILE CREATION POLICY
+
+### 덮어쓰기 대상 (Overwrite — 최신 상태만 유지)
+- `knowledge/agent_hub/INTELLIGENCE_QUANTA.md`
+- `directives/IDENTITY.md`
+- `directives/system/SYSTEM.md`
+
+### 추가 대상 (Append — 이력 축적)
+- `knowledge/agent_hub/council_room.md`
+- `knowledge/agent_hub/feedback_loop.md`
+
+### 날짜별 생성 허용 (Date-stamped Output)
+- `knowledge/reports/morning_YYYYMMDD.md`
+- `knowledge/reports/evening_YYYYMMDD.md`
+
+### 생성 금지 (Forbidden Output)
+- 루트(/)에 어떤 .md 파일도 생성하지 않는다
+- 임시 보고서 파일 생성 금지 (SESSION_SUMMARY, WAKEUP_REPORT, DEEP_WORK_PROGRESS 등)
+- 위 허용 위치 외 임의 경로에 .md 생성 금지
 
 ---
 
@@ -79,7 +121,11 @@ Session End
 
 ## 🎯 CORE VALUES (97layerOS IDENTITY)
 
-This system serves **97layer's Slow Life Archive** - a cycle of:
+This system serves **97layer's THE CYCLE** — a living archive system:
+
+```
+Input → Store → Connect → Generate → Publish → Input again
+```
 
 1. **Essence over Speed** - 속도보다 본질
 2. **Record over Memory** - 기억보다 기록
@@ -104,7 +150,7 @@ This system serves **97layer's Slow Life Archive** - a cycle of:
 At session end, ALWAYS run:
 
 ```bash
-python execution/system/handoff.py --handoff
+python core/system/handoff.py --handoff
 ```
 
 This saves the current state for the next AI agent.

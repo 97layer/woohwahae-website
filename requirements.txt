@@ -3,7 +3,7 @@
 # Last updated: 2026-02-16
 
 # Core Dependencies
-python-telegram-bot==21.0.1  # Telegram Bot API
+python-telegram-bot==22.5   # Telegram Bot API
 aiohttp==3.9.3              # Async HTTP client
 requests==2.31.0            # HTTP library
 
@@ -13,14 +13,15 @@ google-auth-oauthlib==1.2.0
 google-auth-httplib2==0.2.0
 google-api-python-client==2.116.0
 
-# NotebookLM MCP CLI
-notebooklm-mcp-cli==0.3.2   # NotebookLM integration
+# Google AI (New SDK)
+google-genai==1.47.0        # Gemini API (replaces deprecated google-generativeai)
+
+# Anthropic
+anthropic==0.79.0           # Claude API
 
 # Utilities
 python-dotenv==1.0.1        # Environment variables
 pyyaml==6.0.1               # YAML parsing
 markdown==3.5.2             # Markdown processing
-
-# Optional (for future features)
-# playwright==1.41.2        # Browser automation
-# youtube-transcript-api==0.6.2  # YouTube transcripts (containerized)
+youtube-transcript-api==1.2.4  # YouTube transcripts
+apscheduler==3.10.4          # APScheduler (PHASE 5: daily_routine.py 연결)

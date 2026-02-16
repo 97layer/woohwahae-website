@@ -27,8 +27,10 @@ logs/
 # Archives & packages
 node_modules/
 *.zip
+*.tar.gz
 *.dmg
 97layerOS.zip
+archive/
 
 # Project specific
 knowledge/inbox/외주 코드/

@@ -1,12 +1,13 @@
 #!/bin/bash
 # Start 97layerOS Telegram Executive Secretary
-# Phase 2: Full-featured bot with 10 commands, daily automation, MCP integration
+# v6 (JARVIS Plus Edition): NotebookLM Deep RAG + Multi-Agent + Premium UX
 
 cd /Users/97layer/97layerOS
+export PYTHONPATH=/Users/97layer/97layerOS
 
 echo "=========================================="
 echo "97layerOS Telegram Executive Secretary"
-echo "Phase 2: 10 Commands + Daily Automation"
+echo "v6: NotebookLM RAG + Multi-Agent + Premium UX"
 echo "=========================================="
 echo ""
 
@@ -61,7 +62,7 @@ BOT_PID=$!
 echo $BOT_PID > /tmp/telegram_bot.pid
 
 echo "✅ Bot started with PID: $BOT_PID"
-echo "   Logs: logs/telegram_secretary.log"
+echo "   Logs: .infra/logs/telegram_secretary.log"
 echo ""
 
 # Wait for bot
