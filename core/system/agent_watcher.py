@@ -20,12 +20,16 @@ Author: 97layerOS Technical Director
 Created: 2026-02-16
 """
 
+import os
 import time
 import signal
 import sys
+import logging
 from pathlib import Path
 from typing import Callable, Optional
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -169,6 +173,9 @@ class AgentWatcher:
             elapsed = time.time() - start_time
             print(f"✅ {self.agent_id}: Task {task.task_id} completed in {elapsed:.2f}s")
 
+            # 발행 단계: 결과를 텔레그램 관리자에게 알림 (ADMIN_TELEGRAM_ID 설정 시)
+            self._notify_admin(task, result)
+
         except Exception as e:
             # Mark task as failed
             error_msg = f"{type(e).__name__}: {str(e)}"
@@ -176,6 +183,76 @@ class AgentWatcher:
 
             elapsed = time.time() - start_time
             print(f"❌ {self.agent_id}: Task {task.task_id} failed after {elapsed:.2f}s: {error_msg}")
+
+    def _notify_admin(self, task: Task, result: dict):
+        """
+        에이전트 완료 결과를 텔레그램 관리자에게 전송.
+        ADMIN_TELEGRAM_ID 또는 TELEGRAM_BOT_TOKEN 미설정 시 skip (graceful).
+        """
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        token = os.getenv('TELEGRAM_BOT_TOKEN')
+
+        if not admin_id or not token:
+            return  # 환경변수 미설정 시 조용히 skip
+
+        try:
+            import requests
+            summary = self._build_summary(task, result)
+            resp = requests.post(
+                f"https://api.telegram.org/bot{token}/sendMessage",
+                json={"chat_id": admin_id, "text": summary, "parse_mode": "Markdown"},
+                timeout=5,
+            )
+            if resp.status_code == 200:
+                logger.info("%s: 텔레그램 알림 전송 완료 (task=%s)", self.agent_id, task.task_id)
+            else:
+                logger.warning(
+                    "%s: 텔레그램 알림 실패 (status=%d)", self.agent_id, resp.status_code
+                )
+        except Exception as e:
+            # 알림 실패가 태스크 실행 자체를 막아서는 안 됨
+            logger.warning("%s: 텔레그램 알림 전송 중 오류: %s", self.agent_id, e)
+
+    def _build_summary(self, task: Task, result: dict) -> str:
+        """에이전트 타입별 완료 요약 메시지 생성"""
+        agent_emoji = {"SA": "🔍", "AD": "🎨", "CE": "✍️", "CD": "🎯", "Ralph": "✅"}
+        emoji = agent_emoji.get(self.agent_type, "🤖")
+        inner = result.get('result', {}) if isinstance(result.get('result'), dict) else {}
+
+        if self.agent_type == "SA":
+            themes = ", ".join(inner.get('themes', [])[:3])
+            summary = inner.get('summary', '')[:100]
+            return (
+                f"{emoji} *SA 분석 완료*\n"
+                f"Signal: `{task.payload.get('signal_id', 'N/A')}`\n"
+                f"주제: {themes or 'N/A'}\n"
+                f"요약: {summary or 'N/A'}"
+            )
+        elif self.agent_type == "AD":
+            title = inner.get('concept_title', 'N/A')
+            mood = inner.get('visual_mood', 'N/A')
+            prompts = inner.get('image_prompts', [])
+            prompt_preview = prompts[0].get('prompt', '')[:80] + '...' if prompts else 'N/A'
+            return (
+                f"{emoji} *AD 비주얼 컨셉 완료*\n"
+                f"제목: {title}\n"
+                f"무드: {mood}\n"
+                f"프롬프트: `{prompt_preview}`"
+            )
+        elif self.agent_type == "CE":
+            headline = inner.get('headline', 'N/A')
+            caption = inner.get('social_caption', '')[:80]
+            return (
+                f"{emoji} *CE 콘텐츠 완료*\n"
+                f"헤드라인: {headline}\n"
+                f"캡션: {caption or 'N/A'}"
+            )
+        else:
+            return (
+                f"{emoji} *{self.agent_type} 태스크 완료*\n"
+                f"ID: `{task.task_id}`\n"
+                f"상태: {result.get('status', 'N/A')}"
+            )
 
 
 # ================== Example Usage ==================

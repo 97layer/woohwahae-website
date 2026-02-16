@@ -2,17 +2,17 @@
 
 > **목적**: AI 세션이 바뀌어도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지)
-> **마지막 갱신**: 2026-02-16 (하위 폴더 정리 + 통합 테스트 완료)
+> **마지막 갱신**: 2026-02-16 (PHASE 9 — THE CYCLE 마지막 25% 완성)
 
 ---
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-16] Renewal PHASE 1-8 전체 완료 — Claude Code (Sonnet 4.5)
+### [2026-02-16] PHASE 1-9 전체 완료 — Claude Code (Sonnet 4.5)
 
 **아키텍처 버전**: Clean Architecture Ver 3.0 (Sanctuary Ver 3.0)
 
-**진행률**: ✅ PHASE 1-8 전체 완료
+**진행률**: ✅ THE CYCLE 완전 연결 완료
 
 - ✅ PHASE 1: 환경 정비 (requirements.txt 현행화, .driveignore 보완)
 - ✅ PHASE 2: 규칙 동기화 (.ai_rules + GEMINI.md FILE CREATION POLICY)
@@ -22,6 +22,27 @@
 - ✅ PHASE 6: signal_router.py (`core/system/signal_router.py`)
 - ✅ PHASE 7: daily_routine.py APScheduler 연결 (`--scheduler`)
 - ✅ PHASE 8: 철학 문서 리뉴얼 (IDENTITY.md v5.0 + SYSTEM.md v5.0)
+- ✅ PHASE 9: CE/AD NotebookLM RAG 연동 + 발행 단계 연결 (에이전트 → 텔레그램)
+
+### THE CYCLE 연결 상태
+
+```
+입력    텔레그램 메시지 수신
+  ↓     telegram_secretary.py → knowledge/signals/*.json
+저장
+  ↓     signal_router.py (10s polling) → QueueManager.create_task()
+라우팅
+  ↓     .infra/queue/tasks/pending/*.json
+큐
+  ↓     AgentWatcher (5s polling) → SA/AD/CE process_task()
+에이전트 처리
+  ↓     Gemini API + NotebookLM RAG (브랜드 보이스/시각 레퍼런스)
+생성
+  ↓     AgentWatcher._notify_admin() → Telegram Bot API
+발행    ← ADMIN_TELEGRAM_ID 설정 시 자동 알림 ✅
+  ↓
+반복    signal_router 계속 대기 중
+```
 
 ---
 
@@ -31,7 +52,9 @@
 97layerOS/
 ├── core/
 │   ├── agents/    (14개) — SA, CE, AD, CD, Ralph + 자산관리
-│   ├── system/    (19개) — 핵심 엔진 (notebooklm_bridge 중복 제거 완료)
+│   │               CE/AD: NotebookLM 브랜드 RAG 연동 (Phase 6.3)
+│   ├── system/    (19개) — 핵심 엔진
+│   │               agent_watcher.py: 완료 시 텔레그램 알림 (Phase 9)
 │   ├── daemons/   (5개)  — telegram_secretary.py (v6 기반 단일화)
 │   ├── bridges/   (3개)  — gdrive_sync, notebooklm_bridge (공식 단일 위치)
 │   └── utils/     (5개)  — parsers, progress_analyzer
@@ -54,7 +77,7 @@
 ├── archive/
 │   └── 2026-02-pre-refactor/  (레거시 코드 + telegram v1-v6)
 │
-├── tests/                 (test_multi_agent_workflow.py 등)
+├── tests/
 │
 └── .infra/                (컨테이너 런타임, logs/ — gitignored)
 ```
@@ -73,7 +96,7 @@
 - `TELEGRAM_BOT_TOKEN` ✅ 설정됨
 - `GEMINI_API_KEY` / `GOOGLE_API_KEY` ✅ 설정됨 (동일 키)
 - `ANTHROPIC_API_KEY` ⚠️ 손상된 패턴 — 실제 키로 교체 필요
-- `ADMIN_TELEGRAM_ID` ❌ 미설정 — Nightguard V2 알림을 위해 필요
+- `ADMIN_TELEGRAM_ID` ❌ 미설정 — **에이전트 완료 알림에 필수** (설정 시 THE CYCLE 발행 단계 활성화)
 - `GOOGLE_DRIVE_FOLDER_ID` ❌ 미설정 — gdrive_sync.py를 위해 필요
 
 ### 파일 생성 정책 (.ai_rules에 명시됨)
@@ -97,20 +120,24 @@
 
 ## 🎯 다음 세션 작업
 
-### 최우선: CE/AD 에이전트 프롬프트 정교화
+### 최우선: .env 값 채우기 (사용자 직접)
 
-SYSTEM.md v5.0에 CE/AD 기준이 명시됐지만 실제 에이전트 코드(`core/agents/ce_agent.py`, `core/agents/ad_agent.py`)에 NotebookLM 브랜드 가이드 쿼리 연동 필요:
-
-```python
-# ce_agent.py 개선 방향
-brand_voice = notebooklm.query("97layer brand voice + WOOHWAHAE tone")
-# ad_agent.py 개선 방향
-visual_ref = notebooklm.query("WOOHWAHAE visual identity archival film")
+THE CYCLE 발행 단계 완전 활성화를 위해:
+```
+ADMIN_TELEGRAM_ID=<텔레그램 사용자 ID>
+GOOGLE_DRIVE_FOLDER_ID=<Drive 폴더 ID>
+ANTHROPIC_API_KEY=<올바른 키>
 ```
 
-### 장기 과제: Nightguard V2 Cookie Watchdog 활성화
+### 중기: Nightguard V2 GCP systemd 등록
 
-`core/system/nightguard_v2.py`가 구현됐지만 실제 GCP VM에서 상시 실행 설정 필요.
+`core/system/nightguard_v2.py` 구현 완료, GCP VM에서 상시 실행 미설정.
+`knowledge/docs/deployment/97layer-telegram.service` 참고하여 서비스 파일 작성 후 등록.
+
+### 장기: google.generativeai → google.genai SDK 마이그레이션
+
+CE/AD/SA 에이전트가 deprecated SDK 사용 중. 경고 발생은 하지만 동작은 함.
+컨테이너 Python 버전 3.9 → 3.11 업그레이드 시 함께 처리 권장.
 
 ---
 
@@ -119,33 +146,38 @@ visual_ref = notebooklm.query("WOOHWAHAE visual identity archival film")
 ```
 [완료] Clean Architecture Ver 3.0
   ✅ Phase 1-4: 구조 정리
-  ✅ Phase 5-7: Organic Ecosystem 코어 구현 (로컬 실행 검증 완료)
-      - heartbeat.py: Mac↔GCP 상태 감지 ✅ 실행 확인
-      - signal_router.py: 신호→큐 자동 라우팅 ✅ 7개 신호 처리
-      - daily_routine.py: APScheduler 09:00/21:00 자동화 ✅ 브리핑 실행
+  ✅ Phase 5-7: Organic Ecosystem 코어 구현
   ✅ Phase 8: 철학 문서 리뉴얼 (IDENTITY.md v5.0 + SYSTEM.md v5.0)
+  ✅ Phase 6.3: CE/AD NotebookLM 브랜드 RAG 연동
+  ✅ Phase 9: THE CYCLE 완전 연결
+      - agent_watcher: 완료 시 텔레그램 알림 (_notify_admin + _build_summary)
+      - start_ecosystem.sh: SA+AD+CE 에이전트 자동 시작 포함
 
-[목표] THE CYCLE 완전 자동화
-  텔레그램 입력 → 신호 저장 → 큐 라우팅 → 에이전트 처리
-  → knowledge/ 저장 → Drive 동기화 → 텔레그램 보고 → 반복
+[현재 상태] THE CYCLE 코드 완전 연결 ✅
+  남은 것: ADMIN_TELEGRAM_ID 환경변수 설정 (사용자 직접) → 즉시 완전 가동
+
+[다음 목표] GCP 24/7 배포
+  로컬에서 동작 검증 → Podman 컨테이너 → GCP VM systemd 등록
 ```
 
-## 🚀 실행 명령 (PYTHONPATH 필수)
+## 🚀 실행 명령
 
 ```bash
 # 전체 에코시스템 한번에 시작 (권장)
+# heartbeat + signal_router + scheduler + SA + AD + CE 자동 기동
 ./start_ecosystem.sh
 
-# 개별 실행 (PYTHONPATH 설정 필요)
-export PYTHONPATH=/Users/97layer/97layerOS
-python core/system/heartbeat.py             # heartbeat 데몬
-python core/system/signal_router.py --watch # 신호 라우팅 감시
-python core/system/daily_routine.py --scheduler  # 스케줄러
+# 텔레그램 봇만 실행
+./start_telegram.sh
 
-# 테스트 (1회 실행)
+# 개별 테스트
+export PYTHONPATH=/Users/97layer/97layerOS
 python core/system/heartbeat.py --once
 python core/system/signal_router.py --once
 python core/system/daily_routine.py --morning
+python core/agents/sa_agent.py --test
+python core/agents/ad_agent.py --test
+python core/agents/ce_agent.py --test
 ```
 
 ---
@@ -154,19 +186,19 @@ python core/system/daily_routine.py --morning
 
 | 컴포넌트 | 경로 |
 |---|---|
+| THE CYCLE 전체 시작 | `./start_ecosystem.sh` |
 | 텔레그램 봇 실행 | `./start_telegram.sh` |
-| 에코시스템 전체 시작 | `./start_ecosystem.sh` |
+| 에이전트 완료 알림 | `core/system/agent_watcher.py` (_notify_admin) |
 | 세션 핸드오프 | `core/system/handoff.py` |
 | 큐 관리 | `core/system/queue_manager.py` |
 | Nightguard | `core/system/nightguard_v2.py` |
 | Drive 동기화 | `core/bridges/gdrive_sync.py` |
-| NotebookLM | `core/system/notebooklm_bridge.py` (+ bridges/ 동기화됨) |
+| NotebookLM | `core/bridges/notebooklm_bridge.py` |
 | 일일 루틴 + 스케줄러 | `core/system/daily_routine.py --scheduler` |
 | Mac↔GCP 하트비트 | `core/system/heartbeat.py` |
 | 신호→큐 라우팅 | `core/system/signal_router.py --watch` |
 | 배포 가이드 | `knowledge/docs/deployment/DEPLOY.md` |
 | 실행 컨텍스트 | `knowledge/system/execution_context.json` |
-| 신호 처리 기록 | `knowledge/system/signal_router_processed.json` |
 
 ---
 
