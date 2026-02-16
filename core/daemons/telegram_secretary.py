@@ -165,33 +165,52 @@ class TelegramSecretaryV6:
 
     async def process_youtube(self, update: Update, context: ContextTypes.DEFAULT_TYPE, url: str):
         status_msg = await update.message.reply_text(
-            "🛸 <b>Anti-Gravity YouTube Analysis System 가동</b>",
+            "🛸 YouTube 분석 중...",
             parse_mode=constants.ParseMode.HTML
         )
 
         try:
-            await status_msg.edit_text("🛸 <code>Analysis</code>: 영상 데이터 수집 및 자막 추출 중...", parse_mode=constants.ParseMode.HTML)
+            # 1. 자막 수집 + Gemini 분석 + 로컬 JSON 저장
+            await status_msg.edit_text("🛸 <code>Step 1/2</code>: 영상 자막 수집 중...", parse_mode=constants.ParseMode.HTML)
             result = self.youtube.process_url(url)
 
             if not result['success']:
-                await status_msg.edit_text(f"❌ 분석 실패: {_escape_html(str(result.get('error', '')))}", parse_mode=constants.ParseMode.HTML)
+                await status_msg.edit_text(
+                    f"❌ 분석 실패: {_escape_html(str(result.get('error', '')))}",
+                    parse_mode=constants.ParseMode.HTML
+                )
                 return
 
-            await status_msg.edit_text("🛸 <code>Intellect</code>: NotebookLM Deep RAG 연동 중...", parse_mode=constants.ParseMode.HTML)
+            video_id = result['video_id']
+            transcript_len = len(result.get('transcript', ''))
+            analysis = result.get('analysis', {})
 
+            # 2. NotebookLM 저장 시도 (실패해도 전체 흐름 중단 안 함)
+            nlm_saved = False
             if self.notebooklm and self.notebooklm.authenticated:
-                await status_msg.edit_text("🛸 <code>Synthesis</code>: 멀티모달 자산(Audio, Mindmap) 생성 중...", parse_mode=constants.ParseMode.HTML)
-                summary = f"ID: <code>{_escape_html(result['video_id'])}</code>\n자막: {len(result['transcript'])}자 수집 완료."
-            else:
-                summary = f"ID: <code>{_escape_html(result['video_id'])}</code>\n자막 수집 완료 (NotebookLM Offline)."
+                await status_msg.edit_text("🛸 <code>Step 2/2</code>: NotebookLM 저장 중...", parse_mode=constants.ParseMode.HTML)
+                try:
+                    content_text = (
+                        f"YouTube: {url}\n"
+                        f"Video ID: {video_id}\n\n"
+                        f"분석:\n{json.dumps(analysis, ensure_ascii=False, indent=2)}\n\n"
+                        f"자막 요약:\n{result.get('transcript', '')[:3000]}"
+                    )
+                    nb_id = self.notebooklm.get_or_create_notebook("97layerOS: Signal Archive")
+                    title = f"[YouTube] {analysis.get('title', video_id)[:60]}"
+                    self.notebooklm.add_source_text(nb_id, content_text, title)
+                    nlm_saved = True
+                except Exception as nlm_e:
+                    logger.warning("NotebookLM 저장 실패: %s", nlm_e)
 
-            final_text = (
-                f"✅ <b>YouTube 전략 분석 완료</b>\n\n"
-                f"{summary}\n\n"
-                f"지식 베이스에 성공적으로 영구 저장되었습니다.\n"
-                f"추가적인 '오디오 브리핑'이나 '마인드맵'이 필요하시면 말씀해주십시오."
-            )
-            await status_msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
+            # 결과 메시지 — 실제 완료된 것만 표시
+            lines = [f"✅ <b>YouTube 분석 완료</b>", ""]
+            lines.append(f"ID: <code>{_escape_html(video_id)}</code>")
+            lines.append(f"자막: {transcript_len}자 수집")
+            lines.append(f"로컬 저장: ✅")
+            lines.append(f"NotebookLM: {'✅ 저장됨' if nlm_saved else '⚠️ 저장 실패 (로컬만)'}")
+
+            await status_msg.edit_text("\n".join(lines), parse_mode=constants.ParseMode.HTML)
 
         except Exception as e:
             logger.error("YouTube processing error: %s", e)
@@ -257,16 +276,18 @@ class TelegramSecretaryV6:
             intent = intent_data['intent']
 
             if intent == 'insight':
-                # 인사이트 저장 UX
+                # 먼저 저장 실행
+                self._save_insight(text, update.effective_user)
+
+                # 저장 완료 후 응답 (실제로 한 것만 표시)
                 timestamp = datetime.now().strftime('%H:%M:%S')
                 preview = _escape_html(text[:150])
                 await update.message.reply_text(
-                    f"💾 <b>Insight Captured</b> (<code>{timestamp}</code>)\n\n"
-                    f"\"{preview}...\"\n\n"
-                    f"자동으로 지식 베이스에 분류 및 저장되었습니다.",
+                    f"💾 <b>Captured</b> (<code>{timestamp}</code>)\n\n"
+                    f"\"{preview}\"\n\n"
+                    f"signals/ 저장 완료. Joon이 분석 중입니다.",
                     parse_mode=constants.ParseMode.HTML
                 )
-                self._save_insight(text, update.effective_user)
             else:
                 # 대화 및 질문 (Deep RAG)
                 placeholder = await update.message.reply_text("💭 사유 중...")
@@ -287,17 +308,44 @@ class TelegramSecretaryV6:
                 pass
 
     def _save_insight(self, text: str, user):
+        """
+        인사이트 저장 + SA 에이전트 분석 큐에 전달.
+        signals/ 파일 저장은 항상 성공. 큐 전달은 실패해도 조용히 스킵.
+        """
         signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
         signals_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        with open(signals_dir / f"text_{timestamp}.json", 'w', encoding='utf-8') as f:
-            json.dump({
-                'type': 'text_insight',
-                'content': text,
-                'captured_at': datetime.now().isoformat(),
-                'from_user': user.username or user.first_name,
-                'status': 'captured'
-            }, f, ensure_ascii=False, indent=2)
+        signal_id = f"text_{timestamp}"
+
+        signal_data = {
+            'signal_id': signal_id,
+            'type': 'text_insight',
+            'content': text,
+            'captured_at': datetime.now().isoformat(),
+            'from_user': user.username or user.first_name,
+            'status': 'captured'
+        }
+
+        # 1. signals/ 저장 (항상)
+        with open(signals_dir / f"{signal_id}.json", 'w', encoding='utf-8') as f:
+            json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        # 2. SA 에이전트 큐에 분석 요청 (THE CYCLE 트리거)
+        try:
+            from core.system.queue_manager import QueueManager
+            qm = QueueManager()
+            qm.create_task(
+                agent_type='SA',
+                task_type='analyze',
+                payload={
+                    'signal_id': signal_id,
+                    'content': text,
+                    'source': 'telegram_insight',
+                }
+            )
+            logger.info("SA 큐 전달: %s", signal_id)
+        except Exception as q_e:
+            logger.warning("SA 큐 전달 실패 (signals/ 저장은 완료): %s", q_e)
 
     def run(self):
         application = Application.builder().token(self.bot_token).build()
