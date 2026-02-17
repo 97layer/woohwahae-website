@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WOOHWAHAE 아카이브 — 슬로우 라이프의 기록들.">
+  <title>아카이브 — WOOHWAHAE</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="../assets/img/symbol.svg" class="nav-symbol" alt="">
+      WOOHWAHAE
+    </a>
+    <ul class="nav-links">
+      <li><a href="../about.html">어바웃</a></li>
+      <li><a href="../atelier.html">아틀리에</a></li>
+      <li><a href="../archive/" class="active">아카이브</a></li>
+      <li><a href="../contact.html">연락</a></li>
+    </ul>
+  </nav>
+
+  <!-- Header -->
+  <div class="container" style="padding-top: 10rem; padding-bottom: 4rem;">
+    <p class="section-label fade-in">Archive</p>
+    <h1 class="fade-in" style="margin-bottom: 1rem;">기록</h1>
+    <p class="fade-in" style="color: var(--text-sub); max-width: 320px; font-size: 0.9rem; line-height: 1.7;">
+      일상에서 건져 올린 생각들.<br>97layerOS가 읽고, 분석하고, 기록한다.
+    </p>
+  </div>
+
+  <!-- Archive List -->
+  <section>
+    <div class="container--wide">
+      <ul class="archive-list" id="archive-list">
+        <!-- ContentPublisher가 자동 삽입 -->
+        <li class="archive-item fade-in" id="empty-state">
+          <span class="archive-date"></span>
+          <div class="archive-content">
+            <p class="archive-title" style="color: var(--text-faint); font-style: italic;">
+              기록이 쌓이고 있습니다.
+            </p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="../assets/img/symbol.svg" alt="WOOHWAHAE" width="28" style="opacity:0.3; margin-bottom:0.5rem;">
+        <p class="footer-brand-name">WOOHWAHAE</p>
+        <p class="footer-brand-desc">Slow Life Atelier</p>
+      </div>
+      <div>
+        <p class="footer-nav-title">Navigate</p>
+        <ul class="footer-nav-list">
+          <li><a href="../about.html">어바웃</a></li>
+          <li><a href="../atelier.html">아틀리에</a></li>
+          <li><a href="../archive/">아카이브</a></li>
+          <li><a href="../shop/">제품</a></li>
+          <li><a href="../contact.html">연락</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-connect-title">Connect</p>
+        <ul class="footer-connect-list">
+          <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-bottom-copy">© 2026 WOOHWAHAE · Based in Ulsan</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    fetch('index.json')
+      .then(r => r.json())
+      .then(posts => {
+        const list = document.getElementById('archive-list');
+        const empty = document.getElementById('empty-state');
+        if (!posts.length) return;
+
+        if (empty) empty.remove();
+
+        posts.forEach(post => {
+          const li = document.createElement('li');
+          li.className = 'archive-item fade-in';
+          li.innerHTML = `
+            <a href="${post.slug}/">
+              <span class="archive-date">${post.date}</span>
+              <div class="archive-content">
+                <p class="archive-title">${post.title}</p>
+                <p class="archive-preview">${post.preview}</p>
+              </div>
+            </a>
+          `;
+          list.appendChild(li);
+        });
+
+        list.querySelectorAll('.fade-in').forEach(el => {
+          const obs = new IntersectionObserver(([e]) => {
+            if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+          }, { threshold: 0.05 });
+          obs.observe(el);
+        });
+      })
+      .catch(() => {});
+  </script>
+
+</body>
+</html>

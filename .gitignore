@@ -30,7 +30,7 @@ node_modules/
 *.tar.gz
 *.dmg
 97layerOS.zip
-archive/
+/archive/
 
 # Project specific
 knowledge/inbox/외주 코드/

@@ -476,10 +476,50 @@ section + section {
   border-color: var(--text);
 }
 
-/* ─── Hub Grid (홈 허브 섹션) ─── */
+/* ─── Section Backgrounds (Magazine B 교차 리듬) ─── */
+.section--dark {
+  background-color: var(--bg-dark);
+}
+
+.section--light {
+  background-color: var(--bg);
+}
+
+/* ─── Visual Statement (타이포그래피 그래픽) ─── */
+.visual-statement {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: var(--space-xl) var(--space-md);
+  overflow: hidden;
+}
+
+.visual-statement-text {
+  font-family: var(--font-en);
+  font-style: italic;
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  text-align: center;
+}
+
+.visual-statement-symbol {
+  position: absolute;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  width: 48px;
+  height: auto;
+  opacity: 0.12;
+}
+
+/* ─── Hub Grid (3열) ─── */
 .hub-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0;
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
@@ -488,18 +528,14 @@ section + section {
 .hub-item {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.6rem;
   padding: var(--space-lg) var(--space-md);
-  border-bottom: 1px solid var(--line);
   border-right: 1px solid var(--line);
-  border-bottom-width: 1px;
+  border-bottom: 1px solid var(--line);
   text-decoration: none;
-  border-bottom: none;
+  border-bottom-style: solid;
   transition: background-color var(--duration) var(--ease);
   position: relative;
-  border: none;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
 
 .hub-item:hover {
@@ -512,18 +548,26 @@ section + section {
 }
 
 .hub-item-label {
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text);
+  color: var(--text-faint);
+  margin-bottom: 0;
+}
+
+.hub-item-title {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
   margin-bottom: 0;
 }
 
 .hub-item-desc {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-sub);
-  line-height: 1.5;
+  line-height: 1.6;
   margin-bottom: 0;
+  max-width: 260px;
 }
 
 .hub-item-arrow {
@@ -539,44 +583,195 @@ section + section {
   color: var(--text);
 }
 
-/* ─── Footer ─── */
-footer {
-  border-top: 1px solid var(--line);
-  padding: var(--space-lg) var(--space-md);
+/* ─── Core Values (THE CYCLE) ─── */
+.values-list {
+  list-style: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  text-align: center;
+  gap: var(--space-xl);
+  max-width: 560px;
 }
 
-.footer-symbol {
-  opacity: 0.3;
+.values-item {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: var(--space-sm);
+  align-items: baseline;
 }
 
-.footer-copy {
+.values-num {
+  font-family: var(--font-en);
   font-size: 0.72rem;
   color: var(--text-faint);
   letter-spacing: 0.05em;
 }
 
-.footer-links {
+.values-title {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 0.5em;
+}
+
+.values-title .en {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  margin-left: 0.5em;
+}
+
+.values-desc {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+
+/* ─── Who We Are For ─── */
+.audience-list {
+  list-style: none;
   display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 440px;
+  margin-bottom: var(--space-xl);
+}
+
+.audience-item {
+  font-size: 1rem;
+  line-height: 1.7;
+  padding-left: 1em;
+  border-left: 2px solid var(--line);
+}
+
+.closing-statement {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  line-height: 1.8;
+  max-width: 400px;
+  padding-left: 1em;
+  border-left: 2px solid var(--navy);
+}
+
+/* ─── Content Grid (Archive Preview 3열 카드) ─── */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-md);
   list-style: none;
 }
 
-.footer-links a {
+.content-card {
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--line);
+}
+
+.content-card a {
+  border-bottom: none;
+  display: block;
+}
+
+.content-card-date {
   font-size: 0.72rem;
   color: var(--text-faint);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-xs);
+}
+
+.content-card-title {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 0.4em;
+  line-height: 1.4;
+}
+
+.content-card-preview {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin-bottom: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─── Footer (통합 3열) ─── */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-lg);
+  max-width: var(--max-wide);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.footer-brand-name {
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  margin-bottom: 0;
+}
+
+.footer-brand-desc {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-bottom: 0;
+}
+
+.footer-nav-title,
+.footer-connect-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--space-sm);
+}
+
+.footer-nav-list,
+.footer-connect-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer-nav-list a,
+.footer-connect-list a {
+  font-size: 0.82rem;
+  color: var(--text-sub);
   border-bottom: none;
   transition: color var(--duration) var(--ease);
 }
 
-.footer-links a:hover {
+.footer-nav-list a:hover,
+.footer-connect-list a:hover {
   color: var(--text);
+}
+
+.footer-bottom {
+  max-width: var(--max-wide);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md) 0;
+  border-top: 1px solid var(--line);
+  margin-top: var(--space-lg);
+}
+
+.footer-bottom-copy {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+}
+
+/* ─── Footer (wrapper) ─── */
+footer {
+  border-top: 1px solid var(--line);
+  padding: var(--space-xl) 0 var(--space-lg);
 }
 
 /* ─── Fade-in Animation (Apple 무드) ─── */
@@ -625,9 +820,28 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .hub-grid .hub-item:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
   .archive-item {
     grid-template-columns: 1fr;
     gap: 0.3rem;
+  }
+
+  .visual-statement-symbol {
+    width: 32px;
+    bottom: var(--space-md);
+    right: var(--space-md);
   }
 }
 
@@ -636,7 +850,15 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .hub-grid .hub-item:last-child {
+    grid-column: auto;
+  }
+
   .nav-links {
     display: none;
+  }
+
+  .visual-statement-text {
+    font-size: clamp(2.4rem, 12vw, 4rem);
   }
 }
