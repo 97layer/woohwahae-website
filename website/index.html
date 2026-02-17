@@ -20,14 +20,16 @@
   <!-- Navigation -->
   <nav>
     <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
+      <img src="assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE" width="28">
     </a>
     <ul class="nav-links">
-      <li><a href="about.html">About</a></li>
       <li><a href="atelier.html">Atelier</a></li>
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="contact.html">Contact</a></li>
+      <li><a href="magazine/">Magazine</a></li>
+      <li><a href="shop/">Shop</a></li>
+      <li><a href="projects/">Projects</a></li>
     </ul>
+    <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
+       target="_blank" rel="noopener" class="nav-cta">Book</a>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -35,56 +37,59 @@
 
   <!-- 1. Hero -->
   <section class="hero section--light">
-    <div class="container">
-      <p class="hero-eyebrow fade-in">Slow Life Atelier · Ulsan</p>
-      <h1 class="hero-title fade-in">
-        우화해<br>
-        <span class="en">WOOHWAHAE</span>
-      </h1>
-      <p class="hero-subtitle fade-in">
-        천천히, 오래 가는 머리를 만드는 곳.
+    <div class="container--full">
+      <h1 class="hero-title fade-in">우화해</h1>
+      <p class="hero-en fade-in">Woohwahae — Slow Life Atelier, Ulsan</p>
+    </div>
+    <div class="container--full">
+      <div class="hero-footer fade-in">
+        <span>헤어 아틀리에</span>
+        <span>울산광역시 남구</span>
+        <span>예약제 운영</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Brand Statement -->
+  <section class="section--ink brand-line-section">
+    <div class="container--full">
+      <p class="statement fade-in">
+        헤어, 매거진, 제품, 프로젝트 — 슬로우 라이프를 탐구하는 플랫폼.
       </p>
     </div>
   </section>
 
-  <!-- 2. Brand Line -->
-  <section class="section--dark brand-line-section">
-    <div class="container">
-      <p class="brand-line fade-in">
-        헤어 아틀리에.<br>
-        울산, 슬로우 라이프.
-      </p>
-    </div>
-  </section>
-
-  <!-- 3. Hub Grid (활성 4칸만) -->
+  <!-- 3. Hub Grid -->
   <section class="section--light">
     <div class="container--wide">
-      <p class="section-label fade-in">Explore</p>
+      <div class="section-header fade-in">
+        <span class="section-label">Channels</span>
+        <h2 class="section-title">채널</h2>
+      </div>
       <div class="hub-grid hub-grid--4">
 
         <a href="atelier.html" class="hub-item fade-in">
           <p class="hub-item-label">Atelier</p>
-          <p class="hub-item-desc">손으로 읽는 하루의 리듬.<br>컨설팅부터 케어까지 하나의 흐름.</p>
+          <p class="hub-item-desc">예약제 헤어 아틀리에.<br>컨설팅부터 케어까지.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
-        <a href="archive/" class="hub-item fade-in">
-          <p class="hub-item-label">Archive</p>
-          <p class="hub-item-desc">슬로우 라이프의 기록들.</p>
+        <a href="magazine/" class="hub-item fade-in">
+          <p class="hub-item-label">Magazine</p>
+          <p class="hub-item-desc">슬로우 라이프의 기록.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
-        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener" class="hub-item fade-in hub-item--external">
-          <p class="hub-item-label">Booking</p>
-          <p class="hub-item-desc">방문 예약.</p>
-          <span class="hub-item-arrow">&nearr;</span>
+        <a href="shop/" class="hub-item fade-in">
+          <p class="hub-item-label">Shop</p>
+          <p class="hub-item-desc">엄선한 제품들.</p>
+          <span class="hub-item-arrow">&rarr;</span>
         </a>
 
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener" class="hub-item fade-in hub-item--external">
-          <p class="hub-item-label">Instagram</p>
-          <p class="hub-item-desc">@woohwahae</p>
-          <span class="hub-item-arrow">&nearr;</span>
+        <a href="projects/" class="hub-item fade-in">
+          <p class="hub-item-label">Projects</p>
+          <p class="hub-item-desc">브랜드 협업과 외부 작업.</p>
+          <span class="hub-item-arrow">&rarr;</span>
         </a>
 
       </div>
@@ -94,10 +99,13 @@
   <!-- 4. Archive Preview (데이터 있을 때만 표시) -->
   <section class="section--dark" id="archive-section">
     <div class="container--wide">
-      <p class="section-label fade-in">Recent</p>
+      <div class="section-header fade-in">
+        <span class="section-label">Magazine</span>
+        <h2 class="section-title">최근 글</h2>
+      </div>
       <div id="archive-preview">
         <ul class="content-grid" id="recent-posts"></ul>
-        <a href="archive/" class="cta fade-in">View All</a>
+        <a href="magazine/" class="cta fade-in">Magazine 전체 보기</a>
       </div>
     </div>
   </section>
@@ -106,17 +114,17 @@
   <footer class="section--light">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="assets/img/symbol.jpg" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
         <p class="footer-brand-name">WOOHWAHAE</p>
         <p class="footer-brand-desc">Slow Life Atelier</p>
       </div>
       <div>
         <p class="footer-nav-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="about.html">About</a></li>
           <li><a href="atelier.html">Atelier</a></li>
-          <li><a href="archive/">Archive</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="magazine/">Magazine</a></li>
+          <li><a href="shop/">Shop</a></li>
+          <li><a href="projects/">Projects</a></li>
+          <li><a href="about.html">About</a></li>
         </ul>
       </div>
       <div>

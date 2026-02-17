@@ -64,17 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ─── Smooth Nav Appearance ───
-  // 스크롤 시 nav 배경 미세하게 변화
+  // 스크롤 시 nav.scrolled 클래스 토글 (CSS에서 처리)
   const nav = document.querySelector('nav');
   if (nav) {
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 60) {
-        nav.style.backdropFilter = 'blur(8px)';
-        nav.style.backgroundColor = 'rgba(250, 250, 247, 0.85)';
-      } else {
-        nav.style.backdropFilter = '';
-        nav.style.backgroundColor = '';
-      }
+      nav.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
   }
 

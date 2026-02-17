@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WOOHWAHAE Magazine — 슬로우 라이프의 기록들.">
-  <title>Magazine — WOOHWAHAE</title>
+  <meta name="description" content="WOOHWAHAE Shop — 곧 오픈합니다.">
+  <title>Shop — WOOHWAHAE</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#1A1A1A">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,41 +16,37 @@
 
   <nav>
     <a href="/" class="nav-logo">
-      <img src="../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
+      <img src="../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE" width="28">
     </a>
     <ul class="nav-links">
       <li><a href="../atelier.html">Atelier</a></li>
-      <li><a href="../magazine/" class="active">Magazine</a></li>
-      <li><a href="../shop/">Shop</a></li>
+      <li><a href="../magazine/">Magazine</a></li>
+      <li><a href="../shop/" class="active">Shop</a></li>
       <li><a href="../projects/">Projects</a></li>
     </ul>
+    <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
+       target="_blank" rel="noopener" class="nav-cta">Book</a>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
 
-  <div class="container">
-    <div class="page-header">
-      <p class="section-label fade-in">Magazine</p>
-      <h1 class="fade-in">매거진</h1>
-      <p class="page-header-desc fade-in">
-        슬로우 라이프의 기록들.
-      </p>
+  <section class="hero section--light page-hero">
+    <div class="container--full">
+      <div class="section-header fade-in">
+        <span class="section-label">Shop</span>
+        <h1 class="section-title">제품</h1>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <section>
+  <section class="section--light">
     <div class="container--wide">
-      <ul class="archive-list" id="archive-list">
-        <li class="archive-item fade-in" id="empty-state">
-          <span class="archive-date"></span>
-          <div class="archive-content">
-            <p class="archive-title archive-empty-msg">
-              기록이 쌓이고 있습니다.
-            </p>
-          </div>
-        </li>
-      </ul>
+      <div class="coming-soon-block fade-in">
+        <p class="coming-soon-label">Coming Soon</p>
+        <p class="coming-soon-title">준비 중입니다.</p>
+        <p class="coming-soon-desc">우화해가 엄선한 제품들을 곧 선보입니다.</p>
+      </div>
     </div>
   </section>
 
@@ -85,37 +81,5 @@
   </footer>
 
   <script src="../assets/js/main.js"></script>
-  <script>
-    fetch('index.json')
-      .then(r => r.json())
-      .then(posts => {
-        const list = document.getElementById('archive-list');
-        const empty = document.getElementById('empty-state');
-        if (!posts.length) return;
-        if (empty) empty.remove();
-        posts.forEach(post => {
-          const li = document.createElement('li');
-          li.className = 'archive-item fade-in';
-          li.innerHTML = `
-            <a href="${post.slug}/">
-              <span class="archive-date">${post.date}</span>
-              <div class="archive-content">
-                <p class="archive-title">${post.title}</p>
-                <p class="archive-preview">${post.preview}</p>
-              </div>
-            </a>
-          `;
-          list.appendChild(li);
-        });
-        list.querySelectorAll('.fade-in').forEach(el => {
-          const obs = new IntersectionObserver(([e]) => {
-            if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-          }, { threshold: 0.05 });
-          obs.observe(el);
-        });
-      })
-      .catch(() => {});
-  </script>
-
 </body>
 </html>
