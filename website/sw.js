@@ -3,7 +3,7 @@
    Cache-First + Network Fallback
    ============================================= */
 
-const CACHE_VERSION = 'woohwahae-v1';
+const CACHE_VERSION = 'woohwahae-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -14,7 +14,7 @@ const STATIC_ASSETS = [
   '/archive/',
   '/assets/css/style.css',
   '/assets/js/main.js',
-  '/assets/img/symbol.svg',
+  '/assets/img/symbol.jpg',
   '/manifest.webmanifest'
 ];
 

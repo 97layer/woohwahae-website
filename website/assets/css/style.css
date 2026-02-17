@@ -143,6 +143,7 @@ nav {
   height: auto;
   display: block;
   flex-shrink: 0;
+  mix-blend-mode: multiply;
 }
 
 .nav-links {
@@ -381,6 +382,61 @@ section + section {
   border-color: var(--text);
 }
 
+/* ─── Post Body (Archive 개별 글, 마크다운 렌더) ─── */
+.post-body {
+  padding: var(--space-xl) 0 var(--space-2xl);
+  max-width: 580px;
+}
+
+.post-body p {
+  font-size: 1rem;
+  line-height: 2.0;
+  color: var(--text);
+  margin-bottom: 1.8em;
+}
+
+.post-body h2 {
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: var(--space-lg) 0 var(--space-sm);
+}
+
+.post-body h3 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-sub);
+  margin: var(--space-md) 0 var(--space-xs);
+}
+
+.post-body blockquote {
+  border-left: 2px solid var(--navy);
+  padding-left: 1.2em;
+  color: var(--text-sub);
+  font-style: italic;
+  margin: var(--space-md) 0;
+}
+
+.post-body img {
+  width: 100%;
+  margin: var(--space-lg) 0;
+  filter: brightness(0.97) saturate(0.9);
+}
+
+.post-body a {
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+}
+
+.post-body time {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: var(--space-md) 0 var(--space-xl);
+}
+
 /* ─── CTA ─── */
 .cta {
   display: inline-block;
@@ -477,8 +533,9 @@ section + section {
 
 /* ─── Footer Brand Symbol ─── */
 .footer-brand-symbol {
-  opacity: 0.3;
+  opacity: 0.4;
   margin-bottom: 0.5rem;
+  mix-blend-mode: multiply;
 }
 
 /* ─── Hub Grid ─── */
