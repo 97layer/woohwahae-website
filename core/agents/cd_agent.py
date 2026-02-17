@@ -94,6 +94,12 @@ class CreativeDirector:
         signal_id = content_draft.get('signal_id', 'unknown')
         print(f"CD: {signal_id} 검토 중.")
 
+        # 새 포맷 지원: instagram_caption + archive_essay 우선, 없으면 구버전 필드
+        instagram_caption = content_draft.get('instagram_caption', content_draft.get('social_caption', ''))
+        archive_essay = content_draft.get('archive_essay', content_draft.get('body', ''))
+        hashtags = content_draft.get('hashtags', '')
+        ralph_score = content_draft.get('ralph_score', 0)
+
         prompt = f"""다음은 97layer 브랜드 판단 기준과 IDENTITY 문서다.
 
 {self._criteria[:2500]}
@@ -105,21 +111,25 @@ class CreativeDirector:
 
 **콘텐츠 초안:**
 - 헤드라인: {content_draft.get('headline', '')}
-- 서브헤드라인: {content_draft.get('subheadline', '')}
-- 본문 (일부): {content_draft.get('body', '')[:300]}
-- 소셜 캡션: {content_draft.get('social_caption', '')}
+- Instagram 캡션: {instagram_caption}
+- 해시태그: {hashtags}
+- Archive 에세이 (일부): {str(archive_essay)[:400]}
 - 톤: {content_draft.get('tone', '')}
+- Ralph 점수: {ralph_score}/100
 
 JSON 형식으로 결정:
 {{
   "decision": "approve|revise|reject",
+  "approved": true|false,
   "brand_score": <0-100, 97layer 정렬도>,
   "strengths": ["강점 1", "강점 2"],
   "concerns": ["우려사항 1"] 또는 [],
-  "revision_notes": "수정 방향 (revise일 때만, 구체적으로)" 또는 null,
+  "feedback": "구체적 수정 방향 (revise/reject일 때 반드시 작성, CE가 바로 적용할 수 있도록 구체적으로)" 또는 null,
+  "revision_notes": "수정 방향 상세" 또는 null,
   "strategic_rationale": "결정 이유 — 한두 문장, 직접적으로"
 }}
 
+"approved"는 decision이 "approve"이면 true, 나머지는 false.
 JSON만 출력.
 """
 
@@ -166,11 +176,20 @@ JSON만 출력.
     def process_task(self, task: Task) -> Dict[str, Any]:
         task_type = task.task_type
         payload = task.payload
-        
-        print(f"📋 {self.agent_id}: Processing task {task.task_id} ({task_type})")
-        
+
+        print(f"CD: {task.task_id} ({task_type})")
+
         if task_type == 'review_content':
-            content_draft = payload.get('content_draft', {})
+            # Orchestrator 경유 시 payload 자체가 content_draft 역할
+            # ce_result가 있으면 그걸 content_draft로, 없으면 payload 전체
+            if 'ce_result' in payload:
+                content_draft = payload['ce_result']
+                # ralph_score를 draft에 포함
+                content_draft['ralph_score'] = payload.get('ralph_score', 0)
+                content_draft['signal_id'] = payload.get('signal_id', content_draft.get('signal_id', 'unknown'))
+            else:
+                content_draft = payload.get('content_draft', payload)
+
             result = self.review_content(content_draft)
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
         else:

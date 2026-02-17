@@ -120,27 +120,49 @@ class ChiefEditor:
         self._brand_voice_cache = _BRAND_VOICE_FALLBACK
         return self._brand_voice_cache
 
-    def write_content(self, analysis: Dict[str, Any], visual_concept: Dict[str, Any]) -> Dict[str, Any]:
+    def write_content(self, analysis: Dict[str, Any], visual_concept: Dict[str, Any],
+                      retry_count: int = 0, feedback: str = "", previous_output: Dict = None) -> Dict[str, Any]:
         """
         SA 분석 + AD 비주얼 컨셉을 기반으로 콘텐츠 작성.
-        브랜드 보이스는 NotebookLM RAG에서 실시간 참조.
+        인스타그램 패키지 + 아카이브 에세이 이중 포맷 생성.
 
         Args:
             analysis: SA strategic analysis
             visual_concept: AD visual concept
+            retry_count: 재작업 횟수 (CD 거절 또는 Ralph 점수 미달)
+            feedback: 이전 거절 피드백 (재작업 시)
+            previous_output: 이전 결과물 (재작업 참고용)
 
         Returns:
-            Final content draft
+            {
+              instagram_caption, hashtags, archive_essay,
+              headline, tone, ...
+            }
         """
         signal_id = analysis.get('signal_id', 'unknown')
-        print(f"Ray: {signal_id} 초안 작업.")
+        print(f"Ray: {signal_id} 초안 작업." + (f" (재작업 {retry_count}회차)" if retry_count > 0 else ""))
 
         # 브랜드 보이스 참조 (NotebookLM 또는 fallback)
         brand_voice = self._get_brand_voice()
         brand_source = "NotebookLM RAG" if self.nlm and self._brand_voice_cache != _BRAND_VOICE_FALLBACK else "fallback"
         logger.info("%s: 브랜드 보이스 출처 — %s", self.agent_id, brand_source)
 
-        prompt = f"""당신은 97layer의 Chief Editor입니다.
+        # 재작업 컨텍스트
+        retry_context = ""
+        if retry_count > 0 and feedback:
+            retry_context = f"""
+**이전 피드백 (반드시 반영):**
+{feedback}
+
+"""
+        if previous_output:
+            retry_context += f"""**이전 출력 (개선 필요):**
+- 인스타 캡션: {previous_output.get('instagram_caption', 'N/A')[:100]}
+- 에세이 일부: {str(previous_output.get('archive_essay', 'N/A'))[:200]}
+
+"""
+
+        prompt = f"""당신은 97layer의 Chief Editor Ray입니다.
 WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠를 작성합니다.
 
 **전략 분석 (SA 제공):**
@@ -149,24 +171,34 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
 - 요약: {analysis.get('summary', '')}
 
 **비주얼 컨셉 (AD 제공):**
-- 제목: {visual_concept.get('concept_title', '')}
-- 무드: {visual_concept.get('visual_mood', '')}
-- 브랜드 정렬: {visual_concept.get('brand_alignment', '')}
+- 제목: {visual_concept.get('concept_title', '(없음)')}
+- 무드: {visual_concept.get('visual_mood', '(없음)')}
+- 브랜드 정렬: {visual_concept.get('brand_alignment', '(없음)')}
 
 **97layer 브랜드 보이스 가이드:**
 {brand_voice}
 
-위 가이드를 철저히 따라 아래 JSON 형식으로 콘텐츠를 작성하세요:
+{retry_context}
+위 가이드를 철저히 따라 **두 가지 포맷**으로 콘텐츠를 작성하세요:
+
+1. **Instagram 패키지**: 발행 즉시 사용 가능한 형태
+2. **Archive Essay**: Notion/블로그용 롱폼 에세이
+
+아래 JSON 형식으로 반환하세요:
 {{
-  "headline": "헤드라인 (한국어, 10-20자)",
-  "subheadline": "서브헤드라인 (20-35자)",
-  "body": "본문 (2-3단락, 각 2-3문장, 사색적 톤)",
-  "social_caption": "인스타그램 캡션 (80자 이내, 해시태그 2-3개 포함)",
-  "call_to_action": "독자에게 던지는 질문 또는 초대 (질문형 권장)",
-  "tags": ["태그1", "태그2", "태그3"],
+  "instagram_caption": "인스타그램 캡션 (한국어, 150자 이내, 브랜드 톤 철저히 준수, 이모지 최소화)",
+  "hashtags": "#woohwahae #slowlife #아카이브 (관련 한국어 해시태그 5-8개)",
+  "archive_essay": "아카이브 에세이 (한국어, 500-800자, 사색적 롱폼, 단락 구분 포함, 느리고 깊은 톤)",
+  "headline": "헤드라인 (10-20자)",
   "tone": "contemplative|reflective|grounded 중 하나",
   "brand_voice_source": "{brand_source}"
 }}
+
+필수 준수 사항:
+- instagram_caption: 반드시 150자 이내. 직관적이고 핵심만.
+- hashtags: #woohwahae 반드시 포함
+- archive_essay: 반드시 500자 이상. 질문으로 마무리 권장.
+- 금지어: 혁신, 트렌드, 최신, 혁명적, 압도적
 
 유효한 JSON만 반환하세요.
 """
@@ -198,10 +230,13 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
                 'written_at': datetime.now().isoformat(),
                 'model': self._model_name,
                 'brand_voice_source': brand_source,
+                'retry_count': retry_count,
                 'status': 'draft_for_cd',
             })
 
-            print(f"Ray: 초안 완료.")
+            caption_len = len(content.get('instagram_caption', ''))
+            essay_len = len(content.get('archive_essay', ''))
+            print(f"Ray: 초안 완료. 캡션 {caption_len}자, 에세이 {essay_len}자.")
             return content
 
         except Exception as e:
@@ -212,12 +247,28 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
         task_type = task.task_type
         payload = task.payload
 
-        print(f"📋 {self.agent_id}: Processing task {task.task_id} ({task_type})")
+        print(f"Ray: {task.task_id} ({task_type})")
 
         if task_type == 'write_content':
-            analysis = payload.get('analysis', {})
-            visual = payload.get('visual_concept', {})
-            result = self.write_content(analysis, visual)
+            # Orchestrator에서 오는 새 payload 구조 지원
+            # payload에 sa_result가 있으면 Orchestrator 경유
+            sa_result = payload.get('sa_result', payload.get('analysis', {}))
+            visual = payload.get('visual_concept', payload.get('ad_result', {}).get('visual_concept', {}))
+
+            # 재작업 파라미터
+            retry_count = payload.get('retry_count', 0)
+            feedback = payload.get('feedback', payload.get('cd_feedback', ''))
+            previous_output = payload.get('previous_output', None)
+
+            result = self.write_content(
+                analysis=sa_result,
+                visual_concept=visual,
+                retry_count=retry_count,
+                feedback=feedback,
+                previous_output=previous_output
+            )
+            # SA 전략 점수를 result에 포함 (Ralph 채점용)
+            result['sa_strategic_score'] = sa_result.get('strategic_score', 0)
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
         else:
             return {'status': 'failed', 'error': f"Unknown task type: {task_type}"}
