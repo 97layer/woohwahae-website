@@ -128,18 +128,14 @@ nav {
 }
 
 .nav-logo {
-  font-size: 0.85rem;
-  font-weight: 400;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
   border-bottom: none;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  font-size: 0; /* 텍스트 숨김 — 로고 이미지만 */
 }
 
 .nav-symbol {
-  width: 20px;
+  width: 36px;
   height: auto;
   display: block;
   flex-shrink: 0;
