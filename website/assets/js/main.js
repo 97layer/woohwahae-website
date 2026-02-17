@@ -46,6 +46,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ─── Mobile Nav Toggle ───
+  const toggle = document.querySelector('.nav-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  if (toggle && navLinks) {
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('active');
+      navLinks.classList.toggle('open');
+    });
+    // 링크 클릭 시 메뉴 닫기
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggle.classList.remove('active');
+        navLinks.classList.remove('open');
+      });
+    });
+  }
+
   // ─── Smooth Nav Appearance ───
   // 스크롤 시 nav 배경 미세하게 변화
   const nav = document.querySelector('nav');

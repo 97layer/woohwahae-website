@@ -19,11 +19,14 @@
       WOOHWAHAE
     </a>
     <ul class="nav-links">
-      <li><a href="about.html">어바웃</a></li>
-      <li><a href="atelier.html">아틀리에</a></li>
-      <li><a href="archive/">아카이브</a></li>
-      <li><a href="contact.html">연락</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="atelier.html">Atelier</a></li>
+      <li><a href="archive/">Archive</a></li>
+      <li><a href="contact.html">Contact</a></li>
     </ul>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <!-- 1. Hero -->
@@ -50,7 +53,7 @@
     <img src="assets/img/symbol.svg" class="visual-statement-symbol" alt="">
   </section>
 
-  <!-- 3. Hub Grid -->
+  <!-- 3. Hub Grid (3x2 = 6 items) -->
   <section class="section--light">
     <div class="container--wide">
       <p class="section-label fade-in">Explore</p>
@@ -58,23 +61,38 @@
 
         <a href="atelier.html" class="hub-item fade-in">
           <p class="hub-item-label">Atelier</p>
-          <p class="hub-item-title">아틀리에</p>
           <p class="hub-item-desc">헤어를 통해 일상을 탐구하는 공간.</p>
-          <span class="hub-item-arrow">→</span>
+          <span class="hub-item-arrow">&rarr;</span>
         </a>
 
         <a href="archive/" class="hub-item fade-in">
           <p class="hub-item-label">Archive</p>
-          <p class="hub-item-title">아카이브</p>
           <p class="hub-item-desc">슬로우 라이프의 기록들.</p>
-          <span class="hub-item-arrow">→</span>
+          <span class="hub-item-arrow">&rarr;</span>
         </a>
 
         <a href="shop/" class="hub-item fade-in hub-item--coming">
           <p class="hub-item-label">Shop</p>
-          <p class="hub-item-title">제품</p>
           <p class="hub-item-desc">본질에 집중한 제품. 곧 공개됩니다.</p>
-          <span class="hub-item-arrow">→</span>
+          <span class="hub-item-arrow">&rarr;</span>
+        </a>
+
+        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener" class="hub-item fade-in hub-item--external">
+          <p class="hub-item-label">Booking</p>
+          <p class="hub-item-desc">예약은 네이버에서.</p>
+          <span class="hub-item-arrow">&nearr;</span>
+        </a>
+
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener" class="hub-item fade-in hub-item--external">
+          <p class="hub-item-label">Instagram</p>
+          <p class="hub-item-desc">일상의 기록. @woohwahae</p>
+          <span class="hub-item-arrow">&nearr;</span>
+        </a>
+
+        <a href="#" class="hub-item fade-in hub-item--coming">
+          <p class="hub-item-label">Playlist</p>
+          <p class="hub-item-desc">슬로우 라이프를 위한 사운드. 곧 공개됩니다.</p>
+          <span class="hub-item-arrow">&nearr;</span>
         </a>
 
       </div>
@@ -121,7 +139,7 @@
       <p class="section-label fade-in">Recent</p>
       <div id="archive-preview">
         <ul class="content-grid" id="recent-posts"></ul>
-        <a href="archive/" class="cta fade-in">모든 기록 보기</a>
+        <a href="archive/" class="cta fade-in">View All</a>
       </div>
     </div>
   </section>
@@ -152,29 +170,29 @@
       <div>
         <p class="footer-nav-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="about.html">어바웃</a></li>
-          <li><a href="atelier.html">아틀리에</a></li>
-          <li><a href="archive/">아카이브</a></li>
-          <li><a href="shop/">제품</a></li>
-          <li><a href="contact.html">연락</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="atelier.html">Atelier</a></li>
+          <li><a href="archive/">Archive</a></li>
+          <li><a href="shop/">Shop</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
       </div>
       <div>
         <p class="footer-connect-title">Connect</p>
         <ul class="footer-connect-list">
           <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a></li>
           <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-bottom-copy">© 2026 WOOHWAHAE · Based in Ulsan</p>
+      <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Based in Ulsan</p>
     </div>
   </footer>
 
   <script src="assets/js/main.js"></script>
   <script>
-    // Archive Preview — index.json에서 최근 글 3개 로드
     fetch('archive/index.json')
       .then(r => r.json())
       .then(posts => {
