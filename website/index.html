@@ -14,7 +14,10 @@
 
   <!-- Navigation -->
   <nav>
-    <a href="/" class="nav-logo">WOOHWAHAE</a>
+    <a href="/" class="nav-logo">
+      <img src="assets/img/symbol.svg" class="nav-symbol" alt="">
+      WOOHWAHAE
+    </a>
     <ul class="nav-links">
       <li><a href="atelier.html">아틀리에</a></li>
       <li><a href="archive/">아카이브</a></li>
@@ -36,6 +39,40 @@
     </div>
   </section>
 
+  <!-- Hub: 핵심 진입점 4개 -->
+  <section>
+    <div class="container--wide">
+      <p class="section-label fade-in">Explore</p>
+      <div class="hub-grid">
+
+        <a href="atelier.html" class="hub-item fade-in">
+          <p class="hub-item-label">아틀리에</p>
+          <p class="hub-item-desc">헤어 아틀리에 · 예약 문의</p>
+          <span class="hub-item-arrow">→</span>
+        </a>
+
+        <a href="archive/" class="hub-item fade-in">
+          <p class="hub-item-label">아카이브</p>
+          <p class="hub-item-desc">슬로우 라이프의 기록들</p>
+          <span class="hub-item-arrow">→</span>
+        </a>
+
+        <a href="shop/" class="hub-item fade-in hub-item--coming">
+          <p class="hub-item-label">쇼핑</p>
+          <p class="hub-item-desc">제품 · 곧 오픈</p>
+          <span class="hub-item-arrow">→</span>
+        </a>
+
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener" class="hub-item fade-in">
+          <p class="hub-item-label">인스타그램</p>
+          <p class="hub-item-desc">@woohwahae · 일상의 기록</p>
+          <span class="hub-item-arrow">↗</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
   <!-- About -->
   <section>
     <div class="container--wide">
@@ -54,8 +91,20 @@
             슬로우 라이프의 실천은 작은 것에서 시작된다.<br>
             좋은 재료, 느린 손길, 오래 가는 선택.
           </p>
+          <a href="atelier.html" class="cta fade-in">아틀리에 보기</a>
         </div>
         <div class="about-space"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Archive Preview (자동 발행) -->
+  <section>
+    <div class="container--wide">
+      <p class="section-label fade-in">최근 기록</p>
+      <div id="archive-preview">
+        <ul class="archive-list" id="recent-posts"></ul>
+        <a href="archive/" class="cta fade-in">모든 기록 보기</a>
       </div>
     </div>
   </section>
@@ -90,33 +139,22 @@
     </div>
   </section>
 
-  <!-- Archive Preview -->
-  <section>
-    <div class="container--wide">
-      <p class="section-label fade-in">최근 기록</p>
-      <div id="archive-preview" class="fade-in">
-        <!-- JavaScript 또는 ContentPublisher가 최근 글 3개를 여기에 삽입 -->
-        <ul class="archive-list" id="recent-posts">
-          <!-- 동적 콘텐츠 -->
-        </ul>
-        <a href="archive/" class="cta fade-in">모든 기록 보기</a>
-      </div>
-    </div>
-  </section>
-
   <!-- Footer -->
   <footer>
+    <div class="footer-symbol">
+      <img src="assets/img/symbol.svg" alt="WOOHWAHAE" width="32">
+    </div>
     <p class="footer-copy">© 2026 WOOHWAHAE</p>
     <ul class="footer-links">
       <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
       <li><a href="archive/">Archive</a></li>
+      <li><a href="atelier.html">Atelier</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
   </footer>
 
   <script src="assets/js/main.js"></script>
   <script>
-    // 최근 아카이브 글 로드 (archive/index.json에서)
     fetch('archive/index.json')
       .then(r => r.json())
       .then(posts => {
@@ -136,7 +174,6 @@
           `;
           list.appendChild(li);
         });
-        // 새로 추가된 요소에 observer 적용
         list.querySelectorAll('.fade-in').forEach(el => {
           const obs = new IntersectionObserver(([e]) => {
             if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
@@ -145,7 +182,6 @@
         });
       })
       .catch(() => {
-        // 아직 글이 없을 때 — 조용히 숨김
         document.getElementById('archive-preview').style.display = 'none';
       });
   </script>

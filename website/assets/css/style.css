@@ -132,6 +132,16 @@ nav {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   border-bottom: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-symbol {
+  width: 20px;
+  height: auto;
+  display: block;
+  flex-shrink: 0;
 }
 
 .nav-links {
@@ -466,13 +476,82 @@ section + section {
   border-color: var(--text);
 }
 
+/* ─── Hub Grid (홈 허브 섹션) ─── */
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.hub-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: var(--space-lg) var(--space-md);
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom-width: 1px;
+  text-decoration: none;
+  border-bottom: none;
+  transition: background-color var(--duration) var(--ease);
+  position: relative;
+  border: none;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.hub-item:hover {
+  background-color: var(--bg-dark);
+}
+
+.hub-item--coming {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.hub-item-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 0;
+}
+
+.hub-item-desc {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.hub-item-arrow {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-md);
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  transition: color var(--duration) var(--ease);
+}
+
+.hub-item:hover .hub-item-arrow {
+  color: var(--text);
+}
+
 /* ─── Footer ─── */
 footer {
   border-top: 1px solid var(--line);
   padding: var(--space-lg) var(--space-md);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  gap: var(--space-md);
+  text-align: center;
+}
+
+.footer-symbol {
+  opacity: 0.3;
 }
 
 .footer-copy {
@@ -542,10 +621,8 @@ footer {
     gap: var(--space-md);
   }
 
-  footer {
-    flex-direction: column;
-    gap: var(--space-sm);
-    text-align: center;
+  .hub-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .archive-item {
@@ -555,6 +632,10 @@ footer {
 }
 
 @media (max-width: 480px) {
+  .hub-grid {
+    grid-template-columns: 1fr;
+  }
+
   .nav-links {
     display: none;
   }
