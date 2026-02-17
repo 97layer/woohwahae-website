@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Archive{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">Archive</p>
+  <div class="admin-section-header">
+    <h1 class="admin-title">아카이브</h1>
+    <a href="{{ url_for('archive_new') }}" class="admin-action-btn">새 글 작성</a>
+  </div>
+</div>
+
+{% if posts %}
+<ul class="admin-post-list">
+  {% for post in posts %}
+  <li class="admin-post-item">
+    <div class="admin-post-info">
+      <span class="admin-post-date">{{ post.date }}</span>
+      <p class="admin-post-title">{{ post.title }}</p>
+      <p class="admin-post-preview">{{ post.preview }}</p>
+    </div>
+    <div class="admin-post-actions">
+      <a href="{{ url_for('archive_edit', slug=post.slug) }}" class="admin-btn">수정</a>
+      <form action="{{ url_for('archive_delete', slug=post.slug) }}" method="post"
+            onsubmit="return confirm('정말 삭제하시겠습니까?');">
+        <button type="submit" class="admin-btn admin-btn--danger">삭제</button>
+      </form>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="admin-empty">
+  <p>아직 작성된 글이 없습니다.</p>
+  <a href="{{ url_for('archive_new') }}" class="admin-action-btn">첫 번째 글 작성하기</a>
+</div>
+{% endif %}
+{% endblock %}

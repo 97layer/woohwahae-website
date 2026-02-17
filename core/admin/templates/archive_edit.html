@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ '새 글' if mode == 'new' else '수정' }}{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">{{ 'New Post' if mode == 'new' else 'Edit Post' }}</p>
+  <h1 class="admin-title">{{ '새 글 작성' if mode == 'new' else '글 수정' }}</h1>
+</div>
+
+<form method="post" class="admin-form">
+  <div class="admin-form-group">
+    <label for="title">제목</label>
+    <input type="text" id="title" name="title" value="{{ post.get('title', '') }}"
+           placeholder="포스트 제목" required>
+  </div>
+
+  {% if mode == 'new' %}
+  <div class="admin-form-group">
+    <label for="slug">슬러그 (URL)</label>
+    <input type="text" id="slug" name="slug" value="{{ post.get('slug', '') }}"
+           placeholder="영문-하이픈-형식" required>
+    <p class="admin-form-hint">woohwahae.kr/archive/<strong>이-부분</strong>/</p>
+  </div>
+  {% endif %}
+
+  <div class="admin-form-group">
+    <label for="preview">미리보기 텍스트</label>
+    <input type="text" id="preview" name="preview" value="{{ post.get('preview', '') }}"
+           placeholder="아카이브 목록에 표시될 요약 (1-2줄)">
+  </div>
+
+  <div class="admin-form-group admin-form-group--editor">
+    <label for="body">본문 (Markdown)</label>
+    <div class="admin-editor-wrap">
+      <textarea id="body" name="body" rows="20" placeholder="마크다운으로 작성하세요..." required>{{ post.get('body', '') }}</textarea>
+      <div class="admin-preview" id="preview-area">
+        <p class="admin-preview-placeholder">미리보기</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-form-actions">
+    <button type="submit" class="admin-action-btn">{{ '작성 완료' if mode == 'new' else '수정 완료' }}</button>
+    <a href="{{ url_for('archive_list') }}" class="admin-btn">취소</a>
+  </div>
+</form>
+
+<script>
+// Auto-generate slug from title (new post only)
+{% if mode == 'new' %}
+document.getElementById('title').addEventListener('input', function() {
+  const slug = this.value.toLowerCase()
+    .replace(/[^\w\s가-힣-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .substring(0, 60)
+    .replace(/-$/, '');
+  document.getElementById('slug').value = slug;
+});
+{% endif %}
+
+// Live markdown preview
+const body = document.getElementById('body');
+const preview = document.getElementById('preview-area');
+if (body && preview) {
+  body.addEventListener('input', function() {
+    // Simple markdown rendering (paragraphs + bold + italic)
+    let html = this.value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    preview.innerHTML = '<p>' + html + '</p>';
+  });
+  // Trigger initial preview
+  if (body.value) body.dispatchEvent(new Event('input'));
+}
+</script>
+{% endblock %}

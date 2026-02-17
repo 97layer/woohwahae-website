@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">Dashboard</p>
+  <h1 class="admin-title">관리</h1>
+</div>
+
+<div class="admin-stats">
+  <div class="admin-stat-card">
+    <p class="admin-stat-num">{{ post_count }}</p>
+    <p class="admin-stat-label">Archive Posts</p>
+    <a href="{{ url_for('archive_list') }}" class="admin-stat-link">관리 →</a>
+  </div>
+  <div class="admin-stat-card">
+    <p class="admin-stat-num">{{ pipeline_count }}</p>
+    <p class="admin-stat-label">Pipeline Items</p>
+    <a href="{{ url_for('pipeline') }}" class="admin-stat-link">검토 →</a>
+  </div>
+</div>
+
+<div class="admin-section" style="margin-top: 4rem;">
+  <p class="admin-label">Quick Actions</p>
+  <div class="admin-actions">
+    <a href="{{ url_for('archive_new') }}" class="admin-action-btn">새 글 작성</a>
+    <form action="{{ url_for('publish') }}" method="post" style="display:inline;">
+      <button type="submit" class="admin-action-btn admin-action-btn--publish">사이트 발행</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

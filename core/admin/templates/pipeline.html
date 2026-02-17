@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Pipeline{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">Pipeline</p>
+  <h1 class="admin-title">97layerOS 콘텐츠</h1>
+  <p class="admin-desc">AI가 생성한 콘텐츠를 검토하고 아카이브로 채택합니다.</p>
+</div>
+
+{% if items %}
+<ul class="admin-pipeline-list">
+  {% for item in items %}
+  <li class="admin-pipeline-item">
+    <div class="admin-pipeline-header">
+      <span class="admin-pipeline-date">{{ item.date }}</span>
+      {% if item.meta.get('brand_score') %}
+      <span class="admin-pipeline-score">Brand {{ item.meta.brand_score }}/100</span>
+      {% endif %}
+    </div>
+
+    <div class="admin-pipeline-body">
+      <div class="admin-pipeline-essay">
+        <p class="admin-pipeline-label">Archive Essay</p>
+        <p class="admin-pipeline-text">{{ item.essay }}</p>
+      </div>
+
+      {% if item.caption %}
+      <div class="admin-pipeline-caption">
+        <p class="admin-pipeline-label">Instagram Caption</p>
+        <p class="admin-pipeline-text">{{ item.caption }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="admin-pipeline-actions">
+      <form action="{{ url_for('pipeline_adopt', item_id=item.id) }}" method="post">
+        <button type="submit" class="admin-action-btn">아카이브에 채택</button>
+      </form>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="admin-empty">
+  <p>파이프라인에 대기 중인 콘텐츠가 없습니다.</p>
+  <p class="admin-empty-sub">97layerOS가 생성한 콘텐츠가 여기에 표시됩니다.</p>
+</div>
+{% endif %}
+{% endblock %}

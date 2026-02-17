@@ -41,6 +41,7 @@ visual/
 brain/
 *screenshot*
 *.png
+!website/assets/img/icon-*.png
 *.jpg
 *.jpeg
 config.json
