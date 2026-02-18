@@ -628,18 +628,225 @@ class TelegramSecretaryV6:
             "\n".join(lines), parse_mode=constants.ParseMode.HTML
         )
 
+    async def draft_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """/draft [테마] — 에세이 초안 생성 후 승인 대기"""
+        theme_arg = ' '.join(context.args).strip() if context.args else None
+        if not theme_arg:
+            await update.message.reply_text(
+                "사용법: <code>/draft 테마명</code>\n예: /draft 슬로우라이프",
+                parse_mode=constants.ParseMode.HTML
+            )
+            return
+
+        status_msg = await update.message.reply_text(
+            f"✍️ <b>{_escape_html(theme_arg)}</b> 초안 작성 중...",
+            parse_mode=constants.ParseMode.HTML
+        )
+        try:
+            # 지식 베이스에서 테마 관련 신호 검색
+            knowledge = self.engine._search_knowledge(theme_arg)
+            draft_prompt = (
+                f"woohwahae 브랜드 아카이브 에세이 초안을 써줘.\n"
+                f"테마: {theme_arg}\n"
+                f"관련 자료:\n{knowledge[:2000] if knowledge else '없음'}\n\n"
+                f"조건: 800~1200자, 한국어, 명사형 제목, Magazine B 스타일, "
+                f"슬로우라이프 철학 반영. 제목과 본문만 출력."
+            )
+            draft_text = self.engine._call_gemini(draft_prompt)
+
+            if not draft_text:
+                await status_msg.edit_text("초안 생성 실패.")
+                return
+
+            # 초안 임시 저장
+            draft_id = f"draft_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            draft_path = PROJECT_ROOT / '.infra' / 'drafts'
+            draft_path.mkdir(parents=True, exist_ok=True)
+            (draft_path / f"{draft_id}.json").write_text(
+                json.dumps({'id': draft_id, 'theme': theme_arg, 'content': draft_text,
+                            'created_at': datetime.now().isoformat()}, ensure_ascii=False, indent=2)
+            )
+
+            # 초안 미리보기 + 승인 버튼
+            preview = draft_text[:800] + ("..." if len(draft_text) > 800 else "")
+            keyboard = InlineKeyboardMarkup([[
+                InlineKeyboardButton("✅ 발행", callback_data=f"draft_publish:{draft_id}"),
+                InlineKeyboardButton("❌ 폐기", callback_data=f"draft_discard:{draft_id}"),
+            ]])
+            await status_msg.edit_text(
+                f"<b>📝 초안 — {_escape_html(theme_arg)}</b>\n\n"
+                f"{_escape_html(preview)}",
+                parse_mode=constants.ParseMode.HTML,
+                reply_markup=keyboard
+            )
+        except Exception as e:
+            logger.error("draft_command error: %s", e)
+            await status_msg.edit_text(f"초안 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
+    async def corpus_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """/corpus — 군집 현황 미리보기"""
+        try:
+            corpus_index = PROJECT_ROOT / 'knowledge' / 'corpus' / 'index.json'
+            if not corpus_index.exists():
+                await update.message.reply_text("Corpus가 아직 초기화되지 않았습니다.")
+                return
+
+            ci = json.loads(corpus_index.read_text())
+            clusters = ci.get('clusters', {})
+            published = ci.get('published', [])
+
+            if not clusters:
+                await update.message.reply_text(
+                    "아직 군집 없음.\nSA 분석이 완료되면 자동으로 군집이 형성됩니다."
+                )
+                return
+
+            lines = [f"<b>🗂 Corpus 군집 현황</b> (발행됨: {len(published)}개)\n"]
+            for theme, c in sorted(clusters.items(), key=lambda x: len(x[1].get('entry_ids', [])), reverse=True):
+                cnt = len(c.get('entry_ids', []))
+                last = c.get('last_seen', '')[:10]
+                # 성숙도 판단 (5개+ = 발행 가능)
+                ready = "🟢 발행가능" if cnt >= 5 else f"🟡 축적중 ({5-cnt}개 더 필요)"
+                lines.append(f"<b>{_escape_html(theme)}</b>\n  {cnt}개 신호 | {last} | {ready}\n")
+
+            lines.append("/publish [테마] 로 즉시 발행")
+            await update.message.reply_text('\n'.join(lines), parse_mode=constants.ParseMode.HTML)
+
+        except Exception as e:
+            logger.error("corpus_command error: %s", e)
+            await update.message.reply_text(f"오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
+    async def handle_draft_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """초안 승인/폐기 인라인 버튼 처리"""
+        query = update.callback_query
+        await query.answer()
+        data = query.data  # "draft_publish:draft_id" or "draft_discard:draft_id"
+
+        try:
+            action, draft_id = data.split(':', 1)
+            draft_path = PROJECT_ROOT / '.infra' / 'drafts' / f"{draft_id}.json"
+
+            if not draft_path.exists():
+                await query.edit_message_text("초안을 찾을 수 없습니다.")
+                return
+
+            draft = json.loads(draft_path.read_text())
+
+            if action == 'draft_discard':
+                draft_path.unlink()
+                await query.edit_message_text(f"❌ 폐기됨: {draft['theme']}")
+                return
+
+            # 발행: CE 태스크로 전달
+            from core.system.queue_manager import QueueManager
+            qm = QueueManager()
+            qm.create_task(
+                agent_type='CE',
+                task_type='write_corpus_essay',
+                payload={
+                    'draft_content': draft['content'],
+                    'theme': draft['theme'],
+                    'forced': True,
+                    'triggered_by': 'telegram_draft_approve',
+                }
+            )
+            draft_path.unlink()
+            await query.edit_message_text(
+                f"🚀 <b>발행 승인됨</b>\n\n"
+                f"테마: {_escape_html(draft['theme'])}\n"
+                f"CE 에이전트가 최종 포맷으로 처리합니다.",
+                parse_mode=constants.ParseMode.HTML
+            )
+        except Exception as e:
+            logger.error("draft callback error: %s", e)
+            await query.edit_message_text(f"처리 오류: {str(e)[:100]}")
+
+    async def send_daily_briefing(self, app):
+        """매일 08:00 자동 브리핑 푸시"""
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        if not admin_id:
+            return
+        try:
+            from datetime import date as _date
+            today = _date.today().isoformat()
+            signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
+            corpus_index = PROJECT_ROOT / 'knowledge' / 'corpus' / 'index.json'
+
+            today_sigs = sum(
+                1 for f in signals_dir.glob('*.json')
+                if json.loads(f.read_text()).get('captured_at', '').startswith(today)
+            )
+            clusters_total = published = 0
+            if corpus_index.exists():
+                ci = json.loads(corpus_index.read_text())
+                clusters_total = len(ci.get('clusters', {}))
+                published = len(ci.get('published', []))
+                ripe = sum(
+                    1 for c in ci.get('clusters', {}).values()
+                    if len(c.get('entry_ids', [])) >= 5
+                )
+            else:
+                ripe = 0
+
+            msg = (
+                f"☀️ <b>일일 브리핑 — {today}</b>\n\n"
+                f"어젯밤 수집: {today_sigs}개 신호\n"
+                f"Corpus 군집: {clusters_total}개 (발행가능 {ripe}개)\n"
+                f"누적 발행: {published}개\n\n"
+                + (f"💡 <b>{ripe}개 군집이 발행 준비 완료</b>\n/publish 로 발행하세요." if ripe > 0
+                   else "Gardener가 03:00에 군집을 점검합니다.")
+            )
+            await app.bot.send_message(chat_id=int(admin_id), text=msg, parse_mode=constants.ParseMode.HTML)
+        except Exception as e:
+            logger.error("daily briefing error: %s", e)
+
+    async def notify_publish_complete(self, theme: str, url: str = ""):
+        """발행 완료 시 텔레그램 알림 (CE agent에서 호출)"""
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        if not admin_id or not hasattr(self, '_app'):
+            return
+        try:
+            link_text = f"\n🔗 {url}" if url else ""
+            msg = (
+                f"✅ <b>발행 완료</b>\n\n"
+                f"테마: {_escape_html(theme)}{link_text}\n"
+                f"woohwahae.kr/archive/ 에 게시됨"
+            )
+            await self._app.bot.send_message(
+                chat_id=int(admin_id), text=msg, parse_mode=constants.ParseMode.HTML
+            )
+        except Exception as e:
+            logger.error("notify_publish_complete error: %s", e)
+
     def run(self):
+        from telegram.ext import JobQueue
         application = Application.builder().token(self.bot_token).build()
+        self._app = application
+
         application.add_handler(CommandHandler("start", self.start_command))
         application.add_handler(CommandHandler("growth", self.growth_command))
         application.add_handler(CommandHandler("status", self.status_command))
         application.add_handler(CommandHandler("publish", self.publish_command))
         application.add_handler(CommandHandler("signal", self.signal_command))
         application.add_handler(CommandHandler("report", self.report_command))
+        application.add_handler(CommandHandler("draft", self.draft_command))
+        application.add_handler(CommandHandler("corpus", self.corpus_command))
         application.add_handler(CommandHandler("approve", self.approve_command))
         application.add_handler(CommandHandler("reject", self.reject_command))
         application.add_handler(CommandHandler("pending", self.pending_command))
+        application.add_handler(CallbackQueryHandler(self.handle_draft_callback, pattern=r'^draft_'))
         application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO, self.handle_message))
+
+        # 매일 08:00 브리핑 자동 푸시
+        from datetime import time as _time
+        job_queue = application.job_queue
+        if job_queue:
+            job_queue.run_daily(
+                lambda ctx: asyncio.create_task(self.send_daily_briefing(application)),
+                time=_time(hour=8, minute=0, second=0),
+                name="daily_briefing"
+            )
+
         logger.info("🚀 V6 Secretary Service Started")
         application.run_polling()
 
