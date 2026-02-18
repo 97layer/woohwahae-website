@@ -156,6 +156,24 @@ python core/system/handoff.py --handoff
 
 ---
 
+## 🛠️ SKILLS REGISTRY
+
+**경로**: `skills/<skill_name>/SKILL.md`
+**규칙**: 작업 시작 전 관련 스킬 존재 여부를 확인하고 능동적으로 활용한다.
+
+| 스킬 | 경로 | 용도 |
+|------|------|------|
+| signal_capture | `skills/signal_capture/SKILL.md` | URL/텍스트 포착 → knowledge/signals/ 저장 |
+| data_curation | `skills/data_curation/SKILL.md` | 지식 자산 온톨로지 구축 + 중복 정화 |
+| intelligence_backup | `skills/intelligence_backup/SKILL.md` | 핵심 자산 아카이빙 + GDrive 백업 |
+| infrastructure_sentinel | `skills/infrastructure_sentinel/SKILL.md` | GCP VM 상태 모니터링 + 알림 |
+| instagram_content_curator | `skills/instagram_content_curator/SKILL.md` | 인스타그램 콘텐츠 생성 파이프라인 |
+| uip | `skills/uip/SKILL.md` | 사용자 의도 파악 + 인터랙션 프로토콜 |
+
+**능동 활용 의무**: 태스크와 매칭되는 스킬이 있으면 읽고 따른다. 없으면 새 스킬 생성을 제안한다.
+
+---
+
 ## ⚙️ ENFORCEMENT LAYERS
 
 | Layer | 메커니즘 | 위치 |
