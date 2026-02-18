@@ -14,23 +14,22 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-  <!-- favicon: symbol.jpg 사용 (SVG 삭제됨) -->
-  <link rel="icon" href="assets/img/symbol.jpg" type="image/jpeg">
+  <link rel="icon" href="assets/img/symbol.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/css/style.css">
   <script src="assets/js/analytics.js"></script>
 </head>
 
 <body>
 
-  <!-- Navigation — 핵심 4개: Archive / Service / About / Contact -->
+  <!-- Navigation -->
   <nav>
     <a href="/" class="nav-logo">
       <img src="assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
       <li><a href="archive/">Archive</a></li>
-      <li><a href="service.html">Service</a></li>
-      <li><a href="about.html">About</a></li>
+      <li><a href="atelier.html">Atelier</a></li>
+      <li><a href="shop.html">Shop</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <button class="nav-toggle" aria-label="Menu">
@@ -38,7 +37,7 @@
     </button>
   </nav>
 
-  <!-- 1. Hero — Magazine B Cover -->
+  <!-- 1. Hero -->
   <section class="hero section--light">
     <div class="container">
       <p class="hero-eyebrow fade-in">Archive for Slow Life</p>
@@ -47,7 +46,7 @@
       </h1>
       <div class="hero-platform fade-in">
         <p class="hero-platform-def">
-          가속화된 세상에서 주체적으로 살아가기 위한 아카이브.
+          A practice of returning to yourself.
         </p>
         <p class="hero-platform-body">
           Hair. Photography. Objects.<br>
@@ -57,7 +56,7 @@
     </div>
   </section>
 
-  <!-- 2. 섹션 입구 — 7 Sections Hub -->
+  <!-- 2. 서비스 입구 -->
   <section class="section--light channels-section">
     <div class="container--wide">
       <p class="section-label fade-in">Explore</p>
@@ -65,45 +64,27 @@
 
         <a href="archive/" class="hub-item fade-in">
           <p class="hub-item-label">Archive</p>
-          <p class="hub-item-desc">생각의 기록.</p>
+          <p class="hub-item-desc">Records of slow life.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
-        <a href="service.html" class="hub-item fade-in">
-          <p class="hub-item-label">Service</p>
-          <p class="hub-item-desc">Hair &amp; Photography.</p>
+        <a href="atelier.html" class="hub-item fade-in">
+          <p class="hub-item-label">Atelier</p>
+          <p class="hub-item-desc">Hair & photography, offline.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
-        <a href="about.html" class="hub-item fade-in">
-          <p class="hub-item-label">About</p>
-          <p class="hub-item-desc">철학의 선언.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
-
-        <span class="hub-item hub-item--coming fade-in">
+        <a href="shop.html" class="hub-item fade-in">
           <p class="hub-item-label">Shop</p>
-          <p class="hub-item-desc">의식적 소비의 큐레이션.</p>
-          <span class="hub-item-arrow">Soon</span>
-        </span>
-
-        <span class="hub-item hub-item--coming fade-in">
-          <p class="hub-item-label">Playlist</p>
-          <p class="hub-item-desc">감각의 리듬.</p>
-          <span class="hub-item-arrow">Soon</span>
-        </span>
-
-        <span class="hub-item hub-item--coming fade-in">
-          <p class="hub-item-label">Photography</p>
-          <p class="hub-item-desc">순간의 포착.</p>
-          <span class="hub-item-arrow">Soon</span>
-        </span>
+          <p class="hub-item-desc">Curated everyday objects.</p>
+          <span class="hub-item-arrow">&rarr;</span>
+        </a>
 
       </div>
     </div>
   </section>
 
-  <!-- 3. Archive Preview -->
+  <!-- 3. Archive Preview (데이터 있을 때만 표시) -->
   <section class="section--light" id="archive-section">
     <div class="container--wide">
       <p class="section-label fade-in">Recent</p>
@@ -114,13 +95,13 @@
     </div>
   </section>
 
-  <!-- 4. Newsletter -->
+  <!-- Newsletter -->
   <section class="section--dark newsletter-section">
     <div class="container">
       <p class="section-label fade-in">Newsletter</p>
       <h2 class="fade-in">Stay in the loop.</h2>
       <p class="fade-in newsletter-desc">
-        Archive updates, curated thoughts.<br>
+        Archive updates, atelier news, and curated thoughts.<br>
         Delivered by email.
       </p>
       <form id="newsletter-form" class="newsletter-form fade-in">
@@ -131,7 +112,7 @@
     </div>
   </section>
 
-  <!-- 5. Footer -->
+  <!-- 4. Footer -->
   <footer class="section--light">
     <div class="footer-grid">
       <div class="footer-brand">
@@ -143,9 +124,10 @@
         <p class="footer-nav-title">Navigate</p>
         <ul class="footer-nav-list">
           <li><a href="archive/">Archive</a></li>
-          <li><a href="service.html">Service</a></li>
-          <li><a href="about.html">About</a></li>
+          <li><a href="atelier.html">Atelier</a></li>
+          <li><a href="shop.html">Shop</a></li>
           <li><a href="contact.html">Contact</a></li>
+          <li><a href="about.html">About</a></li>
         </ul>
       </div>
       <div>
@@ -184,7 +166,7 @@
           li.className = 'content-card fade-in';
           li.innerHTML = `
             <a href="archive/${post.slug}/">
-              <p class="content-card-date">${post.issue} · ${post.date}</p>
+              <p class="content-card-date">${post.date}</p>
               <p class="content-card-title">${post.title}</p>
               <p class="content-card-preview">${post.preview}</p>
             </a>

@@ -33,12 +33,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from core.system.agent_watcher import AgentWatcher
 from core.system.queue_manager import Task
 
-# Gemini API imports (google.genai — 신규 SDK)
-try:
-    import google.genai as genai
-except ImportError:
-    print("⚠️  google-genai not installed. Run: pip install google-genai")
-    sys.exit(1)
+# Using REST API directly - no SDK needed
 
 
 class StrategyAnalyst:
@@ -97,7 +92,7 @@ class StrategyAnalyst:
         content = signal_data.get('content', '')
         source = signal_data.get('source', 'unknown')
 
-        print(f"Joon: 신호 {signal_id} 분석 시작.")
+        print(f"Joon: 신호 {signal_id} 분석 시작. [API: {self._api_url}]")
 
         # Construct prompt for strategic analysis
         prompt = self._build_analysis_prompt(content, source)

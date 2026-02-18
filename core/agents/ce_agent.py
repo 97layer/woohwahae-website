@@ -282,8 +282,16 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
 
     def _write_corpus_essay(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Corpus 군집 기반 에세이 작성.
-        Magazine B 방식: 여러 신호의 흐름을 읽고 본질을 추출한 롱폼.
+        Corpus 군집 기반 원소스 멀티유즈 콘텐츠 생성.
+
+        하나의 Gemini 호출로 5개 포맷 동시 생성:
+          1. archive_essay     — 롱폼 에세이 (800~1200자) → woohwahae.kr/archive/
+          2. instagram_caption — 캡션 (150자 이내) → 인스타그램 단일 피드
+          3. carousel_slides   — 3~5장 텍스트 슬라이드 → 인스타그램 캐러셀
+          4. telegram_summary  — 3줄 요약 → 봇 푸시 알림
+          5. pull_quote        — 핵심 1문장 → 웹사이트 히어로/about 인용구
+
+        원칙: 포맷이 다를 뿐 동일한 본질에서 파생. 재가공 아닌 파생.
         """
         theme = payload.get("theme", "")
         rag_context = payload.get("rag_context", [])
@@ -299,28 +307,36 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
             if insights:
                 context_text += f"인사이트: {' / '.join(str(x) for x in insights[:3])}\n"
 
-        prompt = f"""너는 WOOHWAHAE 아카이브의 편집자다.
+        prompt = f"""너는 WOOHWAHAE의 편집장이다.
 
 주제: {theme}
 신호 수: {entry_count}개
-지시: {instruction}
 
-아래는 이 주제와 관련해 쌓인 신호들의 요약이다:
+아래는 이 주제와 관련해 시간을 두고 쌓인 신호들의 요약이다:
 {context_text}
 
-위 신호들의 흐름을 읽고, 단편적인 요약이 아닌 하나의 글로 써라.
+이 신호들의 흐름에서 본질을 읽어내고, 아래 5개 포맷을 동시에 만들어라.
+모두 같은 본질에서 파생된다. 재가공이 아닌 파생이다.
 
-요구사항:
-- 분량: 800~1200자 (한국어)
-- 톤: Magazine B처럼 절제되고 사색적. 감탄사나 수식어 없음.
-- 구조: 도입(관찰) → 전개(맥락) → 마무리(열린 질문 또는 여백)
-- 이모지, 볼드, 헤더 사용 금지
-- WOOHWAHAE 5 Pillars 반영: 슬로우라이프, 미니멀리즘, 본질, 절제, 기록
+공통 규칙:
+- 한국어
+- 이모지 완전 금지
+- 볼드, 헤더 사용 금지
+- WOOHWAHAE 톤: 절제, 사색, 여백. 감탄사 없음.
 
 응답 형식 (JSON):
 {{
-  "archive_essay": "에세이 전문",
-  "essay_title": "제목 (10자 이내, 간결하게)",
+  "essay_title": "제목 (10자 이내, 명사형)",
+  "pull_quote": "이 글 전체를 관통하는 핵심 문장 1개 (30자 이내). 웹사이트 히어로에 써도 될 만큼 밀도 있게.",
+  "archive_essay": "롱폼 에세이. 800~1200자. 도입(관찰) → 전개(맥락) → 마무리(열린 질문 또는 여백). 단락 사이 빈 줄.",
+  "instagram_caption": "인스타그램 캡션. 150자 이내. 에세이의 핵심을 압축. 마지막 줄은 여백을 주는 한 문장.",
+  "carousel_slides": [
+    "슬라이드 1: 도입 문장 (30자 이내)",
+    "슬라이드 2: 핵심 관찰 (30자 이내)",
+    "슬라이드 3: 맥락 또는 역설 (30자 이내)",
+    "슬라이드 4: 마무리 또는 질문 (30자 이내)"
+  ],
+  "telegram_summary": "봇 푸시 알림용 3줄 요약. 각 줄 40자 이내. 첫 줄: 제목. 둘째 줄: 핵심. 셋째 줄: 링크 유도.",
   "theme": "{theme}",
   "entry_count": {entry_count}
 }}
@@ -336,14 +352,20 @@ JSON만 출력."""
                 contents=[prompt]
             )
             text = response.text.strip()
-            # JSON 추출
             match = re.search(r'\{.*\}', text, re.DOTALL)
             if match:
                 result = json.loads(match.group())
-                print(f"Ray: corpus 에세이 완료 — {theme} ({entry_count}개 신호)")
+                formats = [k for k in ['archive_essay', 'instagram_caption', 'carousel_slides',
+                                        'telegram_summary', 'pull_quote'] if k in result]
+                print(f"Ray: 원소스 멀티유즈 완료 — {theme} | 포맷: {', '.join(formats)}")
                 return result
             else:
-                return {"archive_essay": text, "essay_title": theme, "theme": theme, "entry_count": entry_count}
+                return {
+                    "archive_essay": text,
+                    "essay_title": theme,
+                    "theme": theme,
+                    "entry_count": entry_count
+                }
         except Exception as e:
             print(f"Ray: corpus 에세이 실패 — {e}")
             return {"error": str(e), "theme": theme}

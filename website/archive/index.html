@@ -4,155 +4,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WOOHWAHAE Archive — 슬로우 라이프의 기록들.">
+  <meta name="description" content="WOOHWAHAE Archive — 생각의 기록. 슬로우 라이프의 에세이와 실천.">
   <title>Archive — WOOHWAHAE</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#FAFAF7">
+  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="icon" href="../assets/img/symbol.jpg" type="image/jpeg">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="../assets/js/analytics.js"></script>
 </head>
 
 <body>
-  <div class="grain-overlay"></div>
 
   <nav>
     <a href="/" class="nav-logo">
       <img src="../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
-      <li><a href="../archive/">Archive</a></li>
-      <li><a href="../atelier.html">Atelier</a></li>
-      <li><a href="../shop.html">Shop</a></li>
+      <li><a href="../archive/" class="active">Archive</a></li>
+      <li><a href="../service.html">Service</a></li>
+      <li><a href="../about.html">About</a></li>
       <li><a href="../contact.html">Contact</a></li>
     </ul>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
-  <main class="archive-container">
+  <!-- Archive Header -->
+  <div class="container--wide">
     <header class="archive-header">
-      <p class="section-label">Archive</p>
-      <h1 class="archive-title">기록</h1>
-      <p class="archive-subtitle">Documenting the process of subtraction.</p>
+      <h1 class="archive-title fade-in">Archive</h1>
+      <p class="archive-subtitle fade-in">생각의 기록.</p>
     </header>
+  </div>
 
-    <nav class="archive-filters">
-      <button class="filter-btn active" data-category="All">All</button>
-      <button class="filter-btn" data-category="Essays">Essays</button>
-      <button class="filter-btn" data-category="Features">Features</button>
-    </nav>
+  <!-- Archive Controls -->
+  <div class="container--wide">
+    <div class="archive-controls">
+      <input type="text" class="archive-search" id="archive-search" placeholder="Search..." aria-label="검색">
+      <div class="archive-filters" id="archive-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="essay">Essay</button>
+        <button class="filter-btn" data-filter="practice">Practice</button>
+        <button class="filter-btn" data-filter="manifesto">Manifesto</button>
+      </div>
+    </div>
+    <p class="archive-count" id="archive-count"></p>
+  </div>
 
-    <section class="archive-grid">
-      <!-- Grid Items will be injected here by archive.js -->
-    </section>
-  </main>
+  <!-- Archive Grid (Magazine B 스타일) -->
+  <div class="container--wide">
+    <div class="archive-grid" id="archive-grid"></div>
+    <p class="archive-empty" id="archive-empty" style="display:none;">검색 결과가 없습니다.</p>
+  </div>
 
+  <!-- Footer -->
   <footer class="section--light">
     <div class="footer-grid">
       <div class="footer-brand">
         <img src="../assets/img/symbol.jpg" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
         <p class="footer-brand-name">WOOHWAHAE</p>
-        <p class="footer-brand-desc">Slow Life Atelier</p>
+        <p class="footer-brand-desc">Archive for Slow Life</p>
       </div>
       <div>
         <p class="footer-nav-title">Navigate</p>
         <ul class="footer-nav-list">
           <li><a href="../archive/">Archive</a></li>
-          <li><a href="../atelier.html">Atelier</a></li>
-          <li><a href="../shop.html">Shop</a></li>
-          <li><a href="../contact.html">Contact</a></li>
+          <li><a href="../service.html">Service</a></li>
           <li><a href="../about.html">About</a></li>
+          <li><a href="../contact.html">Contact</a></li>
         </ul>
       </div>
       <div>
         <p class="footer-connect-title">Connect</p>
         <ul class="footer-connect-list">
           <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
+              target="_blank" rel="noopener">Booking</a></li>
           <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Based in Ulsan</p>
+      <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Archive for Slow Life</p>
     </div>
   </footer>
 
-  <script id="archive-data" type="application/json">
-[
-  {
-    "slug": "issue-00",
-    "title": "WOOHWAHAE Manifesto",
-    "date": "2026.02.17",
-    "issue": "Issue 00",
-    "preview": "소음을 제거하면 본질이 남는다. 우리는 슬로우라이프를 기록한다.",
-    "category": "Manifesto"
-  },
-  {
-    "slug": "issue-001-beginning",
-    "title": "Beginning",
-    "date": "2026.02.17",
-    "issue": "Issue 001",
-    "preview": "처음 시작하는 순간의 기록. 공간을 열기 전, 오래 생각했다.",
-    "category": "Essay"
-  },
-  {
-    "slug": "issue-002-slow-life",
-    "title": "Slow Life",
-    "date": "2026.02.17",
-    "issue": "Issue 002",
-    "preview": "슬로우 라이프는 느린 삶이 아니다. 자신의 속도를 아는 삶이다.",
-    "category": "Essay"
-  },
-  {
-    "slug": "issue-003-hair-and-daily",
-    "title": "Hair and Daily",
-    "date": "2026.02.17",
-    "issue": "Issue 003",
-    "preview": "아침에 거울 앞에 서는 시간. 그 전쟁의 원인은 대부분 하나다.",
-    "category": "Practice"
-  },
-  {
-    "slug": "issue-004-art-of-waiting",
-    "title": "기다림의 미학",
-    "date": "2026.03.01",
-    "issue": "Issue 004",
-    "preview": "헤어는 본질적으로 기다림의 예술이다. 빠르게 만든 것은 빠르게 무너진다.",
-    "category": "Essay"
-  },
-  {
-    "slug": "issue-005-72h-rule",
-    "title": "72시간 규칙",
-    "date": "2026.02.18",
-    "issue": "Issue 005",
-    "preview": "완벽주의는 생산적으로 보이지만 실제로는 마비다. 완벽한 지연보다 불완전한 완료.",
-    "category": "Practice"
-  },
-  {
-    "slug": "issue-006-8pyeong",
-    "title": "8평",
-    "date": "2026.02.18",
-    "issue": "Issue 006",
-    "preview": "반지하 8평 원룸에 산다. 좁은 공간은 선택을 강제한다.",
-    "category": "Essay"
-  },
-  {
-    "slug": "issue-007-noise-removal",
-    "title": "소음 제거",
-    "date": "2026.02.18",
-    "issue": "Issue 007",
-    "preview": "무엇을 하는지보다 무엇을 하지 않는지가 정체성을 더 명확하게 드러낸다.",
-    "category": "Manifesto"
-  },
-  {
-    "slug": "issue-008-raw-materiality",
-    "title": "날것의 물성",
-    "date": "2026.02.18",
-    "issue": "Issue 008",
-    "preview": "매끄러운 마감은 눈을 속이지만, 거친 질감은 손끝을 깨운다. 우리는 본질적인 감각으로 돌아가야 한다.",
-    "category": "Essay",
-    "image_url": "../../assets/images/issue_008_cover.png"
-  }
-]
-  </script>
-  <script src="../assets/js/archive.js"></script>
   <script src="../assets/js/main.js"></script>
+  <script>
+    /* Archive 페이지 — index.json에서 동적 렌더링 */
+    (function () {
+      const grid = document.getElementById('archive-grid');
+      const emptyMsg = document.getElementById('archive-empty');
+      const countEl = document.getElementById('archive-count');
+      const searchInput = document.getElementById('archive-search');
+      const filtersEl = document.getElementById('archive-filters');
+
+      let posts = [];
+      let activeFilter = 'all';
+
+      fetch('index.json')
+        .then(r => r.json())
+        .then(data => {
+          posts = data;
+          render();
+          bindEvents();
+        })
+        .catch(() => {
+          grid.innerHTML = '<p class="archive-empty">아카이브를 불러오지 못했습니다.</p>';
+        });
+
+      function render() {
+        const query = (searchInput.value || '').toLowerCase();
+        const filtered = posts.filter(p => {
+          const matchFilter = activeFilter === 'all' || p.category.toLowerCase() === activeFilter;
+          const matchSearch = !query ||
+            p.title.toLowerCase().includes(query) ||
+            p.preview.toLowerCase().includes(query) ||
+            (p.issue || '').toLowerCase().includes(query);
+          return matchFilter && matchSearch;
+        });
+
+        grid.innerHTML = '';
+
+        if (filtered.length === 0) {
+          emptyMsg.style.display = 'block';
+          countEl.textContent = '';
+        } else {
+          emptyMsg.style.display = 'none';
+          countEl.textContent = filtered.length + ' issues';
+        }
+
+        filtered.forEach(post => {
+          const card = document.createElement('a');
+          card.href = post.slug + '/';
+          card.className = 'archive-card fade-in';
+          card.innerHTML = `
+            <div class="archive-card-image">
+              <div style="width:100%;height:100%;background:var(--bg-dark);"></div>
+            </div>
+            <div class="archive-card-meta">
+              <span>${post.issue}</span>
+              <span>${post.category}</span>
+            </div>
+            <h3 class="archive-card-title">${post.title}</h3>
+            <p class="archive-card-preview">${post.preview}</p>
+          `;
+          grid.appendChild(card);
+        });
+
+        /* fade-in 등록 */
+        grid.querySelectorAll('.fade-in').forEach(el => {
+          const obs = new IntersectionObserver(([e]) => {
+            if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+          }, { threshold: 0.1 });
+          obs.observe(el);
+        });
+      }
+
+      function bindEvents() {
+        filtersEl.addEventListener('click', e => {
+          if (!e.target.classList.contains('filter-btn')) return;
+          filtersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          activeFilter = e.target.dataset.filter;
+          render();
+        });
+
+        let debounce;
+        searchInput.addEventListener('input', () => {
+          clearTimeout(debounce);
+          debounce = setTimeout(render, 200);
+        });
+      }
+    })();
+  </script>
+
 </body>
 
 </html>

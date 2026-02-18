@@ -76,7 +76,7 @@ class ContentPublisher:
 
         logger.info(f"[Publisher] 발행 시작: {signal_id}")
 
-        # 콘텐츠 추출
+        # 콘텐츠 추출 — corpus 멀티유즈 포맷 포함
         instagram_caption = payload.get("instagram_caption", "")
         hashtags = payload.get("hashtags", "")
         archive_essay = payload.get("archive_essay", "")
@@ -84,7 +84,7 @@ class ContentPublisher:
         sa_result = payload.get("sa_result", {})
         ad_result = payload.get("ad_result", {})
 
-        # CE result에서도 추출 시도
+        # CE result에서도 추출 시도 (corpus 멀티유즈 포맷 포함)
         ce_result = payload.get("ce_result", {})
         if not instagram_caption:
             instagram_caption = ce_result.get("instagram_caption", "")
@@ -93,10 +93,26 @@ class ContentPublisher:
         if not archive_essay:
             archive_essay = ce_result.get("archive_essay", "")
 
+        # corpus 전용 포맷
+        pull_quote = ce_result.get("pull_quote", payload.get("pull_quote", ""))
+        carousel_slides = ce_result.get("carousel_slides", payload.get("carousel_slides", []))
+        telegram_summary = ce_result.get("telegram_summary", payload.get("telegram_summary", ""))
+        essay_title = ce_result.get("essay_title", payload.get("essay_title", ""))
+        is_corpus = payload.get("mode") == "corpus_essay" or bool(pull_quote)
+
         # 1. 텍스트 파일 저장
         (publish_dir / "instagram_caption.txt").write_text(instagram_caption, encoding="utf-8")
         (publish_dir / "hashtags.txt").write_text(hashtags, encoding="utf-8")
         (publish_dir / "archive_essay.txt").write_text(archive_essay, encoding="utf-8")
+
+        # corpus 멀티유즈 추가 파일
+        if pull_quote:
+            (publish_dir / "pull_quote.txt").write_text(pull_quote, encoding="utf-8")
+        if carousel_slides:
+            slides_text = "\n---\n".join(carousel_slides) if isinstance(carousel_slides, list) else str(carousel_slides)
+            (publish_dir / "carousel_slides.txt").write_text(slides_text, encoding="utf-8")
+        if telegram_summary:
+            (publish_dir / "telegram_summary.txt").write_text(telegram_summary, encoding="utf-8")
 
         # 2. 이미지 소스 결정
         image_path = self._get_image(payload, publish_dir, sa_result, ad_result)
@@ -105,8 +121,12 @@ class ContentPublisher:
         meta = {
             "signal_id": signal_id,
             "published_at": datetime.now().isoformat(),
+            "is_corpus": is_corpus,
+            "essay_title": essay_title,
             "instagram_caption_length": len(instagram_caption),
             "archive_essay_length": len(archive_essay),
+            "has_carousel": bool(carousel_slides),
+            "has_pull_quote": bool(pull_quote),
             "cd_brand_score": cd_result.get("brand_score", 0),
             "cd_decision": cd_result.get("decision", "approve"),
             "sa_strategic_score": sa_result.get("strategic_score", 0),
@@ -118,11 +138,13 @@ class ContentPublisher:
             json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8"
         )
 
-        logger.info(f"[Publisher] 패키지 저장: {publish_dir}")
+        logger.info(f"[Publisher] 패키지 저장: {publish_dir} (corpus={is_corpus})")
 
         # 4. Telegram push
+        # corpus 모드: telegram_summary 우선, 없으면 instagram_caption fallback
+        tg_content = telegram_summary if (is_corpus and telegram_summary) else instagram_caption
         telegram_sent = self._push_to_telegram(
-            instagram_caption=instagram_caption,
+            instagram_caption=tg_content,
             hashtags=hashtags,
             archive_essay=archive_essay,
             image_path=image_path,
@@ -133,13 +155,15 @@ class ContentPublisher:
         self._update_memory(meta, instagram_caption, archive_essay)
 
         # 6. woohwahae.kr 웹사이트 자동 발행
+        # corpus 모드: essay_title을 제목으로, pull_quote를 서브헤드로
+        title = essay_title or (meta.get("themes", ["기록"])[0] if meta.get("themes") else "기록")
         website_published = self._publish_to_website(
             signal_id=signal_id,
-            title=meta.get("themes", ["기록"])[0] if meta.get("themes") else "기록",
+            title=title,
             archive_essay=archive_essay,
             instagram_caption=instagram_caption,
             image_path=image_path,
-            meta=meta
+            meta={**meta, "pull_quote": pull_quote}
         )
 
         result = {

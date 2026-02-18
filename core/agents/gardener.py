@@ -536,7 +536,7 @@ JSON만 출력."""
             })
 
         payload = {
-            "mode": "corpus_essay",               # CE가 이 모드를 감지
+            "mode": "corpus_essay",
             "theme": cluster["theme"],
             "entry_count": cluster["entry_count"],
             "rag_context": rag_context,
@@ -544,8 +544,10 @@ JSON만 출력."""
             "time_span_hours": cluster["hours_span"],
             "instruction": (
                 f"주제 '{cluster['theme']}'에 관한 {cluster['entry_count']}개의 신호를 바탕으로 "
-                f"WOOHWAHAE 아카이브 에세이를 작성하라. "
-                f"단일 신호 요약이 아닌, 흐름을 읽고 본질을 추출한 긴 호흡의 글."
+                f"원소스 멀티유즈 콘텐츠를 생성하라. "
+                f"archive_essay(롱폼) / instagram_caption(150자) / "
+                f"carousel_slides(3~5장) / telegram_summary(3줄) / pull_quote(1문장) "
+                f"5개 포맷을 동시에. 모두 같은 본질에서 파생."
             ),
         }
 

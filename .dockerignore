@@ -34,3 +34,8 @@ token.json
 
 # 캐시
 *.cache
+
+# Large Assets (빌드 제외)
+website/assets/uploads/
+website/assets/img/
+website/assets/css/_archive/

@@ -27,13 +27,11 @@
             <div class="recent-signals">
                 <h3 class="admin-label">Recent Signals</h3>
                 <ul id="signals-list">
-                    {% for exp in experiences %}
-                    <li class="signal-item">
+                    {% for exp in experiences %}<li class="signal-item">
                         <span class="signal-tag">{{ exp.category }}</span>
                         <p class="signal-summary">{{ exp.summary }}</p>
                         <span class="signal-date">{{ exp.timestamp }}</span>
-                    </li>
-                    {% endfor %}
+                    </li>{% endfor %}
                 </ul>
             </div>
         </section>
@@ -58,7 +56,7 @@
         <h2 class="admin-label">Top Knowledge Concepts</h2>
         <div class="concepts-cloud">
             {% for concept, count in concepts %}
-            <div class="concept-tag" style="opacity: {{ 0.3 + (count/concepts[0][1])*0.7 }}">
+            <div class="concept-tag" data-count="{{ count }}">
                 <span class="concept-name">{{ concept }}</span>
                 <span class="concept-count">{{ count }}</span>
             </div>

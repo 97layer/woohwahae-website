@@ -66,12 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.addEventListener('click', () => {
       toggle.classList.toggle('active');
       navLinks.classList.toggle('open');
+      // body 스크롤 잠금/해제
+      document.body.classList.toggle('nav-open');
     });
     // 링크 클릭 시 메뉴 닫기
     navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         toggle.classList.remove('active');
         navLinks.classList.remove('open');
+        document.body.classList.remove('nav-open');
       });
     });
   }
