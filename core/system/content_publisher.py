@@ -96,7 +96,15 @@ class ContentPublisher:
         # corpus 전용 포맷
         pull_quote = ce_result.get("pull_quote", payload.get("pull_quote", ""))
         carousel_slides = ce_result.get("carousel_slides", payload.get("carousel_slides", []))
-        telegram_summary = ce_result.get("telegram_summary", payload.get("telegram_summary", ""))
+        # CE가 list로 반환하는 필드 → str 정규화
+        _raw_tg = ce_result.get("telegram_summary", payload.get("telegram_summary", ""))
+        telegram_summary = "\n".join(_raw_tg) if isinstance(_raw_tg, list) else (_raw_tg or "")
+        _raw_ig = instagram_caption
+        if isinstance(_raw_ig, list):
+            instagram_caption = " ".join(_raw_ig)
+        _raw_hash = hashtags
+        if isinstance(_raw_hash, list):
+            hashtags = " ".join(_raw_hash)
         essay_title = ce_result.get("essay_title", payload.get("essay_title", ""))
         is_corpus = payload.get("mode") == "corpus_essay" or bool(pull_quote)
 

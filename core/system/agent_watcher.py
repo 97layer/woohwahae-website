@@ -240,11 +240,13 @@ class AgentWatcher:
                 f"프롬프트: `{prompt_preview}`"
             )
         elif self.agent_type == "CE":
-            headline = inner.get('headline', 'N/A')
-            caption = inner.get('social_caption', '')[:80]
+            # corpus essay 포맷: essay_title + instagram_caption
+            title = inner.get('essay_title') or inner.get('headline', 'N/A')
+            raw_caption = inner.get('instagram_caption') or inner.get('social_caption', '')
+            caption = (raw_caption if isinstance(raw_caption, str) else ' '.join(raw_caption))[:80]
             return (
                 f"{emoji} *CE 콘텐츠 완료*\n"
-                f"헤드라인: {headline}\n"
+                f"제목: {title}\n"
                 f"캡션: {caption or 'N/A'}"
             )
         else:
