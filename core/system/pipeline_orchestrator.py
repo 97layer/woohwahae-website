@@ -65,6 +65,9 @@ class PipelineOrchestrator:
         self._orchestrated: Dict[str, Any] = self._load_orchestrated()
         self._running = False
 
+        # 신호 디렉토리 (입력 소스)
+        self.signals_path = self.base_path / "knowledge" / "signals"
+
     def _load_orchestrated(self) -> Dict:
         """이미 처리한 task_id 목록 로드"""
         if self.orchestrated_file.exists():
@@ -166,6 +169,94 @@ class PipelineOrchestrator:
             score += 5
 
         return min(score, 100)
+
+    def _get_processed_signal_ids(self) -> set:
+        """이미 파이프라인에 투입되었거나 큐에 대기 중인 signal_id 반환 (중복 투입 방지)"""
+        processed = set()
+        for v in self._orchestrated.values():
+            if isinstance(v, dict):
+                sid = v.get("signal_id")
+                if sid:
+                    processed.add(sid)
+        # pending 큐 파일에서도 확인 (재시작 시 중복 방지)
+        if self.pending_path.exists():
+            for f in self.pending_path.glob("*_SA_*.json"):
+                try:
+                    d = json.loads(f.read_text())
+                    sid = d.get("payload", {}).get("signal_id")
+                    if sid:
+                        processed.add(sid)
+                except Exception:
+                    pass
+        return processed
+
+    def _scan_new_signals(self) -> int:
+        """
+        knowledge/signals/ 스캔 → 미처리 신호 → SA 태스크 자동 생성
+
+        이 메서드가 없으면 파이프라인이 시작되지 않는다.
+        신호는 텔레그램/YouTube 등으로 들어와 'captured' 상태로 쌓이는데,
+        누군가 이를 SA 태스크로 변환해줘야 에이전트들이 처리 시작 가능.
+
+        상태 규칙:
+          captured / stored → 미처리 → SA 태스크 생성
+          analyzed / published / processing → 이미 처리됨 → 스킵
+        """
+        if not self.signals_path.exists():
+            return 0
+
+        SKIP_STATUSES = {"analyzed", "published", "processing"}
+        processed_ids = self._get_processed_signal_ids()
+        created_count = 0
+
+        for signal_file in sorted(self.signals_path.glob("*.json")):
+            try:
+                signal_data = json.loads(signal_file.read_text())
+            except Exception as e:
+                logger.warning(f"[Orchestrator] 신호 파일 읽기 실패: {signal_file.name} - {e}")
+                continue
+
+            signal_id = signal_data.get("signal_id", signal_file.stem)
+            status = signal_data.get("status", "captured")
+            signal_type = signal_data.get("type", "text_insight")
+
+            if status in SKIP_STATUSES:
+                continue
+            if signal_id in processed_ids:
+                continue
+
+            # SA 태스크 페이로드 구성
+            payload = {
+                "signal_id": signal_id,
+                "signal_type": signal_type,
+                "content": signal_data.get("content", ""),
+                "signal_path": str(signal_file),
+                "captured_at": signal_data.get("captured_at", ""),
+                "from_user": signal_data.get("from_user", "97layer"),
+                "metadata": signal_data.get("metadata", {}),
+            }
+            if signal_type == "youtube_video":
+                payload["transcript"] = signal_data.get("transcript", "")
+                payload["video_id"] = signal_data.get("video_id", "")
+                payload["title"] = signal_data.get("title", "")
+
+            task_id = self._create_task("SA", "analyze_signal", payload)
+
+            # 즉시 처리됨으로 마킹 (재시작 시 중복 방지)
+            self._orchestrated[f"queued_{signal_id}"] = {
+                "orchestrated_at": datetime.now().isoformat(),
+                "next_task_id": task_id,
+                "signal_id": signal_id,
+            }
+            self._save_orchestrated()
+
+            logger.info(f"[Orchestrator] 신규 신호 → SA 태스크: {signal_id} ({signal_type})")
+            created_count += 1
+
+        if created_count > 0:
+            logger.info(f"[Orchestrator] {created_count}개 신호 파이프라인 투입 완료")
+
+        return created_count
 
     def process_completed_tasks(self):
         """완료된 태스크 스캔 → 다음 파이프라인 단계 생성"""
@@ -382,9 +473,12 @@ class PipelineOrchestrator:
 
         while self._running:
             try:
-                count = self.process_completed_tasks()
-                if count > 0:
-                    logger.info(f"[Orchestrator] 이번 사이클: {count}개 처리")
+                # Step 1: 신규 신호 스캔 → SA 태스크 생성 (파이프라인 진입점)
+                new_signals = self._scan_new_signals()
+                # Step 2: 완료된 태스크 → 다음 단계 체인 (SA→AD→CE→CD→Publisher)
+                completed = self.process_completed_tasks()
+                if new_signals + completed > 0:
+                    logger.info(f"[Orchestrator] 사이클: 신규신호={new_signals}, 체인처리={completed}")
             except Exception as e:
                 logger.error(f"[Orchestrator] 오류: {e}", exc_info=True)
 
