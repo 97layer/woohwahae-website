@@ -1,11 +1,22 @@
-# robots.txt for WOOHWAHAE
+# WOOHWAHAE - Archive for Slow Life
 # https://woohwahae.kr
 
 User-agent: *
 Allow: /
 
-# Sitemaps
-Sitemap: https://woohwahae.kr/sitemap.xml
+# Disallow admin and backend areas
+Disallow: /backend/
+Disallow: /admin/
+Disallow: /.claude/
+Disallow: /upload.html
 
-# Crawl-delay (optional, for gentle crawling)
-Crawl-delay: 1
+# Disallow backup and test files
+Disallow: *-backup*
+Disallow: *-v2*
+Disallow: *-broken*
+
+# Allow CSS, JS, and images
+Allow: /assets/
+
+# Sitemap
+Sitemap: https://woohwahae.kr/sitemap.xml

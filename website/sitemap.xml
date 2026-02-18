@@ -44,9 +44,70 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Shop -->
+  <url>
+    <loc>https://woohwahae.kr/shop.html</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Playlist -->
+  <url>
+    <loc>https://woohwahae.kr/playlist.html</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Project -->
+  <url>
+    <loc>https://woohwahae.kr/project.html</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Photography -->
+  <url>
+    <loc>https://woohwahae.kr/photography.html</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Archive Issues -->
+  <url>
+    <loc>https://woohwahae.kr/archive/issue-00/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://woohwahae.kr/archive/issue-001-beginning/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://woohwahae.kr/archive/issue-002-slow-life/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://woohwahae.kr/archive/issue-003-hair-and-daily/</loc>
+    <lastmod>2026-02-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!--
-    Note: Individual archive posts will be dynamically added here
-    as they are published. Update this file when adding new content.
+    Note: Update this sitemap when adding new archive content.
+    Consider automating sitemap generation via CMS backend.
   -->
 
 </urlset>

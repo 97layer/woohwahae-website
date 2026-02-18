@@ -1,22 +1,30 @@
-# IDENTITY — 97layer + WOOHWAHAE v5.0
+# IDENTITY — WOOHWAHAE Platform v6.0
 
-> **버전**: 5.0
-> **갱신**: 2026-02-16
-> **원칙**: 이 문서는 덮어쓰기(Overwrite) 방식으로 관리된다. 모든 AI 에이전트는 이 문서를 브랜드 판단의 기준으로 삼는다.
+> **버전**: 6.0
+> **갱신**: 2026-02-17
+> **원칙**: 이 문서는 덮어쓰기(Overwrite) 방식으로 관리된다. 모든 AI 에이전트는 이 문서를 플랫폼 판단의 기준으로 삼는다.
 
 ---
 
-## I. 구조 (The Architecture)
+## I. 플랫폼 구조 (Platform Architecture)
 
 ```
-97layer          — 인간. 사유하고 기록하는 사람.
-    ↓
-WOOHWAHAE        — 브랜드. 그 사유의 외부 발현체.
-    ↓
-97layerOS        — 시스템. 발현을 자동화하는 순환 체계(THE CYCLE).
+WOOHWAHAE (최상위 플랫폼)
+    │
+    └── "Archive for Slow Life"
+         가속화된 세상에서 주체적으로 살아가기 위한
+         [생각의 기록] + [실천의 모음] + [의식의 플랫폼]
+              │
+              ├── About        : 철학의 선언
+              ├── Archive      : 생각의 기록 (Magazine)
+              ├── Shop         : 의식적 소비의 큐레이션
+              ├── Service      : 실천의 공간 (Hair Atelier)
+              ├── Playlist     : 감각의 리듬
+              ├── Project      : 협업의 실험
+              └── Photography  : 순간의 포착
 ```
 
-세 층은 독립적이지 않다. 97layer의 내면이 WOOHWAHAE가 되고, WOOHWAHAE의 축적이 97layerOS를 통해 순환한다.
+**WOOHWAHAE는 브랜드가 아니라 삶의 방식이다.** 7개 섹션은 모두 하나의 큰 철학을 표현하는 다른 방식들이다.
 
 ---
 
@@ -41,14 +49,33 @@ WOOHWAHAE        — 브랜드. 그 사유의 외부 발현체.
 
 ---
 
-## III. WOOHWAHAE — The Brand (브랜드)
+## III. WOOHWAHAE — The Platform (플랫폼)
 
-### 핵심 선언
+### 핵심 정의
 
-> **"Remove the Noise, Reveal the Essence"**
-> 소음을 제거하고, 본질을 드러낸다.
+> **"Archive for Slow Life"**
+> 가속화된 세상에서 주체적으로 살아가기 위한 아카이브
 
-WOOHWAHAE는 헤어 아틀리에이자 슬로우 라이프의 제1 발현체다. 빠른 트렌드가 아닌 개인의 본질적 아름다움을 찾는 공간. 기술보다 철학이 먼저인 곳.
+WOOHWAHAE는 세 가지 차원으로 존재한다:
+
+1. **생각의 기록** — 슬로우라이프에 대한 사색과 철학을 기록
+2. **실천의 모음** — 일상에서 구현하는 구체적 방법들을 모음
+3. **의식의 플랫폼** — 의식적으로 선택하고 살아가는 커뮤니티
+
+빠른 트렌드가 아닌 지속 가능한 삶의 방식을 탐구하는 플랫폼. 소비보다 의식이 먼저인 곳.
+
+### Editor & Curator
+
+**WOOSUNHO** — Editor & Curator of WOOHWAHAE
+
+- **역할**: 플랫폼의 모든 콘텐츠를 편집하고 큐레이팅
+- **관점**: Hair Designer의 경험을 바탕으로 한 슬로우라이프 실천자
+- **채널**: Instagram @woosunhokr — 일상 기록과 사색의 아카이브
+- **철학**: "가장 개인적인 것이 가장 보편적이다"
+
+헤어 아틀리에는 그 철학을 실천하는 하나의 공간이고,
+매거진은 그 생각을 기록하는 하나의 매체이며,
+7개 섹션은 모두 Editor의 시각으로 큐레이팅된다.
 
 ### 5 Pillars
 
@@ -119,9 +146,9 @@ The Story   — 개인 경험(Opening) → 보편 전환(Bridge) → 핵심(Core
 
 > "가장 개인적인 것이 가장 보편적인 것이 되는 시스템적 증명"
 
-- **2026 (Integration)**: THE CYCLE 완전 자동화. 97layerOS로 지능형 브랜드 생산 체계 완성.
-- **2027 (Expansion)**: 헤어 아틀리에를 넘어 라이프스타일 전반(오브제, 의식주)으로 WOOHWAHAE 확장.
-- **2028 (Legacy)**: 지속 가능한 본질주의 커뮤니티 형성 및 독립 운영 체계 구축.
+- **2026 (Integration)**: THE CYCLE 완전 자동화. 매거진 B 방향 전환 — Brand Scout + Issue 기반 발행.
+- **2027 (Expansion)**: 헤어 아틀리에를 넘어 라이프스타일 전반(오브제, 의식주)으로 WOOHWAHAE 확장. 월간 Issue 정규화.
+- **2028 (Legacy)**: 지속 가능한 본질주의 커뮤니티 형성. 구독 모델 + 오프라인 연결.
 
 ---
 
@@ -133,6 +160,6 @@ The Story   — 개인 경험(Opening) → 보편 전환(Bridge) → 핵심(Core
 
 ---
 
-**Last Updated**: 2026-02-16
-**Version**: 5.0 (THE CYCLE + WOOHWAHAE 정체성 통합)
+**Last Updated**: 2026-02-17
+**Version**: 6.0 (WOOHWAHAE Platform 구조 확립 + 7 Sections 병렬 체계)
 **갱신 정책**: 덮어쓰기. 버전 이력은 Git에 위임.
