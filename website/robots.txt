@@ -1,0 +1,11 @@
+# robots.txt for WOOHWAHAE
+# https://woohwahae.kr
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://woohwahae.kr/sitemap.xml
+
+# Crawl-delay (optional, for gentle crawling)
+Crawl-delay: 1

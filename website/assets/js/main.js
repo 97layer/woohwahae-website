@@ -63,18 +63,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ─── Smooth Nav Appearance ───
-  // 스크롤 시 nav 배경 미세하게 변화
+  // ─── Magazine B Style Nav on Scroll ───
   const nav = document.querySelector('nav');
   if (nav) {
+    let lastScroll = 0;
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 60) {
-        nav.style.backdropFilter = 'blur(8px)';
-        nav.style.backgroundColor = 'rgba(250, 250, 247, 0.85)';
+      const currentScroll = window.scrollY;
+
+      // 스크롤 다운: nav에 scrolled 클래스 추가
+      if (currentScroll > 100) {
+        nav.classList.add('scrolled');
       } else {
-        nav.style.backdropFilter = '';
-        nav.style.backgroundColor = '';
+        nav.classList.remove('scrolled');
       }
+
+      lastScroll = currentScroll;
     }, { passive: true });
   }
 

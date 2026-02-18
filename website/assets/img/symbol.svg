@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <defs>
+    <style>
+      .symbol-shape { fill: currentColor; }
+    </style>
+  </defs>
+
+  <!-- 외곽 유기적 형태 -->
+  <path class="symbol-shape" d="
+    M 120 20
+    C 95 20, 75 25, 60 35
+    C 45 45, 35 60, 28 80
+    C 20 100, 18 120, 20 140
+    C 22 160, 28 178, 38 192
+    C 48 206, 62 215, 80 218
+    C 98 221, 116 220, 134 218
+    C 152 216, 168 210, 180 200
+    C 192 190, 202 176, 208 158
+    C 214 140, 216 120, 214 100
+    C 212 80, 206 62, 196 48
+    C 186 34, 172 24, 154 21
+    C 136 18, 128 20, 120 20
+    Z
+
+    M 120 60
+    C 110 62, 100 66, 92 74
+    C 84 82, 78 92, 75 104
+    C 72 116, 72 128, 75 140
+    C 78 152, 84 162, 92 170
+    C 100 178, 110 182, 120 184
+    C 130 186, 140 184, 148 178
+    C 156 172, 162 164, 166 154
+    C 170 144, 170 132, 166 120
+    C 162 108, 156 98, 148 90
+    C 140 82, 130 78, 120 76
+    Z"
+    fill-rule="evenodd"/>
+
+  <!-- 중앙 대칭 패턴 -->
+  <g transform="translate(120, 120)">
+    <!-- 상단 타원 -->
+    <ellipse cx="0" cy="-35" rx="18" ry="28" fill="white"/>
+
+    <!-- 좌측 상단 타원 -->
+    <ellipse cx="-32" cy="-20" rx="22" ry="30" fill="white" transform="rotate(-25 -32 -20)"/>
+
+    <!-- 좌측 하단 타원 -->
+    <ellipse cx="-32" cy="20" rx="22" ry="30" fill="white" transform="rotate(25 -32 20)"/>
+
+    <!-- 우측 상단 타원 -->
+    <ellipse cx="32" cy="-20" rx="22" ry="30" fill="white" transform="rotate(25 32 -20)"/>
+
+    <!-- 우측 하단 타원 -->
+    <ellipse cx="32" cy="20" rx="22" ry="30" fill="white" transform="rotate(-25 32 20)"/>
+
+    <!-- 하단 타원 -->
+    <ellipse cx="0" cy="35" rx="18" ry="28" fill="white"/>
+  </g>
+</svg>

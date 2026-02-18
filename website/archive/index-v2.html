@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive — WOOHWAHAE</title>
+    <meta name="description" content="슬로우라이프를 기록하는 아카이브">
+
+    <link rel="stylesheet" href="../assets/css/style-v2.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">WOOHWAHAE</a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/about/">About</a></li>
+                <li><a href="/archive/" class="active">Archive</a></li>
+                <li><a href="/atelier/">Atelier</a></li>
+                <li><a href="/contact/">Contact</a></li>
+            </ul>
+
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section style="padding-top: 120px; padding-bottom: 80px;">
+        <div class="container">
+            <h1 style="font-size: 64px; font-weight: 200; margin-bottom: 24px;">Archive</h1>
+            <p style="font-size: 18px; color: #666; max-width: 480px;">
+                일상에서 건져 올린 생각들.<br>
+                슬로우라이프를 기록합니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- Issue Grid -->
+    <section class="section section--gray">
+        <div class="container">
+            <div class="magazine-grid">
+                <!-- Issue 00 -->
+                <a href="/archive/issue-00/" class="issue-card">
+                    <div class="issue-number">00</div>
+                    <div class="issue-content">
+                        <div>
+                            <p class="issue-label">Issue 00</p>
+                            <h3 class="issue-title">WOOHWAHAE<br>Manifesto</h3>
+                            <p class="issue-preview">
+                                소음을 제거하면 본질이 남는다.
+                                우리가 슬로우라이프를 기록하는 이유.
+                            </p>
+                        </div>
+                        <p class="issue-date">2026.02.17</p>
+                    </div>
+                </a>
+
+                <!-- Issue 01 -->
+                <a href="/archive/issue-001-beginning/" class="issue-card">
+                    <div class="issue-number">01</div>
+                    <div class="issue-content">
+                        <div>
+                            <p class="issue-label">Issue 01</p>
+                            <h3 class="issue-title">우화해의<br>시작</h3>
+                            <p class="issue-preview">
+                                울산의 작은 공간에서 시작된
+                                슬로우 라이프 아틀리에의 첫 이야기.
+                            </p>
+                        </div>
+                        <p class="issue-date">2024.02</p>
+                    </div>
+                </a>
+
+                <!-- Issue 02 -->
+                <a href="/archive/issue-002-slow-life/" class="issue-card">
+                    <div class="issue-number">02</div>
+                    <div class="issue-content">
+                        <div>
+                            <p class="issue-label">Issue 02</p>
+                            <h3 class="issue-title">슬로우<br>라이프란</h3>
+                            <p class="issue-preview">
+                                빠름에 익숙한 시대,
+                                느림의 의미를 다시 생각합니다.
+                            </p>
+                        </div>
+                        <p class="issue-date">2024.03</p>
+                    </div>
+                </a>
+
+                <!-- Issue 03 -->
+                <a href="/archive/issue-003-hair-and-daily/" class="issue-card">
+                    <div class="issue-number">03</div>
+                    <div class="issue-content">
+                        <div>
+                            <p class="issue-label">Issue 03</p>
+                            <h3 class="issue-title">헤어와<br>일상</h3>
+                            <p class="issue-preview">
+                                머리를 손질하는 시간이
+                                일상에 가져다주는 변화.
+                            </p>
+                        </div>
+                        <p class="issue-date">2024.04</p>
+                    </div>
+                </a>
+
+                <!-- Coming Soon -->
+                <div class="issue-card" style="opacity: 0.3; cursor: not-allowed;">
+                    <div class="issue-number">04</div>
+                    <div class="issue-content">
+                        <div>
+                            <p class="issue-label">Issue 04</p>
+                            <h3 class="issue-title">Coming<br>Soon</h3>
+                            <p class="issue-preview">
+                                다음 이슈를 준비하고 있습니다.
+                            </p>
+                        </div>
+                        <p class="issue-date">2026.03</p>
+                    </div>
+                </div>
+
+                <!-- Coming Soon -->
+                <div class="issue-card" style="opacity: 0.3; cursor: not-allowed;">
+                    <div class="issue-number">05</div>
+                    <div class="issue-content">
+                        <div>
+                            <p class="issue-label">Issue 05</p>
+                            <h3 class="issue-title">Coming<br>Soon</h3>
+                            <p class="issue-preview">
+                                다음 이슈를 준비하고 있습니다.
+                            </p>
+                        </div>
+                        <p class="issue-date">2026.04</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                © 2026 WOOHWAHAE
+            </div>
+            <div class="footer-right">
+                <a href="https://instagram.com/woosunhokr" target="_blank">Instagram</a>
+                <a href="/contact/">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        navToggle?.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('open');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navToggle?.contains(e.target) && !navMenu?.contains(e.target)) {
+                navToggle?.classList.remove('active');
+                navMenu?.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
