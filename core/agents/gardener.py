@@ -257,6 +257,180 @@ JSON만 출력."""
         except Exception as e:
             logger.warning("QUANTA 업데이트 실패: %s", e)
 
+    def _evolve_concept_memory(self, stats: Dict):
+        """
+        개념 진화 기록 — 대화/신호가 쌓일수록 사고가 깊어지는 구조의 핵심.
+
+        기존 long_term_memory.json의 concepts는 카운트(슬로우라이프: 1)만 존재.
+        이 메서드는 Gemini가 corpus entry들을 읽고 각 핵심 개념이 어떻게 심화됐는지
+        서술로 기록한다. 모델이 바뀌어도 이 파일을 읽으면 동일한 사고 수준에서 출발 가능.
+        """
+        lm_path = self.knowledge_dir / 'long_term_memory.json'
+        if not lm_path.exists():
+            return
+
+        try:
+            lm = json.loads(lm_path.read_text(encoding='utf-8'))
+        except Exception:
+            return
+
+        # corpus entries 로드 (최근 30개 — 사고 흐름 파악용)
+        corpus_dir = self.knowledge_dir / 'corpus' / 'entries'
+        recent_entries = []
+        if corpus_dir.exists():
+            entry_files = sorted(corpus_dir.glob('*.json'), reverse=True)[:30]
+            for f in entry_files:
+                try:
+                    recent_entries.append(json.loads(f.read_text(encoding='utf-8')))
+                except Exception:
+                    pass
+
+        if not recent_entries:
+            # corpus 비어있으면 experiences에서 추출
+            recent_entries = [
+                {"summary": e.get("summary", ""), "themes": [], "key_insights": []}
+                for e in lm.get("experiences", [])[-20:]
+            ]
+
+        if not recent_entries:
+            return
+
+        # 상위 개념 목록
+        concepts = lm.get("concepts", {})
+        top_concepts = sorted(concepts.items(), key=lambda x: x[1] if isinstance(x[1], (int, float)) else 0, reverse=True)[:6]
+        if not top_concepts:
+            return
+
+        # 기존 concept_evolution 로드
+        concept_evolution = lm.get("concept_evolution", {})
+
+        # 각 상위 개념에 대해 진화 서술 생성
+        entries_text = ""
+        for e in recent_entries[:15]:
+            entries_text += f"- {e.get('summary', '')[:120]}\n"
+
+        concepts_str = ", ".join(k for k, _ in top_concepts)
+
+        prompt = f"""너는 97layerOS의 지식 큐레이터다.
+
+아래는 최근 수집된 신호들의 요약이다:
+{entries_text}
+
+이 사람이 반복적으로 다루는 핵심 개념들: {concepts_str}
+
+각 개념에 대해 답하라:
+1. 이 개념이 초기에는 어떤 맥락이었는가?
+2. 최근 신호들을 통해 어떻게 심화/확장되었는가?
+3. 현재 이 사람의 이 개념에 대한 사고 수준을 한 문장으로.
+
+응답 형식 (JSON):
+{{
+  "concept_evolution": {{
+    "개념명": {{
+      "current_depth": "현재 사고 깊이를 한 문장으로",
+      "trajectory": "초기 → 현재 방향으로 어떻게 변화했는지",
+      "last_updated": "{datetime.now().strftime('%Y-%m-%d')}"
+    }}
+  }}
+}}
+
+분석 가능한 개념만 포함. JSON만 출력."""
+
+        try:
+            response = self.client.models.generate_content(
+                model=self._model,
+                contents=[prompt]
+            )
+            import re as re_module
+            text = response.text.strip()
+            match = re_module.search(r'\{.*\}', text, re_module.DOTALL)
+            if not match:
+                return
+
+            result = json.loads(match.group())
+            new_evolution = result.get("concept_evolution", {})
+
+            # 기존 기록과 병합 (덮어쓰지 않고 누적)
+            for concept, data in new_evolution.items():
+                if concept not in concept_evolution:
+                    concept_evolution[concept] = data
+                else:
+                    # 기존 trajectory 보존 + 현재 depth 갱신
+                    concept_evolution[concept]["current_depth"] = data.get("current_depth", "")
+                    concept_evolution[concept]["last_updated"] = data.get("last_updated", "")
+                    prev_traj = concept_evolution[concept].get("trajectory", "")
+                    new_traj = data.get("trajectory", "")
+                    if new_traj and new_traj != prev_traj:
+                        concept_evolution[concept]["trajectory"] = new_traj
+
+            lm["concept_evolution"] = concept_evolution
+            lm["metadata"]["last_updated"] = datetime.now().strftime('%Y-%m-%dT%H:%M')
+
+            lm_path.write_text(json.dumps(lm, ensure_ascii=False, indent=2), encoding='utf-8')
+            logger.info("🧠 개념 진화 기록 갱신: %d개 개념", len(new_evolution))
+
+        except Exception as e:
+            logger.warning("개념 진화 기록 실패: %s", e)
+
+    def _update_quanta_with_growth(self, stats: Dict):
+        """
+        INTELLIGENCE_QUANTA.md를 상태 스냅샷이 아닌 사고 성장 일지로 갱신.
+        어떤 모델이 읽어도 현재 사고 수준을 즉시 파악할 수 있도록.
+        """
+        quanta_path = self.knowledge_dir / 'agent_hub' / 'INTELLIGENCE_QUANTA.md'
+        lm_path = self.knowledge_dir / 'long_term_memory.json'
+
+        if not quanta_path.exists():
+            return
+
+        try:
+            # concept_evolution 로드
+            concept_evolution = {}
+            if lm_path.exists():
+                lm = json.loads(lm_path.read_text(encoding='utf-8'))
+                concept_evolution = lm.get("concept_evolution", {})
+
+            content = quanta_path.read_text(encoding='utf-8')
+            now = datetime.now().strftime('%Y-%m-%d %H:%M')
+            themes_str = ', '.join(t for t, _ in stats['top_themes'][:5]) or '없음'
+
+            # 개념 진화 요약 텍스트
+            evolution_lines = ""
+            for concept, data in list(concept_evolution.items())[:4]:
+                depth = data.get("current_depth", "")
+                if depth:
+                    evolution_lines += f"- **{concept}**: {depth}\n"
+
+            if not evolution_lines:
+                evolution_lines = "- (아직 충분한 신호 미축적)\n"
+
+            marker = "## 🌱 Gardener 자동 업데이트"
+            new_section = (
+                f"{marker}\n"
+                f"최종 실행: {now}\n\n"
+                f"**수집 현황** | 신호: {stats['signal_count']}개 / SA분석: {stats['sa_analyzed']}개 / 평균점수: {stats['avg_score']}\n\n"
+                f"**부상 테마** | {themes_str}\n\n"
+                f"**개념 사고 수준** (세션 간 연속성 앵커)\n"
+                f"{evolution_lines}\n"
+            )
+
+            import re as re_module
+            if marker in content:
+                content = re_module.sub(
+                    rf"{re_module.escape(marker)}.*?(?=\n##|\Z)",
+                    new_section,
+                    content,
+                    flags=re_module.DOTALL
+                )
+            else:
+                content += f"\n\n{new_section}"
+
+            quanta_path.write_text(content, encoding='utf-8')
+            logger.info("✅ INTELLIGENCE_QUANTA.md 성장 일지 갱신")
+
+        except Exception as e:
+            logger.warning("QUANTA 성장 갱신 실패: %s", e)
+
     # ── 제안 관리 ─────────────────────────────────
 
     def _load_pending(self) -> List[Dict]:
@@ -437,10 +611,13 @@ JSON만 출력."""
             stats['signal_count'], stats['sa_analyzed'], stats['avg_score']
         )
 
-        # 2. AUTO 갱신
-        self._auto_update_quanta(stats)
+        # 2. 개념 진화 기록 (핵심: 대화가 쌓일수록 사고가 깊어지는 구조)
+        self._evolve_concept_memory(stats)
 
-        # 3. Corpus 군집 성숙도 점검 → 익은 것 에세이 트리거 (핵심 신규)
+        # 3. QUANTA 성장 일지 갱신 (상태 스냅샷 → 사고 수준 앵커로)
+        self._update_quanta_with_growth(stats)
+
+        # 4. Corpus 군집 성숙도 점검 → 익은 것 에세이 트리거 (핵심 신규)
         corpus_result = self._check_corpus_clusters()
 
         # 4. PROPOSE 생성 (신호가 10개 이상일 때만)
