@@ -163,12 +163,10 @@ python core/system/handoff.py --handoff
 
 | 스킬 | 경로 | 용도 |
 |------|------|------|
-| signal_capture | `skills/signal_capture/SKILL.md` | URL/텍스트 포착 → knowledge/signals/ 저장 |
+| signal_capture | `skills/signal_capture/SKILL.md` | 채널 표준화(텔레그램/유튜브/URL/텍스트) + knowledge/signals/ 저장 |
 | data_curation | `skills/data_curation/SKILL.md` | 지식 자산 온톨로지 구축 + 중복 정화 |
 | intelligence_backup | `skills/intelligence_backup/SKILL.md` | 핵심 자산 아카이빙 + GDrive 백업 |
-| infrastructure_sentinel | `skills/infrastructure_sentinel/SKILL.md` | GCP VM 상태 모니터링 + 알림 |
-| instagram_content_curator | `skills/instagram_content_curator/SKILL.md` | 인스타그램 콘텐츠 생성 파이프라인 |
-| uip | `skills/uip/SKILL.md` | 사용자 의도 파악 + 인터랙션 프로토콜 |
+| infrastructure_sentinel | `skills/infrastructure_sentinel/SKILL.md` | GCP VM 3개 서비스 상태 모니터링 + 재시작 |
 
 **능동 활용 의무**: 태스크와 매칭되는 스킬이 있으면 읽고 따른다. 없으면 새 스킬 생성을 제안한다.
 
