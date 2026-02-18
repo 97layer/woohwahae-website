@@ -19,91 +19,95 @@ function initArchive() {
       setupEventListeners();
       updateCount(allPosts.length);
     })
-    .catch((e) => {
-      console.error('Archive load failed:', e);
-      showError();
+  async function loadArchive() {
+    try {
+      const response = await fetch('index.json');
+      const data = await response.json();
+
+      // 초기 렌더링 (All)
+      renderArchive(data, 'All');
+
+      // 필터 버튼 이벤트
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          // Active 클래스 갱신
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+
+          const category = e.target.dataset.category;
+          renderArchive(data, category);
+        });
+      });
+
+    } catch (error) {
+      console.error('Error loading archive:', error);
+    }
+  }
+
+  function renderArchive(posts, category) {
+    const grid = document.querySelector('.archive-grid');
+    grid.innerHTML = '';
+
+    const filteredPosts = category === 'All'
+      ? posts
+      : posts.filter(post => {
+        // 매핑: 화면 카테고리 -> 데이터 카테고리
+        if (category === 'Essays') return post.category === 'Essay';
+        if (category === 'Features') return post.category !== 'Essay'; // 나머지는 Feature 취급
+        return true;
+      });
+
+    filteredPosts.forEach(post => {
+      const card = document.createElement('a');
+      card.href = post.url || `issue/${post.slug}`; // url 필드가 있으면 사용, 없으면 slug 기반
+      card.className = 'archive-card fade-in';
+
+      // 이미지 처리 (없으면 플레이스홀더)
+      // 실제 구현 시에는 post.image_url이 있어야 함. 
+      // 현재는 Issue 008만 이미지가 있으므로 체크 필요.
+      let imageUrl = post.image_url || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 투명
+      if (!post.image_url) {
+        // 임시: Issue 번호에 따라 다른 회색 톤 적용 (가상 이미지 대신)
+        imageUrl = '../../assets/images/placeholder_grain.jpg'; // or similar
+      }
+
+      // Issue 008 특수 처리 (방금 생성한 이미지)
+      if (post.slug === 'issue-008-raw-materiality') {
+        // Artifact 경로를 절대 경로로 쓸 수 없으므로, assets 폴더로 이동시키는 로직이 필요함.
+        // 여기서는 일단 하드코딩된 경로(예시)를 가정하거나, 나중에 파일 이동을 수행해야 함.
+        // 임시로 로컬 경로 가정:
+        imageUrl = 'ticket_image_path_placeholder';
+      }
+
+      card.innerHTML = `
+                <div class="archive-card-image">
+                    <img src="${imageUrl}" alt="${post.title}" loading="lazy">
+                </div>
+                <div class="archive-card-meta">
+                    <span class="issue-num">${post.issue || 'ISSUE'}</span>
+                    <span class="issue-date">${post.date}</span>
+                </div>
+                <h2 class="archive-card-title">${post.title}</h2>
+                <p class="archive-card-preview">${post.preview}</p>
+            `;
+
+      grid.appendChild(card);
     });
-}
 
-// 카테고리 버튼 렌더링 (전체 포함)
-function renderCategories() {
-  const filtersContainer = document.getElementById('archive-filters');
-  // 중복 없는 카테고리 목록
-  const categories = ['all', ...new Set(allPosts.map(p => p.category))];
-
-  filtersContainer.innerHTML = ''; // 기존 버튼 초기화
-
-  categories.forEach(category => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn';
-    if (category === 'all') btn.classList.add('active');
-    btn.dataset.category = category;
-    // 'all' -> '전체', 나머지는 그대로
-    btn.textContent = category === 'all' ? '전체' : category;
-    filtersContainer.appendChild(btn);
-  });
-}
-
-// 포스트 렌더링
-function renderPosts(posts) {
-  const list = document.getElementById('archive-list');
-  const empty = document.getElementById('archive-empty');
-
-  list.innerHTML = '';
-
-  if (!posts.length) {
-    empty.style.display = 'block';
-    list.style.display = 'none';
-    return;
+    // Trigger animations
+    setTimeout(() => {
+      document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+    }, 50);
   }
 
-  empty.style.display = 'none';
-  list.style.display = 'block';
-
-  posts.forEach(post => {
-    const li = document.createElement('li');
-    li.className = 'archive-item fade-in';
-
-    // 링크 래퍼로 전체 감싸기 (접근성 위해 블록 링크 허용)
-    li.innerHTML = `
-      <span class="archive-date">${post.date}</span>
-      <div class="archive-content">
-        <a href="${post.slug}/" class="archive-link-wrapper">
-          <p class="archive-issue">${post.issue}</p>
-          <h2 class="archive-title">${post.title}</h2>
-          <p class="archive-preview">${post.preview}</p>
-          <span class="archive-category">${post.category}</span>
-        </a>
-      </div>
-    `;
-    list.appendChild(li);
-  });
-
-  // Fade-in animation 적용
-  animateFadeIn();
+  loadArchive();
+  p.preview.toLowerCase().includes(term) ||
+    p.category.toLowerCase().includes(term)
+  );
 }
 
-// 검색 및 필터 적용
-function filterPosts() {
-  let filtered = allPosts;
-
-  // 카테고리 필터
-  if (currentCategory !== 'all') {
-    filtered = filtered.filter(p => p.category === currentCategory);
-  }
-
-  // 검색어 필터
-  if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    filtered = filtered.filter(p =>
-      p.title.toLowerCase().includes(term) ||
-      p.preview.toLowerCase().includes(term) ||
-      p.category.toLowerCase().includes(term)
-    );
-  }
-
-  renderPosts(filtered);
-  updateCount(filtered.length);
+renderPosts(filtered);
+updateCount(filtered.length);
 }
 
 // 이벤트 리스너 설정
