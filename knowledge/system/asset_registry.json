@@ -1,0 +1,799 @@
+{
+  "version": "2.0",
+  "created_at": "2026-02-16T18:01:14.427889",
+  "last_updated": "2026-02-19T00:22:25",
+  "assets": [
+    {
+      "id": "image_tmp2t4zprye_20260217_002322",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmp2t4zprye_20260217_002322.json",
+      "status": "captured",
+      "created_at": "2026-02-17T00:23:22.134655",
+      "source": "telegram",
+      "size_bytes": 4557
+    },
+    {
+      "id": "image_tmp4a2yrv7n_20260216_212819",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmp4a2yrv7n_20260216_212819.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:28:19.338020",
+      "source": "telegram",
+      "size_bytes": 3888
+    },
+    {
+      "id": "image_tmp4a5f0erk_20260216_212926",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmp4a5f0erk_20260216_212926.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:29:26.182591",
+      "source": "telegram",
+      "size_bytes": 4328
+    },
+    {
+      "id": "image_tmp6al8lfr3_20260216_212834",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmp6al8lfr3_20260216_212834.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:28:34.882279",
+      "source": "telegram",
+      "size_bytes": 5284
+    },
+    {
+      "id": "image_tmp9lptxqqe_20260216_212939",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmp9lptxqqe_20260216_212939.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:29:39.733252",
+      "source": "telegram",
+      "size_bytes": 4580
+    },
+    {
+      "id": "image_tmp_s4xqcpp_20260216_212335",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmp_s4xqcpp_20260216_212335.json",
+      "status": "completed",
+      "created_at": "2026-02-16T21:23:35.257924",
+      "source": "telegram",
+      "size_bytes": 4204
+    },
+    {
+      "id": "image_tmpbr3si27u_20260216_212901",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmpbr3si27u_20260216_212901.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:29:01.190791",
+      "source": "telegram",
+      "size_bytes": 3621
+    },
+    {
+      "id": "image_tmpjzoo74_m_20260216_212914",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmpjzoo74_m_20260216_212914.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:29:14.885677",
+      "source": "telegram",
+      "size_bytes": 3931
+    },
+    {
+      "id": "image_tmpskzlb3e9_20260216_212955",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmpskzlb3e9_20260216_212955.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:29:55.488080",
+      "source": "telegram",
+      "size_bytes": 5256
+    },
+    {
+      "id": "image_tmpvq_b3jtd_20260218_234521",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmpvq_b3jtd_20260218_234521.json",
+      "status": "captured",
+      "created_at": "2026-02-18T23:45:21.726008",
+      "source": "telegram",
+      "size_bytes": 3757
+    },
+    {
+      "id": "image_tmpy7x9iuc8_20260216_212848",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmpy7x9iuc8_20260216_212848.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:28:48.376998",
+      "source": "telegram",
+      "size_bytes": 4941
+    },
+    {
+      "id": "image_tmpyd9rrm4d_20260216_223410",
+      "type": "signal",
+      "subtype": "image",
+      "path": "knowledge/signals/images/image_tmpyd9rrm4d_20260216_223410.json",
+      "status": "captured",
+      "created_at": "2026-02-16T22:34:10.318868",
+      "source": "telegram",
+      "size_bytes": 4948
+    },
+    {
+      "id": "text_20260216_160102",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_160102.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T16:01:02.970293",
+      "source": "97layer",
+      "size_bytes": 205
+    },
+    {
+      "id": "text_20260216_204122",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_204122.json",
+      "status": "stored",
+      "created_at": "2026-02-16T20:41:22.966535",
+      "source": "97layer",
+      "size_bytes": 216
+    },
+    {
+      "id": "text_20260216_204131",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_204131.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T20:41:31.453184",
+      "source": "97layer",
+      "size_bytes": 220
+    },
+    {
+      "id": "text_20260216_212820",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_212820.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T21:28:20.132259",
+      "source": "97layer",
+      "size_bytes": 327
+    },
+    {
+      "id": "text_20260216_215341",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_215341.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:53:41.507228",
+      "source": "97layer",
+      "size_bytes": 8507
+    },
+    {
+      "id": "text_20260216_215346",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_215346.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:53:46.481471",
+      "source": "97layer",
+      "size_bytes": 601
+    },
+    {
+      "id": "text_20260216_215646",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_215646.json",
+      "status": "captured",
+      "created_at": "2026-02-16T21:56:46.435574",
+      "source": "97layer",
+      "size_bytes": 223
+    },
+    {
+      "id": "text_20260216_223411",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_223411.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T22:34:11.022168",
+      "source": "97layer",
+      "size_bytes": 293
+    },
+    {
+      "id": "text_20260216_224718",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_224718.json",
+      "status": "captured",
+      "created_at": "2026-02-16T22:47:18.509531",
+      "source": "97layer",
+      "size_bytes": 1008
+    },
+    {
+      "id": "text_20260216_231642",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_231642.json",
+      "status": "captured",
+      "created_at": "2026-02-16T23:16:42.598890",
+      "source": "97layer",
+      "size_bytes": 6583
+    },
+    {
+      "id": "text_20260216_232216",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_232216.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T23:22:16.984158",
+      "source": "97layer",
+      "size_bytes": 6630
+    },
+    {
+      "id": "text_20260216_232623",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260216_232623.json",
+      "status": "captured",
+      "created_at": "2026-02-16T23:26:23.507984",
+      "source": "97layer",
+      "size_bytes": 1835
+    },
+    {
+      "id": "text_20260217_002322",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260217_002322.json",
+      "status": "analyzed",
+      "created_at": "2026-02-17T00:23:22.836751",
+      "source": "97layer",
+      "size_bytes": 273
+    },
+    {
+      "id": "text_20260218_224555",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260218_224555.json",
+      "status": "captured",
+      "created_at": "2026-02-18T22:45:55.369114",
+      "source": "97layer",
+      "size_bytes": 227
+    },
+    {
+      "id": "text_20260218_234522",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260218_234522.json",
+      "status": "analyzed",
+      "created_at": "2026-02-18T23:45:22.728030",
+      "source": "97layer",
+      "size_bytes": 269
+    },
+    {
+      "id": "text_20260219_000042",
+      "type": "signal",
+      "subtype": "text_insight",
+      "path": "knowledge/signals/text_20260219_000042.json",
+      "status": "analyzed",
+      "created_at": "2026-02-19T00:00:42.234156",
+      "source": "97layer",
+      "size_bytes": 337
+    },
+    {
+      "id": "youtube_7HBhL7lltpU_20260217_000130",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_7HBhL7lltpU_20260217_000130.json",
+      "status": "analyzed",
+      "created_at": "2026-02-17T00:01:30.254104",
+      "source": "telegram",
+      "size_bytes": 7884
+    },
+    {
+      "id": "youtube_7HBhL7lltpU_20260217_002358",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_7HBhL7lltpU_20260217_002358.json",
+      "status": "analyzed",
+      "created_at": "2026-02-17T00:23:58.144007",
+      "source": "telegram",
+      "size_bytes": 8406
+    },
+    {
+      "id": "youtube_7HBhL7lltpU_20260217_141451",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_7HBhL7lltpU_20260217_141451.json",
+      "status": "captured",
+      "created_at": "2026-02-17T14:14:51.823618",
+      "source": "telegram",
+      "size_bytes": 7833
+    },
+    {
+      "id": "youtube_7HBhL7lltpU_20260217_141746",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_7HBhL7lltpU_20260217_141746.json",
+      "status": "captured",
+      "created_at": "2026-02-17T14:17:46.705729",
+      "source": "telegram",
+      "size_bytes": 8461
+    },
+    {
+      "id": "youtube_7HBhL7lltpU_20260218_233954",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_7HBhL7lltpU_20260218_233954.json",
+      "status": "captured",
+      "created_at": "2026-02-18T23:39:54.482902",
+      "source": "telegram",
+      "size_bytes": 406
+    },
+    {
+      "id": "youtube_DpD0wnGk03s_20260216_155119",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_DpD0wnGk03s_20260216_155119.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T15:51:19.109756",
+      "source": "telegram",
+      "size_bytes": 362
+    },
+    {
+      "id": "youtube_DpD0wnGk03s_20260216_155200",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_DpD0wnGk03s_20260216_155200.json",
+      "status": "captured",
+      "created_at": "2026-02-16T15:52:00.665750",
+      "source": "telegram",
+      "size_bytes": 315
+    },
+    {
+      "id": "youtube_DpD0wnGk03s_20260216_155510",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_DpD0wnGk03s_20260216_155510.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T15:55:10.203662",
+      "source": "telegram",
+      "size_bytes": 342
+    },
+    {
+      "id": "youtube_DpD0wnGk03s_20260216_155525",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_DpD0wnGk03s_20260216_155525.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T15:55:25.894607",
+      "source": "telegram",
+      "size_bytes": 342
+    },
+    {
+      "id": "youtube_DpD0wnGk03s_20260216_155545",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_DpD0wnGk03s_20260216_155545.json",
+      "status": "analyzed",
+      "created_at": "2026-02-16T15:55:45.658628",
+      "source": "telegram",
+      "size_bytes": 342
+    },
+    {
+      "id": "youtube_DpD0wnGk03s_20260216_160041",
+      "type": "signal",
+      "subtype": "youtube_video",
+      "path": "knowledge/signals/youtube_DpD0wnGk03s_20260216_160041.json",
+      "status": "captured",
+      "created_at": "2026-02-16T16:00:41.472994",
+      "source": "telegram",
+      "size_bytes": 5226
+    },
+    {
+      "id": "404",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/404.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:03:48",
+      "source": "manual",
+      "size_bytes": 2891
+    },
+    {
+      "id": "index_v3_atelier",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/_archive_backup/index_v3_atelier.html",
+      "status": "published",
+      "created_at": "2026-02-18T21:20:18",
+      "source": "manual",
+      "size_bytes": 6932
+    },
+    {
+      "id": "photography",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/_archive_backup/photography.html",
+      "status": "published",
+      "created_at": "2026-02-18T16:57:17",
+      "source": "manual",
+      "size_bytes": 8903
+    },
+    {
+      "id": "playlist",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/_archive_backup/playlist.html",
+      "status": "published",
+      "created_at": "2026-02-18T16:57:17",
+      "source": "manual",
+      "size_bytes": 7753
+    },
+    {
+      "id": "project",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/_archive_backup/project.html",
+      "status": "published",
+      "created_at": "2026-02-18T16:57:17",
+      "source": "manual",
+      "size_bytes": 13336
+    },
+    {
+      "id": "about",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/about.html",
+      "status": "published",
+      "created_at": "2026-02-18T22:18:36",
+      "source": "manual",
+      "size_bytes": 8662
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 6764
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-00/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 6438
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-001-beginning/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 5894
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-002-slow-life/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 5655
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-003-hair-and-daily/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 5684
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-004-art-of-waiting/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 5773
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-005-72h-rule/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 6769
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-006-8pyeong/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 6555
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-007-noise-removal/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 6747
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/archive/issue-008-raw-materiality/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:25:49",
+      "source": "manual",
+      "size_bytes": 7577
+    },
+    {
+      "id": "atelier",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/atelier.html",
+      "status": "published",
+      "created_at": "2026-02-18T18:35:28",
+      "source": "manual",
+      "size_bytes": 6485
+    },
+    {
+      "id": "contact",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/contact.html",
+      "status": "published",
+      "created_at": "2026-02-18T22:18:59",
+      "source": "manual",
+      "size_bytes": 3718
+    },
+    {
+      "id": "index",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/index.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:13:12",
+      "source": "manual",
+      "size_bytes": 7705
+    },
+    {
+      "id": "photography",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/photography.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:04:22",
+      "source": "manual",
+      "size_bytes": 8933
+    },
+    {
+      "id": "privacy",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/privacy.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:03:48",
+      "source": "manual",
+      "size_bytes": 7487
+    },
+    {
+      "id": "service",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/service.html",
+      "status": "published",
+      "created_at": "2026-02-18T22:18:48",
+      "source": "manual",
+      "size_bytes": 7307
+    },
+    {
+      "id": "shop",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/shop.html",
+      "status": "published",
+      "created_at": "2026-02-18T22:19:01",
+      "source": "manual",
+      "size_bytes": 3095
+    },
+    {
+      "id": "terms",
+      "type": "content",
+      "subtype": "html_article",
+      "path": "website/terms.html",
+      "status": "published",
+      "created_at": "2026-02-18T23:03:48",
+      "source": "manual",
+      "size_bytes": 8497
+    },
+    {
+      "id": "20251114_012857(1).jpg",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/20251114_012857(1).jpg",
+      "status": "active",
+      "created_at": "2026-02-18T07:44:48",
+      "source": "manual",
+      "size_bytes": 1181641
+    },
+    {
+      "id": "20251114_013946.jpg",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/20251114_013946.jpg",
+      "status": "active",
+      "created_at": "2026-02-18T07:44:48",
+      "source": "manual",
+      "size_bytes": 373207
+    },
+    {
+      "id": "20251114_014624.jpg",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/20251114_014624.jpg",
+      "status": "active",
+      "created_at": "2026-02-18T07:44:48",
+      "source": "manual",
+      "size_bytes": 1561286
+    },
+    {
+      "id": "20251114_014635.jpg",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/20251114_014635.jpg",
+      "status": "active",
+      "created_at": "2026-02-18T07:44:48",
+      "source": "manual",
+      "size_bytes": 1562109
+    },
+    {
+      "id": "icon-192.png",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/assets/img/icon-192.png",
+      "status": "active",
+      "created_at": "2026-02-18T09:59:15",
+      "source": "manual",
+      "size_bytes": 10103
+    },
+    {
+      "id": "icon-512.png",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/assets/img/icon-512.png",
+      "status": "active",
+      "created_at": "2026-02-18T09:59:15",
+      "source": "manual",
+      "size_bytes": 28316
+    },
+    {
+      "id": "symbol.jpg",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/assets/img/symbol.jpg",
+      "status": "active",
+      "created_at": "2026-02-18T09:59:15",
+      "source": "manual",
+      "size_bytes": 223286
+    },
+    {
+      "id": "symbol.svg",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/assets/img/symbol.svg",
+      "status": "active",
+      "created_at": "2026-02-18T10:54:50",
+      "source": "manual",
+      "size_bytes": 1716
+    },
+    {
+      "id": "20260218_155939_17994247922436463.jpg",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/assets/uploads/detail/20260218_155939_17994247922436463.jpg",
+      "status": "active",
+      "created_at": "2026-02-18T15:59:39",
+      "source": "manual",
+      "size_bytes": 158490
+    },
+    {
+      "id": "대표심볼.JPG",
+      "type": "media",
+      "subtype": "image",
+      "path": "website/대표심볼.JPG",
+      "status": "active",
+      "created_at": "2026-02-18T07:44:48",
+      "source": "manual",
+      "size_bytes": 223286
+    },
+    {
+      "id": "data_curation",
+      "type": "skill",
+      "subtype": "skill_definition",
+      "path": "skills/data_curation/SKILL.md",
+      "status": "active",
+      "created_at": "2026-02-18T22:25:59",
+      "source": "manual",
+      "size_bytes": 1352
+    },
+    {
+      "id": "infrastructure_sentinel",
+      "type": "skill",
+      "subtype": "skill_definition",
+      "path": "skills/infrastructure_sentinel/SKILL.md",
+      "status": "active",
+      "created_at": "2026-02-18T22:25:59",
+      "source": "manual",
+      "size_bytes": 1268
+    },
+    {
+      "id": "intelligence_backup",
+      "type": "skill",
+      "subtype": "skill_definition",
+      "path": "skills/intelligence_backup/SKILL.md",
+      "status": "active",
+      "created_at": "2026-02-18T22:26:32",
+      "source": "manual",
+      "size_bytes": 1177
+    },
+    {
+      "id": "signal_capture",
+      "type": "skill",
+      "subtype": "skill_definition",
+      "path": "skills/signal_capture/SKILL.md",
+      "status": "active",
+      "created_at": "2026-02-18T22:29:42",
+      "source": "manual",
+      "size_bytes": 2145
+    }
+  ],
+  "stats": {
+    "total": 77,
+    "by_type": {
+      "signal": 39,
+      "content": 24,
+      "media": 10,
+      "skill": 4
+    },
+    "by_status": {
+      "captured": 23,
+      "completed": 1,
+      "analyzed": 14,
+      "stored": 1,
+      "published": 24,
+      "active": 14
+    },
+    "by_source": {
+      "telegram": 23,
+      "97layer": 16,
+      "manual": 38
+    }
+  }
+}
