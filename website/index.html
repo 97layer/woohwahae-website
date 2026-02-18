@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="icon" href="assets/img/symbol.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/analytics.js"></script>
 </head>
+
 <body>
 
   <!-- Navigation -->
@@ -23,9 +27,9 @@
       <img src="assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
-      <li><a href="about.html">About</a></li>
       <li><a href="archive/">Archive</a></li>
       <li><a href="atelier.html">Atelier</a></li>
+      <li><a href="shop.html">Shop</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <button class="nav-toggle" aria-label="Menu">
@@ -53,17 +57,11 @@
     </div>
   </section>
 
-  <!-- 2. 채널 — 우화해에서 파생된 것들 -->
+  <!-- 2. 서비스 입구 -->
   <section class="section--light channels-section">
     <div class="container--wide">
-      <p class="section-label fade-in">Channels</p>
-      <div class="hub-grid hub-grid--7">
-
-        <a href="about.html" class="hub-item fade-in">
-          <p class="hub-item-label">About</p>
-          <p class="hub-item-desc">우리에 대해.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
+      <p class="section-label fade-in">Explore</p>
+      <div class="hub-grid">
 
         <a href="archive/" class="hub-item fade-in">
           <p class="hub-item-label">Archive</p>
@@ -71,33 +69,15 @@
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
-        <a href="shop.html" class="hub-item hub-item--coming fade-in">
-          <p class="hub-item-label">Shop</p>
-          <p class="hub-item-desc">엄선한 것들.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
-
         <a href="atelier.html" class="hub-item fade-in">
           <p class="hub-item-label">Atelier</p>
-          <p class="hub-item-desc">오프라인 실천 공간.</p>
+          <p class="hub-item-desc">헤어와 촬영, 오프라인 실천.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
-        <a href="playlist.html" class="hub-item fade-in">
-          <p class="hub-item-label">Playlist</p>
-          <p class="hub-item-desc">공간의 소리.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
-
-        <a href="project.html" class="hub-item hub-item--coming fade-in">
-          <p class="hub-item-label">Project</p>
-          <p class="hub-item-desc">협업과 실험.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
-
-        <a href="photography.html" class="hub-item fade-in">
-          <p class="hub-item-label">Photography</p>
-          <p class="hub-item-desc">순간의 기록.</p>
+        <a href="shop.html" class="hub-item fade-in">
+          <p class="hub-item-label">Shop</p>
+          <p class="hub-item-desc">일상의 물건들.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
@@ -116,6 +96,23 @@
     </div>
   </section>
 
+  <!-- Newsletter -->
+  <section class="section--dark newsletter-section">
+    <div class="container">
+      <p class="section-label fade-in">Newsletter</p>
+      <h2 class="fade-in">소식 받아보기</h2>
+      <p class="fade-in newsletter-desc">
+        슬로우 라이프의 기록, 아틀리에 소식, 큐레이션된 생각들을<br>
+        이메일로 전해드립니다.
+      </p>
+      <form id="newsletter-form" class="newsletter-form fade-in">
+        <input type="email" id="newsletter-email" placeholder="이메일 주소" required aria-label="이메일 주소">
+        <button type="submit">구독하기</button>
+      </form>
+      <p id="newsletter-message" class="newsletter-message" style="display: none;"></p>
+    </div>
+  </section>
+
   <!-- 4. Footer -->
   <footer class="section--light">
     <div class="footer-grid">
@@ -126,23 +123,37 @@
       </div>
       <div>
         <p class="footer-nav-title">Navigate</p>
-        
+        <ul class="footer-nav-list">
+          <li><a href="archive/">Archive</a></li>
+          <li><a href="atelier.html">Atelier</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
       </div>
       <div>
         <p class="footer-connect-title">Connect</p>
         <ul class="footer-connect-list">
           <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a></li>
+          <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
+              target="_blank" rel="noopener">Booking</a></li>
           <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Archive for Slow Life</p>
+      <p class="footer-bottom-copy">
+        &copy; 2026 WOOHWAHAE &middot; Archive for Slow Life &middot;
+        <a href="privacy.html">개인정보처리방침</a> &middot;
+        <a href="terms.html">이용약관</a>
+      </p>
     </div>
   </footer>
 
+  <script src="assets/js/newsletter.js"></script>
   <script src="assets/js/main.js"></script>
+  <!-- CMS 인라인 편집 (관리자용) -->
+  <script src="assets/js/cms.js"></script>
   <script>
     fetch('archive/index.json')
       .then(r => r.json())
@@ -179,4 +190,5 @@
   </script>
 
 </body>
+
 </html>

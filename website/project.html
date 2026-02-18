@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="icon" href="assets/img/symbol.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/analytics.js"></script>
 </head>
+
 <body>
 
   <nav>
@@ -19,9 +23,9 @@
       <img src="assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
-      <li><a href="about.html">About</a></li>
-      <li><a href="atelier.html">Atelier</a></li>
       <li><a href="archive/">Archive</a></li>
+      <li><a href="atelier.html">Atelier</a></li>
+      <li><a href="shop.html">Shop</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <button class="nav-toggle" aria-label="Menu">
@@ -194,6 +198,83 @@
     </div>
   </section>
 
+  <!-- Workshop Registration -->
+  <section class="section--dark">
+    <div class="container">
+      <div class="workshop-registration fade-in">
+        <h2>Slow Morning Workshop</h2>
+        <p class="workshop-subtitle">매월 첫째 주 토요일 오전 10:00 - 12:00</p>
+
+        <div class="workshop-details">
+          <h3>워크샵 내용</h3>
+          <ul>
+            <li>간단한 셀프 헤어 스타일링 배우기</li>
+            <li>두피 마사지와 헤어 케어 팁</li>
+            <li>천연 헤어 오일 만들기</li>
+            <li>티 타임과 슬로우 라이프 토크</li>
+          </ul>
+
+          <div class="workshop-info-grid" style="margin-top: 2rem;">
+            <div>
+              <h4>정원</h4>
+              <p>6-8명 소수 정원제</p>
+            </div>
+            <div>
+              <h4>참가비</h4>
+              <p>15,000원 (재료비 포함)</p>
+            </div>
+            <div>
+              <h4>장소</h4>
+              <p>WOOHWAHAE 아틀리에<br>울산 남구</p>
+            </div>
+            <div>
+              <h4>다음 일정</h4>
+              <p>2026년 3월 1일 (토)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 등록 폼 -->
+        <div class="workshop-form" style="margin-top: 3rem;">
+          <h3>워크샵 신청</h3>
+          <form id="workshopForm" style="max-width: 500px; margin: 0 auto;">
+            <div style="margin-bottom: 1.5rem;">
+              <input type="text" id="name" placeholder="이름" required style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1);
+                            border: 1px solid rgba(255,255,255,0.2); color: white;
+                            border-radius: 4px; font-size: 16px;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <input type="tel" id="phone" placeholder="연락처 (010-0000-0000)" required
+                pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1);
+                            border: 1px solid rgba(255,255,255,0.2); color: white;
+                            border-radius: 4px; font-size: 16px;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <textarea id="message" placeholder="참가 동기나 궁금한 점이 있으시면 남겨주세요 (선택)" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1);
+                               border: 1px solid rgba(255,255,255,0.2); color: white;
+                               border-radius: 4px; font-size: 16px; min-height: 100px;
+                               resize: vertical;"></textarea>
+            </div>
+            <button type="submit" class="cta" style="width: 100%;">
+              신청하기
+            </button>
+          </form>
+
+          <p style="text-align: center; margin-top: 2rem; font-size: 14px; opacity: 0.8;">
+            또는 카카오톡으로 문의: @woohwahae
+          </p>
+        </div>
+
+        <div id="workshopSuccess" style="display: none; text-align: center; padding: 3rem;
+                                          background: rgba(76, 175, 80, 0.1); border-radius: 8px;
+                                          margin-top: 2rem;">
+          <h3>신청이 완료되었습니다!</h3>
+          <p>확인 후 연락드리겠습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="section--light">
     <div class="footer-grid">
@@ -205,10 +286,11 @@
       <div>
         <p class="footer-nav-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="about.html">About</a></li>
-          <li><a href="atelier.html">Atelier</a></li>
           <li><a href="archive/">Archive</a></li>
+          <li><a href="atelier.html">Atelier</a></li>
+          <li><a href="shop.html">Shop</a></li>
           <li><a href="contact.html">Contact</a></li>
+          <li><a href="about.html">About</a></li>
         </ul>
       </div>
       <div>
@@ -226,5 +308,39 @@
   </footer>
 
   <script src="assets/js/main.js"></script>
+
+  <!-- Workshop Registration Script -->
+  <script>
+    document.getElementById('workshopForm')?.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+      const message = document.getElementById('message').value || '없음';
+
+      // 이메일로 전송 (실제로는 백엔드 API 사용 권장)
+      const mailtoLink = `mailto:workshop@woohwahae.kr?subject=Slow Morning Workshop 신청&body=
+이름: ${name}
+연락처: ${phone}
+메시지: ${message}
+      `;
+
+      window.location.href = mailtoLink;
+
+      // 성공 메시지 표시
+      document.getElementById('workshopForm').style.display = 'none';
+      document.getElementById('workshopSuccess').style.display = 'block';
+
+      // Google Analytics 이벤트
+      if (typeof trackEvent !== 'undefined') {
+        trackEvent('workshop_registration', {
+          workshop_name: 'Slow Morning Workshop',
+          value: 15000,
+          currency: 'KRW'
+        });
+      }
+    });
+  </script>
 </body>
+
 </html>

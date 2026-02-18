@@ -30,5 +30,13 @@
     "issue": "Issue 003",
     "preview": "일상 속 헤어 케어의 철학.",
     "category": "Practice"
+  },
+  {
+    "slug": "issue-004-art-of-waiting",
+    "title": "기다림의 미학",
+    "date": "2026.03.01",
+    "issue": "Issue 004",
+    "preview": "빠른 세상에서 기다림이 주는 가치. 헤어는 본질적으로 기다림의 예술이다.",
+    "category": "Essay"
   }
 ]

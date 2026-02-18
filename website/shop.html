@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="icon" href="assets/img/symbol.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/analytics.js"></script>
 </head>
+
 <body>
 
   <nav>
@@ -19,13 +23,10 @@
       <img src="assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
-      <li><a href="about.html">About</a></li>
       <li><a href="archive/">Archive</a></li>
-      <li><a href="shop.html" class="active">Shop</a></li>
       <li><a href="atelier.html">Atelier</a></li>
-      <li><a href="playlist.html">Playlist</a></li>
-      <li><a href="project.html">Project</a></li>
-      <li><a href="photography.html">Photography</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="contact.html">Contact</a></li>
     </ul>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -174,7 +175,19 @@
           '아틀리에에서 구매 가능' 표시 제품은 즉시 구매 가능하며,<br>
           '주문 제작' 제품은 2-3주의 시간이 소요됩니다.
         </p>
-        <p style="margin-top: 2rem;">
+
+        <!-- 구매 버튼 추가 -->
+        <div style="margin-top: 3rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="https://pf.kakao.com/_woohwahae" target="_blank" class="cta"
+            style="background: #FEE500; color: #000;">
+            카카오톡으로 주문하기
+          </a>
+          <a href="mailto:shop@woohwahae.kr?subject=제품 문의" class="cta">
+            이메일로 문의하기
+          </a>
+        </div>
+
+        <p style="margin-top: 2rem; font-size: 14px; opacity: 0.8;">
           제품 문의: <a href="mailto:shop@woohwahae.kr">shop@woohwahae.kr</a><br>
           카카오톡 문의: @woohwahae
         </p>
@@ -193,10 +206,11 @@
       <div>
         <p class="footer-nav-title">Navigate</p>
         <ul class="footer-nav-list">
-          <li><a href="about.html">About</a></li>
-          <li><a href="atelier.html">Atelier</a></li>
           <li><a href="archive/">Archive</a></li>
+          <li><a href="atelier.html">Atelier</a></li>
+          <li><a href="shop.html">Shop</a></li>
           <li><a href="contact.html">Contact</a></li>
+          <li><a href="about.html">About</a></li>
         </ul>
       </div>
       <div>
@@ -214,5 +228,58 @@
   </footer>
 
   <script src="assets/js/main.js"></script>
+
+  <!-- Shop 구매 기능 -->
+  <script>
+    // 플로팅 구매 버튼 추가
+    // 플로팅 버튼 — .kakao-float 클래스로 브랜드 톤 통일
+    const floatingBtn = document.createElement('div');
+    floatingBtn.innerHTML = `
+      <a href="https://pf.kakao.com/_woohwahae" target="_blank" class="kakao-float">
+        제품 문의
+      </a>
+    `;
+    document.body.appendChild(floatingBtn);
+
+    // 제품 주문 함수
+    function orderProduct(productName) {
+      const message = `안녕하세요, ${productName} 구매 문의드립니다.`;
+      const kakaoUrl = `https://pf.kakao.com/_woohwahae?text=${encodeURIComponent(message)}`;
+      window.open(kakaoUrl, '_blank');
+    }
+
+    // 각 제품 카드에 호버시 주문 버튼 표시
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.style.position = 'relative';
+
+      const productName = card.querySelector('.product-name')?.textContent;
+      const productPrice = card.querySelector('.product-price')?.textContent;
+
+      if (productName && productPrice) {
+        const orderBtn = document.createElement('div');
+        orderBtn.className = 'product-hover-btn';
+        orderBtn.innerHTML = `
+          <button onclick="orderProduct('${productName}')"
+                  style="position: absolute; bottom: 20px; left: 20px; right: 20px;
+                         background: #000; color: white; border: none;
+                         padding: 12px; border-radius: 4px; cursor: pointer;
+                         opacity: 0; transition: opacity 0.3s ease;
+                         font-size: 14px; font-weight: 500;">
+            카카오톡 문의
+          </button>
+        `;
+        card.appendChild(orderBtn);
+
+        // 호버 효과
+        card.addEventListener('mouseenter', () => {
+          orderBtn.querySelector('button').style.opacity = '1';
+        });
+        card.addEventListener('mouseleave', () => {
+          orderBtn.querySelector('button').style.opacity = '0';
+        });
+      }
+    });
+  </script>
 </body>
+
 </html>
