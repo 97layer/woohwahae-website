@@ -323,15 +323,18 @@ class HandoffEngine:
         # Scan important directories
         for pattern in ["directives/**/*", "execution/**/*", "knowledge/**/*", "system/**/*"]:
             for item in self.project_root.glob(pattern):
-                if not item.exists():  # Skip broken symlinks
-                    continue
+                try:
+                    if not item.exists():  # Skip broken symlinks
+                        continue
 
-                relative_path = str(item.relative_to(self.project_root))
+                    relative_path = str(item.relative_to(self.project_root))
 
-                if item.is_dir():
-                    cache['folders'].append(relative_path)
-                elif item.is_file():
-                    cache['files'].append(relative_path)
+                    if item.is_dir():
+                        cache['folders'].append(relative_path)
+                    elif item.is_file():
+                        cache['files'].append(relative_path)
+                except (PermissionError, OSError):
+                    continue  # Skip files with permission issues
 
         # Save cache
         with open(self.fs_cache_path, 'w', encoding='utf-8') as f:
