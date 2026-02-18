@@ -12,7 +12,7 @@
     "title": "Beginning",
     "date": "2026.02.17",
     "issue": "Issue 001",
-    "preview": "처음 시작하는 순간의 기록.",
+    "preview": "처음 시작하는 순간의 기록. 공간을 열기 전, 오래 생각했다.",
     "category": "Essay"
   },
   {
@@ -20,7 +20,7 @@
     "title": "Slow Life",
     "date": "2026.02.17",
     "issue": "Issue 002",
-    "preview": "느리게 살아가는 방법에 대한 성찰.",
+    "preview": "슬로우 라이프는 느린 삶이 아니다. 자신의 속도를 아는 삶이다.",
     "category": "Essay"
   },
   {
@@ -28,7 +28,7 @@
     "title": "Hair and Daily",
     "date": "2026.02.17",
     "issue": "Issue 003",
-    "preview": "일상 속 헤어 케어의 철학.",
+    "preview": "아침에 거울 앞에 서는 시간. 그 전쟁의 원인은 대부분 하나다.",
     "category": "Practice"
   },
   {
@@ -36,7 +36,39 @@
     "title": "기다림의 미학",
     "date": "2026.03.01",
     "issue": "Issue 004",
-    "preview": "빠른 세상에서 기다림이 주는 가치. 헤어는 본질적으로 기다림의 예술이다.",
+    "preview": "헤어는 본질적으로 기다림의 예술이다. 빠르게 만든 것은 빠르게 무너진다.",
+    "category": "Essay"
+  },
+  {
+    "slug": "issue-005-72h-rule",
+    "title": "72시간 규칙",
+    "date": "2026.02.18",
+    "issue": "Issue 005",
+    "preview": "완벽주의는 생산적으로 보이지만 실제로는 마비다. 완벽한 지연보다 불완전한 완료.",
+    "category": "Practice"
+  },
+  {
+    "slug": "issue-006-8pyeong",
+    "title": "8평",
+    "date": "2026.02.18",
+    "issue": "Issue 006",
+    "preview": "반지하 8평 원룸에 산다. 좁은 공간은 선택을 강제한다.",
+    "category": "Essay"
+  },
+  {
+    "slug": "issue-007-noise-removal",
+    "title": "소음 제거",
+    "date": "2026.02.18",
+    "issue": "Issue 007",
+    "preview": "무엇을 하는지보다 무엇을 하지 않는지가 정체성을 더 명확하게 드러낸다.",
+    "category": "Manifesto"
+  },
+  {
+    "slug": "issue-008-raw-materiality",
+    "title": "날것의 물성",
+    "date": "2026.02.18",
+    "issue": "Issue 008",
+    "preview": "매끄러운 마감은 눈을 속이지만, 거친 질감은 손끝을 깨운다. 우리는 본질적인 감각으로 돌아가야 한다.",
     "category": "Essay"
   }
 ]

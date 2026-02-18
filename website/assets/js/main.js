@@ -6,19 +6,18 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ─── Fade-in on Scroll ───
+  // rootMargin 제거: 뷰포트 내 요소가 즉시 트리거되도록
   const observerOptions = {
-    threshold: 0.12,
-    rootMargin: '0px 0px -40px 0px'
+    threshold: 0.05
   };
 
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        // 순차 딜레이 (같은 뷰포트 내 요소들)
         const delay = entry.target.dataset.delay || 0;
         setTimeout(() => {
           entry.target.classList.add('visible');
-        }, delay * 100);
+        }, delay * 80);
         observer.unobserve(entry.target);
       }
     });
@@ -29,11 +28,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!el.dataset.delay) {
       const siblings = el.parentElement?.querySelectorAll('.fade-in');
       if (siblings) {
-        let idx = Array.from(siblings).indexOf(el);
+        const idx = Array.from(siblings).indexOf(el);
         el.dataset.delay = idx;
       }
     }
     observer.observe(el);
+  });
+
+  // 페이지 로드 직후 이미 뷰포트 안에 있는 요소 즉시 visible 처리
+  // (h1, hero 등 스크롤 없이 보여야 하는 요소)
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.fade-in').forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const delay = el.dataset.delay || 0;
+        setTimeout(() => {
+          el.classList.add('visible');
+        }, delay * 80);
+      }
+    });
   });
 
   // ─── Nav Active State ───
@@ -41,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.nav-links a').forEach(link => {
     const href = link.getAttribute('href');
     if (href === currentPath ||
-        (href !== '/' && currentPath.startsWith(href.replace('.html', '')))) {
+      (href !== '/' && currentPath.startsWith(href.replace('.html', '')))) {
       link.classList.add('active');
     }
   });
@@ -87,6 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .catch(() => {});
+      .catch(() => { });
   });
 }

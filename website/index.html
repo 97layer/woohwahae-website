@@ -37,21 +37,20 @@
     </button>
   </nav>
 
-  <!-- 1. Hero — 우화해 선언 -->
+  <!-- 1. Hero -->
   <section class="hero section--light">
     <div class="container">
       <p class="hero-eyebrow fade-in">Archive for Slow Life</p>
       <h1 class="hero-title fade-in">
-        우화해<br>
-        <span class="en">WOOHWAHAE</span>
+        WOOHWAHAE
       </h1>
       <div class="hero-platform fade-in">
         <p class="hero-platform-def">
-          흐트러진 의식의 구심점으로 회귀하는 순환
+          A practice of returning to yourself.
         </p>
         <p class="hero-platform-body">
-          번데기가 나비가 되듯,<br>
-          자신만의 속도로 나답게 살아갑니다.
+          Hair. Photography. Objects.<br>
+          At your own pace.
         </p>
       </div>
     </div>
@@ -65,19 +64,19 @@
 
         <a href="archive/" class="hub-item fade-in">
           <p class="hub-item-label">Archive</p>
-          <p class="hub-item-desc">슬로우 라이프의 기록.</p>
+          <p class="hub-item-desc">Records of slow life.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
         <a href="atelier.html" class="hub-item fade-in">
           <p class="hub-item-label">Atelier</p>
-          <p class="hub-item-desc">헤어와 촬영, 오프라인 실천.</p>
+          <p class="hub-item-desc">Hair & photography, offline.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
         <a href="shop.html" class="hub-item fade-in">
           <p class="hub-item-label">Shop</p>
-          <p class="hub-item-desc">일상의 물건들.</p>
+          <p class="hub-item-desc">Curated everyday objects.</p>
           <span class="hub-item-arrow">&rarr;</span>
         </a>
 
@@ -100,14 +99,14 @@
   <section class="section--dark newsletter-section">
     <div class="container">
       <p class="section-label fade-in">Newsletter</p>
-      <h2 class="fade-in">소식 받아보기</h2>
+      <h2 class="fade-in">Stay in the loop.</h2>
       <p class="fade-in newsletter-desc">
-        슬로우 라이프의 기록, 아틀리에 소식, 큐레이션된 생각들을<br>
-        이메일로 전해드립니다.
+        Archive updates, atelier news, and curated thoughts.<br>
+        Delivered by email.
       </p>
       <form id="newsletter-form" class="newsletter-form fade-in">
-        <input type="email" id="newsletter-email" placeholder="이메일 주소" required aria-label="이메일 주소">
-        <button type="submit">구독하기</button>
+        <input type="email" id="newsletter-email" placeholder="Your email" required aria-label="Email address">
+        <button type="submit">Subscribe</button>
       </form>
       <p id="newsletter-message" class="newsletter-message" style="display: none;"></p>
     </div>
@@ -152,8 +151,6 @@
 
   <script src="assets/js/newsletter.js"></script>
   <script src="assets/js/main.js"></script>
-  <!-- CMS 인라인 편집 (관리자용) -->
-  <script src="assets/js/cms.js"></script>
   <script>
     fetch('archive/index.json')
       .then(r => r.json())
