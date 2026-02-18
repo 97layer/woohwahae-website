@@ -402,6 +402,21 @@ JSON만 출력."""
                 # HTML 저장 실패는 에세이 생성 결과에 영향 없음
                 print(f"Ray: HTML 저장 실패 (무시) — {html_e}")
 
+            # ── NotebookLM Essay Archive 저장 ──────────────────────
+            if self.nlm:
+                try:
+                    self.nlm.add_essay_to_archive({
+                        'essay_title': result.get('essay_title', theme),
+                        'theme': theme,
+                        'archive_essay': result.get('archive_essay', ''),
+                        'pull_quote': result.get('pull_quote', ''),
+                        'instagram_caption': result.get('instagram_caption', ''),
+                        'issue_num': result.get('issue_num', ''),
+                    })
+                    print(f"Ray: NotebookLM Essay Archive 저장 완료 — {result.get('essay_title', theme)}")
+                except Exception as nlm_e:
+                    print(f"Ray: NotebookLM 저장 실패 (무시) — {nlm_e}")
+
             return result
 
         except Exception as e:
@@ -439,17 +454,34 @@ JSON만 출력."""
         issue_num_str = f"{next_num:03d}"  # 009, 010 ...
 
         # ── slug 생성 (테마 → 소문자 영문 slug) ──
-        slug_map = {
+        # 단어 단위 매핑 — 복합 테마도 처리 (첫 번째 매칭 키워드 사용)
+        _word_slug_map = {
             '조용한지능': 'quiet-intelligence', '슬로우라이프': 'slow-life',
-            '여백': 'negative-space', '기록': 'record', '감각': 'sensory',
-            '침묵': 'silence', '물성': 'materiality', '일상': 'daily',
+            '여백': 'negative-space', '기록': 'record',
+            '감각': 'sensory', '침묵': 'silence',
+            '물성': 'materiality', '일상': 'daily',
+            '미용': 'beauty', '정신건강': 'mental-health', '정신': 'mental',
+            '돌봄': 'care', '관계': 'relationship', '시간': 'time',
+            '공간': 'space', '음식': 'food', '음악': 'music',
+            '독서': 'reading', '글쓰기': 'writing', '사진': 'photo',
+            '여행': 'travel', '산책': 'walk', '계절': 'season',
+            '빛': 'light', '색': 'color', '질감': 'texture',
+            '본질': 'essence', '선택': 'choice', '집중': 'focus',
+            '느림': 'slow', '비움': 'empty', '채움': 'fill',
+            '습관': 'habit', '루틴': 'routine', '의식': 'ritual',
+            '몸': 'body', '마음': 'mind', '영성': 'spirit',
         }
-        slug = slug_map.get(theme.replace(' ', ''), None)
+        theme_key = theme.replace(' ', '').replace('의', '').replace('과', '').replace('와', '')
+        slug = None
+        # 정확 매칭 우선
+        for k, v in _word_slug_map.items():
+            if k in theme_key:
+                slug = v
+                break
         if not slug:
-            # fallback: 한글 → 로마자 단순 치환 불가, 그냥 theme 영문화 시도
-            slug = _re.sub(r'[^\w\s-]', '', theme.lower().replace(' ', '-'))
-            if not slug or not slug[0].isascii():
-                slug = f"issue-{theme[:6]}"  # 최후 fallback
+            # ASCII 테마는 그대로 slug화
+            ascii_slug = _re.sub(r'[^\w-]', '', theme.lower().replace(' ', '-'))
+            slug = ascii_slug if ascii_slug and ascii_slug[0].isascii() else 'essay'
         slug = slug[:30]
 
         folder_name = f"issue-{issue_num_str}-{slug}"

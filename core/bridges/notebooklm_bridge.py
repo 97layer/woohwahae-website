@@ -24,6 +24,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # 97layer 전용 노트북 타이틀
 NB_SIGNAL_ARCHIVE = "97layerOS: Signal Archive"
+NB_ESSAY_ARCHIVE  = "97layerOS: Essay Archive"
 NB_BRAND_GUIDE    = "97layerOS: Identity Framework and System Implementation Guide"
 
 
@@ -265,6 +266,61 @@ SA 점수: {score}
         브랜드/아이덴티티 컨텍스트 쿼리 (기존 코드 호환용)
         """
         return self.query_brand_guide(question)
+
+    def add_essay_to_archive(self, essay_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        CE 에세이 → Essay Archive 노트북에 텍스트 소스로 추가.
+        /draft 승인 후 CE write_corpus_essay 완료 시 호출.
+        """
+        return _run(self._async_add_essay(essay_data))
+
+    async def _async_add_essay(self, essay_data: Dict[str, Any]) -> Dict[str, Any]:
+        essay_title  = essay_data.get("essay_title", "제목 없음")
+        theme        = essay_data.get("theme", "unknown")
+        archive_essay = essay_data.get("archive_essay", "")
+        pull_quote   = essay_data.get("pull_quote", "")
+        instagram_caption = essay_data.get("instagram_caption", "")
+        issue_num    = essay_data.get("issue_num", "")
+        today        = datetime.now().strftime("%Y-%m-%d")
+
+        # Essay Archive 노트북 확보
+        nb_id = await self._async_get_or_create(NB_ESSAY_ARCHIVE)
+
+        # 소스 텍스트 구성 — 에세이 전문 + 멀티포맷 메타
+        text = f"""# {essay_title}
+날짜: {today}
+테마: {theme}
+이슈: {issue_num}
+
+---
+
+## 풀쿼트
+{pull_quote}
+
+---
+
+## 본문
+{archive_essay}
+
+---
+
+## 인스타그램 캡션
+{instagram_caption if isinstance(instagram_caption, str) else chr(10).join(instagram_caption)}
+"""
+        source_title = f"[{issue_num}] {essay_title} — {theme}"
+
+        client = await _get_client()
+        async with client:
+            source_obj = await client.sources.add_text(nb_id, source_title, text, wait=True)
+            source_id = getattr(source_obj, "id", str(source_obj))
+
+        logger.info(f"📚 Essay Archive 추가: {source_title}")
+        return {
+            "notebook_id": nb_id,
+            "source_id": source_id,
+            "title": source_title,
+            "essay_title": essay_title,
+        }
 
 
 # ── 싱글턴 / 편의 함수 ────────────────────────
