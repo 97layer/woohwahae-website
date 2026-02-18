@@ -147,6 +147,22 @@ class StrategyAnalyst:
             except Exception as corpus_e:
                 print(f"⚠️  Corpus skipped: {corpus_e}")
 
+            # 신호 파일 status → analyzed (Orchestrator 중복 투입 방지)
+            try:
+                import pathlib
+                signal_path = signal_data.get('signal_path') or str(
+                    PROJECT_ROOT / 'knowledge' / 'signals' / f"{signal_id}.json"
+                )
+                sp = pathlib.Path(str(signal_path))
+                if sp.exists():
+                    sig_json = json.loads(sp.read_text())
+                    sig_json['status'] = 'analyzed'
+                    sig_json['analyzed_at'] = datetime.now().isoformat()
+                    sp.write_text(json.dumps(sig_json, indent=2, ensure_ascii=False))
+                    print(f"Joon: 신호 status → analyzed: {signal_id}")
+            except Exception as upd_e:
+                print(f"⚠️  Signal status update skipped: {upd_e}")
+
             return analysis
 
         except Exception as e:

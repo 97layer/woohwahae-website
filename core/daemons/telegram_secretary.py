@@ -91,11 +91,18 @@ class TelegramSecretaryV6:
         welcome_msg = (
             f"<b>97layerOS</b>\n\n"
             f"안녕하세요, {_escape_html(user.first_name)}님.\n\n"
-            f"- 자연어로 뭐든 물어보면 됩니다\n"
-            f"- YouTube 링크 → 영상 분석\n"
-            f"- 이미지 → 브랜드 인사이트 추출\n"
-            f"- 아이디어 텍스트 → 자동 저장\n"
-            f"- /growth → 시스템 성장 지표"
+            f"<b>명령어</b>\n"
+            f"/status — 파이프라인 현황\n"
+            f"/publish — 콘텐츠 즉시 발행\n"
+            f"/publish [테마] — 테마 지정 발행\n"
+            f"/report — 오늘 처리 요약\n"
+            f"/growth — 시스템 성장 지표\n"
+            f"/signal [텍스트] — 신호 직접 투입\n"
+            f"/pending — 가드너 제안 목록\n\n"
+            f"<b>자동 처리</b>\n"
+            f"텍스트 → 신호 수집\n"
+            f"YouTube 링크 → 영상 분석\n"
+            f"이미지 → 브랜드 인사이트 추출"
         )
         await update.message.reply_text(welcome_msg, parse_mode=constants.ParseMode.HTML)
 
@@ -355,6 +362,216 @@ class TelegramSecretaryV6:
         except Exception as q_e:
             logger.warning("SA 큐 전달 실패 (signals/ 저장은 완료): %s", q_e)
 
+    async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """/status — 파이프라인 현황 스냅샷"""
+        try:
+            signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
+            corpus_index = PROJECT_ROOT / 'knowledge' / 'corpus' / 'index.json'
+            queue_completed = PROJECT_ROOT / '.infra' / 'queue' / 'tasks' / 'completed'
+            queue_pending = PROJECT_ROOT / '.infra' / 'queue' / 'tasks' / 'pending'
+
+            sig_stats: Dict = {}
+            for f in signals_dir.glob('*.json'):
+                try:
+                    d = json.loads(f.read_text())
+                    s = d.get('status', 'unknown')
+                    sig_stats[s] = sig_stats.get(s, 0) + 1
+                except Exception:
+                    pass
+
+            clusters_total = 0
+            published_count = 0
+            if corpus_index.exists():
+                ci = json.loads(corpus_index.read_text())
+                clusters_total = len(ci.get('clusters', {}))
+                published_count = len(ci.get('published', []))
+
+            pending_cnt = len(list(queue_pending.glob('*.json'))) if queue_pending.exists() else 0
+            completed_cnt = len(list(queue_completed.glob('*.json'))) if queue_completed.exists() else 0
+
+            from datetime import datetime as _dt
+            now = _dt.now()
+            next_g = now.replace(hour=3, minute=0, second=0, microsecond=0)
+            if next_g <= now:
+                from datetime import timedelta
+                next_g += timedelta(days=1)
+            delta = next_g - now
+            h, rem = divmod(int(delta.total_seconds()), 3600)
+            m = rem // 60
+
+            total_sigs = sum(sig_stats.values())
+            msg = (
+                f"<b>⚙️ 파이프라인 현황</b>\n\n"
+                f"<b>신호</b>\n"
+                f"총 {total_sigs}개 | 수집 {sig_stats.get('captured',0)} | "
+                f"분석완료 {sig_stats.get('analyzed',0)}\n\n"
+                f"<b>Corpus</b>\n"
+                f"군집 {clusters_total}개 | 발행됨 {published_count}개\n\n"
+                f"<b>태스크 큐</b>\n"
+                f"대기 {pending_cnt}개 | 완료 {completed_cnt}개\n\n"
+                f"<b>Gardener</b>\n"
+                f"다음 실행: {h}시간 {m}분 후 (03:00)"
+            )
+            await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
+
+        except Exception as e:
+            logger.error("status_command error: %s", e)
+            await update.message.reply_text(f"상태 조회 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
+    async def publish_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """/publish [테마] — Corpus 군집 즉시 발행 트리거"""
+        theme_arg = ' '.join(context.args).strip() if context.args else None
+        try:
+            from core.system.corpus_manager import CorpusManager
+            corpus = CorpusManager()
+            corpus_index_path = PROJECT_ROOT / 'knowledge' / 'corpus' / 'index.json'
+
+            if theme_arg:
+                index = json.loads(corpus_index_path.read_text()) if corpus_index_path.exists() else {}
+                clusters = index.get('clusters', {})
+                matched = next((v for k, v in clusters.items() if theme_arg in k), None)
+                if not matched:
+                    available = ', '.join(clusters.keys()) or '없음'
+                    await update.message.reply_text(
+                        f"테마 <b>{_escape_html(theme_arg)}</b> 군집 없음.\n"
+                        f"현재 군집: {_escape_html(available)}",
+                        parse_mode=constants.ParseMode.HTML
+                    )
+                    return
+                ripe = [matched]
+                forced = True
+            else:
+                ripe = corpus.get_ripe_clusters()
+                forced = False
+
+            if not ripe:
+                index = json.loads(corpus_index_path.read_text()) if corpus_index_path.exists() else {}
+                clusters = index.get('clusters', {})
+                if clusters:
+                    lines = ["<b>발행 가능한 군집 없음</b> (성숙도 미달)\n", "<b>현재 군집:</b>"]
+                    for theme, c in clusters.items():
+                        cnt = len(c.get('entry_ids', []))
+                        lines.append(f"  • {_escape_html(theme)}: {cnt}개 신호")
+                    lines.append("\n조건: 5개+ 신호, 72시간+ 분포")
+                    await update.message.reply_text('\n'.join(lines), parse_mode=constants.ParseMode.HTML)
+                else:
+                    await update.message.reply_text(
+                        "아직 Corpus 군집이 없습니다.\n신호가 분석되면 자동으로 군집이 형성됩니다."
+                    )
+                return
+
+            from core.system.queue_manager import QueueManager
+            qm = QueueManager()
+            triggered = []
+            for cluster in ripe:
+                theme = cluster.get('theme', 'unknown')
+                qm.create_task(
+                    agent_type='CE',
+                    task_type='write_corpus_essay',
+                    payload={
+                        'cluster': cluster,
+                        'forced': forced,
+                        'triggered_by': 'telegram_publish_command',
+                    }
+                )
+                triggered.append(theme)
+
+            forced_label = " (강제)" if forced else ""
+            themes_text = ', '.join(_escape_html(t) for t in triggered)
+            await update.message.reply_text(
+                f"🚀 <b>발행 트리거됨{forced_label}</b>\n\n"
+                f"테마: {themes_text}\n"
+                f"CE 에이전트가 에세이를 작성합니다.\n"
+                f"완료 시 woohwahae.kr/archive/ 에 게시됩니다.",
+                parse_mode=constants.ParseMode.HTML
+            )
+
+        except Exception as e:
+            logger.error("publish_command error: %s", e)
+            await update.message.reply_text(f"발행 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
+    async def signal_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """/signal [텍스트] — 신호 직접 투입"""
+        text = ' '.join(context.args).strip() if context.args else ''
+        if not text:
+            await update.message.reply_text(
+                "사용법: <code>/signal 투입할 내용</code>",
+                parse_mode=constants.ParseMode.HTML
+            )
+            return
+        try:
+            self._save_insight(text, update.effective_user)
+            preview = _escape_html(text[:100])
+            await update.message.reply_text(
+                f"📥 <b>신호 투입 완료</b>\n\n\"{preview}\"\n\nSA 분석 큐 전달됨.",
+                parse_mode=constants.ParseMode.HTML
+            )
+        except Exception as e:
+            logger.error("signal_command error: %s", e)
+            await update.message.reply_text(f"신호 투입 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
+    async def report_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """/report — 오늘 처리 요약"""
+        try:
+            from datetime import date as _date
+            today = _date.today().isoformat()
+            signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
+            queue_completed = PROJECT_ROOT / '.infra' / 'queue' / 'tasks' / 'completed'
+
+            today_sigs = []
+            for f in signals_dir.glob('*.json'):
+                try:
+                    d = json.loads(f.read_text())
+                    if d.get('captured_at', '').startswith(today):
+                        today_sigs.append(d)
+                except Exception:
+                    pass
+
+            today_sa = 0
+            scores = []
+            if queue_completed.exists():
+                for f in queue_completed.glob('*.json'):
+                    try:
+                        d = json.loads(f.read_text())
+                        if d.get('agent_type') == 'SA' and (d.get('completed_at') or '').startswith(today):
+                            today_sa += 1
+                            score = d.get('result', {}).get('result', {}).get('strategic_score', 0)
+                            if score:
+                                scores.append(score)
+                    except Exception:
+                        pass
+            avg_score = int(sum(scores) / len(scores)) if scores else 0
+
+            corpus_index = PROJECT_ROOT / 'knowledge' / 'corpus' / 'index.json'
+            clusters_total = published_count = 0
+            if corpus_index.exists():
+                ci = json.loads(corpus_index.read_text())
+                clusters_total = len(ci.get('clusters', {}))
+                published_count = len(ci.get('published', []))
+
+            sig_types: Dict = {}
+            for s in today_sigs:
+                t = s.get('type', 'unknown')
+                sig_types[t] = sig_types.get(t, 0) + 1
+            sig_type_text = ', '.join(f"{t} {n}개" for t, n in sig_types.items()) or '없음'
+
+            msg = (
+                f"<b>📋 일일 리포트 — {today}</b>\n\n"
+                f"<b>오늘 수집</b>\n"
+                f"신규 신호: {len(today_sigs)}개 ({sig_type_text})\n\n"
+                f"<b>오늘 분석</b>\n"
+                f"SA 완료: {today_sa}건"
+                + (f" | 평균 점수: {avg_score}" if avg_score else "") + "\n\n"
+                f"<b>Corpus 누적</b>\n"
+                f"군집: {clusters_total}개 | 발행: {published_count}개\n\n"
+                f"/publish — 즉시 발행  |  /status — 상세 현황"
+            )
+            await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
+
+        except Exception as e:
+            logger.error("report_command error: %s", e)
+            await update.message.reply_text(f"리포트 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
     async def approve_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Gardener 제안 승인 — /approve [id]"""
         if not self.gardener:
@@ -415,6 +632,10 @@ class TelegramSecretaryV6:
         application = Application.builder().token(self.bot_token).build()
         application.add_handler(CommandHandler("start", self.start_command))
         application.add_handler(CommandHandler("growth", self.growth_command))
+        application.add_handler(CommandHandler("status", self.status_command))
+        application.add_handler(CommandHandler("publish", self.publish_command))
+        application.add_handler(CommandHandler("signal", self.signal_command))
+        application.add_handler(CommandHandler("report", self.report_command))
         application.add_handler(CommandHandler("approve", self.approve_command))
         application.add_handler(CommandHandler("reject", self.reject_command))
         application.add_handler(CommandHandler("pending", self.pending_command))
