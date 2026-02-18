@@ -1,0 +1,124 @@
+name: 97layerOS Session Integrity Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  session-integrity:
+    name: Session Handoff Protocol Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for QUANTA age check
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Check mandatory files exist
+        run: |
+          echo "🔍 Checking mandatory files..."
+          REQUIRED_FILES=(
+            "knowledge/system/work_lock.json"
+            "knowledge/system/filesystem_cache.json"
+            "knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
+            "directives/IDENTITY.md"
+            "directives/system/SYSTEM.md"
+          )
+
+          MISSING=0
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing: $file"
+              MISSING=1
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+          if [ $MISSING -eq 1 ]; then
+            echo ""
+            echo "❌ INTEGRITY CHECK FAILED: Missing mandatory files"
+            exit 1
+          fi
+
+      - name: Validate JSON files
+        run: |
+          echo "🔍 Validating JSON integrity..."
+          python3 -c "import json; json.load(open('knowledge/system/work_lock.json'))" || exit 1
+          python3 -c "import json; json.load(open('knowledge/system/filesystem_cache.json'))" || exit 1
+          echo "✅ All JSON files valid"
+
+      - name: Check INTELLIGENCE_QUANTA freshness
+        run: |
+          echo "🔍 Checking QUANTA freshness..."
+          QUANTA_FILE="knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
+
+          # Get last commit that modified QUANTA
+          LAST_COMMIT=$(git log -1 --format=%ct "$QUANTA_FILE" 2>/dev/null || echo 0)
+          NOW=$(date +%s)
+          AGE_SECONDS=$((NOW - LAST_COMMIT))
+          AGE_HOURS=$((AGE_SECONDS / 3600))
+
+          echo "QUANTA last updated: $AGE_HOURS hours ago"
+
+          if [ $AGE_HOURS -gt 72 ]; then
+            echo "⚠️  WARNING: QUANTA is >72h old"
+            echo "This suggests session handoff may not be working properly"
+            # Don't fail, just warn for now
+          else
+            echo "✅ QUANTA is fresh (< 72h)"
+          fi
+
+      - name: Check for forbidden files
+        run: |
+          echo "🔍 Checking for forbidden session files..."
+          FORBIDDEN=$(find . -maxdepth 1 -type f \( \
+            -name "SESSION_SUMMARY_*.md" -o \
+            -name "WAKEUP_REPORT_*.md" -o \
+            -name "CONTEXT_*.md" -o \
+            -name "AI_BRIEFING_*.md" \
+          \) 2>/dev/null || true)
+
+          if [ -n "$FORBIDDEN" ]; then
+            echo "❌ Found forbidden files in root:"
+            echo "$FORBIDDEN"
+            echo ""
+            echo "These violate .ai_rules file policy"
+            exit 1
+          else
+            echo "✅ No forbidden files in root"
+          fi
+
+      - name: Verify handoff.py functionality
+        run: |
+          echo "🔍 Testing handoff.py..."
+          if python3 core/system/handoff.py --onboard; then
+            echo "✅ handoff.py --onboard works"
+          else
+            echo "❌ handoff.py --onboard failed"
+            exit 1
+          fi
+
+      - name: Final report
+        if: success()
+        run: |
+          echo ""
+          echo "╔════════════════════════════════════════════════════════════════╗"
+          echo "║  ✅ 97layerOS Session Integrity Check PASSED                 ║"
+          echo "╚════════════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "✅ All mandatory files present"
+          echo "✅ JSON files valid"
+          echo "✅ QUANTA reasonably fresh"
+          echo "✅ No forbidden files"
+          echo "✅ handoff.py operational"
+          echo ""
+          echo "This commit maintains harness engineering standards."

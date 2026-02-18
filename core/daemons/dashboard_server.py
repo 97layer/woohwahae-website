@@ -14,6 +14,7 @@ STATUS_FILE = PROJECT_ROOT / "knowledge" / "system_state.json"
 SYNAPSE_FILE = PROJECT_ROOT / "knowledge" / "agent_hub" / "synapse_bridge.json"
 COUNCIL_DIR = PROJECT_ROOT / "knowledge" / "council_log"
 DASHBOARD_DIR = PROJECT_ROOT / "dashboard"
+INFRA_QUEUE_DIR = PROJECT_ROOT / ".infra" / "queue"
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
@@ -134,22 +135,39 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.end_headers()
 
             try:
-                last_update = None
+                from core.system.cortex_edge import get_cortex
+                cortex = get_cortex()
+                
                 while True:
-                    # Read Synapse Bridge for real-time agent state
+                    # 1. Read Synapse Bridge for real-time agent state
+                    synapse_data = {}
                     if SYNAPSE_FILE.exists():
                         with open(SYNAPSE_FILE, 'r', encoding='utf-8') as f:
                             synapse_data = json.load(f)
 
-                        current_update = synapse_data.get('last_update')
-                        if current_update != last_update:
-                            # Send SSE event
-                            event_data = json.dumps(synapse_data)
-                            self.wfile.write(f"data: {event_data}\n\n".encode('utf-8'))
-                            self.wfile.flush()
-                            last_update = current_update
+                    # 2. Add System Intelligence from Cortex
+                    cortex_status = cortex.get_system_status()
+                    
+                    # 3. Queue status
+                    pending_tasks = list((INFRA_QUEUE_DIR / "tasks" / "pending").glob("*.json"))
+                    processing_tasks = list((INFRA_QUEUE_DIR / "tasks" / "processing").glob("*.json"))
+                    
+                    full_payload = {
+                        "synapse": synapse_data,
+                        "cortex": cortex_status,
+                        "queue": {
+                            "pending": len(pending_tasks),
+                            "processing": len(processing_tasks)
+                        },
+                        "timestamp": datetime.now().isoformat()
+                    }
 
-                    time.sleep(1)  # Poll every second
+                    # Send SSE event
+                    event_data = json.dumps(full_payload)
+                    self.wfile.write(f"data: {event_data}\n\n".encode('utf-8'))
+                    self.wfile.flush()
+                    
+                    time.sleep(2)  # Update every 2 seconds
 
             except (BrokenPipeError, ConnectionResetError):
                 # Client disconnected

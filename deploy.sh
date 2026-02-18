@@ -31,13 +31,15 @@ tar \
     --exclude='*/__pycache__' \
     --exclude='.git' \
     --exclude='.env' \
+    --no-xattrs \
     -czf /tmp/97layer-deploy.tar.gz \
     core/ \
     directives/ \
     knowledge/docs/ \
     knowledge/agent_hub/ \
     knowledge/long_term_memory.json \
-    requirements.txt
+    requirements.txt \
+    website/
 SIZE=$(du -h /tmp/97layer-deploy.tar.gz | cut -f1)
 echo "✅ 패키지 생성 완료 (${SIZE})"
 

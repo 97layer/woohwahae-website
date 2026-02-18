@@ -266,8 +266,15 @@ class HandoffEngine:
         with open(self.work_lock_path, 'r', encoding='utf-8') as f:
             lock_data = json.load(f)
 
-        # Check expiration
-        expires_at = datetime.fromisoformat(lock_data['expires_at'])
+        if not lock_data.get('locked', False):
+            return {"locked": False}
+
+        # Check expiration (handle None case)
+        expires_at_str = lock_data.get('expires_at')
+        if not expires_at_str:
+            return {"locked": False}
+
+        expires_at = datetime.fromisoformat(expires_at_str)
         if datetime.now() > expires_at:
             print(f"⏰ Work lock expired. Auto-releasing...")
             self.work_lock_path.unlink()
@@ -291,9 +298,18 @@ class HandoffEngine:
             with open(self.fs_cache_path, 'r', encoding='utf-8') as f:
                 cache = json.load(f)
 
-            last_scan = datetime.fromisoformat(cache['last_scan'])
-            if datetime.now() - last_scan < timedelta(minutes=5):
-                return cache  # Fresh cache
+            last_scan_str = cache.get('last_scan', '')
+            if last_scan_str:
+                # Handle 'Z' timezone format
+                last_scan_str = last_scan_str.replace('Z', '+00:00')
+                try:
+                    last_scan = datetime.fromisoformat(last_scan_str)
+                    # Make both timezone-naive for comparison
+                    last_scan_naive = last_scan.replace(tzinfo=None)
+                    if datetime.now() - last_scan_naive < timedelta(minutes=5):
+                        return cache  # Fresh cache
+                except (ValueError, AttributeError):
+                    pass  # Invalid format, proceed with scan
 
         # Scan filesystem
         print("🔍 Scanning filesystem...")

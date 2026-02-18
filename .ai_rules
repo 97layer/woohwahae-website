@@ -1,6 +1,6 @@
 # 97layerOS AI Agent Constitution
 # Priority: 0 (MAXIMUM - All AI models MUST obey)
-# Last Updated: 2026-02-16
+# Last Updated: 2026-02-18
 
 ## 🔴 MANDATORY SESSION PROTOCOL
 
@@ -102,11 +102,7 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 ```
 Session Start
   ↓
-Read INTELLIGENCE_QUANTA.md (맥락 복구)
-  ↓
-Check work_lock.json (충돌 방지)
-  ↓
-Check filesystem_cache.json (중복 방지)
+./scripts/session_bootstrap.sh  (자동: QUANTA 읽기 + lock 확인 + cache 확인)
   ↓
 Perform Task
   ↓
@@ -114,8 +110,15 @@ Register Asset (자산 등록)
   ↓
 Update INTELLIGENCE_QUANTA.md (다음 세션 준비)
   ↓
+./scripts/session_handoff.sh "agent-id" "summary" "task1" "task2"
+  ↓
 Session End
 ```
+
+> bootstrap 스크립트가 없는 환경(VM 등)에서는 수동으로:
+> 1. `cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md`
+> 2. `cat knowledge/system/work_lock.json`
+> 3. `cat knowledge/system/filesystem_cache.json`
 
 ---
 
@@ -150,10 +153,33 @@ Input → Store → Connect → Generate → Publish → Input again
 At session end, ALWAYS run:
 
 ```bash
+./scripts/session_handoff.sh "agent-id" "작업 요약" "다음 태스크1" "다음 태스크2"
+```
+
+스크립트 없는 환경:
+```bash
 python core/system/handoff.py --handoff
 ```
 
 This saves the current state for the next AI agent.
+
+---
+
+## ⚙️ ENFORCEMENT LAYERS
+
+이 시스템은 Zero Trust 원칙으로 설계됨. AI가 프로토콜을 자발적으로 따를 것을 가정하지 않는다.
+
+| Layer | 메커니즘 | 위치 |
+|-------|---------|------|
+| 1 | Git Pre-Commit Hook (자동 검증) | `.git/hooks/pre-commit` |
+| 2 | GitHub Actions CI/CD | `.github/workflows/session-integrity.yml` |
+| 3 | Bootstrap Script | `scripts/session_bootstrap.sh` |
+| 4 | Handoff Script | `scripts/session_handoff.sh` |
+
+검증 항목: 필수 파일 존재 / JSON 유효성 / QUANTA freshness(72h) / 금지 파일 부재
+**handoff 미실행 시 커밋 차단.**
+
+상세 문서: `knowledge/docs/ENFORCEMENT_SYSTEM.md`
 
 ---
 

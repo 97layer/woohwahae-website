@@ -360,6 +360,27 @@ nav.scrolled {
   opacity: 0.08;
 }
 
+/* Mobile Responsiveness for Archive */
+@media (max-width: 768px) {
+  .archive-header {
+    padding: 80px 0 40px;
+  }
+
+  .archive-title {
+    font-size: 2.5rem;
+  }
+
+  .archive-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .archive-card-image {
+    aspect-ratio: 3/2;
+    /* 모바일에서는 가로형이 더 보기 좋을 수 있음 */
+  }
+}
+
 /* ─── Sections ─── */
 section {
   padding: var(--space-xl) 0;
@@ -375,79 +396,6 @@ section+section {
   text-transform: uppercase;
   color: var(--text-faint);
   margin-bottom: var(--space-xl);
-}
-
-/* ─── Archive List ─── */
-.archive-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-}
-
-.archive-item {
-  padding: var(--space-md) 0;
-  border-bottom: 1px solid var(--line);
-  display: grid;
-  grid-template-columns: 6rem 1fr;
-  gap: var(--space-md);
-  align-items: baseline;
-  transition: opacity var(--duration) var(--ease);
-}
-
-.archive-item:first-child {
-  border-top: 1px solid var(--line);
-}
-
-.archive-item:hover {
-  opacity: 0.65;
-}
-
-.archive-item a {
-  border-bottom: none;
-  display: contents;
-}
-
-.archive-date {
-  font-size: 0.75rem;
-  color: var(--text-faint);
-  letter-spacing: 0.05em;
-  line-height: 1.9;
-}
-
-.archive-content {}
-
-.archive-title {
-  font-size: 1rem;
-  font-weight: 400;
-  margin-bottom: 0.3em;
-  line-height: 1.4;
-}
-
-.archive-empty-msg {
-  color: var(--text-faint);
-  font-style: italic;
-}
-
-.archive-preview {
-  font-size: 0.85rem;
-  color: var(--text-sub);
-  line-height: 1.6;
-  margin-bottom: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.archive-category {
-  display: inline-block;
-  font-size: 0.7rem;
-  color: var(--text-faint);
-  margin-top: var(--space-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
 /* ─── Article (개별 글) ─── */

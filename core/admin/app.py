@@ -22,6 +22,8 @@ WEBSITE_DIR = BASE_DIR / 'website'
 ARCHIVE_DIR = WEBSITE_DIR / 'archive'
 PUBLISHED_DIR = BASE_DIR / 'knowledge' / 'assets' / 'published'
 UPLOAD_DIR = WEBSITE_DIR / 'assets' / 'img' / 'uploads'
+SIGNALS_DIR = BASE_DIR / 'knowledge' / 'signals'
+MEMORY_FILE = BASE_DIR / 'knowledge' / 'long_term_memory.json'
 
 # ─── App ───
 app = Flask(
@@ -35,7 +37,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 
 ADMIN_PASSWORD_HASH = os.getenv(
     'ADMIN_PASSWORD_HASH',
-    generate_password_hash('woohwahae2024')  # 개발용 기본 비밀번호
+    generate_password_hash('woohwahae2024', method='pbkdf2:sha256')  # 개발용 기본 비밀번호
 )
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
@@ -209,6 +211,59 @@ def pipeline_adopt(item_id):
     return redirect(url_for('archive_list'))
 
 
+# ─── Cockpit (Second Brain UI) ───
+@app.route('/cockpit')
+@login_required
+def cockpit():
+    """세컨드 브레인 주입 및 소통 창구"""
+    memory = {}
+    if MEMORY_FILE.exists():
+        try:
+            memory = json.loads(MEMORY_FILE.read_text(encoding='utf-8'))
+        except:
+            pass
+    
+    # 랭킹 데이터 추출
+    concepts = sorted(memory.get('concepts', {}).items(), key=lambda x: x[1], reverse=True)[:10]
+    experiences = memory.get('experiences', [])[-5:]
+    
+    return render_template('cockpit.html', concepts=concepts, experiences=experiences)
+
+
+@app.route('/api/insight', methods=['POST'])
+@login_required
+def api_insight():
+    """인사이트 주입 API"""
+    data = request.json
+    text = data.get('text', '').strip()
+    if not text:
+        return jsonify({'error': '내용이 없습니다.'}), 400
+    
+    from core.system.cortex_edge import get_cortex
+    cortex = get_cortex()
+    result = cortex.inject_signal(text, source="web_admin")
+    
+    return jsonify(result)
+
+
+@app.route('/api/chat', methods=['POST'])
+@login_required
+def api_chat():
+    """AIEngine 대화 API (Deep RAG)"""
+    data = request.json
+    text = data.get('text', '').strip()
+    if not text:
+        return jsonify({'error': '내용이 없습니다.'}), 400
+    
+    try:
+        from core.system.cortex_edge import get_cortex
+        cortex = get_cortex()
+        result = cortex.query("admin", text)
+        return jsonify({'response': result['response']})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 # ─── Image Upload ───
 @app.route('/upload', methods=['POST'])
 @login_required
@@ -314,4 +369,4 @@ def _allowed_file(filename):
 
 # ─── Run ───
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

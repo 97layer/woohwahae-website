@@ -141,11 +141,8 @@ class ConversationEngine:
             if len(context['history']) > 5:
                 context['history'] = context['history'][-5:]
 
-            # 자가발전: 대화 완료 후 long_term_memory 비동기 업데이트
-            try:
-                self._update_long_term_memory(message, answer)
-            except Exception as mem_e:
-                logger.debug(f"Memory update skipped: {mem_e}")
+            # 자가발전: Cortex에서 통합 관리하므로 여기서는 스킵 (중복 방지)
+            # self._update_long_term_memory(message, answer)
 
             return answer
 

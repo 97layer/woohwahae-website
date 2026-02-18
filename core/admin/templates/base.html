@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>{% block title %}Admin{% endblock %} — WOOHWAHAE</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Crimson+Text:ital,wght@0,400;1,400&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
 </head>
+
 <body>
 
   <nav class="admin-nav">
     <a href="{{ url_for('dashboard') }}" class="admin-logo">WOOHWAHAE <span>Admin</span></a>
     <div class="admin-nav-links">
-      <a href="{{ url_for('archive_list') }}" {% if request.path.startswith('/archive') %}class="active"{% endif %}>Archive</a>
-      <a href="{{ url_for('pipeline') }}" {% if request.path.startswith('/pipeline') %}class="active"{% endif %}>Pipeline</a>
+      <a href="{{ url_for('cockpit') }}" {% if request.path=='/cockpit' %}class="active" {% endif %}>Cockpit</a>
+      <a href="{{ url_for('archive_list') }}" {% if request.path.startswith('/archive') %}class="active" {% endif
+        %}>Archive</a>
+      <a href="{{ url_for('pipeline') }}" {% if request.path.startswith('/pipeline') %}class="active" {% endif
+        %}>Pipeline</a>
       <form action="{{ url_for('publish') }}" method="post" style="display:inline;">
         <button type="submit" class="admin-publish-btn">발행</button>
       </form>
@@ -37,4 +44,5 @@
   </main>
 
 </body>
+
 </html>

@@ -24,6 +24,7 @@ from datetime import datetime
 import asyncio
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from core.system.cortex_edge import get_cortex
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -87,8 +88,9 @@ class SignalProcessor:
         # 처리 큐
         self.processing_queue = []
         self.is_processing = False
+        self.cortex = get_cortex()
 
-        logger.info("✅ Signal Processor initialized")
+        logger.info("✅ Signal Processor initialized with Cortex Integration")
 
     def process_signal(self, signal_path: str):
         """
@@ -189,14 +191,20 @@ class SignalProcessor:
 
         content = signal_data.get('content', '')
 
-        # 간단한 처리: 저장만
+        # 간단한 처리: 저장 및 메모리 반영
         signal_data['status'] = 'stored'
         signal_data['stored_at'] = datetime.now().isoformat()
 
         with open(signal_path, 'w', encoding='utf-8') as f:
             json.dump(signal_data, f, ensure_ascii=False, indent=2)
 
-        logger.info("✅ Text signal stored")
+        # Cortex 메모리에 반영 (비동기성 분석 결과로 취급)
+        self.cortex._update_long_term_memory(
+            f"신규 텍스트 신호 감지: {content[:50]}...",
+            f"시스템에 텍스트 인텔리전스로 저장되었습니다. ID: {signal_data.get('signal_id')}"
+        )
+
+        logger.info("✅ Text signal stored and indexed by Cortex")
 
     def start_monitoring(self):
         """신호 디렉토리 모니터링 시작"""

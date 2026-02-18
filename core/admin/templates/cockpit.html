@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Cockpit{% endblock %}
+
+{% block content %}
+<div class="cockpit-container">
+    <header class="admin-section-header">
+        <div>
+            <p class="admin-label">97layerOS Control Center</p>
+            <h1 class="admin-title">Cockpit <span id="system-heartbeat" class="status-dot"></span></h1>
+            <p class="admin-desc">세컨드 브레인 주입 및 실시간 시스템 소통 | <span id="queue-status">Queue: 0 pending</span></p>
+        </div>
+    </header>
+
+    <div class="cockpit-grid">
+        <!-- 1. Insight Injection (왼쪽) -->
+        <section class="cockpit-section cockpit-injection">
+            <h2 class="admin-label">Quick Injection</h2>
+            <div class="injection-box">
+                <textarea id="insight-input" placeholder="새로운 인사이트나 생각을 자유롭게 기록하십시오..."></textarea>
+                <div class="injection-actions">
+                    <span id="char-count">0 chars</span>
+                    <button id="inject-btn" class="admin-action-btn">주입 (Inject)</button>
+                </div>
+            </div>
+
+            <div class="recent-signals">
+                <h3 class="admin-label">Recent Signals</h3>
+                <ul id="signals-list">
+                    {% for exp in experiences %}
+                    <li class="signal-item">
+                        <span class="signal-tag">{{ exp.category }}</span>
+                        <p class="signal-summary">{{ exp.summary }}</p>
+                        <span class="signal-date">{{ exp.timestamp }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. AI Communication (오른쪽) -->
+        <section class="cockpit-section cockpit-chat">
+            <h2 class="admin-label">Deep RAG Engine</h2>
+            <div id="chat-window" class="chat-window">
+                <div class="chat-message bot">
+                    <p>안녕하세요. 97layerOS의 수석 오케스트레이터입니다. 시스템의 지식이나 브랜딩 전략에 대해 무엇이든 질문하십시오.</p>
+                </div>
+            </div>
+            <div class="chat-input-box">
+                <input type="text" id="chat-input" placeholder="AI에게 메시지 보내기..." autocomplete="off">
+                <button id="send-btn">전송</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- 3. Knowledge Visualization (하단) -->
+    <section class="cockpit-knowledge">
+        <h2 class="admin-label">Top Knowledge Concepts</h2>
+        <div class="concepts-cloud">
+            {% for concept, count in concepts %}
+            <div class="concept-tag" style="opacity: {{ 0.3 + (count/concepts[0][1])*0.7 }}">
+                <span class="concept-name">{{ concept }}</span>
+                <span class="concept-count">{{ count }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<style>
+    /* Cockpit 전용 스타일 */
+    .cockpit-container {
+        animation: fadeIn 1s var(--ease);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .cockpit-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 2.5rem;
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .cockpit-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Injection */
+    .injection-box {
+        background: var(--bg-dark);
+        padding: 1.5rem;
+        border: 1px solid var(--line);
+        margin-bottom: 2rem;
+    }
+
+    #insight-input {
+        width: 100%;
+        min-height: 154px;
+        background: transparent;
+        border: none;
+        font-family: var(--font-kr);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        outline: none;
+        margin-bottom: 1rem;
+    }
+
+    .injection-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #char-count {
+        font-size: 0.7rem;
+        color: var(--text-faint);
+        letter-spacing: 0.05em;
+    }
+
+    /* Signals List */
+    .signal-item {
+        list-style: none;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .signal-tag {
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 2px 6px;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+
+    .signal-summary {
+        font-size: 0.85rem;
+        color: var(--text-sub);
+        margin-bottom: 0.3rem;
+    }
+
+    .signal-date {
+        font-size: 0.65rem;
+        color: var(--text-faint);
+    }
+
+    /* Chat */
+    .chat-window {
+        height: 400px;
+        border: 1px solid var(--line);
+        padding: 1.5rem;
+        overflow-y: auto;
+        background: white;
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .chat-message {
+        max-width: 85%;
+        padding: 0.8rem 1rem;
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
+
+    .chat-message.user {
+        align-self: flex-end;
+        background: var(--bg-dark);
+        color: var(--text);
+        border-left: 2px solid var(--text);
+    }
+
+    .chat-message.bot {
+        align-self: flex-start;
+        background: white;
+        color: var(--text);
+        border-left: 2px solid var(--accent);
+    }
+
+    .chat-input-box {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    #chat-input {
+        flex: 1;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--line);
+        font-family: var(--font-kr);
+        font-size: 0.9rem;
+        outline: none;
+    }
+
+    #chat-input:focus {
+        border-color: var(--text);
+    }
+
+    #send-btn {
+        padding: 0 1.5rem;
+        background: var(--text);
+        color: var(--bg);
+        border: none;
+        cursor: pointer;
+        font-size: 0.78rem;
+    }
+
+    /* Knowledge */
+    .concepts-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 1rem;
+        padding: 2rem;
+        background: var(--bg-dark);
+    }
+
+    .concept-tag {
+        background: white;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .concept-name {
+        font-size: 0.85rem;
+        font-weight: 400;
+    }
+
+    .concept-count {
+        font-size: 0.7rem;
+        color: var(--text-faint);
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        margin-left: 10px;
+        box-shadow: 0 0 5px var(--accent);
+    }
+
+    .status-dot.offline {
+        background: #666;
+        box-shadow: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .cockpit-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const insightInput = document.getElementById('insight-input');
+        const injectBtn = document.getElementById('inject-btn');
+        const charCount = document.getElementById('char-count');
+
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatWindow = document.getElementById('chat-window');
+
+        // 1. Insight Injection
+        insightInput.addEventListener('input', () => {
+            charCount.innerText = `${insightInput.value.length} chars`;
+        });
+
+        injectBtn.addEventListener('click', async () => {
+            const text = insightInput.value.trim();
+            if (!text) return;
+
+            injectBtn.disabled = true;
+            injectBtn.innerText = '주입 중...';
+
+            try {
+                const res = await fetch('/api/insight', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    insightInput.value = '';
+                    charCount.innerText = '0 chars';
+                    alert('인사이트 주입 완료. 더 사이클이 시작됩니다.');
+                    location.reload(); // 리스트 갱신을 위해 간단히 리로드
+                } else {
+                    alert('오류: ' + (data.error || '알 수 없는 문제'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('통신 오류가 발생했습니다.');
+            } finally {
+                injectBtn.disabled = false;
+                injectBtn.innerText = '주입 (Inject)';
+            }
+        });
+
+        // 2. Chat Communication
+        const appendMessage = (role, text) => {
+            const div = document.createElement('div');
+            div.className = `chat-message ${role}`;
+            div.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        };
+
+        const handleSend = async () => {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage('user', text);
+            chatInput.value = '';
+
+            // 로딩 표시
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'chat-message bot loading';
+            loadingDiv.innerText = '사유 중...';
+            chatWindow.appendChild(loadingDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const data = await res.json();
+
+                chatWindow.removeChild(loadingDiv);
+                if (data.response) {
+                    appendMessage('bot', data.response);
+                } else {
+                    appendMessage('bot', '오류가 발생했습니다: ' + (data.error || '연결 실패'));
+                }
+            } catch (err) {
+                chatWindow.removeChild(loadingDiv);
+                appendMessage('bot', '통신 중 오류가 발생했습니다.');
+            }
+        };
+
+        sendBtn.addEventListener('click', handleSend);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+
+        // 3. Real-time SSE Integration (Cortex Dashboard)
+        const queueStatus = document.getElementById('queue-status');
+        const heartbeat = document.getElementById('system-heartbeat');
+        const signalsList = document.getElementById('signals-list');
+
+        const connectSSE = () => {
+            console.log('Connecting to Cortex SSE...');
+            // Dashboard Server (Port 8000)
+            const evs = new EventSource('http://localhost:8000/api/stream');
+
+            evs.onmessage = (e) => {
+                const data = JSON.parse(e.data);
+                console.log('SSE Data:', data);
+
+                // Update Heartbeat
+                heartbeat.classList.remove('offline');
+
+                // Update Queue Status
+                if (data.queue) {
+                    queueStatus.innerText = `Queue: ${data.queue.pending} pending, ${data.queue.processing} processing`;
+                }
+
+                // Update Concepts (하단 클라우드 자동 갱신은 복잡하므로 로그만 출력하거나 부분 갱신 가능)
+                if (data.cortex && data.cortex.intelligence) {
+                    // 필요시 UI 업데이트 추가
+                }
+            };
+
+            evs.onerror = () => {
+                console.warn('SSE Disconnected. Retrying...');
+                heartbeat.classList.add('offline');
+                evs.close();
+                setTimeout(connectSSE, 5000);
+            };
+        };
+
+        connectSSE();
+    });
+</script>
+{% endblock %}
