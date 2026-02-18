@@ -270,8 +270,83 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
             # SA 전략 점수를 result에 포함 (Ralph 채점용)
             result['sa_strategic_score'] = sa_result.get('strategic_score', 0)
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
+
+        elif task_type == 'write_corpus_essay':
+            # Gardener가 트리거한 corpus 기반 에세이 작성
+            # 단일 신호가 아닌 군집 전체 RAG → Magazine B 스타일 롱폼
+            result = self._write_corpus_essay(payload)
+            return {'status': 'completed', 'task_id': task.task_id, 'result': result}
+
         else:
             return {'status': 'failed', 'error': f"Unknown task type: {task_type}"}
+
+    def _write_corpus_essay(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Corpus 군집 기반 에세이 작성.
+        Magazine B 방식: 여러 신호의 흐름을 읽고 본질을 추출한 롱폼.
+        """
+        theme = payload.get("theme", "")
+        rag_context = payload.get("rag_context", [])
+        entry_count = payload.get("entry_count", 0)
+        instruction = payload.get("instruction", "")
+
+        # RAG 컨텍스트 직렬화
+        context_text = ""
+        for i, entry in enumerate(rag_context, 1):
+            context_text += f"\n[{i}] {entry.get('captured_at', '')[:10]} | {entry.get('signal_type', '')}\n"
+            context_text += f"요약: {entry.get('summary', '')}\n"
+            insights = entry.get('key_insights', [])
+            if insights:
+                context_text += f"인사이트: {' / '.join(str(x) for x in insights[:3])}\n"
+
+        prompt = f"""너는 WOOHWAHAE 아카이브의 편집자다.
+
+주제: {theme}
+신호 수: {entry_count}개
+지시: {instruction}
+
+아래는 이 주제와 관련해 쌓인 신호들의 요약이다:
+{context_text}
+
+위 신호들의 흐름을 읽고, 단편적인 요약이 아닌 하나의 글로 써라.
+
+요구사항:
+- 분량: 800~1200자 (한국어)
+- 톤: Magazine B처럼 절제되고 사색적. 감탄사나 수식어 없음.
+- 구조: 도입(관찰) → 전개(맥락) → 마무리(열린 질문 또는 여백)
+- 이모지, 볼드, 헤더 사용 금지
+- WOOHWAHAE 5 Pillars 반영: 슬로우라이프, 미니멀리즘, 본질, 절제, 기록
+
+응답 형식 (JSON):
+{{
+  "archive_essay": "에세이 전문",
+  "essay_title": "제목 (10자 이내, 간결하게)",
+  "theme": "{theme}",
+  "entry_count": {entry_count}
+}}
+
+JSON만 출력."""
+
+        try:
+            import google.genai as genai
+            import os, re
+            client = genai.Client(api_key=os.getenv('GOOGLE_API_KEY'))
+            response = client.models.generate_content(
+                model='gemini-2.5-pro',
+                contents=[prompt]
+            )
+            text = response.text.strip()
+            # JSON 추출
+            match = re.search(r'\{.*\}', text, re.DOTALL)
+            if match:
+                result = json.loads(match.group())
+                print(f"Ray: corpus 에세이 완료 — {theme} ({entry_count}개 신호)")
+                return result
+            else:
+                return {"archive_essay": text, "essay_title": theme, "theme": theme, "entry_count": entry_count}
+        except Exception as e:
+            print(f"Ray: corpus 에세이 실패 — {e}")
+            return {"error": str(e), "theme": theme}
 
     def start_watching(self, interval: int = 5):
         watcher = AgentWatcher(agent_type=self.agent_type, agent_id=self.agent_id)

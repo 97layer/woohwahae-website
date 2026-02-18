@@ -258,8 +258,57 @@ class PipelineOrchestrator:
 
         return created_count
 
+    def _process_sa_completed_only(self) -> int:
+        """
+        SA 완료 태스크만 처리 → Corpus 누적.
+        즉시발행 체인(AD→CE→CD)은 실행하지 않음.
+        발행은 Gardener가 Corpus 군집 성숙도 기반으로 트리거.
+        """
+        from core.system.corpus_manager import CorpusManager
+
+        tasks = self._load_completed_tasks()
+        processed_count = 0
+        corpus = CorpusManager()
+
+        for task in tasks:
+            task_id = task.get("task_id", "")
+            agent_type = task.get("agent_type", "")
+            task_type = task.get("task_type", "")
+            status = task.get("status", "")
+            result = task.get("result", {}) or {}
+
+            if self._is_orchestrated(task_id):
+                continue
+            if status != "completed":
+                continue
+
+            # SA 완료 → Corpus에 누적 (체인 진행 없음)
+            if agent_type == "SA" and task_type in ["analyze_signal", "analyze"]:
+                sa_result = result.get("result", {})
+                signal_id = task.get("payload", {}).get("signal_id", "")
+                signal_path = task.get("payload", {}).get("signal_path", "")
+
+                # 원본 신호 데이터 로드
+                signal_data = {}
+                if signal_path:
+                    try:
+                        signal_data = json.loads(Path(signal_path).read_text())
+                    except Exception:
+                        signal_data = task.get("payload", {})
+
+                try:
+                    corpus.add_entry(signal_id, sa_result, signal_data)
+                    logger.info(f"[Orchestrator] SA→Corpus: {signal_id}")
+                except Exception as e:
+                    logger.warning(f"[Orchestrator] Corpus 누적 실패: {e}")
+
+                self._mark_orchestrated(task_id, "corpus_accumulated")
+                processed_count += 1
+
+        return processed_count
+
     def process_completed_tasks(self):
-        """완료된 태스크 스캔 → 다음 파이프라인 단계 생성"""
+        """완료된 태스크 스캔 → 다음 파이프라인 단계 생성 (레거시 — 현재 미사용)"""
         tasks = self._load_completed_tasks()
         processed_count = 0
 
@@ -475,10 +524,12 @@ class PipelineOrchestrator:
             try:
                 # Step 1: 신규 신호 스캔 → SA 태스크 생성 (파이프라인 진입점)
                 new_signals = self._scan_new_signals()
-                # Step 2: 완료된 태스크 → 다음 단계 체인 (SA→AD→CE→CD→Publisher)
-                completed = self.process_completed_tasks()
+                # Step 2: SA 완료 태스크만 처리 → Corpus 누적 (즉시발행 체인 비활성화)
+                # AD→CE→CD→Publisher 즉시발행은 비활성화.
+                # 발행 트리거는 Gardener가 Corpus 군집 성숙도를 판단해서 수행.
+                completed = self._process_sa_completed_only()
                 if new_signals + completed > 0:
-                    logger.info(f"[Orchestrator] 사이클: 신규신호={new_signals}, 체인처리={completed}")
+                    logger.info(f"[Orchestrator] 사이클: 신규신호={new_signals}, SA완료처리={completed}")
             except Exception as e:
                 logger.error(f"[Orchestrator] 오류: {e}", exc_info=True)
 

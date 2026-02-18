@@ -63,18 +63,18 @@ class StrategyAnalyst:
         self.agent_id = agent_id
         self.agent_type = "SA"
 
-        # Initialize Gemini API (google.genai 신규 SDK)
-        api_key = api_key or os.getenv('GOOGLE_API_KEY')
-        if not api_key:
+        # Initialize Gemini API (REST API 직접 호출)
+        self.api_key = api_key or os.getenv('GOOGLE_API_KEY')
+        if not self.api_key:
             raise ValueError("GOOGLE_API_KEY not found in environment")
 
-        self.client = genai.Client(api_key=api_key)
         self._model_name = 'gemini-2.5-flash'
+        self._api_url = 'https://generativelanguage.googleapis.com/v1beta/models'
 
         # Joon의 인격 지침 로드
         self._persona = self._load_persona()
 
-        print(f"Joon: 준비됨.")
+        print(f"Joon: 준비됨. (Key: ...{self.api_key[-4:]})")
 
     def analyze_signal(self, signal_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -103,12 +103,16 @@ class StrategyAnalyst:
         prompt = self._build_analysis_prompt(content, source)
 
         try:
-            # Call Gemini API (google.genai 신규 SDK)
-            response = self.client.models.generate_content(
-                model=self._model_name,
-                contents=[prompt]
-            )
-            analysis_text = response.text
+            # Call Gemini API (REST API 직접 호출)
+            import requests
+            api_url = f"{self._api_url}/{self._model_name}:generateContent"
+            headers = {"Content-Type": "application/json"}
+            payload = {"contents": [{"parts": [{"text": prompt}]}]}
+
+            response = requests.post(f"{api_url}?key={self.api_key}",
+                                    headers=headers, json=payload, timeout=60)
+            response.raise_for_status()
+            analysis_text = response.json()['candidates'][0]['content']['parts'][0]['text']
 
             # Parse structured response
             analysis = self._parse_analysis(analysis_text)
@@ -138,6 +142,15 @@ class StrategyAnalyst:
                 self._save_to_notebooklm(analysis, content, source)
             except Exception as nlm_e:
                 print(f"⚠️  NotebookLM skipped: {nlm_e}")
+
+            # Corpus 누적: 신호 → 지식 풀 (군집 기반 발행을 위한 축적)
+            try:
+                from core.system.corpus_manager import CorpusManager
+                corpus = CorpusManager()
+                corpus.add_entry(signal_id, analysis, signal_data)
+                print(f"Joon: Corpus 누적 완료 → {signal_id}")
+            except Exception as corpus_e:
+                print(f"⚠️  Corpus skipped: {corpus_e}")
 
             return analysis
 

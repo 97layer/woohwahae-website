@@ -333,10 +333,100 @@ JSON만 출력."""
 
     # ── 메인 사이클 ───────────────────────────────
 
+    def _trigger_essay_for_cluster(self, cluster: Dict) -> Optional[str]:
+        """
+        성숙한 군집 → CE Agent에게 에세이 작성 지시
+        Magazine B 방식: 단일 신호가 아닌 군집 전체를 RAG해서 에세이 작성
+
+        Returns: task_id or None
+        """
+        from core.system.corpus_manager import CorpusManager
+        from core.system.queue_manager import QueueManager
+
+        corpus = CorpusManager()
+        entries = corpus.get_entries_for_essay(cluster["entry_ids"])
+
+        if not entries:
+            return None
+
+        # 에세이 RAG 컨텍스트 구성
+        rag_context = []
+        for e in entries:
+            rag_context.append({
+                "summary": e.get("summary", ""),
+                "key_insights": e.get("key_insights", []),
+                "themes": e.get("themes", []),
+                "captured_at": e.get("captured_at", ""),
+                "signal_type": e.get("signal_type", ""),
+                "preview": e.get("raw_content_preview", ""),
+            })
+
+        payload = {
+            "mode": "corpus_essay",               # CE가 이 모드를 감지
+            "theme": cluster["theme"],
+            "entry_count": cluster["entry_count"],
+            "rag_context": rag_context,
+            "avg_strategic_score": cluster["avg_strategic_score"],
+            "time_span_hours": cluster["hours_span"],
+            "instruction": (
+                f"주제 '{cluster['theme']}'에 관한 {cluster['entry_count']}개의 신호를 바탕으로 "
+                f"WOOHWAHAE 아카이브 에세이를 작성하라. "
+                f"단일 신호 요약이 아닌, 흐름을 읽고 본질을 추출한 긴 호흡의 글."
+            ),
+        }
+
+        try:
+            queue = QueueManager()
+            task_id = queue.create_task(
+                agent_type="CE",
+                task_type="write_corpus_essay",
+                payload=payload,
+            )
+            logger.info(f"🖊️  에세이 트리거: {cluster['theme']} ({cluster['entry_count']}개 entry) → CE task {task_id}")
+            return task_id
+        except Exception as e:
+            logger.error(f"에세이 트리거 실패: {e}")
+            return None
+
+    def _check_corpus_clusters(self) -> Dict:
+        """
+        Corpus 군집 성숙도 점검 → 익은 군집 에세이 트리거
+        """
+        try:
+            from core.system.corpus_manager import CorpusManager
+            corpus = CorpusManager()
+            summary = corpus.get_summary()
+            ripe = corpus.get_ripe_clusters()
+
+            triggered = []
+            for cluster in ripe:
+                task_id = self._trigger_essay_for_cluster(cluster)
+                if task_id:
+                    triggered.append({
+                        "theme": cluster["theme"],
+                        "entry_count": cluster["entry_count"],
+                        "task_id": task_id,
+                    })
+
+            logger.info(
+                "📚 Corpus 점검: 총 %d개 entry / 군집 %d개 / 성숙 %d개 / 에세이 트리거 %d개",
+                summary["total_entries"], summary["total_clusters"],
+                summary["ripe_clusters"], len(triggered)
+            )
+
+            return {
+                "corpus_summary": summary,
+                "ripe_clusters": len(ripe),
+                "essay_triggered": triggered,
+            }
+        except Exception as e:
+            logger.warning(f"Corpus 점검 실패: {e}")
+            return {"corpus_summary": {}, "ripe_clusters": 0, "essay_triggered": []}
+
     def run_cycle(self, days: int = 7) -> Dict:
         """
         Gardener 메인 사이클
-        Returns: {stats, proposals, auto_updates}
+        Returns: {stats, proposals, corpus_check, auto_updates}
         """
         logger.info("🌱 Gardener 사이클 시작 (지난 %d일)", days)
 
@@ -350,7 +440,10 @@ JSON만 출력."""
         # 2. AUTO 갱신
         self._auto_update_quanta(stats)
 
-        # 3. PROPOSE 생성 (신호가 10개 이상일 때만)
+        # 3. Corpus 군집 성숙도 점검 → 익은 것 에세이 트리거 (핵심 신규)
+        corpus_result = self._check_corpus_clusters()
+
+        # 4. PROPOSE 생성 (신호가 10개 이상일 때만)
         new_proposals = []
         if stats['signal_count'] >= 10:
             new_proposals = self._analyze_and_propose(stats)
@@ -365,6 +458,7 @@ JSON만 출력."""
             'stats': stats,
             'new_proposals': new_proposals,
             'pending_count': len(self.pending),
+            'corpus': corpus_result,
         }
 
     def format_telegram_report(self, result: Dict) -> str:
