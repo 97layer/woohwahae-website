@@ -345,8 +345,9 @@ JSON으로만 응답:
 
         검색 순서:
         1. signals/ JSON (순호가 보낸 인사이트 + SA 분석 결과)
-        2. long_term_memory.json (누적 개념 및 경험)
-        3. directives/ 마크다운 (브랜드/아이덴티티)
+        2. corpus/ entries + index (군집 테마 + 분석 결과)
+        3. long_term_memory.json (누적 개념 및 경험)
+        4. directives/ 마크다운 (브랜드/아이덴티티)
         """
         try:
             keywords = [w.lower() for w in query.split() if len(w) > 1]
@@ -354,7 +355,7 @@ JSON으로만 응답:
                 return ""
             results = []
 
-            # 1. signals/ JSON — 순호 인사이트 + SA 분석 결과
+            # 1. signals/ JSON — 순호 인사이트 + SA 분석 결과 (전체 검색)
             signals_dir = self.knowledge_dir / 'signals'
             if signals_dir.exists():
                 signal_files = sorted(
@@ -363,7 +364,7 @@ JSON으로만 응답:
                     reverse=True  # 최신순
                 )
                 matched = []
-                for sf in signal_files[:200]:  # 최근 200개만 검색
+                for sf in signal_files:  # 전체 검색 (제한 없음)
                     try:
                         data = json.loads(sf.read_text(encoding='utf-8'))
                         content = data.get('content', '') + ' ' + json.dumps(
@@ -381,50 +382,90 @@ JSON으로만 응답:
                             else:
                                 entry += f"\n{text}"
                             matched.append(entry)
-                            if len(matched) >= 5:
+                            if len(matched) >= 8:  # 최대 8개 (5→8)
                                 break
                     except Exception:
                         pass
                 if matched:
                     results.append("**[저장된 인사이트]**\n" + "\n\n".join(matched))
 
-            # 2. long_term_memory — 누적 개념/패턴
+            # 2. corpus/ — 군집 테마 + 분석 entries
+            corpus_dir = self.knowledge_dir / 'corpus'
+            if corpus_dir.exists():
+                # 2a. index.json — 테마 군집 매칭
+                corpus_index = corpus_dir / 'index.json'
+                if corpus_index.exists():
+                    try:
+                        ci = json.loads(corpus_index.read_text(encoding='utf-8'))
+                        matched_themes = []
+                        for theme, cluster in ci.get('clusters', {}).items():
+                            if any(kw in theme.lower() for kw in keywords):
+                                cnt = len(cluster.get('entry_ids', []))
+                                matched_themes.append(f"테마 '{theme}': {cnt}개 신호 축적")
+                        if matched_themes:
+                            results.append("**[Corpus 군집]**\n" + "\n".join(matched_themes))
+                    except Exception:
+                        pass
+
+                # 2b. entries/ — SA 분석 결과 풀텍스트 검색
+                entries_dir = corpus_dir / 'entries'
+                if entries_dir.exists():
+                    matched_entries = []
+                    for ef in sorted(entries_dir.glob('*.json'), key=lambda f: f.stat().st_mtime, reverse=True):
+                        try:
+                            data = json.loads(ef.read_text(encoding='utf-8'))
+                            searchable = json.dumps(data, ensure_ascii=False)
+                            if any(kw in searchable.lower() for kw in keywords):
+                                summary = data.get('summary', '') or data.get('analysis', {}).get('summary', '')
+                                themes = data.get('themes', data.get('analysis', {}).get('themes', []))
+                                entry = f"[corpus/{ef.stem}]"
+                                if themes:
+                                    entry += f" 테마: {', '.join(str(t) for t in themes[:3])}"
+                                if summary:
+                                    entry += f"\n{summary[:150]}"
+                                matched_entries.append(entry)
+                                if len(matched_entries) >= 5:
+                                    break
+                        except Exception:
+                            pass
+                    if matched_entries:
+                        results.append("**[Corpus 분석]**\n" + "\n\n".join(matched_entries))
+
+            # 3. long_term_memory — 누적 개념/패턴
             lm_path = self.knowledge_dir / 'long_term_memory.json'
             if lm_path.exists():
                 try:
                     lm = json.loads(lm_path.read_text(encoding='utf-8'))
-                    # 개념 노드에서 키워드 매칭
                     concepts = lm.get('concepts', {})
                     matched_concepts = [
                         f"{k}({v}회)" for k, v in concepts.items()
                         if any(kw in k.lower() for kw in keywords)
                     ]
-                    # 경험에서 키워드 매칭
                     experiences = lm.get('experiences', [])
                     matched_exp = []
-                    for exp in reversed(experiences[-50:]):
+                    for exp in reversed(experiences):  # 전체 경험 검색 (50→전체)
                         s = exp.get('summary', '')
                         if any(kw in s.lower() for kw in keywords):
                             matched_exp.append(f"- {s[:120]}")
-                            if len(matched_exp) >= 3:
+                            if len(matched_exp) >= 5:  # 3→5개
                                 break
                     if matched_concepts or matched_exp:
                         lm_text = ""
                         if matched_concepts:
-                            lm_text += "개념: " + ", ".join(matched_concepts[:5]) + "\n"
+                            lm_text += "개념: " + ", ".join(matched_concepts[:8]) + "\n"
                         if matched_exp:
                             lm_text += "\n".join(matched_exp)
                         results.append(f"**[장기 기억]**\n{lm_text}")
                 except Exception:
                     pass
 
-            # 3. directives/ 마크다운 — 브랜드/아이덴티티
+            # 4. directives/ 마크다운 — 브랜드/아이덴티티
             for md_file in sorted(self.directives_dir.glob('**/*.md')):
                 try:
                     content = md_file.read_text(encoding='utf-8')
                     if any(kw in content.lower() for kw in keywords):
                         results.append(f"**[{md_file.name}]**\n{content[:400]}...")
-                        if len(results) >= 5:
+                        if len(results) >= 6:  # 5→6
                             break
                 except Exception:
                     pass
