@@ -42,17 +42,70 @@
   <section>
     <div class="container--wide">
       <ul class="archive-list" id="archive-list">
-        <li class="archive-item fade-in" id="empty-state">
-          <span class="archive-date"></span>
-          <div class="archive-content">
-            <p class="archive-title archive-empty-msg">
-              기록이 쌓이고 있습니다.
-            </p>
-          </div>
-        </li>
+        <!-- 동적으로 로드됨 -->
       </ul>
     </div>
   </section>
+
+  <script>
+    // Archive 콘텐츠 로드
+    fetch('index.json')
+      .then(r => r.json())
+      .then(posts => {
+        const list = document.getElementById('archive-list');
+        if (!posts.length) {
+          list.innerHTML = `
+            <li class="archive-item fade-in">
+              <span class="archive-date"></span>
+              <div class="archive-content">
+                <p class="archive-title archive-empty-msg">
+                  기록이 쌓이고 있습니다.
+                </p>
+              </div>
+            </li>
+          `;
+          return;
+        }
+
+        posts.forEach(post => {
+          const li = document.createElement('li');
+          li.className = 'archive-item fade-in';
+          li.innerHTML = `
+            <span class="archive-date">${post.date}</span>
+            <div class="archive-content">
+              <a href="${post.slug}/">
+                <p class="archive-issue">${post.issue}</p>
+                <h2 class="archive-title">${post.title}</h2>
+                <p class="archive-preview">${post.preview}</p>
+                <span class="archive-category">${post.category}</span>
+              </a>
+            </div>
+          `;
+          list.appendChild(li);
+        });
+
+        // Fade-in animation
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+
+        list.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+      })
+      .catch(() => {
+        document.getElementById('archive-list').innerHTML = `
+          <li class="archive-item fade-in">
+            <div class="archive-content">
+              <p class="archive-title archive-empty-msg">콘텐츠를 불러올 수 없습니다.</p>
+            </div>
+          </li>
+        `;
+      });
+  </script>
 
   <footer class="section--light">
     <div class="footer-grid">
@@ -85,37 +138,6 @@
   </footer>
 
   <script src="../assets/js/main.js"></script>
-  <script>
-    fetch('index.json')
-      .then(r => r.json())
-      .then(posts => {
-        const list = document.getElementById('archive-list');
-        const empty = document.getElementById('empty-state');
-        if (!posts.length) return;
-        if (empty) empty.remove();
-        posts.forEach(post => {
-          const li = document.createElement('li');
-          li.className = 'archive-item fade-in';
-          li.innerHTML = `
-            <a href="${post.slug}/">
-              <span class="archive-date">${post.date}</span>
-              <div class="archive-content">
-                <p class="archive-title">${post.title}</p>
-                <p class="archive-preview">${post.preview}</p>
-              </div>
-            </a>
-          `;
-          list.appendChild(li);
-        });
-        list.querySelectorAll('.fade-in').forEach(el => {
-          const obs = new IntersectionObserver(([e]) => {
-            if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-          }, { threshold: 0.05 });
-          obs.observe(el);
-        });
-      })
-      .catch(() => {});
-  </script>
 
 </body>
 </html>
