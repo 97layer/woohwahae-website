@@ -275,6 +275,35 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
             # Gardener가 트리거한 corpus 기반 에세이 작성
             # 단일 신호가 아닌 군집 전체 RAG → Magazine B 스타일 롱폼
             result = self._write_corpus_essay(payload)
+
+            # ContentPublisher 호출 (홈페이지 발행)
+            if result and not result.get('error'):
+                try:
+                    from core.system.content_publisher import ContentPublisher
+                    from pathlib import Path
+                    publisher = ContentPublisher(base_path=Path(__file__).parent.parent.parent)
+
+                    pub_payload = {
+                        'signal_id': payload.get('theme', 'corpus').replace(' ', '_'),
+                        'ce_result': result,
+                        'mode': 'corpus_essay',
+                        'essay_title': result.get('essay_title', ''),
+                        'instagram_caption': result.get('instagram_caption', ''),
+                        'archive_essay': result.get('archive_essay', ''),
+                        'pull_quote': result.get('pull_quote', ''),
+                        'carousel_slides': result.get('carousel_slides', []),
+                        'telegram_summary': result.get('telegram_summary', ''),
+                        'sa_result': {'themes': [payload.get('theme', '')]},
+                        'ad_result': {},
+                    }
+                    pub_result = publisher.publish(pub_payload)
+                    result['published'] = pub_result.get('status') == 'success'
+                    result['website_published'] = pub_result.get('website_published', False)
+                    print(f"Ray: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')}")
+                except Exception as e:
+                    print(f"Ray: 홈페이지 발행 실패 — {e}")
+                    result['published'] = False
+
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
 
         else:
@@ -358,17 +387,174 @@ JSON만 출력."""
                 formats = [k for k in ['archive_essay', 'instagram_caption', 'carousel_slides',
                                         'telegram_summary', 'pull_quote'] if k in result]
                 print(f"Ray: 원소스 멀티유즈 완료 — {theme} | 포맷: {', '.join(formats)}")
-                return result
             else:
-                return {
+                result = {
                     "archive_essay": text,
                     "essay_title": theme,
                     "theme": theme,
                     "entry_count": entry_count
                 }
+
+            # ── HTML 저장 ──────────────────────────────────────────
+            try:
+                self._save_essay_html(result, theme)
+            except Exception as html_e:
+                # HTML 저장 실패는 에세이 생성 결과에 영향 없음
+                print(f"Ray: HTML 저장 실패 (무시) — {html_e}")
+
+            return result
+
         except Exception as e:
             print(f"Ray: corpus 에세이 실패 — {e}")
             return {"error": str(e), "theme": theme}
+
+    def _save_essay_html(self, result: dict, theme: str):
+        """CE 에세이 결과를 website/archive/issue-NNN-slug/index.html 로 저장."""
+        import re as _re
+        from datetime import datetime as _dt
+        from pathlib import Path as _Path
+
+        # env_validator 경유 단일 진입점
+        try:
+            from core.system.env_validator import get_project_root, get_site_base_url
+            PROJECT_ROOT = _Path(get_project_root())
+        except Exception:
+            PROJECT_ROOT = _Path(__file__).resolve().parent.parent.parent
+
+        instagram_url = os.getenv('INSTAGRAM_URL', 'https://instagram.com/woohwahae')
+        archive_dir = PROJECT_ROOT / 'website' / 'archive'
+
+        # ── 이슈 번호 자동 계산 ──
+        existing = sorted([
+            d for d in archive_dir.iterdir()
+            if d.is_dir() and _re.match(r'issue-\d+', d.name)
+        ])
+        # issue-00 ~ issue-008 형태 모두 포함해서 최댓값 추출
+        max_num = 0
+        for d in existing:
+            m = _re.match(r'issue-0*(\d+)', d.name)
+            if m:
+                max_num = max(max_num, int(m.group(1)))
+        next_num = max_num + 1
+        issue_num_str = f"{next_num:03d}"  # 009, 010 ...
+
+        # ── slug 생성 (테마 → 소문자 영문 slug) ──
+        slug_map = {
+            '조용한지능': 'quiet-intelligence', '슬로우라이프': 'slow-life',
+            '여백': 'negative-space', '기록': 'record', '감각': 'sensory',
+            '침묵': 'silence', '물성': 'materiality', '일상': 'daily',
+        }
+        slug = slug_map.get(theme.replace(' ', ''), None)
+        if not slug:
+            # fallback: 한글 → 로마자 단순 치환 불가, 그냥 theme 영문화 시도
+            slug = _re.sub(r'[^\w\s-]', '', theme.lower().replace(' ', '-'))
+            if not slug or not slug[0].isascii():
+                slug = f"issue-{theme[:6]}"  # 최후 fallback
+        slug = slug[:30]
+
+        folder_name = f"issue-{issue_num_str}-{slug}"
+        issue_dir = archive_dir / folder_name
+        issue_dir.mkdir(parents=True, exist_ok=True)
+
+        essay_title = result.get('essay_title', theme)
+        pull_quote = result.get('pull_quote', '')
+        archive_essay = result.get('archive_essay', '')
+        today = _dt.now().strftime('%Y.%m.%d')
+
+        # ── 에세이 본문 → HTML 단락 변환 ──
+        paragraphs = [p.strip() for p in archive_essay.split('\n\n') if p.strip()]
+        para_html = ''
+        for i, p in enumerate(paragraphs):
+            # 중간에 <hr> 한 번 삽입 (절반 지점)
+            if i == len(paragraphs) // 2:
+                para_html += '            <hr class="article-divider">\n\n'
+            if i == len(paragraphs) - 1:
+                # 마지막 단락은 closing 스타일
+                para_html += f'            <p class="article-closing fade-in">\n                {p}\n            </p>\n\n'
+            else:
+                para_html += f'            <p class="fade-in">\n                {p}\n            </p>\n\n'
+
+        html = f"""<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Issue {issue_num_str} — {essay_title}. {pull_quote}">
+  <title>Issue {issue_num_str}: {essay_title} — WOOHWAHAE Archive</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#FAFAF7">
+  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="nav-logo">
+            <img src="../../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
+        </a>
+        <ul class="nav-links">
+            <li><a href="../../archive/" class="active">Archive</a></li>
+            <li><a href="../../service.html">Service</a></li>
+            <li><a href="../../about.html">About</a></li>
+            <li><a href="../../contact.html">Contact</a></li>
+        </ul>
+        <button class="nav-toggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <div class="article-container">
+
+        <header class="article-header">
+            <p class="article-meta fade-in">Issue {issue_num_str} &nbsp;·&nbsp; Essay &nbsp;·&nbsp; {today}</p>
+            <h1 class="article-title fade-in">{essay_title}</h1>
+            <p class="article-subtitle fade-in">{pull_quote}</p>
+        </header>
+
+        <div class="article-body">
+
+{para_html}
+        </div>
+
+    </div>
+
+    <footer class="section--light">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="../../assets/img/symbol.jpg" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
+                <p class="footer-brand-name">WOOHWAHAE</p>
+                <p class="footer-brand-desc">Archive for Slow Life</p>
+            </div>
+            <div>
+                <p class="footer-nav-title">Navigate</p>
+                <ul class="footer-nav-list">
+                    <li><a href="../../archive/">Archive</a></li>
+                    <li><a href="../../service.html">Service</a></li>
+                    <li><a href="../../about.html">About</a></li>
+                    <li><a href="../../contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-connect-title">Connect</p>
+                <ul class="footer-connect-list">
+                    <li><a href="{instagram_url}" target="_blank" rel="noopener">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="footer-copy">&copy; 2026 WOOHWAHAE. All rights reserved.</p>
+    </footer>
+
+    <script src="../../assets/js/main.js"></script>
+</body>
+</html>"""
+
+        html_path = issue_dir / 'index.html'
+        html_path.write_text(html, encoding='utf-8')
+        print(f"Ray: HTML 저장 완료 — {html_path.relative_to(PROJECT_ROOT)}")
+        print(f"Ray: Issue {issue_num_str} '{essay_title}' → archive/{folder_name}/")
 
     def start_watching(self, interval: int = 5):
         watcher = AgentWatcher(agent_type=self.agent_type, agent_id=self.agent_id)
@@ -383,6 +569,9 @@ JSON만 출력."""
 
 if __name__ == '__main__':
     import argparse
+    from core.system.env_validator import validate_env
+    validate_env("ce_agent")
+
     parser = argparse.ArgumentParser(description='97layerOS Chief Editor Agent')
     parser.add_argument('--agent-id', default='ce-worker-1')
     parser.add_argument('--interval', type=int, default=5)

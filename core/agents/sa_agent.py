@@ -421,6 +421,8 @@ JSON만 출력. 설명 없이.
 
 if __name__ == '__main__':
     import argparse
+    from core.system.env_validator import validate_env
+    validate_env("sa_agent")
 
     parser = argparse.ArgumentParser(description='97layerOS Strategy Analyst Agent')
     parser.add_argument('--agent-id', default='sa-worker-1', help='Agent instance ID')

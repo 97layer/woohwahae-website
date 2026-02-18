@@ -482,7 +482,8 @@ class TelegramSecretaryV6:
                 f"🚀 <b>발행 트리거됨{forced_label}</b>\n\n"
                 f"테마: {themes_text}\n"
                 f"CE 에이전트가 에세이를 작성합니다.\n"
-                f"완료 시 woohwahae.kr/archive/ 에 게시됩니다.",
+                f"완료 시 {os.getenv('SITE_ARCHIVE_PATH', 'website/archive')}/ 에 파일로 저장됩니다.\n"
+                f"(도메인 연결 후 {os.getenv('SITE_BASE_URL', 'https://woohwahae.kr')}/archive/ 에 노출)",
                 parse_mode=constants.ParseMode.HTML
             )
 
@@ -652,7 +653,21 @@ class TelegramSecretaryV6:
                 f"조건: 800~1200자, 한국어, 명사형 제목, Magazine B 스타일, "
                 f"슬로우라이프 철학 반영. 제목과 본문만 출력."
             )
-            draft_text = self.engine._call_gemini(draft_prompt)
+            import requests as _req
+            _api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
+            if not _api_key:
+                raise RuntimeError("GOOGLE_API_KEY 환경변수 없음")
+            _url = (
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                f"gemini-2.5-flash:generateContent?key={_api_key}"
+            )
+            _resp = _req.post(
+                _url,
+                json={"contents": [{"parts": [{"text": draft_prompt}]}]},
+                timeout=90
+            )
+            _resp.raise_for_status()
+            draft_text = _resp.json()["candidates"][0]["content"]["parts"][0]["text"]
 
             if not draft_text:
                 await status_msg.edit_text("초안 생성 실패.")
@@ -810,7 +825,7 @@ class TelegramSecretaryV6:
             msg = (
                 f"✅ <b>발행 완료</b>\n\n"
                 f"테마: {_escape_html(theme)}{link_text}\n"
-                f"woohwahae.kr/archive/ 에 게시됨"
+                f"website/archive/ 에 파일 저장됨\n(도메인 연결 후 웹에서 확인 가능)"
             )
             await self._app.bot.send_message(
                 chat_id=int(admin_id), text=msg, parse_mode=constants.ParseMode.HTML
@@ -852,9 +867,9 @@ class TelegramSecretaryV6:
 
 
 if __name__ == "__main__":
+    from core.system.env_validator import validate_env
+    validate_env("telegram_secretary")
+
     token = os.getenv('TELEGRAM_BOT_TOKEN')
-    if token:
-        bot = TelegramSecretaryV6(token)
-        bot.run()
-    else:
-        print("Error: TELEGRAM_BOT_TOKEN not found")
+    bot = TelegramSecretaryV6(token)
+    bot.run()

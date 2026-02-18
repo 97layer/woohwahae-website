@@ -720,6 +720,8 @@ async def run_scheduled(hour: int = 3):
 
 if __name__ == '__main__':
     import argparse
+    from core.system.env_validator import validate_env
+    validate_env("gardener")
 
     logging.basicConfig(level=logging.INFO, format='%(message)s')
 
