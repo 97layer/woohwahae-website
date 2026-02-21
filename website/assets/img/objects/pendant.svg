@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#ECEAE5"/>
+  <!-- chain arc -->
+  <path d="M165 130 C165 130, 175 105, 200 100 C225 105, 235 130, 235 130" stroke="#C4B8A8" stroke-width="0.8" fill="none" opacity="0.5"/>
+  <!-- chain lines -->
+  <line x1="165" y1="130" x2="180" y2="210" stroke="#C4B8A8" stroke-width="0.8" opacity="0.5"/>
+  <line x1="235" y1="130" x2="220" y2="210" stroke="#C4B8A8" stroke-width="0.8" opacity="0.5"/>
+  <!-- bail -->
+  <ellipse cx="200" cy="218" rx="8" ry="10" fill="none" stroke="#8B7355" stroke-width="1.5"/>
+  <!-- pendant body -->
+  <ellipse cx="200" cy="278" rx="32" ry="48" fill="none" stroke="#8B7355" stroke-width="1.5"/>
+  <!-- inner contour -->
+  <ellipse cx="200" cy="276" rx="22" ry="36" fill="none" stroke="#A89880" stroke-width="0.8" opacity="0.5"/>
+  <!-- surface texture -->
+  <path d="M188 262 C193 267, 207 267, 212 262" stroke="#C4B8A8" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <path d="M186 278 C191 283, 209 283, 214 278" stroke="#C4B8A8" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <path d="M188 294 C193 299, 207 299, 212 294" stroke="#C4B8A8" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <!-- subtle highlight -->
+  <ellipse cx="192" cy="265" rx="4" ry="8" fill="#C4B8A8" opacity="0.1"/>
+</svg>

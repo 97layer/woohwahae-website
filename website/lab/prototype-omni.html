@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omni-Integrated Prototype (v6.1) — WOOHWAHAE Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css?v=omni_v61">
+    <style>
+        /* 
+       [SYSTEM OVERRIDE: OMNI-INTEGRATED v6.1]
+       Collaboration of SA, CE, AD, CD.
+       - [/] Design the "Ultimate Prototype" (v7.0) with high-end Three.js rendering.
+       - [ ] Implement advanced GUI elements (Interactive Overlays, Glass Physics).
+       - [ ] Optimize 렌더링 성능 (Shader optimization, Framerate stabilization).
+       - [ ] Prepare deployment package (Assets + Ultimate- **Deployment**: GCP VM + Nginx / SCP Transfer.
+
+## Typography Architecture (v7.0)
+브랜드의 대위법(Counterpoint)을 활자로 구현한다.
+
+- **Primary Heading (Elegance)**: **'Fraunces'** (Google Fonts). 가변적 굵기와 높은 대비를 가진 세리프체로, 고전적 매거진의 서사와 현대적 파격을 동시에 표현.
+- **Service Body (Practicality)**: **'Pretendard'**. 중립적이고 신뢰감 있는 가독성을 보장.
+- **GUI & Meta (Precision)**: **'Space Mono'**. 기계적이고 차가운 느낌의 고정폭 글꼴로, 데이터의 정밀함과 엔지니어링 미학을 강조.
+
+## Proposed Changes
+figure on GCP VM (136.109.201.201).
+       - [ ] Final verification and user review.
+    */
+        :root {
+            --bg: #FAFAF7;
+            --text: #1a1a1a;
+            --line: #E4E3DC;
+            --duration-omni: 1.6s;
+            --ease-omni: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        /* Cinematic Grain (CD: High-definition Texture) */
+        .cd-texture {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 9999;
+            animation: noise-flow 8s steps(10) infinite;
+        }
+
+        @keyframes noise-flow {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            10% {
+                transform: translate(-2%, -2%);
+            }
+
+            30% {
+                transform: translate(2%, -4%);
+            }
+
+            50% {
+                transform: translate(-4%, 2%);
+            }
+
+            70% {
+                transform: translate(4%, 4%);
+            }
+        }
+
+        /* Vertical Axis (CD: Absolute Order) */
+        .cd-axis {
+            position: fixed;
+            left: 50%;
+            top: 0;
+            width: 1px;
+            height: 100vh;
+            background: var(--line);
+            opacity: 0.2;
+            z-index: 5;
+            transform-origin: center top;
+        }
+
+        /* Sectional Architecture */
+        .omni-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 15vh 10vw;
+            position: relative;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .omni-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.5em;
+            opacity: 0.4;
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .omni-title {
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 100;
+            letter-spacing: -0.05em;
+            line-height: 0.8;
+            margin-bottom: 6rem;
+            transition: all var(--duration-omni) var(--ease-omni);
+            pointer-events: none;
+        }
+
+        .omni-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+
+        /* CE: Editorial Pacing (Text blocks) */
+        .ce-content {
+            grid-column: 7 / 12;
+            border-left: 1px solid var(--text);
+            padding-left: 3rem;
+            opacity: 0.8;
+            transition: opacity 1s var(--ease-omni);
+        }
+
+        .ce-desc {
+            font-size: 1.2rem;
+            font-weight: 300;
+            line-height: 1.9;
+            word-break: keep-all;
+        }
+
+        /* AD: Tactile Elements (Atelier Visuals) */
+        .ad-visual-wrap {
+            grid-column: 2 / 6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-mask {
+            width: 100%;
+            aspect-ratio: 1 / 1.2;
+            background: #E8E6E1;
+            clip-path: inset(100% 0 0 0);
+            /* Initial state for scroll animation */
+            transition: clip-path 1.5s var(--ease-omni);
+        }
+
+        /* Special Sections Highlights */
+        #omni-service .ad-mask {
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FAFAF7;
+            font-family: 'DM Mono';
+            font-size: 0.7rem;
+        }
+
+        #omni-photography {
+            background: #000;
+            color: #fff;
+        }
+
+        #omni-photography .omni-num {
+            opacity: 0.6;
+        }
+
+        #omni-photography .ce-content {
+            border-left-color: #FAFAF7;
+        }
+
+        /* Nav (SA: Predictive Entrance) */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2.5rem 10vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            mix-blend-mode: difference;
+            color: #fff;
+        }
+
+        .nav-label {
+            font-family: 'DM Mono';
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cd-texture"></div>
+    <div class="cd-axis" id="axis"></div>
+
+    <nav id="omni-nav">
+        <div class="nav-label">WOOHWAHAE / OMNI_INTEGRATED v6.1</div>
+        <a href="../lab/"
+            style="font-family:'DM Mono'; font-size:0.6rem; text-decoration:none; color:inherit; border-bottom:1px solid currentColor;">EXIT_LAB</a>
+    </nav>
+
+    <!-- 01 ABOUT (CD + CE Focus) -->
+    <section id="omni-about" class="omni-section">
+        <span class="omni-num">01 / ARCHITECTURE</span>
+        <h2 class="omni-title fade-in" id="title-about">Silent Order</h2>
+        <div class="omni-grid fade-in">
+            <div class="ce-content">
+                <p class="ce-desc">
+                    우리는 파편화된 정보를 나열하지 않습니다.
+                    모든 '신호'는 하나의 질서 속에 정렬될 때 비로소 우화가 됩니다.
+                    이것은 97layerOS가 지향하는 최종적인 형태, 즉 '침묵의 질서'입니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 02 ARCHIVE (CE + SA Focus) -->
+    <section id="omni-archive" class="omni-section" style="background: #F2F1EC;">
+        <span class="omni-num">02 / TRACE</span>
+        <h2 class="omni-title fade-in" id="title-archive">Digital Essence</h2>
+        <div class="omni-grid fade-in">
+            <div class="ad-visual-wrap">
+                <div class="ad-mask" id="mask-archive"></div>
+                <div
+                    style="position:absolute; top:0; font-family:'DM Mono'; font-size:0.5rem; letter-spacing:0.5em; writing-mode:vertical-rl; right:-1rem;">
+                    ACCUMULATED_DATA</div>
+            </div>
+            <div class="ce-content" style="grid-column: 8 / 13;">
+                <p class="ce-desc">
+                    흘러가는 생각들은 아카이브를 통해 고형화됩니다.
+                    CE는 텍스트의 호흡을 고르고, SA는 데이터의 궤적을 예측합니다.
+                    우연한 영감이 정교한 기록으로 변모하는 과정입니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 04 SERVICE (AD + CD Focus) -->
+    <section id="omni-service" class="omni-section">
+        <span class="omni-num">04 / CRAFT</span>
+        <h2 class="omni-title fade-in" id="title-service">Atelier Cutting</h2>
+        <div class="omni-grid fade-in">
+            <div class="ce-content" style="grid-column: 2 / 7;">
+                <p class="ce-desc">
+                    아틀리에 디렉터(AD)의 가위는 0.1mm의 오차도 허용하지 않습니다.
+                    정밀함(Precision)은 우아함(Elegance)을 뒷받참하는 유일한 근거입니다.
+                    시술의 모든 과정은 한 편의 조각과 같습니다.
+                </p>
+            </div>
+            <div class="ad-visual-wrap" style="grid-column: 9 / 13;">
+                <div class="ad-mask" id="mask-service"
+                    style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transition: clip-path 2s ease-in-out;">
+                    <span>剪定 [剪定]: PRUNING</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 07 PHOTOGRAPHY (CD Focus) -->
+    <section id="omni-photography" class="omni-section">
+        <span class="omni-num">07 / MOMENT</span>
+        <h2 class="omni-title fade-in" id="title-photography">Heavy Light</h2>
+        <div class="omni-grid fade-in">
+            <div class="ce-content" style="grid-column: 4 / 9; border-left-color: rgba(255,255,255,0.2);">
+                <p class="ce-desc">
+                    빛은 질량을 가집니다.
+                    어둠 속에서 가장 밝게 빛나는 지점, 그 찰나의 순간을 영원으로 박제합니다.
+                    CD의 마지막 시선이 머무는 곳입니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="padding: 15vh 10vw; border-top: 1px solid var(--line); color: var(--text); opacity:0.3;">
+        <div style="display:flex; justify-content:space-between; font-family:'DM Mono'; font-size:0.6rem;">
+            <span>COUNCIL OF AGENTS: SA / CE / AD / CD</span>
+            <span>© 2026 97LAYER_SYSTEM</span>
+        </div>
+    </footer>
+
+    <script>
+        // 1. SA: Predictive Scroll & Velocity Responsive
+        let lastScrollY = window.scrollY;
+        const axis = document.getElementById('axis');
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const velocity = Math.abs(currentScrollY - lastScrollY);
+            lastScrollY = currentScrollY;
+
+            // Axis Distortion based on scroll velocity (CD's order reacting to SA's data)
+            const axisShift = Math.min(20, velocity * 0.5);
+            axis.style.transform = `translateX(-50%) skewX(${axisShift * 0.1}deg)`;
+
+            // CE: Dynamic Typography Pacing
+            document.querySelectorAll('.omni-title').forEach(title => {
+                const rect = title.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    const dist = Math.abs(rect.top - window.innerHeight / 2);
+                    title.style.letterSpacing = `${-0.05 + dist * 0.0001}em`;
+                    title.style.opacity = Math.max(0.1, 1 - dist * 0.001);
+                }
+            });
+
+            // AD: Tactile Masking Activation
+            const archiveMask = document.getElementById('mask-archive');
+            const archiveRect = archiveMask.getBoundingClientRect();
+            if (archiveRect.top < window.innerHeight * 0.8) {
+                archiveMask.style.clipPath = 'inset(0 0 0 0)';
+            }
+
+            const serviceMask = document.getElementById('mask-service');
+            const serviceRect = serviceMask.getBoundingClientRect();
+            if (serviceRect.top < window.innerHeight * 0.8) {
+                // Scissors animation simulation
+                serviceMask.style.clipPath = 'polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%)';
+                setTimeout(() => {
+                    serviceMask.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+                }, 1000);
+            }
+        });
+
+        // 2. Observer for initial Fade-in
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(60px)';
+            el.style.transition = 'all 1.6s cubic-bezier(0.19, 1, 0.22, 1)';
+            observer.observe(el);
+
+            // Force visible animation on interaction
+            el.addEventListener('transitionend', () => {
+                el.style.transform = 'translateY(0)';
+                el.style.opacity = '1';
+            });
+        });
+
+        // Sync visibility with scroll fallback
+        const checkVisibility = () => {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.9) {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }
+            });
+        }
+        window.addEventListener('scroll', checkVisibility);
+        checkVisibility();
+
+    </script>
+</body>
+
+</html>

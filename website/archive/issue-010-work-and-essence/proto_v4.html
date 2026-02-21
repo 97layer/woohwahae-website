@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[PROTO] Issue 010: 본질의 형상 — WOOHWAHAE Archive</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        /* 
+       [VISUAL ARCHIVE] 
+       V4 — "SENSORY ESSENCE"
+       말 대신 형태와 시각적 질량으로 철학을 증명한다.
+    */
+        :root {
+            --bg: #FAFAF7;
+            --text: #1a1b1d;
+            --dim: #92928c;
+            --accent: #2d343e;
+            /* Deep Navy from identity */
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            word-break: keep-all;
+        }
+
+        .canvas-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 4rem;
+            display: grid;
+            grid-template-columns: 1.2fr 1px 2fr;
+            /* 시각자료와 텍스트의 극단적 병치 */
+            gap: 5rem;
+            min-height: 100vh;
+            align-items: center;
+        }
+
+        /* 수직 분할선 */
+        .divider {
+            height: 60vh;
+            background: var(--line);
+            opacity: 0.2;
+        }
+
+        /* 1. 시각 자료 영역 (Visual Specimen) */
+        .visual-specimen {
+            position: sticky;
+            top: 15vh;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .specimen-box {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #f0f0eb;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.03);
+        }
+
+        /* 추상적 본질의 형상 (CSS Drawing) */
+        .essence-object {
+            width: 120px;
+            height: 180px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+            filter: blur(1px);
+            box-shadow:
+                20px 30px 50px rgba(0, 0, 0, 0.2),
+                inset -5px -5px 15px rgba(255, 255, 255, 0.1);
+            animation: breathe 8s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+
+            0%,
+            100% {
+                transform: scale(1) translateY(0);
+                filter: blur(1px);
+            }
+
+            50% {
+                transform: scale(1.05) translateY(-10px);
+                filter: blur(0px);
+            }
+        }
+
+        .specimen-label {
+            margin-top: 2rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        /* 2. 텍스트 영역 (Narrative) */
+        .narrative {
+            padding: 10vh 0;
+        }
+
+        .article-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--dim);
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .article-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 200;
+            letter-spacing: -0.05em;
+            margin-bottom: 4rem;
+            line-height: 1.1;
+        }
+
+        .p-block {
+            margin-bottom: 4rem;
+            font-size: 1.1rem;
+            opacity: 0.8;
+            transition: opacity 0.8s ease;
+        }
+
+        .p-block:hover {
+            opacity: 1;
+        }
+
+        .highlight-quote {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 1.8rem;
+            letter-spacing: -0.03em;
+            line-height: 1.4;
+            margin: 6rem 0;
+            color: var(--accent);
+        }
+
+        /* 마이크로 인터랙션: 지문의 잔상 */
+        .fingerprint-bg {
+            position: fixed;
+            bottom: -10%;
+            right: -5%;
+            width: 60%;
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @media (max-width: 1000px) {
+            .canvas-container {
+                grid-template-columns: 1fr;
+                padding: 4rem 2rem;
+            }
+
+            .visual-specimen {
+                position: static;
+                height: auto;
+                margin-bottom: 4rem;
+            }
+
+            .divider {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="canvas-container">
+
+        <!-- Left: Visual Specimen -->
+        <div class="visual-specimen fade-in">
+            <div class="specimen-box">
+                <!-- 본질의 형상: 검은 돌(Pebble) 혹은 조각상 같은 추상체 -->
+                <div class="essence-object"></div>
+            </div>
+            <div class="specimen-label">
+                Fig 01. Structural Essence / Issue 010
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Right: Narrative -->
+        <div class="narrative">
+            <span class="article-meta fade-in">2026.02.20 — ARCHIVE RECORD</span>
+            <h1 class="article-title fade-in">일과 본질.</h1>
+
+            <div class="p-block fade-in">
+                가끔 생각해보면, 이 일을 하면서 돈이 우선이었던 적은 없었던 것 같다.
+                시작은 단순했다. 남들이 가지 않는 길이 멋져 보였고, 손으로 무언가를 만드는 일이 좋았다. 그게 전부였다.
+            </div>
+
+            <div class="highlight-quote fade-in">
+                "기술은 결국 자기 이해의 표현이다.<br>
+                왜 이렇게 자르는지 설명할 수 있을 때,<br>
+                비로소 그것이 철학이 된다."
+            </div>
+
+            <div class="p-block fade-in">
+                그런데 10년 넘게 이 일을 하면서 깨달은 게 있다. 잘하고 싶다는 욕구와 나를 알고 싶다는 욕구가 같은 뿌리에서 나온다는 것.
+                돈을 더 벌기 위한 선택보다, 내가 진짜 하고 싶은 방향으로 움직였을 때 오히려 일이 더 단단해졌다.
+            </div>
+
+            <div class="p-block fade-in" style="font-style: italic; color: var(--dim);">
+                완성된 결과보다 과정에 더 의미를 두는 사람이라는 걸 이제는 인정한다.
+                그래서 기록한다. 잊지 않기 위해.
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 지각되지 않는 배경 요소 -->
+    <svg class="fingerprint-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <path
+            d="M100,20 C120,20 140,30 150,50 C160,70 160,90 150,110 C140,130 120,140 100,140 C80,140 60,130 50,110 C40,90 40,70 50,50 C60,30 80,20 100,20"
+            fill="none" stroke="currentColor" stroke-width="0.2" />
+        <!-- 추상적 지문 패턴 노이즈 -->
+    </svg>
+
+    <script src="../../assets/js/main.js"></script>
+</body>
+
+</html>

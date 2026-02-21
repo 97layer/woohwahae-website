@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#ECEAE5"/>
+  <!-- camera body simplified -->
+  <rect x="140" y="230" width="120" height="80" rx="6" fill="none" stroke="#8B7355" stroke-width="1.5"/>
+  <!-- lens -->
+  <circle cx="200" cy="270" r="25" fill="none" stroke="#8B7355" stroke-width="1.5"/>
+  <circle cx="200" cy="270" r="15" fill="none" stroke="#A89880" stroke-width="1"/>
+  <circle cx="200" cy="270" r="5" fill="#C4B8A8" opacity="0.4"/>
+  <!-- viewfinder -->
+  <rect x="185" y="222" width="30" height="12" rx="2" fill="none" stroke="#8B7355" stroke-width="1"/>
+  <!-- shutter button -->
+  <circle cx="235" cy="226" r="5" fill="none" stroke="#A89880" stroke-width="1"/>
+  <!-- film strip suggestion -->
+  <rect x="160" y="340" width="80" height="10" rx="1" fill="none" stroke="#C4B8A8" stroke-width="0.8" opacity="0.4"/>
+  <line x1="172" y1="340" x2="172" y2="350" stroke="#C4B8A8" stroke-width="0.5" opacity="0.3"/>
+  <line x1="184" y1="340" x2="184" y2="350" stroke="#C4B8A8" stroke-width="0.5" opacity="0.3"/>
+  <line x1="196" y1="340" x2="196" y2="350" stroke="#C4B8A8" stroke-width="0.5" opacity="0.3"/>
+  <line x1="208" y1="340" x2="208" y2="350" stroke="#C4B8A8" stroke-width="0.5" opacity="0.3"/>
+  <line x1="220" y1="340" x2="220" y2="350" stroke="#C4B8A8" stroke-width="0.5" opacity="0.3"/>
+  <line x1="232" y1="340" x2="232" y2="350" stroke="#C4B8A8" stroke-width="0.5" opacity="0.3"/>
+</svg>

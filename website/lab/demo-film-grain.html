@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exp.007 — Film Grain · WOOHWAHAE Lab</title>
+  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #1a1916;
+      --text: #E8E6E1;
+      --text-faint: #7a7870;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+    html, body { height: 100%; width: 100%; overflow: hidden; background: var(--bg); }
+    /* symbol 이미지 */
+    #symbol-wrap {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1;
+    }
+    #symbol-wrap img {
+      width: min(50vw, 50vh);
+      filter: invert(1) sepia(0.15) brightness(0.88);
+      opacity: 0.72;
+    }
+    /* grain canvas */
+    #grain-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 2; pointer-events: none;
+      mix-blend-mode: overlay;
+    }
+    /* 스캔라인 */
+    #scan-overlay {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      z-index: 3; pointer-events: none;
+      animation: flicker 0.12s infinite alternate;
+    }
+    @keyframes flicker {
+      0%  { opacity: 0.9; }
+      100%{ opacity: 1.0; }
+    }
+    /* 비네트 */
+    #vignette {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at center,
+        transparent 40%, rgba(0,0,0,0.70) 100%);
+      z-index: 3; pointer-events: none;
+    }
+    /* UI */
+    .ui-back {
+      position: fixed; top: 1.5rem; left: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-faint); text-decoration: none; transition: color 0.2s;
+      z-index: 10;
+    }
+    .ui-back:hover { color: var(--text); }
+    .ui-label {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem; letter-spacing: 0.06em; color: var(--text-faint);
+      z-index: 10;
+    }
+    .toggle-row {
+      position: fixed; bottom: 1.5rem; left: 1.5rem;
+      display: flex; gap: 0.8rem;
+      z-index: 10;
+    }
+    .toggle-btn {
+      font-family: var(--font-mono);
+      font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      background: transparent;
+      border: 1px solid var(--text-faint);
+      color: var(--text-faint);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .toggle-btn.on { border-color: var(--text); color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <a href="./" class="ui-back">← Lab</a>
+  <div class="ui-label">Exp.007 / Film Grain</div>
+
+  <div id="symbol-wrap">
+    <img src="../assets/img/symbol.png" alt="WOOHWAHAE symbol">
+  </div>
+
+  <canvas id="grain-canvas"></canvas>
+  <div id="scan-overlay"></div>
+  <div id="vignette"></div>
+
+  <div class="toggle-row">
+    <button class="toggle-btn on" id="btn-grain">Grain</button>
+    <button class="toggle-btn on" id="btn-scan">Scan</button>
+    <button class="toggle-btn on" id="btn-vignette">Vignette</button>
+  </div>
+
+  <script>
+    const gc      = document.getElementById('grain-canvas');
+    const ctx     = gc.getContext('2d');
+    const scan    = document.getElementById('scan-overlay');
+    const vignette= document.getElementById('vignette');
+    let grainOn   = true, scanOn = true, vigOn = true;
+    let frame     = 0;
+
+    function resize() {
+      gc.width  = innerWidth;
+      gc.height = innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function drawGrain() {
+      if (!grainOn) { ctx.clearRect(0, 0, gc.width, gc.height); return; }
+      const w = gc.width, h = gc.height;
+      const img = ctx.createImageData(w, h);
+      const d   = img.data;
+      // 2프레임마다 갱신 (60fps → 30fps noise)
+      if (frame % 2 === 0) {
+        for (let i = 0; i < d.length; i += 4) {
+          const v = (Math.random() * 180) | 0;
+          d[i]   = v;
+          d[i+1] = v;
+          d[i+2] = v;
+          d[i+3] = (Math.random() * 48) | 0;
+        }
+        ctx.putImageData(img, 0, 0);
+      }
+    }
+
+    (function loop() {
+      requestAnimationFrame(loop);
+      frame++;
+      drawGrain();
+    })();
+
+    // 토글 버튼
+    function setupToggle(btnId, onToggle) {
+      const btn = document.getElementById(btnId);
+      btn.addEventListener('click', () => {
+        const state = onToggle();
+        btn.classList.toggle('on', state);
+      });
+    }
+    setupToggle('btn-grain',   () => { grainOn   = !grainOn;   if (!grainOn) ctx.clearRect(0,0,gc.width,gc.height); return grainOn; });
+    setupToggle('btn-scan',    () => { scanOn    = !scanOn;    scan.style.display    = scanOn    ? '' : 'none'; return scanOn; });
+    setupToggle('btn-vignette',() => { vigOn     = !vigOn;     vignette.style.display= vigOn     ? '' : 'none'; return vigOn; });
+  </script>
+</body>
+</html>

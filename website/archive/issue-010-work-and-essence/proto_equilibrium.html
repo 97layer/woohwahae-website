@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Equilibrium (Issue 010) — WOOHWAHAE Archive</title>
+    <link rel="stylesheet" href="../../assets/css/style.css?v=typo_v38">
+    <style>
+        /* 
+       [SYSTEM OVERRIDE: MASTER EQUILIBRIUM]
+       A balance between Innovation (Pillar 5) and Elegance/Precision (Pillar 3 & 4).
+       - Solid Nav (Anti-Glassmorphism)
+       - Strict Vertical Axis (Precise Alignment)
+       - Quiet Micro-Interactions
+    */
+        :root {
+            --bg: #FAFAF7;
+            --text: #1a1a1a;
+            --text-sub: #5A5A5A;
+            --line: #E4E3DC;
+            --duration-master: 0.9s;
+            --ease-master: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        /* 1. SOLID & PRECISE NAVIGATION */
+        nav,
+        nav.scrolled {
+            background-color: var(--bg) !important;
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+            border-bottom: 1px solid var(--line) !important;
+            box-shadow: none !important;
+            padding: 1.2rem 2.5rem !important;
+        }
+
+        /* 2. THE VERTICAL SYSTEM (Precision) */
+        .equilibrium-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 160px 4rem 10rem;
+            display: grid;
+            grid-template-columns: 280px 1px 1fr;
+            gap: 6rem;
+            position: relative;
+        }
+
+        .v-axis {
+            grid-column: 2;
+            height: 100%;
+            background: var(--line);
+            opacity: 0.6;
+        }
+
+        /* 3. SIDE META (Elegance & Data) */
+        .side-meta {
+            grid-column: 1;
+            position: sticky;
+            top: 160px;
+            height: fit-content;
+        }
+
+        .meta-serial {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 5rem;
+            display: block;
+        }
+
+        .meta-tags {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            color: var(--text-faint);
+            text-transform: uppercase;
+        }
+
+        .tag-item {
+            border-left: 1px solid var(--text);
+            padding-left: 1rem;
+        }
+
+        /* 4. CONTENT AREA (Typography Tension) */
+        .main-content {
+            grid-column: 3;
+            max-width: 720px;
+        }
+
+        .article-header {
+            margin-bottom: 6rem;
+        }
+
+        .article-title {
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            font-weight: 300;
+            letter-spacing: -0.05em;
+            line-height: 1.05;
+            margin-bottom: 2.5rem;
+            color: var(--text);
+        }
+
+        .article-subtitle {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: var(--text-sub);
+            line-height: 1.7;
+            max-width: 480px;
+        }
+
+        /* Pacing: Asymmetrical but Controlled */
+        .article-body p {
+            font-size: 1.12rem;
+            line-height: 2.1;
+            margin-bottom: 4rem;
+            color: var(--text);
+        }
+
+        .p-asym {
+            margin-left: 15%;
+            border-left: 1px solid var(--line);
+            padding-left: 2rem;
+            color: var(--text-sub);
+        }
+
+        /* Visual Break: Quiet Specimen */
+        .visual-break {
+            margin: 8rem 0;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #F2F1EC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .essence-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            animation: breath-soft 4s ease-in-out infinite;
+        }
+
+        @keyframes breath-soft {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: scale(3.5);
+                opacity: 0.8;
+            }
+        }
+
+        /* Heavy Pull (Interaction) */
+        .pull-quote {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: -0.04em;
+            line-height: 1.35;
+            margin: 8rem 0;
+            padding: 4rem 0;
+            border-top: 1px solid var(--text);
+            border-bottom: 1px solid var(--text);
+            transition: background-color var(--duration-master) var(--ease-master);
+        }
+
+        .pull-quote:hover {
+            background-color: #F2F1EC;
+        }
+
+        @media (max-width: 1100px) {
+            .equilibrium-container {
+                grid-template-columns: 1fr;
+                padding: 120px 2rem;
+            }
+
+            .v-axis,
+            .side-meta {
+                display: none;
+            }
+
+            .p-asym {
+                margin-left: 0;
+            }
+
+            .pull-quote {
+                font-size: 1.6rem;
+            }
+        }
+
+        .article-footer {
+            margin-top: 15rem;
+            border-top: 1px solid var(--line);
+            padding-top: 2rem;
+        }
+
+        .footer-back-link {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="nav-logo">
+            <img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+        </a>
+        <ul class="nav-links">
+            <li><a href="../../archive/">Archive</a></li>
+            <li><a href="../../offering.html">Offering</a></li>
+            <li><a href="../../about.html">About</a></li>
+            <li><a href="../../contact.html">Contact</a></li>
+            <li><a href="../../lab/">Lab</a></li>
+        </ul>
+        <button class="nav-lang-toggle" id="lang-toggle">EN</button>
+    </nav>
+
+    <main class="equilibrium-container">
+
+        <!-- Left: Side Meta (Precision) -->
+        <aside class="side-meta fade-in">
+            <span class="meta-serial">ISSUE_010</span>
+            <div class="meta-tags">
+                <div class="tag-item">Recorded / 2026.02.20</div>
+                <div class="tag-item">Concept / Essence</div>
+                <div class="tag-item">Status / Archived</div>
+            </div>
+        </aside>
+
+        <!-- Center: Vertical Axis (Precision) -->
+        <div class="v-axis"></div>
+
+        <!-- Right: Main Content (Elegance) -->
+        <article class="main-content">
+            <header class="article-header fade-in">
+                <h1 class="article-title">일과 본질</h1>
+                <p class="article-subtitle">이 일을 하면서 돈이 우선이었던 적은 없었다. 나를 알아가는 것이 원동력이다.</p>
+            </header>
+
+            <div class="article-body">
+                <p class="fade-in">
+                    가끔 생각해보면, 이 일을 하면서 돈이 우선이었던 적은 없었던 것 같다.
+                    시작은 단순했다. 남들이 가지 않는 길이 멋져 보였고, 손으로 무언가를 만드는 일이 좋았다. 그게 전부였다.
+                </p>
+
+                <div class="visual-break fade-in">
+                    <div class="essence-dot"></div>
+                </div>
+
+                <p class="fade-in p-asym">
+                    그런데 10년 넘게 이 일을 하면서 깨달은 게 있다. <br>
+                    잘하고 싶다는 욕구와 나를 알고 싶다는 욕구가 같은 뿌리에서 나온다는 것.
+                </p>
+
+                <div class="pull-quote fade-in">
+                    기술은 결국 자기 이해의 표현이다. <br>
+                    왜 이렇게 자르는지 설명할 수 있을 때, 비로소 그것이 철학이 된다.
+                </div>
+
+                <p class="fade-in">
+                    돈을 더 벌기 위한 선택보다, 내가 진짜 하고 싶은 방향으로 움직였을 때 오히려 일이 더 단단해졌다. 우화해를 연 것도 그런 선택이었다.
+                </p>
+
+                <p class="fade-in p-asym">
+                    완성된 결과보다 과정에 더 의미를 두는 사람이라는 걸 이제는 인정한다. 그래서 기록한다. 잊지 않기 위해.
+                </p>
+            </div>
+
+            <footer class="article-footer">
+                <a href="../../archive/" class="footer-back-link">← RETURN_ARCHIVE</a>
+            </footer>
+        </article>
+
+    </main>
+
+    <script src="../../assets/js/main.js"></script>
+</body>
+
+</html>

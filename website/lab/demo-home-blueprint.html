@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOOHWAHAE — Home Architecture Prototype (V4)</title>
+    <meta name="description" content="격리된 V4 홈페이지 시뮬레이터 샌드박스">
+    <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+    <!-- 핵심: 기존 하드코딩된 스타일을 모두 지우고 실제 운영 서버의 브랜드 CSS만 로드합니다. -->
+    <link rel="stylesheet" href="../assets/css/style.css?v=typo_v38">
+
+    <style>
+        /* 프로토타입 전용 필수 유틸리티만 최소한으로 선언 (톤오브매너 간섭 X) */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .blueprint-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            mix-blend-mode: difference;
+            z-index: 999;
+            pointer-events: none;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #fff;
+            /* Difference blend mode for contrast */
+        }
+
+        /* 1. Overture Hero */
+        .seq-overture {
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            /* 브랜드 다크 톤 (#F2F1EC 등) */
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+
+        .overture-content {
+            position: absolute;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        /* 타이포그래피는 style.css의 .hero-title, .hero-subtitle을 사용합니다 */
+
+        .overture-hint {
+            position: absolute;
+            bottom: 2rem;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--text-faint);
+            text-transform: uppercase;
+            animation: pulseHint 3s infinite alternate;
+        }
+
+        @keyframes pulseHint {
+            0% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Fade-up common */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 3열 Directory Gateway 조정 (quad-gateway 기반) */
+        .tri-gateway {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--line);
+            border: 1px solid var(--line);
+        }
+
+        @media (max-width: 900px) {
+            .tri-gateway {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tri-gateway>a {
+            background: var(--bg);
+            padding: 4rem 2rem 3rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: background var(--duration) var(--ease);
+        }
+
+        .tri-gateway>a:hover {
+            background: var(--bg-dark);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mockup Navigation -->
+    <div class="blueprint-nav">
+        <span>WOOHWAHAE.</span>
+        <span>LAB.015 [INTERNAL]</span>
+    </div>
+
+    <!-- 1. Overture: 3D Particle Hero (using brand background class) -->
+    <section class="seq-overture section--dark" id="seq1">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <div class="overture-content">
+            <h1 class="hero-title fade-up" style="margin-bottom:0; text-shadow: 0 4px 20px rgba(0,0,0,0.05);">Silence
+                and Structure.</h1>
+            <!-- 텍스트 컬러는 style.css의 .hero-title을 그대로 따르며, 캔버스와 조화되게 둡니다. -->
+            <div class="overture-hint fade-up">[ Scroll to Discover ]</div>
+        </div>
+    </section>
+
+    <!-- 2. Philosophy: 3 Pillars (Using mag-row from style.css) -->
+    <section class="section--light" id="seq2" style="padding: 8rem 0;">
+        <div class="container--wide">
+            <div class="mag-row fade-up">
+                <div class="mag-label">
+                    <p class="section-label">Core Philosophy</p>
+                </div>
+                <div class="mag-body" style="display:flex; flex-direction:column; gap: 4rem;">
+
+                    <div>
+                        <h2
+                            style="font-family: var(--font-mono); font-size: 1rem; letter-spacing: 0.1em; color: var(--text-sub); margin-bottom: 1rem;">
+                            Ritual.</h2>
+                        <p class="lead" style="margin-bottom: 0.5rem;">불필요한 장식을 덜어내고 뼈대에 집중합니다. 단순함은 비어있음이 아니라, 완벽히 계산된
+                            구조적 미학의 최종 형태입니다.</p>
+                        <p
+                            style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-faint); max-width: 500px;">
+                            우화해(WOOHWAHAE)는 단순한 서비스 제공을 넘어 비동기적 자율성과 절제된 의식을 수립합니다.</p>
+                    </div>
+
+                    <div>
+                        <h2
+                            style="font-family: var(--font-mono); font-size: 1rem; letter-spacing: 0.1em; color: var(--text-sub); margin-bottom: 1rem;">
+                            Archive.</h2>
+                        <p class="lead" style="margin-bottom: 0;">순간의 유행을 쫓지 않고 영원히 남을 클래식을 박제합니다. 우리는 지나간 작업들을 가장 가치 있는
+                            정보로 취급합니다.</p>
+                    </div>
+
+                    <div>
+                        <h2
+                            style="font-family: var(--font-mono); font-size: 1rem; letter-spacing: 0.1em; color: var(--text-sub); margin-bottom: 1rem;">
+                            Blueprint.</h2>
+                        <p class="lead" style="margin-bottom: 0;">침묵 속의 구조화를 믿으며, 오프라인의 공간과 디지털 경험 사이의 틈을 치밀한 엔지니어링 계산으로
+                            좁혀 나갑니다.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Directory (Offering Integration - Using tri-gateway & gateway classes from style.css) -->
+    <section class="section--dark" id="seq3" style="padding: 6rem 0 8rem;">
+        <div class="container--wide">
+            <div class="mag-row fade-up" style="margin-bottom: 3rem;">
+                <div class="mag-label">
+                    <p class="section-label">Select Your Destination</p>
+                </div>
+            </div>
+
+            <div class="tri-gateway fade-up">
+                <a href="#" class="gateway-card">
+                    <p class="gateway-label">001 &nbsp;FOR INDIVIDUAL</p>
+                    <p class="gateway-title" style="font-size: 2rem; margin-bottom: 1rem;">Offering</p>
+                    <p class="gateway-desc" style="flex: 1;">헤어. 구조를 먼저 읽고 그 사람에게 맞는 형태를 설계합니다. 고객님을 위한 비스포크 디자인 코스와 가격
+                        안내, 그리고 조용한 동선을 위한 예약 루트.</p>
+                    <p class="gateway-link">예약 &amp; 요금 →</p>
+                </a>
+
+                <a href="#" class="gateway-card">
+                    <p class="gateway-label">002 &nbsp;FOR DAILY</p>
+                    <p class="gateway-title" style="font-size: 2rem; margin-bottom: 1rem;">Archive</p>
+                    <p class="gateway-desc" style="flex: 1;">오케스트레이터가 기록한 영원한 질감과 구조의 시각적 기록물들. 에디토리얼 모델 작업부터, 직접 찾아보고
+                        기록한 영감의 사진첩.</p>
+                    <p class="gateway-link">작업 보기 →</p>
+                </a>
+
+                <a href="#" class="gateway-card">
+                    <p class="gateway-label">003 &nbsp;FOR SYSTEM</p>
+                    <p class="gateway-title" style="font-size: 2rem; margin-bottom: 1rem;">Lab</p>
+                    <p class="gateway-desc" style="flex: 1;">헤어 실무자를 위한 3D 도해도 기하학 아키텍처 및 예약 고객을 위한 디지털 처방전 모멘텀. 브랜드 교육과
+                        협업의 연구실.</p>
+                    <p class="gateway-link">실험 보기 →</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Anchor: Footer (Exact match to offering footer) -->
+    <footer class="section--light">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="../assets/img/symbol.png" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
+                <p class="footer-brand-name">WOOHWAHAE</p>
+                <p class="footer-brand-desc">Archive for Slow Life</p>
+            </div>
+            <div>
+                <p class="footer-nav-title">Navigate</p>
+                <ul class="footer-nav-list">
+                    <li><a href="../archive/">Archive</a></li>
+                    <li><a href="../offering.html">Offering</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="../contact.html">Contact</a></li>
+                    <li><a href="../lab/">Lab</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-connect-title">Connect</p>
+                <ul class="footer-connect-list">
+                    <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
+                    <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
+                            target="_blank" rel="noopener">Booking</a></li>
+                    <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Archive for Slow Life <span
+                    style="margin-left: 10px;"><a href="../lab/index.html">← Return to Lab</a></span></p>
+            <div class="footer-legal">
+                <a href="../privacy.html">개인정보처리방침</a>
+                <a href="../terms.html">이용약관</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =========================================================================
+       SCRIPTS
+       ========================================================================= -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
+
+            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+            setTimeout(() => { document.querySelector('.hero-title')?.classList.add('visible'); }, 500);
+            setTimeout(() => { document.querySelector('.overture-hint')?.classList.add('visible'); }, 1500);
+        });
+    </script>
+
+    <!-- Three.js Hero Symbol Logistics -->
+    <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    }
+  }
+  </script>
+    <script type="module">
+        import * as THREE from 'three';
+
+        const canvas = document.getElementById('hero-canvas');
+        if (!canvas) throw new Error('hero-canvas not found');
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, precision: 'highp' });
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 0);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+        camera.position.set(0, 0, 5.5);
+
+        function setSize() {
+            const W = window.innerWidth;
+            const H = window.innerHeight;
+            renderer.setSize(W, H, false);
+            camera.aspect = W / H;
+            camera.updateProjectionMatrix();
+        }
+        setSize();
+        window.addEventListener('resize', setSize);
+
+        // 브랜드 톤앤매너에 맞게 라이팅 조정
+        scene.add(new THREE.AmbientLight(0xE8E6E1, 1.1));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+        keyLight.position.set(2, 3, 4); scene.add(keyLight);
+        const fillLight = new THREE.DirectionalLight(0xdde8f0, 0.9);
+        fillLight.position.set(-3, -1, 2); scene.add(fillLight);
+        const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        rimLight.position.set(0, -4, -3); scene.add(rimLight);
+
+        function roughen(geo, amount) {
+            const pos = geo.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                const nx = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+                const ny = Math.sin(i * 269.5 + 183.3) * 43758.5453;
+                const nz = Math.sin(i * 419.2 + 631.4) * 43758.5453;
+                pos.setX(i, pos.getX(i) + (nx - Math.floor(nx) - 0.5) * amount);
+                pos.setY(i, pos.getY(i) + (ny - Math.floor(ny) - 0.5) * amount);
+                pos.setZ(i, pos.getZ(i) + (nz - Math.floor(nz) - 0.5) * amount);
+            }
+            pos.needsUpdate = true; geo.computeVertexNormals(); return geo;
+        }
+
+        function roughCirclePts(r, n, wobble) {
+            const pts = [];
+            for (let i = 0; i <= n; i++) {
+                const t = i / n, a = t * Math.PI * 2;
+                const w = 1 + Math.sin(a * 2.3 + r * 5.7) * wobble + Math.sin(a * 5.1 + r * 3.1) * wobble * 0.6
+                    + Math.sin(a * 9.7 + r * 7.3) * wobble * 0.3 + Math.cos(a * 4.2 - r * 2.9) * wobble * 0.5;
+                const zOff = Math.sin(a * 3.1 + r * 4.1) * wobble * r * 0.45 + Math.cos(a * 6.7 - r * 1.8) * wobble * r * 0.25;
+                pts.push(new THREE.Vector3(Math.cos(a) * r * w, Math.sin(a) * r * w, zOff));
+            }
+            return pts;
+        }
+
+        function makeMat(color, opacity, roughness = 0.88, metalness = 0.04) {
+            return new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent: true, opacity });
+        }
+
+        const root = new THREE.Group(); scene.add(root);
+
+        // 브랜드 톤앤매너에 맞게 머티리얼 톤(브라운/베이지)을 사용
+        const ringDefs = [
+            { r: 1.10, tube: 0.005, tX: 0.32, tY: 0.08, tZ: 0.05, spin: 0.038, wobble: 0.065, op: 0.78 },
+            { r: 0.84, tube: 0.004, tX: -0.42, tY: -0.12, tZ: 0.10, spin: -0.055, wobble: 0.055, op: 0.60 },
+            { r: 0.58, tube: 0.0032, tX: 0.18, tY: 0.24, tZ: -0.08, spin: 0.072, wobble: 0.048, op: 0.44 },
+            { r: 0.30, tube: 0.0025, tX: -0.14, tY: -0.28, tZ: 0.12, spin: -0.088, wobble: 0.038, op: 0.32 },
+        ];
+        const rings = ringDefs.map(def => {
+            const pts = roughCirclePts(def.r, 260, def.wobble);
+            const geo = roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true, 'centripetal', 0.4), 320, def.tube, 12, true), def.tube * 0.7);
+            const mesh = new THREE.Mesh(geo, makeMat(0x2a2820, def.op));
+            mesh.rotation.set(def.tX, def.tY, def.tZ); root.add(mesh);
+            return { mesh, def };
+        });
+
+        const spiralPts = [];
+        for (let i = 0; i <= 600; i++) {
+            const t = i / 600, angle = t * 3.8 * Math.PI * 2 - Math.PI / 2, r = 0.10 + (1.12 - 0.10) * t;
+            const z = Math.sin(t * Math.PI * 2.2) * 0.20 + Math.sin(t * 17.3) * 0.025;
+            const w = Math.sin(t * 11.3) * 0.048 + Math.sin(t * 27.9 + 1.3) * 0.022;
+            spiralPts.push(new THREE.Vector3(Math.cos(angle) * (r + w), Math.sin(angle) * (r + w), z));
+        }
+        const sc = new THREE.CatmullRomCurve3(spiralPts, false, 'centripetal', 0.3);
+        const spts = sc.getPoints(1000);
+        const spiralInner = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spts.slice(0, 510), false, 'centripetal'), 500, 0.005, 12, false), 0.004), makeMat(0x252320, 0.86));
+        const spiralOuter = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spts.slice(500), false, 'centripetal'), 500, 0.003, 10, false), 0.003), makeMat(0x252320, 0.60));
+        spiralInner.rotation.x = spiralOuter.rotation.x = 0.10;
+        root.add(spiralInner); root.add(spiralOuter);
+
+        const ecgRaw = [[-1.0, 0, 0], [-0.66, 0, 0.01], [-0.60, -0.11, 0.02], [-0.54, 0, 0.01], [-0.36, 0.01, -0.01], [-0.26, 0.09, 0.02], [-0.16, -0.68, 0.04], [-0.08, 0.14, 0.02], [0, 0.01, -0.01], [0.24, -0.24, 0.02], [0.46, 0.01, -0.01], [1.0, 0, 0]].map(([x, y, z]) => new THREE.Vector3(x, y, z));
+        const ecgMesh = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ecgRaw, false, 'centripetal', 0.25), 360, 0.004, 12, false), 0.003), makeMat(0x2a2820, 0.72));
+        ecgMesh.rotation.set(0.08, 0, 0); root.add(ecgMesh);
+
+        const dotMesh = new THREE.Mesh(roughen(new THREE.SphereGeometry(0.040, 32, 32), 0.006), makeMat(0x1a1814, 0.92, 0.72, 0.08));
+        root.add(dotMesh);
+
+        const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
+        window.addEventListener('mousemove', e => {
+            mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
+        }, { passive: true });
+
+        setTimeout(() => { canvas.style.opacity = '1'; }, 120);
+
+        const clock = new THREE.Clock();
+        (function animate() {
+            requestAnimationFrame(animate);
+            const dt = clock.getDelta(), t = clock.getElapsedTime();
+            smooth.x += (mouse.x - smooth.x) * 0.04;
+            smooth.y += (mouse.y - smooth.y) * 0.04;
+            root.rotation.y = t * 0.028 + smooth.x * 0.22;
+            root.rotation.x = smooth.y * -0.16;
+            rings.forEach(({ mesh, def }) => { mesh.rotation.z += def.spin * dt; });
+            spiralInner.rotation.y += 0.004 * dt;
+            spiralOuter.rotation.y += 0.004 * dt;
+            dotMesh.scale.setScalar(1 + Math.sin(t * 2.8) * 0.06);
+            keyLight.position.x = 2 + smooth.x * 1.8;
+            keyLight.position.y = 3 - smooth.y * 1.2;
+            renderer.render(scene, camera);
+        })();
+    </script>
+</body>
+
+</html>

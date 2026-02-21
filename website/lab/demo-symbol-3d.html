@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exp.005 — Symbol Particle · WOOHWAHAE Lab</title>
+  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #E8E6E1;
+      --text: #2C2C2C;
+      --text-faint: #8E8E88;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg); color: var(--text);
+      font-family: var(--font-mono); overflow: hidden;
+    }
+    canvas { display: block; }
+    .ui-back {
+      position: fixed; top: 1.5rem; left: 1.5rem;
+      font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-faint); text-decoration: none; transition: color 0.2s;
+      z-index: 10;
+    }
+    .ui-back:hover { color: var(--text); }
+    .ui-label {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      font-size: 0.68rem; letter-spacing: 0.06em; color: var(--text-faint);
+      z-index: 10;
+    }
+    .ui-meta {
+      position: fixed; bottom: 1.5rem; left: 1.5rem;
+      font-size: 0.60rem; color: var(--text-faint); letter-spacing: 0.04em;
+      z-index: 10; line-height: 1.8;
+    }
+    #loading {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; color: var(--text-faint); letter-spacing: 0.06em;
+      text-transform: uppercase; z-index: 20;
+      transition: opacity 0.8s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="./" class="ui-back">← Lab</a>
+  <div class="ui-label">Exp.005 / Symbol Particle</div>
+  <div class="ui-meta">
+    symbol.png 픽셀 샘플링 → Three.js 파티클<br>
+    마우스를 움직이면 시점이 변합니다
+  </div>
+  <div id="loading">Loading symbol...</div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const loading = document.getElementById('loading');
+
+    // ── 심볼 이미지 픽셀 샘플링 ──
+    async function sampleSymbol(src, threshold = 160, maxPoints = 6000) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const size = 256;
+          const offscreen = document.createElement('canvas');
+          offscreen.width = offscreen.height = size;
+          const ctx = offscreen.getContext('2d');
+          ctx.drawImage(img, 0, 0, size, size);
+          const data = ctx.getImageData(0, 0, size, size).data;
+          const pts = [];
+          const step = Math.max(1, Math.floor(size / 80));
+          for (let y = 0; y < size; y += step) {
+            for (let x = 0; x < size; x += step) {
+              const idx = (y * size + x) * 4;
+              const brightness = (data[idx] + data[idx+1] + data[idx+2]) / 3;
+              if (brightness < threshold) {
+                pts.push([
+                  (x / size - 0.5) * 4.0,
+                  -(y / size - 0.5) * 4.0,
+                  (Math.random() - 0.5) * 0.3,
+                ]);
+              }
+            }
+          }
+          // shuffle & limit
+          for (let i = pts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pts[i], pts[j]] = [pts[j], pts[i]];
+          }
+          resolve(pts.slice(0, maxPoints));
+        };
+        img.onerror = () => resolve([]);
+        img.src = src;
+      });
+    }
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, precision: 'highp' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setClearColor(0xE8E6E1, 1);
+    document.body.appendChild(renderer.domElement);
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 7);
+
+    window.addEventListener('resize', () => {
+      renderer.setSize(innerWidth, innerHeight);
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+    });
+
+    // 파티클 생성
+    const pts = await sampleSymbol('../assets/img/symbol.png');
+    loading.style.opacity = '0';
+    setTimeout(() => loading.remove(), 900);
+
+    const positions = new Float32Array(pts.length * 3);
+    const sizes     = new Float32Array(pts.length);
+    pts.forEach(([x, y, z], i) => {
+      positions[i*3]   = x + (Math.random()-0.5)*0.04;
+      positions[i*3+1] = y + (Math.random()-0.5)*0.04;
+      positions[i*3+2] = z;
+      sizes[i] = 2.5 + Math.random() * 1.8;
+    });
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('size',     new THREE.BufferAttribute(sizes, 1));
+
+    const mat = new THREE.PointsMaterial({
+      color: 0x2C2C2C,
+      size: 0.045,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.82,
+    });
+
+    const points = new THREE.Points(geo, mat);
+    scene.add(points);
+
+    // 마우스 틸트
+    const mouse  = { x: 0, y: 0 };
+    const smooth = { x: 0, y: 0 };
+    window.addEventListener('mousemove', e => {
+      mouse.x = (e.clientX / innerWidth  - 0.5) * 2;
+      mouse.y = (e.clientY / innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    const clock = new THREE.Clock();
+    (function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      smooth.x += (mouse.x - smooth.x) * 0.04;
+      smooth.y += (mouse.y - smooth.y) * 0.04;
+
+      points.rotation.y = t * 0.018 + smooth.x * 0.28;
+      points.rotation.x = smooth.y * -0.18;
+
+      // 파티클 미세 진동 (호흡)
+      mat.opacity = 0.72 + Math.sin(t * 1.4) * 0.10;
+
+      renderer.render(scene, camera);
+    })();
+  </script>
+</body>
+</html>

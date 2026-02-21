@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOOHWAHAE — Salon Blueprint & Routine</title>
+    <meta name="description" content="고객 맞춤형 헤어 디자인 도해도 및 케어 처방전. 프로페셔널 아카이빙 툴.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #E8E6E1;
+            --text: #1a1814;
+            --text-faint: #8b8984;
+            --line: #d1cfca;
+            --accent: #b03a2e;
+            /* 컷트 라인용 레드 */
+            --blue: #2980b9;
+            /* 텐션/각도용 블루 */
+            --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Print / Export Mode Styles */
+        body.export-mode .nav-menu,
+        body.export-mode .tool-panel,
+        body.export-mode .export-btn {
+            display: none !important;
+        }
+
+        body.export-mode {
+            background: #ffffff;
+            /* 순백색으로 깔끔하게 출력 */
+        }
+
+        body.export-mode .blueprint-container {
+            border: none;
+            box-shadow: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        body.export-mode .form-input,
+        body.export-mode .form-textarea {
+            border: none !important;
+            resize: none;
+            background: transparent;
+            padding: 0;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-symbol {
+            width: 18px;
+        }
+
+        /* Main Layout */
+        .blueprint-container {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            border-left: 1px solid var(--line);
+            border-right: 1px solid var(--line);
+        }
+
+        /* Left: Drawing Canvas */
+        .canvas-section {
+            flex: 1;
+            min-width: 320px;
+            position: relative;
+            border-right: 1px solid var(--line);
+            background: #f4f3f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-panel {
+            padding: 1rem;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            background: var(--bg);
+        }
+
+        .tool-btn {
+            background: none;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: #e0ded9;
+        }
+
+        .tool-btn.active {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        /* SVG Background Silhouette */
+        .canvas-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            /* Prevent scrolling while drawing on iPad */
+        }
+
+        /* Right: Client Form */
+        .form-section {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        @media (max-width: 800px) {
+            .form-section {
+                width: 100%;
+                border-top: 1px solid var(--line);
+            }
+
+            .blueprint-container {
+                border: none;
+            }
+        }
+
+        .form-header {
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .doc-title {
+            font-size: 1.4rem;
+            font-weight: 300;
+            margin: 0 0 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .doc-meta {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-faint);
+        }
+
+        .form-body {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-faint);
+        }
+
+        .form-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--line);
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-bottom-color: var(--text);
+        }
+
+        .form-textarea {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid var(--line);
+            padding: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text);
+            resize: vertical;
+            min-height: 100px;
+            outline: none;
+            border-radius: 4px;
+        }
+
+        .form-textarea:focus {
+            border-color: var(--text);
+        }
+
+        .form-footer {
+            padding: 2rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .export-btn {
+            width: 100%;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .export-btn:hover {
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav-menu">
+        <a href="./" class="nav-brand">
+            <img src="../assets/img/symbol.png" class="nav-symbol" alt="">
+            Lab / Bespoke Recipe
+        </a>
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint);">
+            INTERNAL PRO TOOL
+        </div>
+    </nav>
+
+    <div class="blueprint-container">
+
+        <!-- Left: Drawing Area -->
+        <div class="canvas-section">
+            <div class="tool-panel" id="toolPanel">
+                <button class="tool-btn active" data-color="#b03a2e" data-width="2">Cut Line (Red)</button>
+                <button class="tool-btn" data-color="#2980b9" data-width="2">Elevation (Blue)</button>
+                <button class="tool-btn" data-color="#1a1814" data-width="1" style="border-style: dashed;">Section
+                    (Dash)</button>
+                <div style="flex:1;"></div>
+                <button class="tool-btn" id="clearBtn">Clear</button>
+            </div>
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <!-- Abstract Head Silhouette SVG -->
+                <svg class="canvas-bg" viewBox="0 0 200 250" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M100 20 C140 20 160 50 160 90 C160 120 150 140 130 160 C120 170 110 210 110 250 M100 20 C60 20 40 50 40 80 C40 100 50 130 60 140 C70 150 80 180 80 210 C80 230 70 250 70 250"
+                        stroke-linecap="round" />
+                </svg>
+                <canvas id="sketchpad"></canvas>
+            </div>
+        </div>
+
+        <!-- Right: Form Area -->
+        <div class="form-section">
+            <div class="form-header">
+                <h1 class="doc-title">Design Blueprint</h1>
+                <div class="doc-meta">WOOHWAHAE ARCHIVE — <span id="currentDate"></span></div>
+            </div>
+
+            <div class="form-body">
+                <div class="form-group">
+                    <label class="form-label">Client Name</label>
+                    <input type="text" class="form-input" placeholder="이름 (예: 김우화 고객님)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Base Structure</label>
+                    <input type="text" class="form-input" placeholder="예: Square Layered / Bob">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Formula / Process</label>
+                    <textarea class="form-textarea"
+                        placeholder="화학 시술(염색/펌) 정보나 커트 프로세스를 기록하세요.&#10;예: Nape - 45° Elevation, Crown - 90° Square."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ritual & Home Care</label>
+                    <textarea class="form-textarea"
+                        placeholder="고객을 위한 홈케어 지침 및 분위기 제안.&#10;예: 젖은 상태에서 아르간 오일 도포 후 자연 건조. 무게 중심이 45일 후 무너지니 다음 방문을 권장."></textarea>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button class="export-btn" id="exportBtn">Export to Client</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Date
+        const dateEl = document.getElementById('currentDate');
+        const today = new Date();
+        dateEl.textContent = today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
+
+        // Canvas Logic
+        const canvas = document.getElementById('sketchpad');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvasWrapper');
+
+        let isDrawing = false;
+        let currentColor = '#b03a2e';
+        let currentWidth = 2;
+        let isDashed = false;
+
+        function resizeCanvas() {
+            // Save canvas content
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            if (canvas.width > 0) tempCtx.drawImage(canvas, 0, 0);
+
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+
+            // Restore content
+            ctx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); // init
+
+        // Tools
+        const toolBtns = document.querySelectorAll('.tool-btn:not(#clearBtn)');
+        toolBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                toolBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentColor = btn.dataset.color;
+                currentWidth = parseInt(btn.dataset.width);
+                isDashed = btn.style.borderStyle === 'dashed';
+            });
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // Drawing
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.touches && e.touches.length > 0) {
+                return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+            }
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function startDraw(e) {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = currentWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            if (isDashed) {
+                ctx.setLineDash([5, 5]);
+            } else {
+                ctx.setLineDash([]);
+            }
+            ctx.stroke();
+            e.preventDefault();
+        }
+
+        function endDraw(e) {
+            isDrawing = false;
+            ctx.closePath();
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', endDraw); // capture outside
+
+        canvas.addEventListener('touchstart', startDraw, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        window.addEventListener('touchend', endDraw);
+
+        // Export Logic
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            document.body.classList.add('export-mode');
+
+            // 알림 메시지 (실제로는 window.print() 나 canvas html2canvas 변환 후 이미지 다운로드로 이어짐)
+            setTimeout(() => {
+                alert("Client Mode (Export View)가 활성화되었습니다. \n이 화면을 캡처하거나 PDF 인쇄(Cmd+P)하여 고객 카카오톡으로 전송합니다. \n\n다시 편집하려면 새로고침 하십시오.");
+                window.print();
+            }, 300);
+        });
+    </script>
+</body>
+
+</html>

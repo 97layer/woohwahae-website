@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Project 문의 — WOOHWAHAE. 모델 작업, 에디토리얼, 협업, 아카이브 촬영 문의.">
+  <meta property="og:title" content="Project 문의 — WOOHWAHAE">
+  <meta property="og:description" content="방향이 맞는지 먼저 이야기합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://woohwahae.kr/offering/project-form.html">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
+  <title>Project 문의 — WOOHWAHAE</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#FAFAF7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/style.css?v=typo_v38">
+  <script src="../assets/js/analytics.js" defer></script>
+  <style>
+    .form-wrap {
+      max-width: 600px;
+    }
+    .form-section {
+      border-top: 1px solid var(--line);
+      padding: var(--space-sm) 0;
+    }
+    .form-section-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: var(--fw-light);
+      letter-spacing: var(--ls-label);
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: var(--space-sm);
+    }
+    .form-field {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: var(--fw-light);
+      color: var(--text-sub);
+      margin-bottom: 0.4rem;
+    }
+    .form-label span {
+      color: var(--text-faint);
+      font-size: 0.72rem;
+      margin-left: 0.3rem;
+    }
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      padding: 0.5rem 0;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: var(--fw-light);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--text-sub);
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.7;
+    }
+    .form-radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .form-radio-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+    }
+    .form-radio-item input[type="radio"] {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: border-color 0.2s;
+    }
+    .form-radio-item input[type="radio"]:checked {
+      border-color: var(--text);
+      background: var(--text);
+    }
+    .form-radio-item label {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: var(--fw-light);
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+    .form-submit {
+      margin-top: var(--space-md);
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--line);
+    }
+    .form-submit-btn {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: var(--fw-light);
+      letter-spacing: var(--ls-micro);
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--line);
+      padding: 0.7rem 1.8rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .form-submit-btn:hover {
+      background: var(--text);
+      color: var(--bg);
+    }
+    .form-note {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-faint);
+      margin-top: 0.8rem;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links">
+      <li><a href="../archive/">Archive</a></li>
+      <li><a href="../offering.html" class="active">Offering</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+      <li><a href="../lab/">Lab</a></li>
+    </ul>
+    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main class="container--wide">
+
+    <div class="detail-back fade-in">
+      <a href="project.html">← Project</a>
+    </div>
+
+    <!-- 인트로 -->
+    <div class="mag-row mag-row--intro fade-in">
+      <div class="mag-label">
+        <p class="section-label">003 Project</p>
+        <p class="mag-heading">Project 문의</p>
+        <p class="mag-label-sub">작업 제안</p>
+      </div>
+      <div class="mag-body">
+        <p class="lead">방향이 맞는지 먼저 이야기합니다.</p>
+        <p>어떤 작업을 생각하고 계신지 간단히 적어주세요. 검토 후 이메일로 답합니다.</p>
+      </div>
+    </div>
+
+    <!-- 폼 -->
+    <div class="mag-row fade-in">
+      <div class="mag-label">
+        <p class="section-label">Form</p>
+      </div>
+      <div class="mag-body">
+        <div class="form-wrap">
+          <form action="mailto:hello@woohwahae.kr" method="post" enctype="text/plain">
+
+            <!-- 01 기본 정보 -->
+            <div class="form-section">
+              <p class="form-section-label">01 기본 정보</p>
+              <div class="form-field">
+                <label class="form-label" for="name">이름<span>*</span></label>
+                <input class="form-input" type="text" id="name" name="이름" required placeholder="">
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="email">이메일<span>*</span></label>
+                <input class="form-input" type="email" id="email" name="이메일" required placeholder="">
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="portfolio">인스타그램 또는 포트폴리오 URL<span>선택</span></label>
+                <input class="form-input" type="text" id="portfolio" name="포트폴리오" placeholder="">
+              </div>
+            </div>
+
+            <!-- 02 작업 유형 -->
+            <div class="form-section">
+              <p class="form-section-label">02 작업 유형</p>
+              <div class="form-field">
+                <div class="form-radio-group">
+                  <label class="form-radio-item">
+                    <input type="radio" name="작업유형" value="Model / Editorial" required>
+                    <label>Model / Editorial — 룩북, 에디토리얼, 포트폴리오</label>
+                  </label>
+                  <label class="form-radio-item">
+                    <input type="radio" name="작업유형" value="Collaboration">
+                    <label>Collaboration — 브랜드 또는 크리에이터 협업</label>
+                  </label>
+                  <label class="form-radio-item">
+                    <input type="radio" name="작업유형" value="Archive Shoot">
+                    <label>Archive Shoot — 기록을 목적으로 한 촬영</label>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 03 작업 내용 -->
+            <div class="form-section">
+              <p class="form-section-label">03 작업 내용</p>
+              <div class="form-field">
+                <label class="form-label" for="content">어떤 작업을 생각하고 계신가요?<span>*</span></label>
+                <textarea class="form-textarea" id="content" name="작업내용" required placeholder="구체적일수록 빠르게 답할 수 있습니다."></textarea>
+              </div>
+            </div>
+
+            <!-- 04 일정 -->
+            <div class="form-section">
+              <p class="form-section-label">04 일정</p>
+              <div class="form-field">
+                <label class="form-label" for="schedule">희망 일정 또는 기간<span>선택</span></label>
+                <input class="form-input" type="text" id="schedule" name="희망일정" placeholder="예: 3월 중, 4월 첫째 주 등">
+              </div>
+            </div>
+
+            <!-- 05 참고 자료 -->
+            <div class="form-section">
+              <p class="form-section-label">05 참고 자료</p>
+              <div class="form-field">
+                <label class="form-label" for="reference">레퍼런스 URL 또는 메모<span>선택</span></label>
+                <textarea class="form-textarea" id="reference" name="참고자료" style="min-height:70px" placeholder="분위기, 스타일, 참고 링크 등"></textarea>
+              </div>
+            </div>
+
+            <!-- 제출 -->
+            <div class="form-submit">
+              <button type="submit" class="form-submit-btn">보내기 →</button>
+              <p class="form-note">제출 시 이메일 앱이 열립니다. hello@woohwahae.kr로 발송됩니다.</p>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="section--light">
+    <div class="footer-inner">
+      <div class="footer-brand-row">
+        <p class="footer-brand-name">WOOHWAHAE</p>
+      </div>
+      <div class="footer-nav-row">
+        <a href="../archive/">Archive</a>
+        <a href="../offering.html">Offering</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../lab/">Lab</a>
+      </div>
+      <div class="footer-connect-row">
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
+        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
+        <a href="mailto:hello@woohwahae.kr">Email</a>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="../privacy.html">Privacy</a>
+          <a href="../terms.html">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Avant-Garde Structure (Exp.022) — WOOHWAHAE Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css?v=typo_v38">
+    <style>
+        /* 
+       [SYSTEM OVERRIDE: THE AVANT-GARDE STRUCTURE]
+       무난함을 파괴하는 디자이너의 편집적 강박.
+       1. Deconstructed Layout
+       2. Typography as Object
+       3. Intentional Friction
+    */
+        :root {
+            --bg: #FAFAF7;
+            --text: #1a1a1a;
+            --line: #000;
+            --duration-heavy: 1.2s;
+            --ease-extreme: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        body {
+            background-color: var(--bg);
+            overflow-x: hidden;
+            cursor: crosshair;
+            /* 탐색적 긴장감 부여 */
+        }
+
+        /* 1. 배경 거대 활자 (Sculptural Text) */
+        .bg-canvas-text {
+            position: fixed;
+            font-size: 45vw;
+            font-weight: 900;
+            color: rgba(26, 26, 26, 0.025);
+            white-space: nowrap;
+            top: 15vh;
+            left: -10vw;
+            z-index: -1;
+            pointer-events: none;
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+        }
+
+        /* 2. 장식성 배제 네비게이션 (Extreme Minimal) */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--bg);
+            border-bottom: 1px solid var(--line);
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-lab-tag {
+            font-family: 'DM Mono';
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            color: var(--text);
+        }
+
+        /* 3. 해체된 섹션 (The Broken Grid) */
+        .viewport-h {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .deconstructed-block {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1rem;
+        }
+
+        /* 섹션 1: 거대 인덱스 + 미세 텍스트 */
+        .v-num {
+            grid-column: 2 / 6;
+            font-size: 20rem;
+            font-weight: 200;
+            line-height: 0.7;
+            letter-spacing: -0.1em;
+            color: var(--text);
+            mix-blend-mode: difference;
+        }
+
+        .v-meta {
+            grid-column: 7 / 10;
+            padding-top: 5rem;
+        }
+
+        .v-meta .label {
+            font-family: 'DM Mono';
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .v-meta .desc {
+            font-size: 1.1rem;
+            max-width: 320px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* 섹션 2: 기하학적 파열 (Image Manipulation) */
+        .p-image-wrap {
+            grid-column: 3 / 8;
+            position: relative;
+        }
+
+        .p-mask {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            background: #e8e6e1;
+            clip-path: polygon(15% 0, 100% 10%, 85% 100%, 0 90%);
+            transition: clip-path var(--duration-heavy) var(--ease-extreme);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .p-mask:hover {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .v-vertical-text {
+            position: absolute;
+            right: -3rem;
+            top: 0;
+            writing-mode: vertical-rl;
+            font-family: 'DM Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.8em;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+
+        /* 4. Offering 리스트의 수직 긴장감 (Asymmetrical List) */
+        .avant-offering {
+            padding: 20vh 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .offering-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 4rem 3rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.8s var(--ease-extreme);
+        }
+
+        .offering-row:hover {
+            padding-left: 6rem;
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .o-title {
+            font-size: 6rem;
+            font-weight: 200;
+            letter-spacing: -0.05em;
+            line-height: 0.8;
+        }
+
+        .o-meta {
+            font-family: 'DM Mono';
+            font-size: 0.65rem;
+            align-self: flex-start;
+            margin-top: 1rem;
+        }
+
+        /* 5. 마이크로 인터랙션: 고해상도 그림자 */
+        .interactive-glow {
+            position: fixed;
+            width: 40vmax;
+            height: 40vmax;
+            background: radial-gradient(circle, rgba(27, 45, 79, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 10;
+            transform: translate(-50%, -50%);
+        }
+
+        @media (max-width: 1000px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .bg-canvas-text {
+                font-size: 80vw;
+            }
+
+            .v-num {
+                font-size: 10rem;
+                grid-column: 1 / 12;
+            }
+
+            .v-meta {
+                grid-column: 1 / 12;
+                padding-top: 1rem;
+            }
+
+            .p-image-wrap {
+                grid-column: 1 / 13;
+            }
+
+            .o-title {
+                font-size: 3rem;
+            }
+
+            .offering-row:hover {
+                padding-left: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="interactive-glow" id="glow"></div>
+    <div class="bg-canvas-text" id="scroll-text">WOOHWAHAE</div>
+
+    <nav>
+        <a href="/" class="nav-logo">
+            <img src="../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE" style="mix-blend-mode:multiply;">
+        </a>
+        <div class="nav-lab-tag">AVANT-GARDE / EXP.022</div>
+        <ul class="nav-links" style="display:none;"></ul>
+        <a href="../lab/"
+            style="font-family:'DM Mono'; font-size:0.6rem; border:none; text-transform:uppercase; letter-spacing:0.1em;">Return</a>
+    </nav>
+
+    <!-- Section 01: Hero Deconstruction -->
+    <section class="viewport-h">
+        <div class="deconstructed-block">
+            <div class="v-num fade-in">01</div>
+            <div class="v-meta fade-in">
+                <span class="label">Manifesto</span>
+                <p class="desc">
+                    침묵은 비어있음이 아니라, 모든 소음이 걸러진 최종적 구조의 상태입니다.
+                    우리는 무난함이라는 타협을 거부하고, 시각적 긴장감을 통해 본질을 증명합니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 02: Geometrical Rupture -->
+    <section class="viewport-h" style="background: #1a1a1a; color: #FAFAF7;">
+        <div class="deconstructed-block">
+            <div class="p-image-wrap fade-in">
+                <div class="p-mask">
+                    <!-- 실제 작업물을 대신하는 추상적 레이어 -->
+                    <div
+                        style="width:100%; height:100%; border:1px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">
+                        <span style="font-family:'DM Mono'; font-size:0.7rem; opacity:0.5;">VISUAL_SPECIMEN.JPG</span>
+                    </div>
+                </div>
+                <div class="v-vertical-text" style="color:#FAFAF7;">ACCUMULATED_DATA_V5.0</div>
+            </div>
+            <div class="v-meta fade-in" style="grid-column: 9 / 13;">
+                <span class="label" style="color:rgba(255,255,255,0.5);">Geometry</span>
+                <p class="desc">
+                    형태는 기능을 따라야 하지만, 형태 그 자체가 철학이 될 때 비로소 아우라가 형성됩니다.
+                    잘리고 비틀린 선들이 모여 하나의 완벽한 우화를 만듭니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 03: The Offering List -->
+    <section class="avant-offering">
+        <div class="container--wide">
+            <p class="section-label" style="text-align:right; margin-bottom:10rem;">The Directory</p>
+
+            <a href="../offering/atelier.html" class="offering-row fade-in">
+                <span class="o-meta">001 / CORE</span>
+                <h2 class="o-title">Atelier</h2>
+                <span class="o-meta">→ SEE_BLUEPRINT</span>
+            </a>
+
+            <a href="../offering/consulting.html" class="offering-row fade-in">
+                <span class="o-meta">002 / SYSTEM</span>
+                <h2 class="o-title">Consulting</h2>
+                <span class="o-meta">→ CONNECT_DATA</span>
+            </a>
+
+            <a href="../offering/project.html" class="offering-row fade-in">
+                <span class="o-meta">003 / WORK</span>
+                <h2 class="o-title">Project</h2>
+                <span class="o-meta">→ VIEW_ARCHIVE</span>
+            </a>
+
+            <a href="../offering/shop.html" class="offering-row fade-in">
+                <span class="o-meta">004 / OBJECT</span>
+                <h2 class="o-title">Shop</h2>
+                <span class="o-meta">→ COLLECT_ESSENCE</span>
+            </a>
+        </div>
+    </section>
+
+    <footer style="padding: 10rem 0; text-align:center; border-top:1px solid var(--line);">
+        <p style="font-family:'DM Mono'; font-size:0.6rem; letter-spacing:0.5em; opacity:0.3;">END_OF_MANIFEST_V5</p>
+    </footer>
+
+    <script>
+        // 마우스 조명 효과
+        const glow = document.getElementById('glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        // 배경 글자 패럴랙스 (수평 이동)
+        const scrollText = document.getElementById('scroll-text');
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY;
+            scrollText.style.transform = `translateX(-${scrollPos * 0.5}px)`;
+        });
+
+        // fade-in 스크립트 (main.js가 없는 랩 환경 대응)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 1.2s cubic-bezier(0.19, 1, 0.22, 1)';
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>

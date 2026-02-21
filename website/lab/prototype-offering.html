@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Offering (Prototype) — WOOHWAHAE</title>
+
+    <!-- 원본 스타일 로드 -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        /* =========================================
+       [PROTOTYPE] EXTREME EDITORIAL OVERRIDES
+       글래스모피즘 전면 폐기, 솔리드 + 1px 파단선.
+       극단적 활자 스케일 대비 및 고의적 반응 지연.
+       ========================================= */
+
+        /* 1. 글래스모피즘 파기 탈피: 내비게이션 */
+        nav.scrolled,
+        nav {
+            background-color: var(--bg) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-bottom: 1px solid var(--line) !important;
+            box-shadow: none !important;
+            padding: var(--space-sm) var(--space-md) !important;
+        }
+
+        /* 2. 기존 Offering Grid 파괴 후 재생산용 리셋 */
+        .mag-row--intro {
+            margin-top: calc(80px + var(--space-lg));
+            border-bottom: 1px solid var(--line);
+            padding-bottom: var(--space-xl);
+        }
+
+        .mag-row--intro .mag-heading {
+            font-size: clamp(2.4rem, 5vw, 4.2rem);
+            letter-spacing: -0.05em;
+            /* 자간을 숨막히게 조임 */
+            line-height: 1.05;
+        }
+
+        /* 3. 새로운 Asymmetrical List 구조 (Editorial Style) */
+        .editorial-list {
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid var(--text);
+            /* 상단 강렬한 경계 */
+            margin-top: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .editorial-item {
+            display: grid;
+            grid-template-columns: 2fr 8fr;
+            padding: var(--space-xl) 0;
+            border-bottom: 1px solid var(--line);
+            align-items: flex-start;
+            transition: background-color 0.8s var(--ease);
+            cursor: pointer;
+        }
+
+        .editorial-item:hover {
+            background-color: var(--bg-dark);
+            /* 명도만 아주 느리게 낮춤 */
+        }
+
+        /* 4. 활자의 긴장감 구성 - 라벨(초박형), 타이틀(비대화) */
+        .ed-meta {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.2em;
+            /* 극도로 넓은 자간 */
+            color: var(--text-faint);
+        }
+
+        .ed-link {
+            display: grid;
+            grid-template-columns: 3.5fr 4.5fr 1fr;
+            align-items: center;
+            text-decoration: none;
+            border-bottom: none;
+        }
+
+        .ed-title {
+            font-family: var(--font-body);
+            font-size: clamp(3rem, 7vw, 4.8rem);
+            /* 화면을 찢고 나올 정도의 거대함 */
+            font-weight: 300;
+            color: var(--text);
+            margin: 0;
+            letter-spacing: -0.04em;
+            transition: transform 0.8s var(--ease);
+            transform-origin: left center;
+        }
+
+        /* 호버 시 묵직한 질량 이동 */
+        .editorial-item:hover .ed-title {
+            transform: translateX(15px);
+        }
+
+        .ed-desc {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin: 0;
+            padding-right: var(--space-md);
+            max-width: 320px;
+            line-height: 1.8;
+            letter-spacing: 0.01em;
+            opacity: 0.7;
+            transition: opacity 0.8s var(--ease);
+        }
+
+        .editorial-item:hover .ed-desc {
+            opacity: 1;
+            /* 호버 시에만 온전한 본질 노출 */
+        }
+
+        .ed-arrow {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--navy);
+            justify-self: end;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.8s var(--ease);
+        }
+
+        .editorial-item:hover .ed-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* 모바일 반응형 파괴 */
+        @media (max-width: 768px) {
+            .editorial-item {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+                padding: var(--space-md) 0;
+            }
+
+            .ed-link {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+
+            .ed-desc {
+                max-width: 100%;
+                margin-top: var(--space-sm);
+            }
+
+            .ed-arrow {
+                display: none;
+                /* 방해 전파 제거 */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Solid Navigation (글래스모피즘 폐기) -->
+    <nav class="scrolled">
+        <a href="/" class="nav-logo">
+            <img src="../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+        </a>
+        <ul class="nav-links">
+            <li><a href="../archive/">Archive</a></li>
+            <li><a href="prototype-offering.html" class="active">Offering</a></li>
+            <li><a href="../about.html">About</a></li>
+            <li><a href="../contact.html">Contact</a></li>
+            <li><a href="../lab/">Lab</a></li>
+        </ul>
+        <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
+    </nav>
+
+    <main class="container--wide">
+
+        <!-- 인트로 (기존 대비 자간/행간 타격감 상승) -->
+        <div class="mag-row mag-row--intro fade-in">
+            <div class="mag-label">
+                <p class="section-label">Offering</p>
+                <p class="mag-heading">같은 철학의 다른 형태들.</p>
+            </div>
+            <div class="mag-body">
+                <p class="lead">하나의 철학에서 출발한 네 가지 방식입니다.</p>
+                <p>헤어를 설계하고, 기준을 전수하고, 작업을 함께 하고, 일상을 위한 것들을 고릅니다. 형태는 달라도 질문은 하나입니다.</p>
+            </div>
+        </div>
+
+        <!-- 변태적인 Editorial List (Asymmetrical Grid) -->
+        <div class="editorial-list fade-in">
+
+            <!-- 001 Atelier -->
+            <div class="editorial-item" onclick="location.href='../offering/atelier.html'">
+                <div class="ed-meta">
+                    <span class="ed-num">001</span>
+                    <span class="ed-label">FOR INDIVIDUAL</span>
+                </div>
+                <div class="ed-link">
+                    <h3 class="ed-title">Atelier</h3>
+                    <p class="ed-desc">헤어. 구조를 먼저 읽고 그 사람에게 맞는 형태를 설계합니다.</p>
+                    <span class="ed-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- 002 Consulting -->
+            <div class="editorial-item" onclick="location.href='../offering/consulting.html'">
+                <div class="ed-meta">
+                    <span class="ed-num">002</span>
+                    <span class="ed-label">FOR SYSTEM</span>
+                </div>
+                <div class="ed-link">
+                    <h3 class="ed-title">Consulting</h3>
+                    <p class="ed-desc">브랜드, 교육, 협업. 방향이 맞는 경우에만 함께합니다.</p>
+                    <span class="ed-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- 003 Project -->
+            <div class="editorial-item" onclick="location.href='../offering/project.html'">
+                <div class="ed-meta">
+                    <span class="ed-num">003</span>
+                    <span class="ed-label">FOR PROJECT</span>
+                </div>
+                <div class="ed-link">
+                    <h3 class="ed-title">Project</h3>
+                    <p class="ed-desc">모델 작업, 에디토리얼, 협업. 방향성이 맞는 프로젝트에 한합니다.</p>
+                    <span class="ed-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- 004 Shop -->
+            <div class="editorial-item" onclick="location.href='../offering/shop.html'">
+                <div class="ed-meta">
+                    <span class="ed-num">004</span>
+                    <span class="ed-label">FOR DAILY</span>
+                </div>
+                <div class="ed-link">
+                    <h3 class="ed-title">Shop</h3>
+                    <p class="ed-desc">직접 써보고, 오래 쓰고, 다시 찾게 된 것들을 고릅니다.</p>
+                    <span class="ed-arrow">→</span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="section--light">
+        <!-- Footer 내용 간소화 처리 (원본 유지) -->
+        <div class="container--wide">
+            <p
+                style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); margin-bottom: var(--space-xl);">
+                WOOHWAHAE PROTOTYPE</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

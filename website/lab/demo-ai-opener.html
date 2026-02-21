@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Cinematic Opener — Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        :root {
+            /* 이미지 무드에 맞춘 딥 브라운/머드 레드 톤 */
+            --opener-bg: #1A1212;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--opener-bg);
+            overflow: hidden;
+            font-family: var(--font-body);
+        }
+
+        /* 1. Cinematic Video Layer */
+        .opener-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: #000;
+        }
+
+        .opener-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 2s var(--ease);
+        }
+
+        .opener-video.playing {
+            opacity: 1;
+        }
+
+        /* Ambient darken for readability */
+        .opener-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.4) 100%);
+            z-index: 105;
+        }
+
+        /* 2. Typographic Overlay */
+        .opener-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 110;
+            text-align: center;
+            width: 100%;
+            padding: 0 var(--space-lg);
+            pointer-events: none;
+        }
+
+        .opener-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: var(--space-md);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 1.5s var(--ease) 1s;
+        }
+
+        .opener-title {
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 8vw, 6.5rem);
+            font-style: italic;
+            font-weight: 300;
+            color: #fff;
+            margin: 0;
+            opacity: 0;
+            filter: blur(10px);
+            /* 번지는 듯한 효과 추가 */
+            transform: scale(0.92);
+            transition: all 2.5s cubic-bezier(0.16, 1, 0.3, 1) 1.5s;
+        }
+
+        .cinematic-active .opener-title {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+        }
+
+        /* 3. Exit / Call to Action */
+        .opener-nav {
+            position: absolute;
+            bottom: var(--space-xl);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 120;
+            opacity: 0;
+            transition: opacity 1s var(--ease) 3s;
+        }
+
+        .btn-enter {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 16px 40px;
+            transition: all 0.5s var(--ease);
+            background: transparent;
+        }
+
+        .btn-enter:hover {
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cinematic-active .opener-nav {
+            opacity: 1;
+        }
+
+        /* Scanline Texture for 'Artificial' look */
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 106;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="opener-container" id="opener">
+        <div class="opener-overlay"></div>
+        <div class="scanline"></div>
+
+        <!-- AI Generated MP4 Source -->
+        <!-- Replace 'src' with your actual generated AI video url -->
+        <video class="opener-video" id="video-source" playsinline muted loop>
+            <source src="https://player.vimeo.com/external/494252666.hd.mp4?s=23186ca1c4e9E9bE5677b2496a75f56477"
+                type="video/mp4">
+        </video>
+
+        <div class="opener-content" id="content-wrap">
+            <p class="opener-label">AI Generated Vision</p>
+            <h1 class="opener-title">WOOHWAHAE</h1>
+        </div>
+
+        <div class="opener-nav">
+            <a href="index.html" class="btn-enter">Enter Platform</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('video-source');
+            const container = document.getElementById('opener');
+
+            // Video can play
+            video.addEventListener('canplaythrough', () => {
+                video.classList.add('playing');
+                video.play();
+                container.classList.add('cinematic-active');
+            });
+
+            // Fallback for slower networks
+            setTimeout(() => {
+                if (!video.classList.contains('playing')) {
+                    video.classList.add('playing');
+                    container.classList.add('cinematic-active');
+                }
+            }, 4000);
+        });
+    </script>
+</body>
+
+</html>

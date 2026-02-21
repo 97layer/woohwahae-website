@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{issue}} — {{title}}. {{preview}}">
+  <meta property="og:title" content="{{issue}}: {{title}} — WOOHWAHAE Archive">
+  <meta property="og:description" content="{{preview}}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://woohwahae.kr/archive/{{slug}}/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
+  <title>{{issue}}: {{title}} — WOOHWAHAE Archive</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#FAFAF7">
+  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=ssg_v1">
+  <script src="../../assets/js/analytics.js" defer></script>
+  <style>
+    .article-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: calc(80px + 2rem) 1.5rem 0;
+    }
+    .article-header {
+      border-top: 1px solid #1a1a1a;
+      padding-top: 1.2rem;
+      margin-bottom: 0;
+    }
+    .article-back-row { margin-bottom: 1.4rem; }
+    .article-back {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      text-decoration: none;
+    }
+    .article-back:hover { color: #1a1a1a; }
+    .article-header-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 0 2.4rem;
+      align-items: start;
+    }
+    .article-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      padding-top: 0.2rem;
+    }
+    .article-issue-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      line-height: 1.8;
+    }
+    .article-issue-label strong {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: #555;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.1rem;
+    }
+    .article-header-right {
+      display: flex;
+      flex-direction: column;
+    }
+    .article-category-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #888;
+      border: 1px solid #ccc;
+      padding: 0.2em 0.6em;
+      align-self: flex-start;
+      margin-bottom: 1.2rem;
+    }
+    .article-title {
+      font-family: 'Pretendard', sans-serif;
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      font-weight: 300;
+      font-style: normal;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: #1a1a1a;
+      margin: 0 0 1.4rem;
+    }
+    .article-subtitle {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: #666;
+      line-height: 1.75;
+      border-left: 2px solid #1a1a1a;
+      padding-left: 1rem;
+      margin: 0;
+    }
+    .article-header-divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 1.8rem 0 0;
+    }
+    .article-body {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+    .article-body p {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.95;
+      color: #2a2a2a;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    .article-body blockquote {
+      margin: 0;
+      padding: 1.2rem 1.4rem;
+      border-left: 2px solid #1a1a1a;
+      background: #f2f0eb;
+      font-family: 'Pretendard', sans-serif;
+      font-style: normal;
+      font-size: 0.95rem;
+      font-weight: 400;
+      line-height: 1.8;
+      color: #1a1a1a;
+    }
+    .viz-line-draw { padding: 0.2rem 0; margin: 0; color: #bbb; }
+    .article-outro { margin-top: 3rem; padding-bottom: 3rem; }
+    .article-outro-rule { height: 1px; background: #1a1a1a; margin-bottom: 1.2rem; }
+    .article-outro-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .article-outro-nav { display: flex; justify-content: space-between; }
+    .article-nav-prev, .article-nav-archive {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #888;
+      text-decoration: none;
+    }
+    .article-nav-prev:hover, .article-nav-archive:hover { color: #1a1a1a; }
+    @media (max-width: 580px) {
+      .article-header-grid { grid-template-columns: 1fr; gap: 1.6rem 0; }
+      .article-header-left { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 1.2rem; }
+      .article-title { font-size: clamp(1.8rem, 8vw, 2.6rem); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../archive/" class="active">Archive</a></li>
+      <li><a href="../../offering.html">Offering</a></li>
+      <li><a href="../../about.html">About</a></li>
+      <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../lab/">Lab</a></li>
+    </ul>
+    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="article-container">
+
+    <header class="article-header">
+
+      <div class="article-back-row fade-in">
+        <a href="../../archive/" class="article-back">← Archive</a>
+      </div>
+
+      <div class="article-header-grid">
+
+        <div class="article-header-left fade-in">
+          <div class="article-issue-label">
+            <strong>{{issue}}</strong>
+            {{date}}<br>
+            <span id="read-time"></span>
+          </div>
+        </div>
+
+        <div class="article-header-right fade-in">
+          <span class="article-category-tag">{{category}}</span>
+          <h1 class="article-title">{{title}}</h1>
+          <p class="article-subtitle">{{preview}}</p>
+        </div>
+
+      </div>
+
+      <div class="article-header-divider fade-in"></div>
+
+    </header>
+
+    <div class="article-body" id="article-content">
+{{content}}
+    </div>
+
+    <div class="article-outro fade-in">
+      <div class="article-outro-rule"></div>
+      <div class="article-outro-meta">
+        <span class="article-outro-issue">{{issue}}</span>
+        <span class="article-outro-date">{{date}}</span>
+      </div>
+      <div class="article-outro-nav">
+        {{prev_link}}
+        <a href="../../archive/" class="article-nav-archive">Archive ↑</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="section--light">
+    <div class="footer-inner">
+      <div class="footer-brand-row">
+        <p class="footer-brand-name">WOOHWAHAE</p>
+      </div>
+      <div class="footer-nav-row">
+        <a href="../../archive/">Archive</a>
+        <a href="../../offering.html">Offering</a>
+        <a href="../../about.html">About</a>
+        <a href="../../contact.html">Contact</a>
+        <a href="../../lab/">Lab</a>
+      </div>
+      <div class="footer-connect-row">
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
+        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
+        <a href="mailto:hello@woohwahae.kr">Email</a>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="../../privacy.html">Privacy</a>
+          <a href="../../terms.html">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+  <script>
+    // Gate 진입 시 fade-in 즉시 표시
+    (function () {
+      if (new URLSearchParams(window.location.search).get('from') === 'gate') {
+        document.querySelectorAll('.fade-in, .fade-in-slow').forEach(function (el) {
+          el.classList.add('visible');
+        });
+        history.replaceState(null, '', window.location.pathname);
+      }
+    })();
+
+    // 읽기시간
+    (function () {
+      var content = document.getElementById('article-content');
+      var rt = document.getElementById('read-time');
+      if (!content || !rt) return;
+      var words = content.innerText.trim().split(/\s+/).length;
+      var mins = Math.max(1, Math.round(words / 200));
+      rt.textContent = mins + 'min read';
+    })();
+
+    // SVG 라인 드로잉
+    (function () {
+      var path = document.querySelector('.line-path');
+      if (!path) return;
+      var len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = len;
+      var fired = false;
+      var obs = new IntersectionObserver(function (entries) {
+        if (fired || !entries[0].isIntersecting) return;
+        fired = true;
+        path.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        path.style.strokeDashoffset = '0';
+      }, { threshold: 0.5 });
+      obs.observe(path.closest('.viz-line-draw'));
+    })();
+  </script>
+</body>
+
+</html>

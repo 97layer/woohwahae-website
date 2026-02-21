@@ -4,100 +4,201 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WOOHWAHAE Archive — 생각의 기록. 슬로우 라이프의 에세이와 실천.">
+  <meta name="description" content="Archive — WOOHWAHAE. 인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.">
+  <meta property="og:title" content="Archive — WOOHWAHAE">
+  <meta property="og:description" content="인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://woohwahae.kr/archive/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>Archive — WOOHWAHAE</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#FAFAF7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-  <link rel="icon" href="../assets/img/symbol.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="preload" href="../assets/css/style.css?v=breath_v1" as="style">
+  <link rel="stylesheet" href="../assets/css/style.css?v=breath_v1">
+  <script src="../assets/js/analytics.js" defer></script>
 </head>
 
 <body>
 
+  <!-- Breath Gate -->
+  <div id="breath-gate" aria-hidden="true">
+    <!-- 텍스트 레이어 -->
+    <div id="bg-text-layer">
+      <p class="bg-issue"></p>
+      <p class="bg-title"></p>
+      <p class="bg-time"></p>
+    </div>
+    <!-- 도트 해체 캔버스 -->
+    <canvas id="bg-canvas"></canvas>
+  </div>
+
+  <style>
+    #breath-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    #breath-gate.active {
+      pointer-events: all;
+      visibility: visible;
+    }
+    /* 도트 캔버스 — 전체 덮음 */
+    #bg-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* 텍스트 레이어 — 캔버스 위 */
+    #bg-text-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.9rem;
+      z-index: 1;
+    }
+    .bg-issue, .bg-title, .bg-time {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    #breath-gate.active .bg-issue {
+      opacity: 1; transform: translateY(0); transition-delay: 0.1s;
+    }
+    #breath-gate.active .bg-title {
+      opacity: 1; transform: translateY(0); transition-delay: 0.24s;
+    }
+    #breath-gate.active .bg-time {
+      opacity: 1; transform: translateY(0); transition-delay: 0.4s;
+    }
+    /* 해체 시 텍스트도 같이 사라짐 */
+    #breath-gate.leaving .bg-issue,
+    #breath-gate.leaving .bg-title,
+    #breath-gate.leaving .bg-time {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      transition-delay: 0s !important;
+    }
+    .bg-issue {
+      font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-faint, #8E8E88);
+      margin: 0;
+    }
+    .bg-title {
+      font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      font-weight: 200;
+      letter-spacing: -0.025em;
+      color: var(--text, #2C2C2C);
+      margin: 0;
+      line-height: 1.2;
+    }
+    .bg-time {
+      font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+      font-size: 0.56rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint, #8E8E88);
+      margin: 0;
+      margin-top: 0.2rem;
+    }
+  </style>
+
   <nav>
     <a href="/" class="nav-logo">
-      <img src="../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
+      <img src="../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
       <li><a href="../archive/" class="active">Archive</a></li>
-      <li><a href="../service.html">Service</a></li>
+      <li><a href="../offering.html">Offering</a></li>
       <li><a href="../about.html">About</a></li>
       <li><a href="../contact.html">Contact</a></li>
+      <li><a href="../lab/">Lab</a></li>
     </ul>
+    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
 
-  <!-- Archive Header -->
-  <div class="container--wide">
-    <header class="archive-header">
-      <h1 class="archive-title fade-in">Archive</h1>
-      <p class="archive-subtitle fade-in">생각의 기록.</p>
-    </header>
-  </div>
+  <main class="container--wide">
 
-  <!-- Archive Controls -->
-  <div class="container--wide">
-    <div class="archive-controls">
-      <input type="text" class="archive-search" id="archive-search" placeholder="Search..." aria-label="검색">
-      <div class="archive-filters" id="archive-filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="essay">Essay</button>
-        <button class="filter-btn" data-filter="practice">Practice</button>
-        <button class="filter-btn" data-filter="manifesto">Manifesto</button>
+    <!-- Archive Header -->
+    <div class="archive-header fade-in">
+      <p class="section-label">Archive</p>
+      <div class="archive-stats">
+        <span id="stat-entries">—</span>
+        <span class="archive-stat-divider">·</span>
+        <span id="stat-categories">—</span>
+        <span class="archive-stat-divider">·</span>
+        <span id="stat-since">—</span>
       </div>
+      <div class="archive-timeline" id="archive-timeline"></div>
+      <p class="archive-tagline">인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.</p>
     </div>
-    <p class="archive-count" id="archive-count"></p>
-  </div>
 
-  <!-- Archive Grid (Magazine B 스타일) -->
-  <div class="container--wide">
-    <div class="archive-grid" id="archive-grid"></div>
-    <p class="archive-empty" id="archive-empty" style="display:none;">검색 결과가 없습니다.</p>
-  </div>
+    <!-- Filter + Grid -->
+    <div class="archive-section">
+      <div class="archive-filter-bar" id="archive-filters">
+        <button class="archive-filter active" data-filter="all">All</button>
+        <button class="archive-filter" data-filter="essay">Essay</button>
+        <button class="archive-filter" data-filter="journal">Journal</button>
+        <button class="archive-filter" data-filter="lab">Lab</button>
+      </div>
+      <p class="archive-count" id="archive-count"></p>
+      <div class="archive-grid" id="archive-grid"></div>
+      <p id="archive-empty" class="archive-empty">해당하는 기록이 없습니다.</p>
+    </div>
 
-  <!-- Footer -->
+  </main>
+
   <footer class="section--light">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <img src="../assets/img/symbol.jpg" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
+    <div class="footer-inner">
+      <div class="footer-brand-row">
         <p class="footer-brand-name">WOOHWAHAE</p>
-        <p class="footer-brand-desc">Archive for Slow Life</p>
       </div>
-      <div>
-        <p class="footer-nav-title">Navigate</p>
-        <ul class="footer-nav-list">
-          <li><a href="../archive/">Archive</a></li>
-          <li><a href="../service.html">Service</a></li>
-          <li><a href="../about.html">About</a></li>
-          <li><a href="../contact.html">Contact</a></li>
-        </ul>
+      <div class="footer-nav-row">
+        <a href="../archive/">Archive</a>
+        <a href="../offering.html">Offering</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../lab/">Lab</a>
       </div>
-      <div>
-        <p class="footer-connect-title">Connect</p>
-        <ul class="footer-connect-list">
-          <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
-              target="_blank" rel="noopener">Booking</a></li>
-          <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
-        </ul>
+      <div class="footer-connect-row">
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
+        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
+        <a href="mailto:hello@woohwahae.kr">Email</a>
       </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Archive for Slow Life</p>
+      <div class="footer-bottom">
+        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="../privacy.html">Privacy</a>
+          <a href="../terms.html">Terms</a>
+        </div>
+      </div>
     </div>
   </footer>
 
   <script src="../assets/js/main.js"></script>
   <script>
-    /* Archive 페이지 — index.json에서 동적 렌더링 */
     (function () {
       const grid = document.getElementById('archive-grid');
       const emptyMsg = document.getElementById('archive-empty');
       const countEl = document.getElementById('archive-count');
-      const searchInput = document.getElementById('archive-search');
       const filtersEl = document.getElementById('archive-filters');
 
       let posts = [];
@@ -107,6 +208,8 @@
         .then(r => r.json())
         .then(data => {
           posts = data;
+          renderStats(data);
+          renderTimeline(data);
           render();
           bindEvents();
         })
@@ -114,25 +217,51 @@
           grid.innerHTML = '<p class="archive-empty">아카이브를 불러오지 못했습니다.</p>';
         });
 
+      function renderStats(data) {
+        const entries = data.length + 1;
+        const cats = [...new Set(data.map(p => p.category))];
+        cats.push('Lab');
+        const dates = data.map(p => p.date).sort();
+        const since = dates[0] || '—';
+        document.getElementById('stat-entries').textContent = entries + ' entries';
+        document.getElementById('stat-categories').textContent = cats.length + ' categories';
+        document.getElementById('stat-since').textContent = 'since ' + since;
+      }
+
+      function renderTimeline(data) {
+        const el = document.getElementById('archive-timeline');
+        const total = data.length + 1;
+        let dots = '';
+        for (let i = 0; i < total; i++) dots += '<span class="timeline-dot filled"></span>';
+        for (let i = 0; i < 3; i++) dots += '<span class="timeline-dot empty"></span>';
+        el.innerHTML = dots;
+      }
+
+      const LAB_CARD = {
+        slug: null,
+        href: '../lab/',
+        title: 'Lab',
+        issue: 'Ongoing',
+        category: 'Lab',
+        preview: '웹 렌더링, 커트 아키텍처, 플랫폼 구축. 만들어가는 과정의 기록.'
+      };
+
       function render() {
-        const query = (searchInput.value || '').toLowerCase();
-        const filtered = posts.filter(p => {
-          const matchFilter = activeFilter === 'all' || p.category.toLowerCase() === activeFilter;
-          const matchSearch = !query ||
-            p.title.toLowerCase().includes(query) ||
-            p.preview.toLowerCase().includes(query) ||
-            (p.issue || '').toLowerCase().includes(query);
-          return matchFilter && matchSearch;
-        });
+        const showLab = activeFilter === 'all' || activeFilter === 'lab';
+        const filtered = posts.filter(p =>
+          activeFilter === 'all' || p.category.toLowerCase() === activeFilter
+        );
 
         grid.innerHTML = '';
 
-        if (filtered.length === 0) {
+        const totalCount = filtered.length + (showLab ? 1 : 0);
+
+        if (totalCount === 0) {
           emptyMsg.style.display = 'block';
           countEl.textContent = '';
         } else {
           emptyMsg.style.display = 'none';
-          countEl.textContent = filtered.length + ' issues';
+          countEl.textContent = totalCount + ' issues';
         }
 
         filtered.forEach(post => {
@@ -150,10 +279,127 @@
             <h3 class="archive-card-title">${post.title}</h3>
             <p class="archive-card-preview">${post.preview}</p>
           `;
+
+          // Breath Gate — 도트 해체 전환
+          card.addEventListener('click', function (e) {
+            e.preventDefault();
+            var dest = card.href + '?from=gate';
+            var gate = document.getElementById('breath-gate');
+            var canvas = document.getElementById('bg-canvas');
+            var ctx = canvas.getContext('2d');
+            var readMins = post.readMin || Math.max(1, Math.round((post.preview || '').length / 80));
+
+            // 텍스트 세팅 + 초기화
+            gate.querySelector('.bg-issue').textContent = post.issue;
+            gate.querySelector('.bg-title').textContent = post.title;
+            gate.querySelector('.bg-time').textContent = readMins + ' min read';
+            gate.classList.remove('active', 'leaving');
+
+            // 캔버스 사이즈
+            var W = canvas.width  = window.innerWidth;
+            var H = canvas.height = window.innerHeight;
+
+            // 도트 설정
+            var DOT = 9;          // 도트 크기(px)
+            var GAP = 1;          // 간격
+            var STEP = DOT + GAP;
+            var COLS = Math.ceil(W / STEP) + 1;
+            var ROWS = Math.ceil(H / STEP) + 1;
+            var TOTAL = COLS * ROWS;
+
+            // 배경색 읽기
+            var bg = getComputedStyle(document.documentElement)
+                       .getPropertyValue('--bg').trim() || '#FAFAF7';
+
+            // 도트 전체 즉시 그리기 (화면 덮음)
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = bg;
+            for (var r = 0; r < ROWS; r++) {
+              for (var c = 0; c < COLS; c++) {
+                ctx.beginPath();
+                ctx.arc(
+                  c * STEP + DOT / 2,
+                  r * STEP + DOT / 2,
+                  DOT / 2, 0, Math.PI * 2
+                );
+                ctx.fill();
+              }
+            }
+
+            // gate 보이기 + 텍스트 등장
+            gate.classList.add('active');
+
+            // 인덱스 섞기 (랜덤 해체 순서)
+            var indices = Array.from({length: TOTAL}, function(_, i) { return i; });
+            for (var i = indices.length - 1; i > 0; i--) {
+              var j = Math.floor(Math.random() * (i + 1));
+              var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
+            }
+
+            // 텍스트 등장 후(~0.85s) + 유지(0.65s) → 도트 해체 시작
+            setTimeout(function () {
+              gate.classList.add('leaving'); // 텍스트 페이드
+
+              var DURATION = 600;  // 해체 총 시간(ms)
+              var start = null;
+
+              function dissolve(ts) {
+                if (!start) start = ts;
+                var elapsed = ts - start;
+                var progress = Math.min(elapsed / DURATION, 1);
+
+                // 이번 프레임까지 지워야 할 도트 수
+                var target = Math.floor(progress * TOTAL);
+                ctx.clearRect(0, 0, W, H);
+
+                // 아직 살아있는 도트만 다시 그림
+                ctx.fillStyle = bg;
+                for (var k = target; k < TOTAL; k++) {
+                  var idx = indices[k];
+                  var col = idx % COLS;
+                  var row = Math.floor(idx / COLS);
+                  ctx.beginPath();
+                  ctx.arc(
+                    col * STEP + DOT / 2,
+                    row * STEP + DOT / 2,
+                    DOT / 2, 0, Math.PI * 2
+                  );
+                  ctx.fill();
+                }
+
+                if (progress < 1) {
+                  requestAnimationFrame(dissolve);
+                } else {
+                  // 해체 완료 → 이동
+                  window.location.href = dest;
+                }
+              }
+
+              requestAnimationFrame(dissolve);
+            }, 1500);
+          });
+
           grid.appendChild(card);
         });
 
-        /* fade-in 등록 */
+        if (showLab) {
+          const labCard = document.createElement('a');
+          labCard.href = LAB_CARD.href;
+          labCard.className = 'archive-card fade-in';
+          labCard.innerHTML = `
+            <div class="archive-card-image">
+              <div style="width:100%;height:100%;background:var(--bg-dark);"></div>
+            </div>
+            <div class="archive-card-meta">
+              <span>${LAB_CARD.issue}</span>
+              <span>${LAB_CARD.category}</span>
+            </div>
+            <h3 class="archive-card-title">${LAB_CARD.title}</h3>
+            <p class="archive-card-preview">${LAB_CARD.preview}</p>
+          `;
+          grid.appendChild(labCard);
+        }
+
         grid.querySelectorAll('.fade-in').forEach(el => {
           const obs = new IntersectionObserver(([e]) => {
             if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
@@ -164,22 +410,15 @@
 
       function bindEvents() {
         filtersEl.addEventListener('click', e => {
-          if (!e.target.classList.contains('filter-btn')) return;
-          filtersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          if (!e.target.classList.contains('archive-filter')) return;
+          filtersEl.querySelectorAll('.archive-filter').forEach(b => b.classList.remove('active'));
           e.target.classList.add('active');
           activeFilter = e.target.dataset.filter;
           render();
         });
-
-        let debounce;
-        searchInput.addEventListener('input', () => {
-          clearTimeout(debounce);
-          debounce = setTimeout(render, 200);
-        });
       }
     })();
   </script>
-
 </body>
 
 </html>

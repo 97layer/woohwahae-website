@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exp.010 — Cut Diagram · WOOHWAHAE Lab</title>
+  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #E8E6E1;
+      --text: #2C2C2C;
+      --text-faint: #8E8E88;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap');
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      overflow: hidden;
+    }
+    /* 필름 그레인 */
+    body::after {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+    }
+    #canvas-container { position: fixed; inset: 0; z-index: 1; }
+
+    /* UI */
+    .ui-back {
+      position: fixed; top: 1.5rem; left: 1.5rem;
+      font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-faint); text-decoration: none;
+      transition: color 0.2s; z-index: 10;
+    }
+    .ui-back:hover { color: var(--text); }
+    .ui-label {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      font-size: 0.68rem; letter-spacing: 0.06em; color: var(--text-faint);
+      z-index: 10;
+    }
+
+    /* 레전드 */
+    .legend {
+      position: fixed; bottom: 2rem; left: 2rem;
+      font-size: 0.60rem; color: var(--text-faint);
+      z-index: 10; letter-spacing: 0.05em; line-height: 2.0;
+    }
+    .legend-item { display: flex; align-items: center; }
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      margin-right: 10px; flex-shrink: 0;
+    }
+    .legend-dash {
+      width: 14px; height: 1px;
+      margin-right: 10px; flex-shrink: 0;
+    }
+
+    /* 우하단 기술 메모 */
+    .ui-angle {
+      position: fixed; bottom: 2rem; right: 1.5rem;
+      font-size: 0.60rem; color: var(--text-faint);
+      z-index: 10; letter-spacing: 0.05em;
+      text-align: right; line-height: 2.0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      canvas { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="./" class="ui-back">← Lab</a>
+  <div class="ui-label">Exp.010 / Cut Diagram</div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#2C2C2C;opacity:.55"></div>
+      Section Lines
+    </div>
+    <div class="legend-item">
+      <div class="legend-dash" style="background:#4A90E2"></div>
+      Guide Line · 0° Horizontal
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#E85A4F"></div>
+      Weight Line · Length Markers
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#2C2C2C;opacity:.22"></div>
+      Distribution Lines
+    </div>
+  </div>
+
+  <div class="ui-angle">
+    Solid Bob · One-Length<br>
+    0° — Natural Distribution<br>
+    마우스로 시점 변경
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    // ── 렌더러 ──
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, precision: 'highp' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setClearColor(0xE8E6E1, 1);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
+    camera.position.set(0, 0.2, 6.8);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    // ── 조명 ──
+    scene.add(new THREE.AmbientLight(0xE8E6E1, 1.0));
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(2, 4, 4); scene.add(keyLight);
+    const fillLight = new THREE.DirectionalLight(0xdde8f0, 0.8);
+    fillLight.position.set(-3, -1, 2); scene.add(fillLight);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    rimLight.position.set(0, -3, -4); scene.add(rimLight);
+
+    // ── root 그룹 ──
+    const root = new THREE.Group();
+    scene.add(root);
+
+    // ── 두상 스케일 상수 ──
+    const SX = 1.0, SY = 1.28, SZ = 1.05;
+    const HEAD_R = 1.0;
+
+    // ── roughen 함수 (from demo-keyframe-3d) ──
+    function roughen(geo, amount) {
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const nx = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+        const ny = Math.sin(i * 269.5 + 183.3) * 43758.5453;
+        const nz = Math.sin(i * 419.2 + 631.4) * 43758.5453;
+        pos.setX(i, pos.getX(i) + (nx - Math.floor(nx) - 0.5) * amount);
+        pos.setY(i, pos.getY(i) + (ny - Math.floor(ny) - 0.5) * amount);
+        pos.setZ(i, pos.getZ(i) + (nz - Math.floor(nz) - 0.5) * amount);
+      }
+      pos.needsUpdate = true;
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    // ── 두상 표면 좌표 헬퍼 ──
+    // Three.js SphereGeometry 좌표계: phi=0 → 북극(+y), phi=π → 남극(-y)
+    // theta=0 → +x 방향, theta=π/2 → +z (앞면 기준), theta=π → -x
+    function headPt(phi, theta, dr = 0.014) {
+      const r = HEAD_R + dr;
+      return new THREE.Vector3(
+        r * Math.sin(phi) * Math.cos(theta) * SX,
+        r * Math.cos(phi)                   * SY,
+        r * Math.sin(phi) * Math.sin(theta) * SZ
+      );
+    }
+
+    // ── 선 생성 헬퍼 ──
+    function makeLine(pts, color, opacity, dashed = false, dashSize = 0.08, gapSize = 0.05) {
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color, dashSize, gapSize, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      return line;
+    }
+
+    // ============================================================
+    // A. 두상 (Head Form)
+    // ============================================================
+    const headGeo = new THREE.SphereGeometry(HEAD_R, 64, 64);
+    headGeo.applyMatrix4(new THREE.Matrix4().makeScale(SX, SY, SZ));
+    roughen(headGeo, 0.008);
+    const headMesh = new THREE.Mesh(headGeo, new THREE.MeshStandardMaterial({
+      color: 0xDEDAD4, roughness: 0.82, metalness: 0.02,
+      transparent: true, opacity: 0.78,
+    }));
+    root.add(headMesh);
+
+    // ============================================================
+    // B. 헤어 볼륨 (Bob Hair Volume)
+    // ============================================================
+    // phi 0→π*0.72 = 상단 72% 구체 (반구형 캡)
+    const hairGeo = new THREE.SphereGeometry(1.08, 48, 48, 0, Math.PI * 2, 0, Math.PI * 0.72);
+    hairGeo.applyMatrix4(new THREE.Matrix4().makeScale(SX, SY, SZ));
+
+    const hairMesh = new THREE.Mesh(hairGeo, new THREE.MeshStandardMaterial({
+      color: 0x3a3530, roughness: 0.92, transparent: true, opacity: 0.15,
+      side: THREE.DoubleSide,
+    }));
+    hairMesh.position.y = -0.10;
+    root.add(hairMesh);
+
+    const hairWire = new THREE.Mesh(hairGeo.clone(), new THREE.MeshBasicMaterial({
+      color: 0x2C2C2C, wireframe: true, transparent: true, opacity: 0.07,
+    }));
+    hairWire.position.y = -0.10;
+    root.add(hairWire);
+
+    // ============================================================
+    // C. 섹션 라인
+    // ============================================================
+    const SEC_COLOR = 0x2C2C2C;
+    const SEC_OP = 0.52;
+    const N = 96; // 선 분할 수
+
+    // C1. 크레스트 라인 — 두상 상단부 수평 원형 경계
+    //     phi ≈ π*0.38 (두개골 최대 폭 근처)
+    (function() {
+      const phi = Math.PI * 0.38;
+      const pts = [];
+      for (let i = 0; i <= N; i++) {
+        const theta = (i / N) * Math.PI * 2;
+        pts.push(headPt(phi, theta, 0.014));
+      }
+      root.add(makeLine(pts, SEC_COLOR, SEC_OP));
+    })();
+
+    // C2. 센터 파팅 전면 — 정수리(phi=0)에서 이마까지
+    //     theta=3π/2 방향 (= -z, 앞면)
+    (function() {
+      const theta = Math.PI * 1.5; // 정면 방향
+      const pts = [];
+      for (let i = 0; i <= 48; i++) {
+        const phi = (i / 48) * Math.PI * 0.44;
+        pts.push(headPt(phi, theta, 0.014));
+      }
+      root.add(makeLine(pts, SEC_COLOR, SEC_OP * 0.85));
+    })();
+
+    // C3. 센터 파팅 후면 — 정수리에서 뒤통수 아래까지
+    //     theta=π/2 방향 (= +z, 뒷면)
+    (function() {
+      const theta = Math.PI * 0.5; // 뒷면 방향
+      const pts = [];
+      for (let i = 0; i <= 48; i++) {
+        const phi = (i / 48) * Math.PI * 0.58;
+        pts.push(headPt(phi, theta, 0.014));
+      }
+      root.add(makeLine(pts, SEC_COLOR, SEC_OP * 0.85));
+    })();
+
+    // C4. 측두부 파팅 (좌) — 크레스트에서 귀 레벨까지
+    //     theta=0 방향 (= +x, 좌측)
+    (function() {
+      const pts = [];
+      for (let i = 0; i <= 36; i++) {
+        const phi = Math.PI * 0.38 + (i / 36) * (Math.PI * 0.62 - Math.PI * 0.38);
+        pts.push(headPt(phi, 0, 0.014));
+      }
+      root.add(makeLine(pts, SEC_COLOR, SEC_OP));
+    })();
+
+    // C5. 측두부 파팅 (우) — x 반전
+    (function() {
+      const pts = [];
+      for (let i = 0; i <= 36; i++) {
+        const phi = Math.PI * 0.38 + (i / 36) * (Math.PI * 0.62 - Math.PI * 0.38);
+        const p = headPt(phi, 0, 0.014);
+        pts.push(new THREE.Vector3(-p.x, p.y, p.z));
+      }
+      root.add(makeLine(pts, SEC_COLOR, SEC_OP));
+    })();
+
+    // C6. 네이프 라인 — 뒷목 하단 경계 (뒷면 범위)
+    //     phi ≈ π*0.78, theta π*0.12 → π*0.88
+    (function() {
+      const phi = Math.PI * 0.78;
+      const pts = [];
+      for (let i = 0; i <= 56; i++) {
+        const theta = Math.PI * 0.12 + (i / 56) * (Math.PI * 0.88 - Math.PI * 0.12);
+        pts.push(headPt(phi, theta, 0.014));
+      }
+      root.add(makeLine(pts, SEC_COLOR, SEC_OP));
+    })();
+
+    // ============================================================
+    // D. 가이드라인 (Guide Line) — 솔리드 밥 수평 기준선
+    // ============================================================
+    // y = -0.55*SY 레벨 수평 원
+    // phi 역산: cos(phi) = -0.55 → phi = acos(-0.55/SY)
+    (function() {
+      const targetY = -0.55;
+      const phi = Math.acos(targetY / SY); // ≈ 2.02 rad
+      const pts = [];
+      for (let i = 0; i <= 120; i++) {
+        const theta = (i / 120) * Math.PI * 2;
+        pts.push(headPt(phi, theta, 0.016));
+      }
+      pts.push(pts[0].clone()); // 닫기
+      root.add(makeLine(pts, 0x4A90E2, 0.88, true, 0.09, 0.055));
+    })();
+
+    // ============================================================
+    // E. 분배선 (Distribution Lines) — 뒷통수 수평 평행선 7개
+    // ============================================================
+    (function() {
+      const phiStart = Math.PI * 0.41; // 크레스트 바로 아래
+      const phiEnd   = Math.PI * 0.77; // 네이프 바로 위
+      const count    = 7;
+      for (let k = 0; k < count; k++) {
+        const phi = phiStart + (k / (count - 1)) * (phiEnd - phiStart);
+        const pts = [];
+        // 뒷통수 범위만: theta π*0.08 → π*0.92
+        for (let i = 0; i <= 52; i++) {
+          const theta = Math.PI * 0.08 + (i / 52) * (Math.PI * 0.92 - Math.PI * 0.08);
+          pts.push(headPt(phi, theta, 0.018));
+        }
+        root.add(makeLine(pts, 0x2C2C2C, 0.20));
+      }
+    })();
+
+    // ============================================================
+    // F. 무게선 (Weight Line) — 솔리드 밥 폴 라인
+    // ============================================================
+    (function() {
+      const y = -0.55 * SY; // ≈ -0.704
+      const pts = [];
+      // 두상 외곽 반경 1.10 으로 수평 원
+      for (let i = 0; i <= 72; i++) {
+        const theta = (i / 72) * Math.PI * 2;
+        const x = Math.cos(theta) * 1.10 * SX;
+        const z = Math.sin(theta) * 1.10 * SZ;
+        pts.push(new THREE.Vector3(x, y, z));
+      }
+      pts.push(pts[0].clone());
+      root.add(makeLine(pts, 0xE85A4F, 0.92));
+
+      // 양쪽 마커 (귀 레벨)
+      const markerGeo = new THREE.SphereGeometry(0.042, 16, 16);
+      const markerMat = new THREE.MeshStandardMaterial({
+        color: 0xE85A4F, roughness: 0.5, metalness: 0.05,
+      });
+      [ [1.10 * SX, 0], [-1.10 * SX, 0] ].forEach(([mx, _]) => {
+        const m = new THREE.Mesh(markerGeo, markerMat);
+        m.position.set(mx, y, 0);
+        root.add(m);
+      });
+      // 뒷머리 중앙 마커
+      const mBack = new THREE.Mesh(markerGeo, markerMat);
+      mBack.position.set(0, y, 1.10 * SZ);
+      root.add(mBack);
+    })();
+
+    // ============================================================
+    // G. 커트 각도 표시 (Cutting Angle Arc) — 측면 0° 호
+    // ============================================================
+    (function() {
+      const y = -0.55 * SY;
+      const r = 0.20;
+      const ox = 1.20; // x 오프셋 (두상 오른쪽 바깥)
+      // 반원 호
+      const arcPts = [];
+      for (let i = 0; i <= 32; i++) {
+        const a = (i / 32) * Math.PI; // 0 → π
+        arcPts.push(new THREE.Vector3(ox + Math.cos(a) * r, y, Math.sin(a) * r));
+      }
+      root.add(makeLine(arcPts, 0x2C2C2C, 0.48));
+      // 수평선 (0° 기준선)
+      const hPts = [
+        new THREE.Vector3(ox - r * 0.1, y, 0),
+        new THREE.Vector3(ox + r * 1.1, y, 0),
+      ];
+      root.add(makeLine(hPts, 0x2C2C2C, 0.48));
+    })();
+
+    // ============================================================
+    // H. 목 절단선 (Neck Ring)
+    // ============================================================
+    (function() {
+      const pts = [];
+      for (let i = 0; i <= 64; i++) {
+        const a = (i / 64) * Math.PI * 2;
+        // 목 하단 y ≈ -1.28 (두상 아래 경계)
+        pts.push(new THREE.Vector3(Math.cos(a) * 0.42, -1.26, Math.sin(a) * 0.42));
+      }
+      root.add(makeLine(pts, 0x2C2C2C, 0.28));
+    })();
+
+    // ============================================================
+    // I. 목 실린더 (Neck stub)
+    // ============================================================
+    (function() {
+      const neckGeo = new THREE.CylinderGeometry(0.32, 0.38, 0.45, 32, 1, true);
+      const neckMat = new THREE.MeshStandardMaterial({
+        color: 0xDEDAD4, roughness: 0.85, transparent: true, opacity: 0.60,
+        side: THREE.DoubleSide,
+      });
+      const neck = new THREE.Mesh(neckGeo, neckMat);
+      neck.position.y = -1.48;
+      root.add(neck);
+    })();
+
+    // ── 마우스 ──
+    const mouse  = { x: 0, y: 0 };
+    const smooth = { x: 0, y: 0 };
+    window.addEventListener('mousemove', e => {
+      mouse.x = (e.clientX / innerWidth  - 0.5) * 2;
+      mouse.y = (e.clientY / innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    // ── 페이드인 ──
+    renderer.domElement.style.opacity = '0';
+    renderer.domElement.style.transition = 'opacity 1.4s ease';
+    setTimeout(() => { renderer.domElement.style.opacity = '1'; }, 80);
+
+    // ── 애니메이션 루프 ──
+    const clock = new THREE.Clock();
+    (function animate() {
+      requestAnimationFrame(animate);
+      const dt = clock.getDelta();
+      const t  = clock.getElapsedTime();
+
+      smooth.x += (mouse.x - smooth.x) * 0.04;
+      smooth.y += (mouse.y - smooth.y) * 0.04;
+
+      // 느린 자동 y축 회전 + 마우스 패럴랙스
+      root.rotation.y = t * 0.018 + smooth.x * 0.20;
+      root.rotation.x = smooth.y * -0.13;
+
+      // 조명 마우스 추적
+      keyLight.position.x = 2 + smooth.x * 2.0;
+      keyLight.position.y = 4 - smooth.y * 1.5;
+
+      renderer.render(scene, camera);
+    })();
+  </script>
+</body>
+</html>

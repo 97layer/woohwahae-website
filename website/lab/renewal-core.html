@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOOHWAHAE — Remote Lab Extension (v11.0)</title>
+    <!-- Brand Manual Fonts -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;300;400&family=Crimson+Text:ital@0;1&display=swap">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+    <style>
+        :root {
+            /* Palette: Monochrome + Deep Navy */
+            --bg: #FAFAF7;
+            --text: #1a1a1a;
+            --text-sub: #5A5A5A;
+            --text-faint: #8E8E88;
+            --line: rgba(26, 26, 26, 0.08);
+            --accent: #1B2D4F;
+
+            /* Typography */
+            --font-mono: 'IBM Plex Mono', monospace;
+            --font-body: 'Pretendard Variable', sans-serif;
+            --font-serif: 'Crimson Text', serif;
+
+            /* Spacing: 60%+ Whitespace Rule */
+            --space-xl: 15vh;
+            --container-w: 1200px;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            word-break: keep-all;
+        }
+
+        /* ─── Navigation ─── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2.5rem 5vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+            color: #fff;
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.5em;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.6;
+            transition: opacity 0.4s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* ─── Layout: Grid System ─── */
+        .grid-frame {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+            max-width: var(--container-w);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: var(--space-xl) 0;
+            border-bottom: 1px solid var(--line);
+            position: relative;
+        }
+
+        .section-label {
+            grid-column: 1 / 4;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            opacity: 0.4;
+        }
+
+        .heading-area {
+            grid-column: 4 / 13;
+            margin-bottom: 6rem;
+        }
+
+        .heading-main {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 200;
+            line-height: 1.05;
+            letter-spacing: -0.05em;
+        }
+
+        .content-area {
+            grid-column: 5 / 12;
+        }
+
+        .body-text {
+            font-size: 1.15rem;
+            font-weight: 300;
+            color: var(--text-sub);
+            margin-bottom: 3rem;
+        }
+
+        .body-text em {
+            font-family: var(--font-serif);
+            font-style: italic;
+        }
+
+        /* ─── Components ─── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 4rem;
+        }
+
+        .service-card {
+            border: 1px solid var(--line);
+            padding: 3rem;
+            transition: all 0.6s var(--ease);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 400px;
+        }
+
+        .service-card:hover {
+            border-color: var(--text);
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .sc-num {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            opacity: 0.3;
+            margin-bottom: 2rem;
+        }
+
+        .sc-title {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        .sc-desc {
+            font-size: 0.95rem;
+            opacity: 0.6;
+            line-height: 1.7;
+        }
+
+        /* ─── Visual Engine ─── */
+        #render-target {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.08;
+        }
+
+        /* ─── Detail Layers ─── */
+        .identity-pill {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            border: 1px solid var(--line);
+            border-radius: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            margin-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ─── Grain Overlay (MIA Spec) ─── */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.5'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-frame {
+                grid-template-columns: 1fr;
+            }
+
+            .section-label,
+            .heading-area,
+            .content-area {
+                grid-column: 1 / -1;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="render-target"></div>
+
+    <nav>
+        <a href="#" class="nav-logo">WOOHWAHAE</a>
+        <ul class="nav-links">
+            <li><a href="#identity">Identity</a></li>
+            <li><a href="#offering">Offering</a></li>
+            <li><a href="#archive">Archive</a></li>
+        </ul>
+    </nav>
+
+    <!-- SECTION 01: IDENTITY -->
+    <section id="identity">
+        <div class="grid-frame">
+            <span class="section-label">01 / BRAND_IDENTITY</span>
+            <div class="heading-area">
+                <h2 class="heading-main">The Process of<br><em>Emergence.</em></h2>
+            </div>
+            <div class="content-area">
+                <p class="body-text">
+                    번데기가 나비가 되는 과정(羽化).<br>
+                    우정한 시대의 속도에 저항하며, 각자의 파동을 회복하는 <em>Slow Life</em> 아카이브입니다. 우리는 '느림'이 아닌 '재조율(Re-tuning)'을 지향합니다.
+                </p>
+                <div>
+                    <span class="identity-pill">AUTHENTICITY</span>
+                    <span class="identity-pill">PRACTICALITY</span>
+                    <span class="identity-pill">ELEGANCE</span>
+                    <span class="identity-pill">PRECISION</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 02: OFFERING -->
+    <section id="offering" style="background: rgba(26,26,26,0.02);">
+        <div class="grid-frame">
+            <span class="section-label">02 / SERVICE_PROTOCOLS</span>
+            <div class="heading-area">
+                <h2 class="heading-main">Same Core,<br>Manifested in 4.</h2>
+            </div>
+            <div class="content-area">
+                <p class="body-text">하나의 철학이 네 가지 현실의 형태로 발현됩니다. 타인에게 보여지는 형태를 넘어, 자신을 긍정하는 실천을 제안합니다.</p>
+                <div class="card-grid">
+                    <a href="#" class="service-card">
+                        <span class="sc-num">001_FOR_INDIVIDUAL</span>
+                        <h3 class="sc-title">Atelier</h3>
+                        <p class="sc-desc">헤어. 정교한 구조 설계와 관찰을 통해 일상의 형태를 조율합니다. "Wash & Go"의 실용적 미학.</p>
+                    </a>
+                    <a href="#" class="service-card">
+                        <span class="sc-num">002_FOR_SYSTEM</span>
+                        <h3 class="sc-title">Consulting</h3>
+                        <p class="sc-desc">브랜드의 구심점을 찾고, 지속 가능한 기준을 설계합니다. 교육과 협업을 통한 철학의 전수.</p>
+                    </a>
+                    <a href="#" class="service-card">
+                        <span class="sc-num">003_FOR_PROJECT</span>
+                        <h3 class="sc-title">Project</h3>
+                        <p class="sc-desc">패션 위크, 에디토리얼, 사진 기록. 브랜드의 순간적 폭발력을 미학적으로 포착합니다.</p>
+                    </a>
+                    <a href="#" class="service-card">
+                        <span class="sc-num">004_FOR_DAILY</span>
+                        <h3 class="sc-title">Shop</h3>
+                        <p class="sc-desc">의식적 소비를 위한 큐레이션. 오랜 시간 검증되고 곁에 두고 싶은 본질적 물건들.</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 03: ARCHIVE METADATA -->
+    <section id="archive">
+        <div class="grid-frame">
+            <span class="section-label">03 / ARCHIVE_META</span>
+            <div class="heading-area">
+                <h2 class="heading-main">Traces of<br><em>Refinement.</em></h2>
+            </div>
+            <div class="content-area">
+                <p class="body-text">기억은 흐려지지만 기록은 남습니다. 97layerOS가 축적해온 사색과 실험의 연대기입니다.</p>
+                <div
+                    style="font-family: var(--font-mono); font-size: 1.2rem; border-top: 1px solid var(--text); padding-top: 2rem;">
+                    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                        <span>ISSUE_010 / Work & Essence</span>
+                        <span style="opacity: 0.3;">2026.02</span>
+                    </div>
+                    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                        <span>ISSUE_009 / Inner World</span>
+                        <span style="opacity: 0.3;">2026.01</span>
+                    </div>
+                    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                        <span>ISSUE_008 / Raw Materiality</span>
+                        <span style="opacity: 0.3;">2025.12</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer
+        style="padding: 10vh 0; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.6rem; opacity: 0.3;">
+        <div class="grid-frame">
+            <div style="grid-column: 1 / 7;">EST. 2024 / ULSAN / RM_LAB_V11.0</div>
+            <div style="grid-column: 7 / 13; text-align: right;">SYSTEM_BY_97LAYER_ORCHESTRATOR</div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('render-target').appendChild(renderer.domElement);
+
+        const geo = new THREE.IcosahedronGeometry(2, 1);
+        const mat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a, wireframe: true, transparent: true, opacity: 0.15 });
+        const obj = new THREE.Mesh(geo, mat);
+        scene.add(obj);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            obj.rotation.y += 0.0015;
+            obj.rotation.x += 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+
+</html>

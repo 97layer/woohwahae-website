@@ -126,9 +126,6 @@ const isDevelopment = window.location.hostname === 'localhost' || window.locatio
 
 })();
 
-    console.log('Google Analytics initialized:', GA_MEASUREMENT_ID);
-})();
-
 /**
  * 사용 방법:
  *

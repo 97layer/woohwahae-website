@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exp.009 — 3D Keyframe · WOOHWAHAE Lab</title>
+  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #E8E6E1;
+      --text: #2C2C2C;
+      --text-faint: #8E8E88;
+      --line: #CCCAC3;
+      --font-mono: 'IBM Plex Mono', 'DM Mono', monospace;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap');
+    html, body {
+      height: 100%; width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      overflow: hidden;
+    }
+    #canvas-wrap {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    canvas {
+      display: block;
+      width: min(80vw, 80vh) !important;
+      height: min(80vw, 80vh) !important;
+    }
+    .ui-back {
+      position: fixed; top: 1.5rem; left: 1.5rem;
+      font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-faint); text-decoration: none;
+      transition: color 0.2s;
+      z-index: 10;
+    }
+    .ui-back:hover { color: var(--text); }
+    .ui-label {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      font-size: 0.68rem; letter-spacing: 0.06em; color: var(--text-faint);
+      z-index: 10;
+    }
+    .ui-meta {
+      position: fixed; bottom: 1.5rem; left: 1.5rem;
+      font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.04em;
+      z-index: 10; line-height: 1.8;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      canvas { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="./" class="ui-back">← Lab</a>
+  <div class="ui-label">Exp.009 / 3D Keyframe</div>
+  <div class="ui-meta">
+    Three.js r158 · TubeGeometry · roughen() · WebGL highp<br>
+    마우스를 움직이면 시점이 변합니다
+  </div>
+
+  <div id="canvas-wrap">
+    <canvas id="hero-canvas"></canvas>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const canvas = document.getElementById('hero-canvas');
+    const wrap   = document.getElementById('canvas-wrap');
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, precision: 'highp' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 3));
+    renderer.setClearColor(0x000000, 0);
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+    camera.position.set(0, 0, 5.5);
+
+    function setSize() {
+      const s = Math.min(wrap.offsetWidth * 0.8, wrap.offsetHeight * 0.8);
+      renderer.setSize(s, s);
+      camera.aspect = 1;
+      camera.updateProjectionMatrix();
+    }
+    setSize();
+    window.addEventListener('resize', setSize);
+
+    // ── 조명 ──
+    scene.add(new THREE.AmbientLight(0xE8E6E1, 1.1));
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+    keyLight.position.set(2, 3, 4); scene.add(keyLight);
+    const fillLight = new THREE.DirectionalLight(0xdde8f0, 0.9);
+    fillLight.position.set(-3, -1, 2); scene.add(fillLight);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    rimLight.position.set(0, -4, -3); scene.add(rimLight);
+
+    // ── 러프 노이즈 ──
+    function roughen(geo, amount) {
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const nx = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+        const ny = Math.sin(i * 269.5 + 183.3) * 43758.5453;
+        const nz = Math.sin(i * 419.2 + 631.4) * 43758.5453;
+        pos.setX(i, pos.getX(i) + (nx - Math.floor(nx) - 0.5) * amount);
+        pos.setY(i, pos.getY(i) + (ny - Math.floor(ny) - 0.5) * amount);
+        pos.setZ(i, pos.getZ(i) + (nz - Math.floor(nz) - 0.5) * amount);
+      }
+      pos.needsUpdate = true;
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    function roughCirclePts(r, n, wobble) {
+      const pts = [];
+      for (let i = 0; i <= n; i++) {
+        const t = i / n;
+        const a = t * Math.PI * 2;
+        const w = 1 + Math.sin(a * 2.3 + r * 5.7) * wobble * 1.0
+          + Math.sin(a * 5.1 + r * 3.1) * wobble * 0.6
+          + Math.sin(a * 9.7 + r * 7.3) * wobble * 0.3
+          + Math.cos(a * 4.2 - r * 2.9) * wobble * 0.5;
+        const zOff = Math.sin(a * 3.1 + r * 4.1) * wobble * r * 0.45
+          + Math.cos(a * 6.7 - r * 1.8) * wobble * r * 0.25;
+        pts.push(new THREE.Vector3(Math.cos(a) * r * w, Math.sin(a) * r * w, zOff));
+      }
+      return pts;
+    }
+
+    function makeMat(color, opacity, roughness = 0.88, metalness = 0.04) {
+      return new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent: true, opacity });
+    }
+
+    const root = new THREE.Group();
+    scene.add(root);
+
+    // ── 링 4개 ──
+    const ringDefs = [
+      { r: 1.10, tube: 0.005,  tX:  0.32, tY:  0.08, tZ:  0.05, spin:  0.038, wobble: 0.065, op: 0.78 },
+      { r: 0.84, tube: 0.004,  tX: -0.42, tY: -0.12, tZ:  0.10, spin: -0.055, wobble: 0.055, op: 0.60 },
+      { r: 0.58, tube: 0.0032, tX:  0.18, tY:  0.24, tZ: -0.08, spin:  0.072, wobble: 0.048, op: 0.44 },
+      { r: 0.30, tube: 0.0025, tX: -0.14, tY: -0.28, tZ:  0.12, spin: -0.088, wobble: 0.038, op: 0.32 },
+    ];
+
+    const rings = ringDefs.map(def => {
+      const pts   = roughCirclePts(def.r, 260, def.wobble);
+      const curve = new THREE.CatmullRomCurve3(pts, true, 'centripetal', 0.4);
+      const geo   = roughen(new THREE.TubeGeometry(curve, 320, def.tube, 12, true), def.tube * 0.7);
+      const mesh  = new THREE.Mesh(geo, makeMat(0x2a2820, def.op));
+      mesh.rotation.set(def.tX, def.tY, def.tZ);
+      root.add(mesh);
+      return { mesh, def };
+    });
+
+    // ── 나선 ──
+    const spiralPts = [];
+    for (let i = 0; i <= 600; i++) {
+      const t = i / 600;
+      const angle = t * 3.8 * Math.PI * 2 - Math.PI / 2;
+      const r = 0.10 + (1.12 - 0.10) * t;
+      const z = Math.sin(t * Math.PI * 2.2) * 0.20 + Math.sin(t * 17.3) * 0.025;
+      const xyWobble = Math.sin(t * 11.3) * 0.048 + Math.sin(t * 27.9 + 1.3) * 0.022;
+      spiralPts.push(new THREE.Vector3(
+        Math.cos(angle) * (r + xyWobble),
+        Math.sin(angle) * (r + xyWobble), z
+      ));
+    }
+    const spiralCurve = new THREE.CatmullRomCurve3(spiralPts, false, 'centripetal', 0.3);
+    const spiralInner = new THREE.Mesh(
+      roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spiralCurve.getPoints(1000).slice(0, 510), false, 'centripetal'), 500, 0.005, 12, false), 0.004),
+      makeMat(0x252320, 0.86)
+    );
+    const spiralOuter = new THREE.Mesh(
+      roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spiralCurve.getPoints(1000).slice(500), false, 'centripetal'), 500, 0.003, 10, false), 0.003),
+      makeMat(0x252320, 0.60)
+    );
+    spiralInner.rotation.x = spiralOuter.rotation.x = 0.10;
+    root.add(spiralInner); root.add(spiralOuter);
+
+    // ── ECG ──
+    const ecgRaw = [
+      [-1.0,0,0],[-0.66,0,0.01],[-0.60,-0.11,0.02],[-0.54,0,0.01],
+      [-0.36,0.01,-0.01],[-0.26,0.09,0.02],[-0.16,-0.68,0.04],
+      [-0.08,0.14,0.02],[0,0.01,-0.01],[0.24,-0.24,0.02],[0.46,0.01,-0.01],[1.0,0,0],
+    ].map(([x,y,z]) => new THREE.Vector3(x,y,z));
+    const ecgMesh = new THREE.Mesh(
+      roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ecgRaw, false, 'centripetal', 0.25), 360, 0.004, 12, false), 0.003),
+      makeMat(0x2a2820, 0.72)
+    );
+    ecgMesh.rotation.set(0.08, 0, 0);
+    root.add(ecgMesh);
+
+    // ── 중심 구 ──
+    const dotMesh = new THREE.Mesh(roughen(new THREE.SphereGeometry(0.040, 32, 32), 0.006), makeMat(0x1a1814, 0.92, 0.72, 0.08));
+    root.add(dotMesh);
+
+    // ── 마우스 ──
+    const mouse  = { x: 0, y: 0 };
+    const smooth = { x: 0, y: 0 };
+    window.addEventListener('mousemove', e => {
+      mouse.x = (e.clientX / innerWidth - 0.5) * 2;
+      mouse.y = (e.clientY / innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    canvas.style.opacity = '0';
+    canvas.style.transition = 'opacity 1.4s ease';
+    setTimeout(() => { canvas.style.opacity = '1'; }, 120);
+
+    const clock = new THREE.Clock();
+    (function animate() {
+      requestAnimationFrame(animate);
+      const dt = clock.getDelta();
+      const t  = clock.getElapsedTime();
+
+      smooth.x += (mouse.x - smooth.x) * 0.04;
+      smooth.y += (mouse.y - smooth.y) * 0.04;
+
+      root.rotation.y = t * 0.028 + smooth.x * 0.22;
+      root.rotation.x = smooth.y * -0.16;
+
+      rings.forEach(({ mesh, def }) => { mesh.rotation.z += def.spin * dt; });
+      spiralInner.rotation.y += 0.004 * dt;
+      spiralOuter.rotation.y += 0.004 * dt;
+      dotMesh.scale.setScalar(1 + Math.sin(t * 2.8) * 0.06);
+
+      keyLight.position.x = 2 + smooth.x * 1.8;
+      keyLight.position.y = 3 - smooth.y * 1.2;
+
+      renderer.render(scene, camera);
+    })();
+  </script>
+</body>
+</html>

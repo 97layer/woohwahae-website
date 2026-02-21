@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOOHWAHAE — External Reconstructed Build</title>
+    <!-- External Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;300;400&display=swap">
+    <style>
+        :root {
+            --bg: #FAFAF7;
+            --text: #1a1a1a;
+            --accent: #8e44ad;
+            --line: rgba(26, 26, 26, 0.1);
+            --font-mono: 'IBM Plex Mono', monospace;
+            --font-body: 'Pretendard', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            margin: 0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2rem 10vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.4em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        /* Section structure */
+        section {
+            padding: 15vh 10vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.4em;
+            margin-bottom: 2rem;
+            opacity: 0.4;
+        }
+
+        .title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 100;
+            letter-spacing: -0.05em;
+            line-height: 1;
+            margin-bottom: 4rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+
+        .text-block {
+            grid-column: 7 / 13;
+        }
+
+        .desc {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            word-break: keep-all;
+            opacity: 0.8;
+        }
+
+        /* Cards for Offering & Archive */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            padding: 2rem;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card:hover {
+            border-color: var(--text);
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .card-num {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.6;
+        }
+
+        /* Render Layer */
+        #render-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="render-bg"></div>
+
+    <nav>
+        <a href="#about" class="nav-logo">WOOHWAHAE</a>
+        <div style="font-family: var(--font-mono); font-size: 0.5rem; opacity: 0.4;">EXTERNAL_SYS_RECONSTRUCTED
+            (136.109.201.201)</div>
+    </nav>
+
+    <!-- ABOUT SECTION -->
+    <section id="about">
+        <span class="section-label">01 / ABOUT</span>
+        <h2 class="title">The Process of Emergence</h2>
+        <div class="content-grid">
+            <div class="text-block">
+                <p class="desc">
+                    번데기가 나비가 되는 과정.<br>
+                    각자의 속도로 내면의 美를 성찰하며, 보다 나다운 모습으로 살아가는 것.<br><br>
+                    우리는 슬로우 라이프 양식을 매개로, 흐트러진 의식의 구심점으로 회귀하는 일종의 순환입니다.
+                    시대의 표준화된 속도는 우리의 감각을 무디게 하고, 타인의 시선은 고유한 색채를 희미하게 만듭니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- OFFERING SECTION -->
+    <section id="offering" style="background: rgba(26,26,26,0.02);">
+        <span class="section-label">02 / OFFERING</span>
+        <h2 class="title">Same Philosophy,<br>Different Forms</h2>
+        <div class="card-grid">
+            <div class="card">
+                <p class="card-num">001 / FOR INDIVIDUAL</p>
+                <h3 class="card-title">Atelier</h3>
+                <p class="card-desc">헤어. 구조를 먼저 읽고 그 사람에게 맞는 형태를 설계합니다.</p>
+            </div>
+            <div class="card">
+                <p class="card-num">002 / FOR SYSTEM</p>
+                <h3 class="card-title">Consulting</h3>
+                <p class="card-desc">브랜드, 교육, 협업. 방향이 맞는 경우에만 함께합니다.</p>
+            </div>
+            <div class="card">
+                <p class="card-num">003 / FOR PROJECT</p>
+                <h3 class="card-title">Project</h3>
+                <p class="card-desc">모델 작업, 에디토리얼. 방향성이 맞는 프로젝트에 한합니다.</p>
+            </div>
+            <div class="card">
+                <p class="card-num">004 / FOR DAILY</p>
+                <h3 class="card-title">Shop</h3>
+                <p class="card-desc">직접 써보고, 오래 쓰고, 다시 찾게 된 것들을 고릅니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ARCHIVE SECTION -->
+    <section id="archive">
+        <span class="section-label">03 / ARCHIVE</span>
+        <h2 class="title">Traces of Senses</h2>
+        <div class="card-grid" id="archive-grid">
+            <!-- Data from local archive/ directory -->
+            <div class="card">
+                <p class="card-num">ISSUE 010</p>
+                <h3 class="card-title">Work & Essence</h3>
+                <p class="card-desc">일과 본질에 대한 기록. 정점에서의 고요함.</p>
+            </div>
+            <div class="card">
+                <p class="card-num">ISSUE 009</p>
+                <h3 class="card-title">Inner World</h3>
+                <p class="card-desc">내면의 세계를 구축하는 법.</p>
+            </div>
+            <div class="card">
+                <p class="card-num">ISSUE 008</p>
+                <h3 class="card-title">Raw Materiality</h3>
+                <p class="card-desc">날것의 재료가 주는 영감.</p>
+            </div>
+            <div class="card">
+                <p class="card-num">ISSUE 007</p>
+                <h3 class="card-title">Noise Removal</h3>
+                <p class="card-desc">소음을 제거하고 남는 것들.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer
+        style="padding: 10vh 10vw; border-top: 1px solid var(--line); opacity: 0.3; font-family: var(--font-mono); font-size: 0.6rem;">
+        <div style="display: flex; justify-content: space-between;">
+            <span>RECONSTRUCTED BY 97LAYER_SYSTEM</span>
+            <span>© 2026 WOOHWAHAE</span>
+        </div>
+    </footer>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+        // Simple background render to add tactile feel
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('render-bg').appendChild(renderer.domElement);
+
+        const geometry = new THREE.BoxGeometry(100, 100, 100);
+        const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, transparent: true, opacity: 0.1 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 50;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.001;
+            cube.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+
+</html>

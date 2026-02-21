@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab — WOOHWAHAE</title>
+  <meta name="description" content="WOOHWAHAE Lab — 실험 아카이브. 웹 렌더링, 모션, 인터랙션 프로토타입.">
+  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="preload" href="../assets/css/style.css?v=footer_v1" as="style">
+  <link rel="stylesheet" href="../assets/css/style.css?v=footer_v1">
+  <script src="../assets/js/analytics.js" defer></script>
+  <style>
+    .lab-hero {
+      padding: var(--space-xl) var(--space-lg) var(--space-md);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .lab-hero-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: var(--fw-light);
+      letter-spacing: var(--ls-label);
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin: 0 0 var(--space-xs);
+    }
+
+    .lab-hero-title {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: var(--fw-light);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin: 0 0 var(--space-sm);
+      color: var(--text);
+    }
+
+    .lab-hero-desc {
+      font-size: 0.85rem;
+      color: var(--text-faint);
+      font-weight: var(--fw-light);
+      max-width: 480px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* Filters System */
+    .lab-filters-container {
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .lab-filter-btn {
+      background: none;
+      border: none;
+      padding: 0.2rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .lab-filter-btn:hover,
+    .lab-filter-btn.active {
+      color: var(--text);
+    }
+
+    .lab-filter-btn.active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 1px;
+      background: var(--text);
+    }
+
+    /* Grid & Cards */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border-left: 1px solid var(--line);
+    }
+
+    @media (max-width: 640px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .lab-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: var(--space-md) var(--space-lg);
+      transition: background 0.2s, opacity 0.3s, transform 0.3s;
+      position: relative;
+    }
+
+    .lab-card.hidden {
+      display: none !important;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+
+    .lab-card:hover {
+      background: var(--bg-dark);
+    }
+
+    .lab-card--placeholder {
+      cursor: default;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .lab-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 0 var(--space-xs);
+    }
+
+    .lab-card-num {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: var(--ls-label);
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .lab-card-date {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.05em;
+      color: var(--text-faint);
+      opacity: 0.6;
+    }
+
+    .lab-card-title {
+      font-size: 1.05rem;
+      font-weight: var(--fw-light);
+      letter-spacing: -0.01em;
+      margin: 0 0 var(--space-xs);
+      color: var(--text);
+    }
+
+    .lab-card-desc {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      font-weight: var(--fw-light);
+      line-height: 1.6;
+      margin: 0 0 var(--space-sm);
+    }
+
+    .lab-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .lab-card-tag {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--line);
+      color: var(--text-faint);
+    }
+
+    /* Clean SVG Icons */
+    .lab-card-icon {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-lg);
+      width: 14px;
+      height: 14px;
+      color: var(--text-faint);
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .lab-card:hover .lab-card-icon {
+      transform: translate(2px, -2px);
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links">
+      <li><a href="../archive/">Archive</a></li>
+      <li><a href="../offering.html">Offering</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+      <li><a href="../lab/" class="active">Lab</a></li>
+    </ul>
+    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <section class="lab-hero">
+    <p class="lab-hero-label">Experiments</p>
+    <h1 class="lab-hero-title">Lab</h1>
+    <p class="lab-hero-desc">웹 렌더링, 모션, 인터랙션 프로토타입. 완성 전 단계의 날것 실험들.</p>
+  </section>
+
+  <!-- Filter Toggle -->
+  <div class="lab-filters-container">
+    <button class="lab-filter-btn active" data-filter="all">All</button>
+    <button class="lab-filter-btn" data-filter="platform">Platform Build</button>
+    <button class="lab-filter-btn" data-filter="hair">Hair Architect</button>
+    <button class="lab-filter-btn" data-filter="kinetic">Kinematics</button>
+    <button class="lab-filter-btn" data-filter="pro">Pro System</button>
+  </div>
+
+  <div class="lab-grid" id="labGrid">
+
+    <a href="demo-bob-silhouette.html" class="lab-card fade-in" data-category="hair">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.001</p>
+      <h2 class="lab-card-title">Bob Silhouette</h2>
+      <p class="lab-card-desc">헤어 실루엣 다이어그램. Three.js r128 + OrbitControls. 두상 뼈대와 무게중심선 시각화.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Three.js</span><span
+          class="lab-card-tag">Geometry</span><span class="lab-card-tag">Hair</span></div>
+    </a>
+
+    <div class="lab-card lab-card--placeholder" data-category="kinetic">
+      <p class="lab-card-num">Exp.002</p>
+      <h2 class="lab-card-title">Symbol Orbit</h2>
+      <p class="lab-card-desc">97LAYER 심볼 주변 궤도 파티클. WebGL 포인트 클라우드 실험. — 아카이브 중</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Three.js</span><span class="lab-card-tag">Particles</span>
+      </div>
+    </div>
+
+    <div class="lab-card lab-card--placeholder" data-category="kinetic">
+      <p class="lab-card-num">Exp.003</p>
+      <h2 class="lab-card-title">Grain Layer</h2>
+      <p class="lab-card-desc">필름 그레인 오버레이 합성. Canvas 2D + SVG feTurbulence. — 아카이브 중</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Canvas 2D</span><span class="lab-card-tag">Noise</span>
+      </div>
+    </div>
+
+    <div class="lab-card lab-card--placeholder" data-category="kinetic">
+      <p class="lab-card-num">Exp.004</p>
+      <h2 class="lab-card-title">Type Motion</h2>
+      <p class="lab-card-desc">타이포그래피 모션. Intersection Observer + CSS clip-path reveal. — 아카이브 중</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">CSS</span><span class="lab-card-tag">Typography</span></div>
+    </div>
+
+    <a href="demo-symbol-3d.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.005</p>
+      <h2 class="lab-card-title">Symbol Particle</h2>
+      <p class="lab-card-desc">symbol.png 픽셀 샘플링 → Three.js 파티클 클라우드. 밝기 임계값 기반 포인트 분포.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Three.js</span><span class="lab-card-tag">Pixel
+          Sampling</span><span class="lab-card-tag">Points</span></div>
+    </a>
+
+    <a href="demo-svg-anim.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.006</p>
+      <h2 class="lab-card-title">SVG Draw-in</h2>
+      <p class="lab-card-desc">순수 SVG path draw-in 애니메이션. strokeDashoffset 시퀀스 + 완료 후 느린 자전. 마우스 3D 틸트.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">SVG</span><span class="lab-card-tag">CSS
+          Animation</span><span class="lab-card-tag">Zero JS</span></div>
+    </a>
+
+    <a href="demo-film-grain.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.007</p>
+      <h2 class="lab-card-title">Film Grain</h2>
+      <p class="lab-card-desc">필름 그레인 + 스캔라인 + 비네트 레이어드. Canvas 2D 실시간 노이즈 + toggle UI.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Canvas 2D</span><span class="lab-card-tag">Film</span><span
+          class="lab-card-tag">Atmosphere</span></div>
+    </a>
+
+    <a href="demo-lottie-style.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.008</p>
+      <h2 class="lab-card-title">Keyframe Composer</h2>
+      <p class="lab-card-desc">Canvas 2D 키프레임 엔진. 8초 루프, easing 7종. 링/나선/ECG 레이어 타임라인 스크럽.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Canvas 2D</span><span
+          class="lab-card-tag">Keyframe</span><span class="lab-card-tag">Timeline</span></div>
+    </a>
+
+    <a href="demo-keyframe-3d.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.009</p>
+      <h2 class="lab-card-title">3D Keyframe</h2>
+      <p class="lab-card-desc">Exp.008 Three.js 포팅. TorusGeometry 링 4개 + TubeGeometry 나선/ECG. 마우스 패럴랙스 + 타임라인 UI.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Three.js</span><span class="lab-card-tag">WebGL</span><span
+          class="lab-card-tag">Keyframe</span></div>
+    </a>
+
+    <a href="demo-cut-diagram.html" class="lab-card fade-in" data-category="hair">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.010</p>
+      <h2 class="lab-card-title">Cut Diagram</h2>
+      <p class="lab-card-desc">단발(Bob) 커트 도해도. 두상 섹션 라인, 가이드라인, 분배선, 무게선 3D 시각화.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Three.js</span><span class="lab-card-tag">Hair
+          Tech</span><span class="lab-card-tag">Diagram</span></div>
+    </a>
+
+    <a href="demo-bgm-player.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.011</p>
+      <h2 class="lab-card-title">Ambient BGM</h2>
+      <p class="lab-card-desc">Web Audio API를 활용한 제너레이티브 앰비언트 사운드스케이프 실험. 오실레이터와 LFO 배위.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Web Audio API</span><span
+          class="lab-card-tag">Generative</span><span class="lab-card-tag">Audio</span></div>
+    </a>
+
+    <a href="demo-scissor-ritual.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.012</p>
+      <h2 class="lab-card-title">Ritual of Scissor</h2>
+      <p class="lab-card-desc">가위 절단의 행위를 캔버스 분할로 치환한 공감각 실험. 잘림을 통한 여백의 생성 과정.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Canvas 2D</span><span
+          class="lab-card-tag">Physics</span><span class="lab-card-tag">Web Audio API</span></div>
+    </a>
+
+    <a href="private-auth.html?target=demo-pro-tool.html" class="lab-card fade-in" data-category="pro">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+        <path d="M8 11V7a4 4 0 018 0v4"></path>
+      </svg>
+      <p class="lab-card-num" style="color:#f39c12;">Exp.013 [PRO]</p>
+      <h2 class="lab-card-title">Sectioning Architect 3D</h2>
+      <p class="lab-card-desc">B2B SaaS 프로토타입. 암호화된 프라이빗 라운지로 미용 교육용 3D 도해도 툴 및 PDF 추출 시스템 모의 실험.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag"
+          style="border-color:#f39c12; color:#f39c12;">Monetization</span><span class="lab-card-tag">B2B
+          SaaS</span><span class="lab-card-tag">Three.js</span></div>
+    </a>
+
+    <a href="private-auth.html?target=demo-salon-blueprint.html" class="lab-card fade-in" data-category="pro">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+        <path d="M8 11V7a4 4 0 018 0v4"></path>
+      </svg>
+      <p class="lab-card-num" style="color:#f39c12;">Exp.014 [PRO]</p>
+      <h2 class="lab-card-title">Salon Blueprint</h2>
+      <p class="lab-card-desc">아이패드 대응 실무형 디지털 시술 처방전. 직접 커트 각도를 드로잉하고 카카오톡용 VIP 리포트로 추출합니다.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag"
+          style="border-color:#f39c12; color:#f39c12;">Monetization</span><span class="lab-card-tag">B2B
+          Core</span><span class="lab-card-tag">Canvas 2D</span></div>
+    </a>
+
+    <a href="demo-home-blueprint.html" class="lab-card fade-in" data-category="platform">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M4 6h16M4 12h16m-7 6h7"></path>
+      </svg>
+      <p class="lab-card-num">Exp.015</p>
+      <h2 class="lab-card-title">V4 Home Blueprint</h2>
+      <p class="lab-card-desc">홈페이지 랜딩 페이지(V4) 개편 과정을 투명하게 기록하는 시뮬레이터 뷰어 및 개발 산출물 아카이브.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Web System</span><span class="lab-card-tag">UI/UX</span>
+      </div>
+    </a>
+
+    <a href="private-auth.html?target=prototype-offering.html" class="lab-card fade-in" data-category="platform">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+        <path d="M8 11V7a4 4 0 018 0v4"></path>
+      </svg>
+      <p class="lab-card-num" style="color:#f39c12;">Exp.016 [PRO]</p>
+      <h2 class="lab-card-title">Offering Prototype (Editorial)</h2>
+      <p class="lab-card-desc">네 가지 Offering에 대한 극단적 여백 및 활자 기반 재설계. Glassmorphism을 덜어내고 묵직한 속도감을 구현한 프로토타입.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">UI/UX</span><span class="lab-card-tag">Typography</span>
+      </div>
+    </a>
+
+    <a href="demo-cinematic-video.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.017</p>
+      <h2 class="lab-card-title">Cinematic Video Intro</h2>
+      <p class="lab-card-desc">시네마틱 인트로 영상 시퀀스 실험. 스켈레톤 로딩 → 영상 페이드 인 → 타이포그래피 등장 연출.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">HTML5 Video</span><span
+          class="lab-card-tag">Motion</span><span class="lab-card-tag">Branding</span></div>
+    </a>
+
+    <a href="demo-3d-art-core.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.018</p>
+      <h2 class="lab-card-title">3D Abstract Art Core</h2>
+      <p class="lab-card-desc">실시간 WebGL 렌더링 아트워크. 물리 기반 재질(PBR)과 시네마틱 조명을 활용한 고사양 3D 렌더링 실험.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Three.js</span><span class="lab-card-tag">WebGL</span><span
+          class="lab-card-tag">Generative Art</span></div>
+    </a>
+
+    <a href="demo-ai-opener.html" class="lab-card fade-in" data-category="kinetic">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num">Exp.019</p>
+      <h2 class="lab-card-title">AI Cinematic Opener</h2>
+      <p class="lab-card-desc">AI 비디오 에이전트(Luma, Runway 등) 생성 영상 기반 인트로 시스템. 고화질 MP4 렌더링 및 타이포그래피 시퀀스 통합.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">AI Video</span><span class="lab-card-tag">MP4</span><span
+          class="lab-card-tag">Intro System</span></div>
+    </a>
+
+    <a href="prototype-master-cut.html" class="lab-card fade-in" data-category="platform">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num" style="color:#1a1a1a;">Exp.021 [MASTER]</p>
+      <h2 class="lab-card-title">The Orchestrator's Cut</h2>
+      <p class="lab-card-desc">WOOHWAHAE의 미학적 권위를 복구하기 위한 마스터 프로토타입. 탈-글래스모피즘, 비대칭 수직 리스트, 감각적 지연을 적용한 집도.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Aesthetics</span><span class="lab-card-tag">Brand
+          Direction</span><span class="lab-card-tag">Layout</span></div>
+    </a>
+
+    <a href="prototype-ultimate.html" class="lab-card fade-in" data-category="platform">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+      <p class="lab-card-num" style="color:#f1c40f;">Exp.022 [ULTIMATE v7.0]</p>
+      <h2 class="lab-card-title">Ultimate Brand Prototype</h2>
+      <p class="lab-card-desc">Three.js 하이엔드 렌더링과 IBM Plex/Pretendard GUI의 결합. 외부 서버 배포를 위해 최적화된 WOOHWAHAE의 최종적 기술 미학
+        결정체.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Three.js</span><span class="lab-card-tag">High-End
+          GUI</span><span class="lab-card-tag">External</span></div>
+    </a>
+
+    <a href="../archive/issue-010-work-and-essence/proto_equilibrium.html" class="lab-card fade-in"
+      data-category="platform">
+      <svg class="lab-card-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+      <p class="lab-card-num" style="color:#2c3e50;">Exp.023 [EQUILIBRIUM]</p>
+      <h2 class="lab-card-title">The Master Equilibrium</h2>
+      <p class="lab-card-desc">파격과 절제 사이의 균형점을 찾기 위한 마스터 템플릿. 정밀한 수직축 시스템과 탈-글래스모피즘을 통해 WOOHWAHAE의 본질적 우아함을 복구합니다.</p>
+      <div class="lab-card-tags"><span class="lab-card-tag">Equilibrium</span><span
+          class="lab-card-tag">Precision</span><span class="lab-card-tag">Elegance</span></div>
+    </a>
+
+    <div class="lab-card lab-card--placeholder" data-category="all">
+      <p class="lab-card-num">Exp.024</p>
+      <h2 class="lab-card-title">—</h2>
+      <p class="lab-card-desc">다음 실험.</p>
+    </div>
+
+  </div>
+
+  <footer class="section--light">
+    <div class="footer-inner">
+      <div class="footer-brand-row">
+        <p class="footer-brand-name">WOOHWAHAE</p>
+      </div>
+      <div class="footer-nav-row">
+        <a href="../archive/">Archive</a>
+        <a href="../offering.html">Offering</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../lab/">Lab</a>
+      </div>
+      <div class="footer-connect-row">
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
+        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
+          target="_blank" rel="noopener">Booking</a>
+        <a href="mailto:hello@woohwahae.kr">Email</a>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="../privacy.html">Privacy</a>
+          <a href="../terms.html">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js" defer></script>
+  <script>
+    // Date Injection Logic (Recordings Archive)
+    document.addEventListener("DOMContentLoaded", () => {
+      const dates = {
+        '001': '2025.10.12', '002': '2025.10.21', '003': '2025.11.10', '004': '2025.11.23',
+        '005': '2025.12.11', '006': '2025.12.28', '007': '2026.01.04', '008': '2026.01.15',
+        '009': '2026.01.28', '010': '2026.02.02', '011': '2026.02.05', '012': '2026.02.10',
+        '013': '2026.02.16', '014': '2026.02.19', '015': '2026.02.20'
+      };
+      document.querySelectorAll('.lab-card-num').forEach(el => {
+        const text = el.innerText;
+        const match = text.match(/Exp\.(\d{3})/);
+        if (match && dates[match[1]]) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'lab-card-meta';
+          el.parentNode.insertBefore(wrapper, el);
+          wrapper.appendChild(el);
+
+          const dateSpan = document.createElement('span');
+          dateSpan.className = 'lab-card-date';
+          dateSpan.textContent = dates[match[1]];
+          wrapper.appendChild(dateSpan);
+        }
+      });
+    });
+
+    // Filtering Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterBtns = document.querySelectorAll('.lab-filter-btn');
+      const cards = document.querySelectorAll('.lab-card');
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove active class from all
+          filterBtns.forEach(b => b.classList.remove('active'));
+          // Add active class to clicked
+          btn.classList.add('active');
+
+          const filterValue = btn.getAttribute('data-filter');
+
+          cards.forEach(card => {
+            const category = card.getAttribute('data-category');
+
+            // All placeholders and neutral items show on "All" natively
+            if (filterValue === 'all') {
+              card.classList.remove('hidden');
+            } else {
+              // Hide or Show based on matching
+              if (category === filterValue) {
+                card.classList.remove('hidden');
+              } else {
+                card.classList.add('hidden');
+              }
+            }
+          });
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

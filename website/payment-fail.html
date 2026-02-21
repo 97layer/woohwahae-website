@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제 실패 — WOOHWAHAE</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=typo_v38">
+  <script src="assets/js/payment.js" defer></script>
+</head>
+<body onload="handlePaymentFail()">
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links">
+      <li><a href="archive/">Archive</a></li>
+      <li><a href="offering.html">Offering</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="lab/">Lab</a></li>
+    </ul>
+  </nav>
+
+  <main class="container--wide" style="padding-top: var(--space-xl); min-height: 60vh;">
+    <div class="mag-row mag-row--intro fade-in">
+      <div class="mag-label">
+        <p class="section-label">Payment Failed</p>
+        <p class="mag-heading">결제<br>실패</p>
+      </div>
+      <div class="mag-body">
+        <p class="lead">결제가 완료되지 않았습니다.</p>
+        <p id="error-info">오류 정보를 확인하는 중...</p>
+        <p style="margin-top: 2rem;">
+          문제가 계속되면 hello@woohwahae.kr로 문의해주세요.
+        </p>
+        <a href="offering.html" class="cta-inline" style="margin-top: 2rem;">다시 시도하기 →</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="section--light">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="assets/img/symbol.png" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
+        <p class="footer-brand-name">WOOHWAHAE</p>
+        <p class="footer-brand-desc">Archive for Slow Life</p>
+      </div>
+      <div>
+        <p class="footer-nav-title">Navigate</p>
+        <ul class="footer-nav-list">
+          <li><a href="archive/">Archive</a></li>
+          <li><a href="offering.html">Offering</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="lab/">Lab</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-connect-title">Connect</p>
+        <ul class="footer-connect-list">
+          <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Archive for Slow Life</p>
+      <div class="footer-legal">
+        <a href="privacy.html">개인정보처리방침</a>
+        <a href="terms.html">이용약관</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+    // 오류 정보 표시
+    function handlePaymentFail() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const message = urlParams.get('message');
+
+      if (code && message) {
+        document.getElementById('error-info').innerHTML = `
+          <strong>오류 코드:</strong> ${code}<br>
+          <strong>오류 메시지:</strong> ${decodeURIComponent(message)}
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

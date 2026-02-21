@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 011: Ambient BGM — WOOHWAHAE</title>
+    <meta name="description" content="Lab 011: Web Audio API를 활용한 제너레이티브 앰비언트 사운드스케이프 실험.">
+    <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #E8E6E1;
+            --text: #1a1814;
+            --text-faint: #8b8984;
+            --line: #d1cfca;
+            --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-faint);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-back:hover {
+            color: var(--text);
+        }
+
+        .player-container {
+            text-align: center;
+        }
+
+        .player-title {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            margin-bottom: 2rem;
+        }
+
+        /* Minimalist Toggle Button */
+        .toggle-btn {
+            background: none;
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--text);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--text);
+        }
+
+        .toggle-btn.is-playing {
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        .toggle-btn.is-playing::before {
+            transform: scaleY(1);
+        }
+
+        /* Sound Visualizer (Canvas) */
+        .visualizer-wrapper {
+            margin-top: 4rem;
+            height: 100px;
+            width: 300px;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .status-text {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-faint);
+            margin-top: 1rem;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .status-text.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="./" class="nav-back">← Back to Lab</a>
+
+    <div class="player-container">
+        <div class="player-title">Exp.011 / Generative BGM</div>
+        <button class="toggle-btn" id="playBtn">SOUND: OFF</button>
+
+        <div class="visualizer-wrapper">
+            <canvas id="visualizer"></canvas>
+        </div>
+        <div class="status-text" id="statusText">Playing generative ambient soundscape...</div>
+    </div>
+
+    <script>
+        let audioCtx;
+        let mainGain;
+        let analyser;
+        let oscillators = [];
+        let isPlaying = false;
+        let canvas, canvasCtx;
+        let animationId;
+
+        const playBtn = document.getElementById('playBtn');
+        const statusText = document.getElementById('statusText');
+
+        function initAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            mainGain = audioCtx.createGain();
+            mainGain.gain.value = 0;
+
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+
+            mainGain.connect(analyser);
+            analyser.connect(audioCtx.destination);
+
+            // Create a generative chord (A minor 9 / meditative frequencies)
+            // A2(110Hz), C3(130.81Hz), E3(164.81Hz), B3(246.94Hz)
+            const frequencies = [110, 130.81, 164.81, 246.94];
+
+            frequencies.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+
+                // Add very slow modulation to frequency
+                const lfo = audioCtx.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.05 + (i * 0.02); // 0.05Hz to 0.11Hz
+
+                const lfoGain = audioCtx.createGain();
+                lfoGain.gain.value = 2; // slight detune amount
+
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+
+                // Individual gain for each oscillator
+                const oscGain = audioCtx.createGain();
+                oscGain.gain.value = 0.25; // balance the mix
+
+                osc.connect(oscGain);
+                oscGain.connect(mainGain);
+
+                osc.start();
+                lfo.start();
+
+                oscillators.push({ osc, lfo, oscGain, lfoGain });
+            });
+
+            initVisualizer();
+        }
+
+        function initVisualizer() {
+            canvas = document.getElementById('visualizer');
+            canvasCtx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            canvasCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        function drawVisualizer() {
+            if (!isPlaying && mainGain.gain.value < 0.01) {
+                canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+                cancelAnimationFrame(animationId);
+                return;
+            }
+
+            animationId = requestAnimationFrame(drawVisualizer);
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.lineWidth = 1;
+            canvasCtx.strokeStyle = 'rgba(26, 24, 20, 0.4)'; // var(--text) with opacity
+            canvasCtx.beginPath();
+
+            const sliceWidth = canvas.offsetWidth / bufferLength;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.offsetHeight / 2;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvas.offsetWidth, canvas.offsetHeight / 2);
+            canvasCtx.stroke();
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (!audioCtx) initAudio();
+
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const now = audioCtx.currentTime;
+
+            if (isPlaying) {
+                // Fade out
+                mainGain.gain.cancelScheduledValues(now);
+                mainGain.gain.setValueAtTime(mainGain.gain.value, now);
+                mainGain.gain.linearRampToValueAtTime(0.001, now + 2);
+
+                playBtn.textContent = 'SOUND: OFF';
+                playBtn.classList.remove('is-playing');
+                statusText.classList.remove('visible');
+                isPlaying = false;
+            } else {
+                // Fade in
+                mainGain.gain.cancelScheduledValues(now);
+                mainGain.gain.setValueAtTime(mainGain.gain.value, now);
+                mainGain.gain.linearRampToValueAtTime(0.5, now + 4); // 4초에 걸쳐 볼륨 증가
+
+                playBtn.textContent = 'SOUND: ON';
+                playBtn.classList.add('is-playing');
+                statusText.classList.add('visible');
+                isPlaying = true;
+
+                drawVisualizer();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (canvas && canvasCtx) {
+                canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+                canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+                canvasCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+        });
+    </script>
+</body>
+
+</html>

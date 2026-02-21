@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Issue 010 — 일과 본질. 이 일을 하면서 돈이 우선이었던 적은 없었다.">
+  <meta property="og:title" content="Issue 010: 일과 본질 — WOOHWAHAE Archive">
+  <meta property="og:description" content="이 일을 하면서 돈이 우선이었던 적은 없었다. 나를 알아가는 것이 원동력이다.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://woohwahae.kr/archive/issue-010-work-and-essence/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
+  <title>Issue 010: 일과 본질 — WOOHWAHAE Archive</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#FAFAF7">
+  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=footer_v1">
+  <script src="../../assets/js/analytics.js" defer></script>
+  <style>
+    /* ── PROTO: IBM×WOOHWAHAE — Magazine 2-col header ── */
+    .article-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: calc(80px + 2rem) 1.5rem 0;
+    }
+
+    /* ── 헤더 전체 — 상단 줄 ── */
+    .article-header {
+      border-top: 1px solid #1a1a1a;
+      padding-top: 1.2rem;
+      margin-bottom: 0;
+    }
+
+    /* ← Archive 백링크 (헤더 위) */
+    .article-back-row {
+      margin-bottom: 1.4rem;
+    }
+
+    .article-back {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      text-decoration: none;
+    }
+
+    .article-back:hover {
+      color: #1a1a1a;
+    }
+
+    /* ── 2컬럼 그리드 ── */
+    .article-header-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 0 2.4rem;
+      align-items: start;
+    }
+
+    /* 좌측 — 메타 + 도트 viz */
+    .article-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      padding-top: 0.2rem;
+    }
+
+    .article-issue-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      line-height: 1.8;
+    }
+
+    .article-issue-label strong {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: #555;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.1rem;
+    }
+
+    /* 우측 — 카테고리 + 제목 + 부제 */
+    .article-header-right {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .article-category-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #888;
+      border: 1px solid #ccc;
+      padding: 0.2em 0.6em;
+      align-self: flex-start;
+      margin-bottom: 1.2rem;
+    }
+
+    /* 제목 — 큰 sans, 굵지 않음 */
+    .article-title {
+      font-family: 'Pretendard', sans-serif;
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      font-weight: 300;
+      font-style: normal;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: #1a1a1a;
+      margin: 0 0 1.4rem;
+    }
+
+    /* 부제 — 좌측 수직선 */
+    .article-subtitle {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: #666;
+      line-height: 1.75;
+      border-left: 2px solid #1a1a1a;
+      padding-left: 1rem;
+      margin: 0;
+    }
+
+    /* 헤더 아래 구분선 */
+    .article-header-divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 1.8rem 0 0;
+    }
+
+    /* ── 본문 ── */
+    .article-body {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .article-body p {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.95;
+      color: #2a2a2a;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    /* blockquote — 배경 + 좌선 */
+    .article-body blockquote {
+      margin: 0;
+      padding: 1.2rem 1.4rem;
+      border-left: 2px solid #1a1a1a;
+      background: #f2f0eb;
+      font-family: 'Pretendard', sans-serif;
+      font-style: normal;
+      font-size: 0.95rem;
+      font-weight: 400;
+      line-height: 1.8;
+      color: #1a1a1a;
+    }
+
+    /* viz — 본문 내 웨이브 라인만 남김 */
+    .viz-line-draw {
+      padding: 0.2rem 0;
+      margin: 0;
+      color: #bbb;
+    }
+
+    /* outro */
+    .article-outro {
+      margin-top: 3rem;
+      padding-bottom: 3rem;
+    }
+
+    .article-outro-rule {
+      height: 1px;
+      background: #1a1a1a;
+      margin-bottom: 1.2rem;
+    }
+
+    .article-outro-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .article-outro-nav {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .article-nav-prev,
+    .article-nav-archive {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #888;
+      text-decoration: none;
+    }
+
+    .article-nav-prev:hover,
+    .article-nav-archive:hover {
+      color: #1a1a1a;
+    }
+
+    /* ── 모바일 — 단일 컬럼 ── */
+    @media (max-width: 580px) {
+      .article-header-grid {
+        grid-template-columns: 1fr;
+        gap: 1.6rem 0;
+      }
+
+      .article-header-left {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 1.2rem;
+      }
+
+      .article-title {
+        font-size: clamp(1.8rem, 8vw, 2.6rem);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links">
+      <li><a href="../../archive/" class="active">Archive</a></li>
+      <li><a href="../../offering.html">Offering</a></li>
+      <li><a href="../../about.html">About</a></li>
+      <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../lab/">Lab</a></li>
+    </ul>
+    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="reading-progress-container">
+    <div class="reading-progress-bar" id="reading-progress"></div>
+  </div>
+
+  <div class="article-container">
+
+    <header class="article-header">
+
+      <!-- 백링크 -->
+      <div class="article-back-row fade-in">
+        <a href="../../archive/" class="article-back">← Archive</a>
+      </div>
+
+      <!-- 2컬럼 그리드 -->
+      <div class="article-header-grid">
+
+        <!-- 좌 — 메타 + 도트 viz -->
+        <div class="article-header-left fade-in">
+          <div class="article-issue-label">
+            <strong>Issue 010</strong>
+            2026.02.20<br>
+            <span id="read-time"></span>
+          </div>
+        </div>
+
+        <!-- 우 — 카테고리 + 제목 + 부제 -->
+        <div class="article-header-right fade-in">
+          <span class="article-category-tag">Essay</span>
+          <h1 class="article-title">일과 본질</h1>
+          <p class="article-subtitle">이 일을 하면서 돈이 우선이었던 적은 없었다.</p>
+        </div>
+
+      </div>
+
+      <!-- 헤더 하단 구분선 -->
+      <div class="article-header-divider fade-in"></div>
+
+    </header>
+
+    <div class="article-body" id="article-content">
+
+      <p class="fade-in">
+        가끔 생각해보면, 이 일을 하면서 돈이 우선이었던 적은 없었던 것 같다.
+      </p>
+
+      <p class="fade-in">
+        시작은 단순했다. 남들이 가지 않는 길이 멋져 보였고,<br>
+        손으로 무언가를 만드는 일이 좋았다.<br>
+        그게 전부였다.
+      </p>
+
+      <p class="fade-in">
+        그런데 10년 넘게 이 일을 하면서 깨달은 게 있다.<br>
+        잘하고 싶다는 욕구와 나를 알고 싶다는 욕구가 같은 뿌리에서 나온다는 것.
+      </p>
+
+      <blockquote class="fade-in">
+        기술은 결국 자기 이해의 표현이다.<br>
+        왜 이렇게 자르는지 설명할 수 있을 때,<br>
+        비로소 그것이 철학이 된다.
+      </blockquote>
+
+      <p class="fade-in">
+        돈을 더 벌기 위한 선택보다, 내가 진짜 하고 싶은 방향으로 움직였을 때<br>
+        오히려 일이 더 단단해졌다.<br>
+        우화해를 연 것도 그런 선택이었다.
+      </p>
+
+      <p class="fade-in">
+        수익성보다 본질을 시도하는 연구실.<br>
+        한 사람에게 온전히 집중하는 시간.<br>
+        그 과정을 기록으로 남기는 것.
+      </p>
+
+      <!-- A. SVG 라인 드로잉 — 섹션 전환 -->
+      <div class="viz-line-draw fade-in" aria-hidden="true">
+        <svg class="line-svg" viewBox="0 0 300 40" preserveAspectRatio="none">
+          <path class="line-path" d="M0,20 C50,5 100,35 150,20 C200,5 250,35 300,20" fill="none" stroke="currentColor" stroke-width="0.8"/>
+        </svg>
+      </div>
+
+      <blockquote class="fade-in">
+        내가 어떤 사람인지 알아가는 것이 원동력이다.<br>
+        일은 그 여정의 형태일 뿐이다.
+      </blockquote>
+
+      <p class="fade-in">
+        완성된 결과보다 과정에 더 의미를 두는 사람이라는 걸<br>
+        이제는 인정한다.<br>
+        그래서 기록한다. 잊지 않기 위해.
+      </p>
+
+    </div>
+
+    <div class="article-outro fade-in">
+      <div class="article-outro-rule"></div>
+      <div class="article-outro-meta">
+        <span class="article-outro-issue">Issue 010</span>
+        <span class="article-outro-date">2026.02.20</span>
+      </div>
+      <div class="article-outro-nav">
+        <a href="../issue-009-inner-world/" class="article-nav-prev">← Issue 009 · 내면 세계</a>
+        <a href="../../archive/" class="article-nav-archive">Archive ↑</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="section--light">
+    <div class="footer-inner">
+      <div class="footer-brand-row">
+        <p class="footer-brand-name">WOOHWAHAE</p>
+      </div>
+      <div class="footer-nav-row">
+        <a href="../../archive/">Archive</a>
+        <a href="../../offering.html">Offering</a>
+        <a href="../../about.html">About</a>
+        <a href="../../contact.html">Contact</a>
+        <a href="../../lab/">Lab</a>
+      </div>
+      <div class="footer-connect-row">
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
+        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
+        <a href="mailto:hello@woohwahae.kr">Email</a>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="../../privacy.html">Privacy</a>
+          <a href="../../terms.html">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── IBM 그리드 인트로 오버레이 ── -->
+  <div id="article-intro" aria-hidden="true">
+    <canvas id="intro-canvas"></canvas>
+  </div>
+
+  <style>
+    #article-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 8000;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(250, 250, 247, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #article-intro.done {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #intro-canvas {
+      display: block;
+      /* 크기는 JS에서 세팅 */
+    }
+  </style>
+
+  <script src="../../assets/js/main.js"></script>
+  <script>
+    // ── IBM 그리드 도트 어셈블리 인트로 (서정적 버전) ──
+    // 단일 오프스크린 캔버스에 모든 요소를 한 번에 렌더링 → 샘플링
+    // 근거리 분산 → 부드러운 수렴 → hold → fade out
+    (function () {
+      var fromGate = new URLSearchParams(window.location.search).get('from') === 'gate';
+
+      if (fromGate) {
+        var introEl = document.getElementById('article-intro');
+        if (introEl) introEl.style.display = 'none';
+        document.querySelectorAll('.fade-in, .fade-in-slow').forEach(function (el) {
+          el.classList.add('visible');
+        });
+        history.replaceState(null, '', window.location.pathname);
+        return;
+      }
+
+      var intro  = document.getElementById('article-intro');
+      var canvas = document.getElementById('intro-canvas');
+      var ctx    = canvas.getContext('2d');
+
+      // ── 이징 (서정적 — 부드러운 quintic) ──
+      function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
+
+      // ── 완료 처리 ──
+      function finish() {
+        intro.classList.add('done');
+        setTimeout(function () {
+          intro.style.display = 'none';
+          document.querySelectorAll('.fade-in, .fade-in-slow').forEach(function (el) {
+            el.classList.add('visible');
+          });
+        }, 1000);
+      }
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // Pre-rendered PNG → 픽셀 샘플링 → 도트 어셈블리
+      // Canvas fillText 폰트 의존성 완전 제거
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      var srcImg = new Image();
+      srcImg.src = './dots-source.png';
+      srcImg.onload = function () {
+        var DPR = window.devicePixelRatio || 1;
+        // 표시 크기 — 뷰포트 대응
+        var displayW = Math.min(680, Math.floor(window.innerWidth * 0.9));
+        var displayH = Math.round(srcImg.naturalHeight * (displayW / srcImg.naturalWidth));
+
+        // 메인 캔버스 설정
+        canvas.width  = displayW * DPR;
+        canvas.height = displayH * DPR;
+        canvas.style.width  = displayW + 'px';
+        canvas.style.height = displayH + 'px';
+        ctx.scale(DPR, DPR);
+
+        // 오프스크린 — PNG를 표시 크기로 축소 그리기
+        var off = document.createElement('canvas');
+        off.width = displayW; off.height = displayH;
+        var oc = off.getContext('2d');
+        oc.drawImage(srcImg, 0, 0, displayW, displayH);
+
+        // ── 픽셀 샘플링 (GAP=2) ──
+        var GAP = 2;
+        var imgData = oc.getImageData(0, 0, displayW, displayH).data;
+        var dots = [];
+
+        for (var py = 0; py < displayH; py += GAP) {
+          for (var px = 0; px < displayW; px += GAP) {
+            var pi = (py * displayW + px) * 4;
+            if (imgData[pi + 3] > 50) {
+              dots.push({
+                tx: px,
+                ty: py,
+                x:  px + (Math.random() - 0.5) * 80,
+                y:  py + (Math.random() - 0.5) * 60,
+                r: imgData[pi], g: imgData[pi + 1], b: imgData[pi + 2],
+                delay: (py / displayH) * 0.6 + Math.random() * 0.15
+              });
+            }
+          }
+        }
+
+        // ── 애니메이션 — 서정적 단일 페이즈 ──
+        var ASSEMBLE = 2400;
+        var HOLD     = 1200;
+        var FADE_OUT = 800;
+
+        var START = null;
+
+        function draw(ts) {
+          if (!START) START = ts;
+          var el = ts - START;
+
+          ctx.clearRect(0, 0, displayW, displayH);
+
+          var globalFade = 1;
+          if (el > ASSEMBLE + HOLD) {
+            var fp = (el - ASSEMBLE - HOLD) / FADE_OUT;
+            globalFade = Math.max(0, 1 - fp);
+          }
+
+          if (globalFade <= 0) {
+            finish();
+            return;
+          }
+
+          for (var i = 0; i < dots.length; i++) {
+            var d = dots[i];
+            var raw = (el - d.delay * ASSEMBLE) / (ASSEMBLE * (1 - d.delay + 0.001));
+            var t   = Math.min(Math.max(raw, 0), 1);
+            var e   = easeOutQuint(t);
+
+            var dx = d.x + (d.tx - d.x) * e;
+            var dy = d.y + (d.ty - d.y) * e;
+
+            var alpha = (0.05 + e * 0.95) * globalFade;
+            if (alpha < 0.01) continue;
+
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle   = 'rgb(' + d.r + ',' + d.g + ',' + d.b + ')';
+            ctx.fillRect(dx, dy, 1.5, 1.5);
+          }
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(draw);
+        }
+
+        requestAnimationFrame(draw);
+      };
+    })();
+
+    // Gate에서 진입 시 — fade-in 딜레이 없이 즉시 표시 (Gate가 이미 전환을 담당했음)
+    (function () {
+      if (new URLSearchParams(window.location.search).get('from') === 'gate') {
+        document.querySelectorAll('.fade-in, .fade-in-slow').forEach(function (el) {
+          el.classList.add('visible');
+        });
+        // URL 파라미터 정리 (히스토리 깔끔하게)
+        history.replaceState(null, '', window.location.pathname);
+      }
+    })();
+
+    window.addEventListener('scroll', function () {
+      const el = document.getElementById('reading-progress');
+      if (!el) return;
+      const body = document.body;
+      const html = document.documentElement;
+      const total = Math.max(body.scrollHeight, html.scrollHeight) - window.innerHeight;
+      el.style.width = (window.scrollY / total * 100) + '%';
+    });
+    // 읽기시간
+    (function () {
+      const content = document.getElementById('article-content');
+      const rt = document.getElementById('read-time');
+      if (!content || !rt) return;
+      const words = content.innerText.trim().split(/\s+/).length;
+      const mins = Math.max(1, Math.round(words / 200));
+      rt.textContent = mins + 'min read';
+    })();
+
+    // SVG 라인 드로잉 — 경로 길이 기반 stroke-dashoffset 애니메이션
+    (function () {
+      const path = document.querySelector('.line-path');
+      if (!path) return;
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = len;
+      let fired = false;
+      const obs = new IntersectionObserver(function(entries) {
+        if (fired || !entries[0].isIntersecting) return;
+        fired = true;
+        path.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        path.style.strokeDashoffset = '0';
+      }, { threshold: 0.5 });
+      obs.observe(path.closest('.viz-line-draw'));
+    })();
+  </script>
+</body>
+
+</html>

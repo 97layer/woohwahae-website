@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#F5F2ED"/>
+  <!-- teacup -->
+  <ellipse cx="200" cy="300" rx="60" ry="15" fill="none" stroke="#A89880" stroke-width="1.5"/>
+  <path d="M140 300 C140 300, 145 370, 200 370 C255 370, 260 300, 260 300" fill="none" stroke="#A89880" stroke-width="1.5"/>
+  <!-- tea surface -->
+  <ellipse cx="200" cy="305" rx="55" ry="12" fill="#DDD5C8" opacity="0.5"/>
+  <!-- steam -->
+  <path d="M185 290 C182 270, 192 260, 188 245" stroke="#C4B8A8" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M200 285 C197 265, 207 250, 203 235" stroke="#C4B8A8" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M215 290 C212 270, 222 255, 218 240" stroke="#C4B8A8" stroke-width="1" fill="none" opacity="0.3"/>
+  <!-- saucer -->
+  <ellipse cx="200" cy="375" rx="75" ry="12" fill="none" stroke="#A89880" stroke-width="1"/>
+</svg>

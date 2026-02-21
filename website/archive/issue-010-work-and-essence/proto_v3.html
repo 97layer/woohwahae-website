@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[PROTO] Issue 010: 일과 본질 — WOOHWAHAE Archive</title>
+    <link rel="stylesheet" href="../../assets/css/style.css?v=footer_v2">
+    <style>
+        /* 
+       [SYSTEM OVERRIDE] 
+       ARCHIVE TEMPLATE V3.0 — "THE MONOLITH"
+       불필요한 장식을 배제하고 극도의 수직적 긴장감만 남긴다.
+    */
+        :root {
+            --bg: #FAFAF7;
+            --line: #1a1a1a;
+            --dim: #8E8E88;
+            --serif: 'Crimson Text', serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            overflow-x: hidden;
+        }
+
+        /* 1. 수직 오케스트레이션 바 (측면 가이드선) */
+        .vertical-axis {
+            position: fixed;
+            left: 5vw;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--line) 150px, var(--line) calc(100% - 150px), transparent);
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .article-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 15rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 2. 극단적 Hero 스케일 (책의 표지 같은 첫인상) */
+        .issue-hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 5rem;
+        }
+
+        .hero-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-family: var(--font-body);
+            font-size: clamp(4rem, 12vw, 10rem);
+            /* 시각적 압도 */
+            font-weight: 200;
+            letter-spacing: -0.06em;
+            line-height: 0.85;
+            margin-left: -0.05em;
+        }
+
+        /* 3. 문단별 지위(Status) 부여 */
+        .content-block {
+            display: grid;
+            grid-template-columns: 3fr 7fr;
+            gap: 2rem;
+            margin-bottom: 8rem;
+            align-items: flex-start;
+        }
+
+        .block-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.55rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding-top: 0.8rem;
+        }
+
+        .block-text {
+            font-size: 1.15rem;
+            line-height: 2.0;
+            color: #1a1a1a;
+        }
+
+        /* 4. "본질의 무게" - 텍스트 마스크 효과 */
+        .heavy-text {
+            font-family: var(--font-body);
+            font-weight: 400;
+            font-size: 2.2rem;
+            letter-spacing: -0.04em;
+            line-height: 1.3;
+            margin: 5rem 0;
+            padding: 4rem 0;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        /* 5. 주석 시스템 (Floating Footnote) */
+        .footnote-link {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            vertical-align: super;
+            color: var(--dim);
+            cursor: help;
+            margin-left: 2px;
+        }
+
+        /* 6. 흐릿한 기억의 시각화 (Blur Filter on Scroll) */
+        .blur-section {
+            transition: filter 1.2s ease;
+        }
+
+        .blur-active {
+            filter: blur(8px);
+            /* 기억의 희석을 시각화 */
+        }
+
+        @media (max-width: 900px) {
+            .content-block {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+                margin-bottom: 4rem;
+            }
+
+            .hero-title {
+                font-size: 5rem;
+            }
+
+            .vertical-axis {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="vertical-axis"></div>
+
+    <nav>
+        <a href="/" class="nav-logo">
+            <img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+        </a>
+        <ul class="nav-links">
+            <li><a href="../../archive/" class="active">Archive</a></li>
+            <li><a href="../../offering.html">Offering</a></li>
+            <li><a href="../../about.html">About</a></li>
+            <li><a href="../../contact.html">Contact</a></li>
+            <li><a href="../../lab/">Lab</a></li>
+        </ul>
+    </nav>
+
+    <main class="article-container">
+
+        <!-- 표지 세션 -->
+        <section class="issue-hero">
+            <div class="hero-meta fade-in">ISSUE NO. 010 / 2026.02.20</div>
+            <h1 class="hero-title fade-in">일과<br>본질.</h1>
+        </section>
+
+        <!-- 본문 블록 01 -->
+        <div class="content-block fade-in">
+            <div class="block-label">01 / INTRODUCTION</div>
+            <div class="block-text">
+                가끔 생각해보면, 이 일을 하면서 돈이 우선이었던 적은 없었던 것 같다.
+                시작은 단순했다. 남들이 가지 않는 길이 멋져 보였고, 손으로 무언가를 만드는 일이 좋았다. 그게 전부였다.
+            </div>
+        </div>
+
+        <!-- 본문 블록 02 (강조) -->
+        <div class="content-block fade-in">
+            <div class="block-label">02 / CORE</div>
+            <div class="block-text heavy-text">
+                기술은 결국 자기 이해의 표현이다.
+                왜 이렇게 자르는지 설명할 수 있을 때, 비로소 그것이 철학이 된다.
+            </div>
+        </div>
+
+        <!-- 본문 블록 03 (주석 포함) -->
+        <div class="content-block fade-in">
+            <div class="block-label">03 / EVOLUTION</div>
+            <div class="block-text">
+                10년 넘게 이 일을 하면서 깨달은 게 있다. 잘하고 싶다는 욕구와 나를 알고 싶다는 욕구가 같은 뿌리에서 나온다는 것.
+                돈을 더 벌기 위한 선택보다, 내가 진짜 하고 싶은 방향으로 움직였을 때 오히려 일이 더 단단해졌다.
+                <span class="footnote-link" title="SYSTEM: 우화해(WOOHWAHAE) 아티클 010 발췌">[*]</span>
+                애초에 우화해를 연 것도 그런 선택이었다.
+            </div>
+        </div>
+
+        <!-- 본문 블록 04 (시각적 소멸 레이아웃) -->
+        <div class="content-block fade-in blur-section" id="reflection-block">
+            <div class="block-label">04 / REFLECTION</div>
+            <div class="block-text">
+                완성된 결과보다 과정에 더 의미를 두는 사람이라는 걸 이제는 인정한다.
+                그래서 기록한다. 잊지 않기 위해. <br><br>
+                이 기록이 누군가에게는 소음이겠지만, 나에게는 본질로 가는 유일한 실표다.
+            </div>
+        </div>
+
+        <footer style="margin-top: 10rem; border-top: 1px solid var(--line); padding-top: 2rem;">
+            <a href="../../archive/"
+                style="font-family:'DM Mono'; font-size:0.7rem; text-decoration:none; color:var(--line); letter-spacing:0.1em;">CLOSE
+                ARCHIVE</a>
+        </footer>
+
+    </main>
+
+    <script src="../../assets/js/main.js"></script>
+    <script>
+        // 고의적 시각 희석 (기억의 모호함 시각화)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.intersectionRatio > 0.8) {
+                    entry.target.classList.add('blur-active');
+                } else {
+                    entry.target.classList.remove('blur-active');
+                }
+            });
+        }, { threshold: [0, 0.8, 1.0] });
+
+        const reflection = document.getElementById('reflection-block');
+        if (reflection) observer.observe(reflection);
+    </script>
+</body>
+
+</html>

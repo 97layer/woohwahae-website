@@ -8,199 +8,314 @@
   <meta property="og:title" content="WOOHWAHAE">
   <meta property="og:description" content="Archive for Slow Life">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://woohwahae.kr/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>WOOHWAHAE</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
+  <meta name="theme-color" content="#E8E6E1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-  <!-- favicon: symbol.jpg 사용 (SVG 삭제됨) -->
-  <link rel="icon" href="assets/img/symbol.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <script src="assets/js/analytics.js"></script>
+  <link rel="icon" href="assets/img/symbol.png" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
+  <link rel="preload" href="assets/css/style.css?v=typo_v38" as="style">
+  <link rel="stylesheet" href="assets/css/style.css?v=typo_v38">
+  <script src="assets/js/analytics.js" defer></script>
 </head>
 
 <body>
 
-  <!-- Navigation — 핵심 4개: Archive / Service / About / Contact -->
+  <!-- Navigation -->
   <nav>
     <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
+      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
       <li><a href="archive/">Archive</a></li>
-      <li><a href="service.html">Service</a></li>
+      <li><a href="offering.html">Offering</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="contact.html">Contact</a></li>
+      <li><a href="lab/">Lab</a></li>
     </ul>
+    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
 
-  <!-- 1. Hero — Magazine B Cover -->
-  <section class="hero section--light">
-    <div class="container">
-      <p class="hero-eyebrow fade-in">Archive for Slow Life</p>
-      <h1 class="hero-title fade-in">
-        WOOHWAHAE
-      </h1>
-      <div class="hero-platform fade-in">
-        <p class="hero-platform-def">
-          가속화된 세상에서 주체적으로 살아가기 위한 아카이브.
-        </p>
-        <p class="hero-platform-body">
-          Hair. Photography. Objects.<br>
-          At your own pace.
-        </p>
+  <!-- 1. Hero — 풀스크린 -->
+  <section class="hero hero--fullscreen section--light">
+
+    <!-- Three.js 캔버스: 섹션 전체 채움 -->
+    <canvas id="hero-canvas" class="hero-canvas-full" aria-hidden="true"></canvas>
+
+    <!-- 오버레이 레이어 -->
+    <div class="hero-overlay">
+      <!-- 중앙 하단 카피 + nav -->
+      <div class="hero-tagline">
+        <div class="hero-platform-def"></div>
+        <div class="hero-stmt-nav">
+          <a href="archive/">Archive</a>
+          <a href="offering.html">Offering</a>
+          <a href="about.html">About</a>
+        </div>
       </div>
     </div>
+
   </section>
 
-  <!-- 2. 섹션 입구 — 7 Sections Hub -->
-  <section class="section--light channels-section">
-    <div class="container--wide">
-      <p class="section-label fade-in">Explore</p>
-      <div class="hub-grid">
-
-        <a href="archive/" class="hub-item fade-in">
-          <p class="hub-item-label">Archive</p>
-          <p class="hub-item-desc">생각의 기록.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
-
-        <a href="service.html" class="hub-item fade-in">
-          <p class="hub-item-label">Service</p>
-          <p class="hub-item-desc">Hair &amp; Photography.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
-
-        <a href="about.html" class="hub-item fade-in">
-          <p class="hub-item-label">About</p>
-          <p class="hub-item-desc">철학의 선언.</p>
-          <span class="hub-item-arrow">&rarr;</span>
-        </a>
-
-        <span class="hub-item hub-item--coming fade-in">
-          <p class="hub-item-label">Shop</p>
-          <p class="hub-item-desc">의식적 소비의 큐레이션.</p>
-          <span class="hub-item-arrow">Soon</span>
-        </span>
-
-        <span class="hub-item hub-item--coming fade-in">
-          <p class="hub-item-label">Playlist</p>
-          <p class="hub-item-desc">감각의 리듬.</p>
-          <span class="hub-item-arrow">Soon</span>
-        </span>
-
-        <span class="hub-item hub-item--coming fade-in">
-          <p class="hub-item-label">Photography</p>
-          <p class="hub-item-desc">순간의 포착.</p>
-          <span class="hub-item-arrow">Soon</span>
-        </span>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. Archive Preview -->
+  <!-- 3. Recent + Newsletter — 병렬 2열 -->
   <section class="section--light" id="archive-section">
     <div class="container--wide">
-      <p class="section-label fade-in">Recent</p>
-      <div id="archive-preview">
-        <ul class="content-grid" id="recent-posts"></ul>
-        <a href="archive/" class="cta fade-in">View All</a>
+      <div class="mag-row fade-in">
+        <div class="mag-label">
+          <p class="section-label">Recent</p>
+          <a href="archive/" class="mag-cta-link fade-in">View All →</a>
+        </div>
+        <div>
+          <div class="archive-grid" id="recent-grid"></div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 4. Newsletter -->
-  <section class="section--dark newsletter-section">
-    <div class="container">
-      <p class="section-label fade-in">Newsletter</p>
-      <h2 class="fade-in">Stay in the loop.</h2>
-      <p class="fade-in newsletter-desc">
-        Archive updates, curated thoughts.<br>
-        Delivered by email.
-      </p>
-      <form id="newsletter-form" class="newsletter-form fade-in">
-        <input type="email" id="newsletter-email" placeholder="Your email" required aria-label="Email address">
-        <button type="submit">Subscribe</button>
-      </form>
-      <p id="newsletter-message" class="newsletter-message" style="display: none;"></p>
+  <section class="section--light" id="newsletter-section">
+    <div class="container--wide">
+      <div class="mag-row fade-in" style="border-bottom:1px solid var(--line);">
+        <div class="mag-label">
+          <p class="section-label">Newsletter</p>
+        </div>
+        <div class="mag-body">
+          <p class="lead">Archive updates, curated thoughts.</p>
+          <form id="newsletter-form" class="newsletter-form">
+            <input type="email" id="newsletter-email" placeholder="Your email" required aria-label="Email address">
+            <button type="submit">Subscribe</button>
+          </form>
+          <p id="newsletter-message" class="newsletter-message"></p>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- 5. Footer -->
   <footer class="section--light">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <img src="assets/img/symbol.jpg" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
+    <div class="footer-inner">
+      <div class="footer-brand-row">
         <p class="footer-brand-name">WOOHWAHAE</p>
-        <p class="footer-brand-desc">Archive for Slow Life</p>
       </div>
-      <div>
-        <p class="footer-nav-title">Navigate</p>
-        <ul class="footer-nav-list">
-          <li><a href="archive/">Archive</a></li>
-          <li><a href="service.html">Service</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
+      <div class="footer-nav-row">
+        <a href="archive/">Archive</a>
+        <a href="offering.html">Offering</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="lab/">Lab</a>
       </div>
-      <div>
-        <p class="footer-connect-title">Connect</p>
-        <ul class="footer-connect-list">
-          <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
-              target="_blank" rel="noopener">Booking</a></li>
-          <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
-        </ul>
+      <div class="footer-connect-row">
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
+        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
+        <a href="mailto:hello@woohwahae.kr">Email</a>
       </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="footer-bottom-copy">
-        &copy; 2026 WOOHWAHAE &middot; Archive for Slow Life &middot;
-        <a href="privacy.html">개인정보처리방침</a> &middot;
-        <a href="terms.html">이용약관</a>
-      </p>
+      <div class="footer-bottom">
+        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+        </div>
+      </div>
     </div>
   </footer>
 
   <script src="assets/js/newsletter.js"></script>
+  <script src="assets/js/hero-animation.js"></script>
   <script src="assets/js/main.js"></script>
+
+  <!-- Three.js Hero Symbol -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas) throw new Error('hero-canvas not found');
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, precision: 'highp' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 3));
+    renderer.setClearColor(0x000000, 0);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+    camera.position.set(0, 0, 5.5);
+
+    function setSize() {
+      const W = innerWidth;
+      const H = innerHeight;
+      renderer.setSize(W, H, false);
+      camera.aspect = W / H;
+      camera.updateProjectionMatrix();
+    }
+    setSize();
+    window.addEventListener('resize', setSize);
+
+    scene.add(new THREE.AmbientLight(0xE8E6E1, 1.1));
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+    keyLight.position.set(2, 3, 4); scene.add(keyLight);
+    const fillLight = new THREE.DirectionalLight(0xdde8f0, 0.9);
+    fillLight.position.set(-3, -1, 2); scene.add(fillLight);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    rimLight.position.set(0, -4, -3); scene.add(rimLight);
+
+    function roughen(geo, amount) {
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const nx = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+        const ny = Math.sin(i * 269.5 + 183.3) * 43758.5453;
+        const nz = Math.sin(i * 419.2 + 631.4) * 43758.5453;
+        pos.setX(i, pos.getX(i) + (nx - Math.floor(nx) - 0.5) * amount);
+        pos.setY(i, pos.getY(i) + (ny - Math.floor(ny) - 0.5) * amount);
+        pos.setZ(i, pos.getZ(i) + (nz - Math.floor(nz) - 0.5) * amount);
+      }
+      pos.needsUpdate = true; geo.computeVertexNormals(); return geo;
+    }
+
+    function roughCirclePts(r, n, wobble) {
+      const pts = [];
+      for (let i = 0; i <= n; i++) {
+        const t = i / n, a = t * Math.PI * 2;
+        const w = 1 + Math.sin(a*2.3+r*5.7)*wobble + Math.sin(a*5.1+r*3.1)*wobble*0.6
+                    + Math.sin(a*9.7+r*7.3)*wobble*0.3 + Math.cos(a*4.2-r*2.9)*wobble*0.5;
+        const zOff = Math.sin(a*3.1+r*4.1)*wobble*r*0.45 + Math.cos(a*6.7-r*1.8)*wobble*r*0.25;
+        pts.push(new THREE.Vector3(Math.cos(a)*r*w, Math.sin(a)*r*w, zOff));
+      }
+      return pts;
+    }
+
+    function makeMat(color, opacity, roughness=0.88, metalness=0.04) {
+      return new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent:true, opacity });
+    }
+
+    const root = new THREE.Group(); scene.add(root);
+
+    const ringDefs = [
+      { r:1.10, tube:0.005,  tX: 0.32, tY: 0.08, tZ: 0.05, spin: 0.038, wobble:0.065, op:0.78 },
+      { r:0.84, tube:0.004,  tX:-0.42, tY:-0.12, tZ: 0.10, spin:-0.055, wobble:0.055, op:0.60 },
+      { r:0.58, tube:0.0032, tX: 0.18, tY: 0.24, tZ:-0.08, spin: 0.072, wobble:0.048, op:0.44 },
+      { r:0.30, tube:0.0025, tX:-0.14, tY:-0.28, tZ: 0.12, spin:-0.088, wobble:0.038, op:0.32 },
+    ];
+    const rings = ringDefs.map(def => {
+      const pts = roughCirclePts(def.r, 260, def.wobble);
+      const geo = roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true,'centripetal',0.4),320,def.tube,12,true), def.tube*0.7);
+      const mesh = new THREE.Mesh(geo, makeMat(0x2a2820, def.op));
+      mesh.rotation.set(def.tX, def.tY, def.tZ); root.add(mesh);
+      return { mesh, def };
+    });
+
+    const spiralPts = [];
+    for (let i = 0; i <= 600; i++) {
+      const t = i/600, angle = t*3.8*Math.PI*2 - Math.PI/2, r = 0.10+(1.12-0.10)*t;
+      const z = Math.sin(t*Math.PI*2.2)*0.20 + Math.sin(t*17.3)*0.025;
+      const w = Math.sin(t*11.3)*0.048 + Math.sin(t*27.9+1.3)*0.022;
+      spiralPts.push(new THREE.Vector3(Math.cos(angle)*(r+w), Math.sin(angle)*(r+w), z));
+    }
+    const sc = new THREE.CatmullRomCurve3(spiralPts,false,'centripetal',0.3);
+    const spts = sc.getPoints(1000);
+    const spiralInner = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spts.slice(0,510),false,'centripetal'),500,0.005,12,false),0.004), makeMat(0x252320,0.86));
+    const spiralOuter = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spts.slice(500),false,'centripetal'),500,0.003,10,false),0.003), makeMat(0x252320,0.60));
+    spiralInner.rotation.x = spiralOuter.rotation.x = 0.10;
+    root.add(spiralInner); root.add(spiralOuter);
+
+    const ecgRaw = [[-1.0,0,0],[-0.66,0,0.01],[-0.60,-0.11,0.02],[-0.54,0,0.01],[-0.36,0.01,-0.01],[-0.26,0.09,0.02],[-0.16,-0.68,0.04],[-0.08,0.14,0.02],[0,0.01,-0.01],[0.24,-0.24,0.02],[0.46,0.01,-0.01],[1.0,0,0]].map(([x,y,z])=>new THREE.Vector3(x,y,z));
+    const ecgMesh = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ecgRaw,false,'centripetal',0.25),360,0.004,12,false),0.003), makeMat(0x2a2820,0.72));
+    ecgMesh.rotation.set(0.08,0,0); root.add(ecgMesh);
+
+    const dotMesh = new THREE.Mesh(roughen(new THREE.SphereGeometry(0.040,32,32),0.006), makeMat(0x1a1814,0.92,0.72,0.08));
+    root.add(dotMesh);
+
+    const mouse = {x:0,y:0}, smooth = {x:0,y:0};
+    window.addEventListener('mousemove', e => {
+      mouse.x = (e.clientX/innerWidth-0.5)*2;
+      mouse.y = (e.clientY/innerHeight-0.5)*2;
+    }, {passive:true});
+
+    setTimeout(() => { canvas.style.opacity = '1'; }, 120);
+
+    const clock = new THREE.Clock();
+    (function animate() {
+      requestAnimationFrame(animate);
+      const dt = clock.getDelta(), t = clock.getElapsedTime();
+      smooth.x += (mouse.x - smooth.x) * 0.04;
+      smooth.y += (mouse.y - smooth.y) * 0.04;
+      root.rotation.y = t*0.028 + smooth.x*0.22;
+      root.rotation.x = smooth.y*-0.16;
+      rings.forEach(({mesh,def}) => { mesh.rotation.z += def.spin*dt; });
+      spiralInner.rotation.y += 0.004*dt;
+      spiralOuter.rotation.y += 0.004*dt;
+      dotMesh.scale.setScalar(1+Math.sin(t*2.8)*0.06);
+      keyLight.position.x = 2+smooth.x*1.8;
+      keyLight.position.y = 3-smooth.y*1.2;
+      renderer.render(scene, camera);
+    })();
+  </script>
   <script>
+    /* Recent Archive — 3-column card grid (same system as archive page) */
     fetch('archive/index.json')
       .then(r => r.json())
       .then(posts => {
-        const grid = document.getElementById('recent-posts');
+        const grid = document.getElementById('recent-grid');
         const section = document.getElementById('archive-section');
         if (!grid || !posts.length) {
           if (section) section.style.display = 'none';
           return;
         }
-        posts.slice(0, 3).forEach(post => {
-          const li = document.createElement('li');
-          li.className = 'content-card fade-in';
-          li.innerHTML = `
-            <a href="archive/${post.slug}/">
-              <p class="content-card-date">${post.issue} · ${post.date}</p>
-              <p class="content-card-title">${post.title}</p>
-              <p class="content-card-preview">${post.preview}</p>
-            </a>
-          `;
-          grid.appendChild(li);
+
+        posts.slice(0, 6).forEach((post, idx) => {
+          const card = document.createElement('a');
+          card.href = 'archive/' + post.slug + '/';
+          card.className = 'archive-card fade-in';
+          card.dataset.delay = idx;
+
+          const issueNum = post.issue ? post.issue.replace('Issue ', '') : '00';
+          const hasImage = post.image_url && post.image_url.trim() !== '';
+          const imageContent = hasImage
+            ? '<img src="' + post.image_url + '" alt="' + post.title + '" loading="lazy">'
+            : '<span class="archive-card-ghost">' + issueNum + '</span>';
+
+          card.innerHTML =
+            '<div class="archive-card-image">' + imageContent + '</div>' +
+            '<span class="archive-card-category">' + post.category + '</span>' +
+            '<h3 class="archive-card-title">' + post.title + '</h3>' +
+            '<div class="archive-card-meta"><span>' + post.issue + '</span><span>' + post.date + '</span></div>' +
+            '<p class="archive-card-preview">' + post.preview + '</p>';
+
+          grid.appendChild(card);
         });
-        grid.querySelectorAll('.fade-in').forEach(el => {
+
+        grid.querySelectorAll('.archive-card.fade-in').forEach((el, i) => {
           const obs = new IntersectionObserver(([e]) => {
-            if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-          }, { threshold: 0.1 });
+            if (e.isIntersecting) {
+              setTimeout(() => e.target.classList.add('visible'), i * 80);
+              obs.unobserve(e.target);
+            }
+          }, { threshold: 0.05 });
           obs.observe(el);
         });
       })
       .catch(() => {
-        const section = document.getElementById('archive-section');
-        if (section) section.style.display = 'none';
+        const grid = document.getElementById('recent-grid');
+        if (grid) {
+          grid.innerHTML = '<p class="archive-error" style="color: var(--text-faint); font-family: var(--font-mono); font-size: 0.8rem;">아카이브 데이터를 동기화할 수 없습니다.</p>';
+        } else {
+          const section = document.getElementById('archive-section');
+          if (section) section.style.display = 'none';
+        }
       });
   </script>
 

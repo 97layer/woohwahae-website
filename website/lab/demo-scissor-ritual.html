@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 012: The Ritual of Scissor — WOOHWAHAE</title>
+    <meta name="description" content="가위를 통해 버림으로써 본질을 완성하는 행위. 공간 절단 캔버스 실험.">
+    <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #E8E6E1;
+            --text: #1a1814;
+            --text-faint: #8b8984;
+            --line: #d1cfca;
+            --solid: #2c2a25;
+            /* 잘려나갈 원단(머리카락)의 색상 */
+            --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-faint);
+            text-decoration: none;
+            transition: color 0.3s;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .nav-back:hover {
+            color: #fff;
+        }
+
+        .lab-info {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-faint);
+            z-index: 100;
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+
+        .lab-info-title {
+            color: #fff;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #drawCanvas {
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        #cutCanvas {
+            z-index: 5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="./" class="nav-back">← Back to Lab</a>
+
+    <div class="lab-info">
+        <div class="lab-info-title">Exp.012 / The Ritual of Scissor</div>
+        <div>Drag across the screen to cut.</div>
+        <div>Sound on recommended.</div>
+    </div>
+
+    <canvas id="cutCanvas"></canvas>
+    <canvas id="drawCanvas"></canvas>
+
+    <script>
+        // Audio Context Setup for Synthesized Scissor Sound
+        let audioCtx = null;
+
+        function initAudio() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playScissorSound() {
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            // Sharp, metallic sound using high frequency sine + rapid decay
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(6000, audioCtx.currentTime); // High pitch metallic origin
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+
+            filter.type = 'highpass';
+            filter.frequency.value = 2000;
+
+            // Envelope
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.01); // sharp attack
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15); // sharp decay
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
+
+            // Add a slight noise burst for the "snip" friction
+            const bufferSize = audioCtx.sampleRate * 0.15; // 150ms of noise
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noiseSource = audioCtx.createBufferSource();
+            noiseSource.buffer = buffer;
+
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.value = 4000;
+            noiseFilter.Q.value = 1.0;
+
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(0, audioCtx.currentTime);
+            noiseGain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.02);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+
+            noiseSource.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(audioCtx.destination);
+
+            noiseSource.start();
+        }
+
+        // Canvas Physics and Rendering
+        const cutCanvas = document.getElementById('cutCanvas');
+        const cutCtx = cutCanvas.getContext('2d');
+        const drawCanvas = document.getElementById('drawCanvas');
+        const drawCtx = drawCanvas.getContext('2d');
+
+        let w, h;
+        let polygons = [];
+
+        // Interaction state
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let dragCurrent = { x: 0, y: 0 };
+
+        function resize() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            cutCanvas.width = drawCanvas.width = w * window.devicePixelRatio;
+            cutCanvas.height = drawCanvas.height = h * window.devicePixelRatio;
+            cutCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            drawCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            // Initialize with one massive polygon filling the screen
+            polygons = [{
+                points: [
+                    { x: 0, y: 0 },
+                    { x: w, y: 0 },
+                    { x: w, y: h },
+                    { x: 0, y: h }
+                ],
+                velocity: { x: 0, y: 0 },
+                rotation: 0,
+                spin: 0,
+                center: { x: w / 2, y: h / 2 },
+                isFalling: false
+            }];
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Interaction Events
+        window.addEventListener('mousedown', e => {
+            initAudio(); // Initialize audio on first trusted user gesture
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            isDragging = true;
+            dragStart = { x: e.clientX, y: e.clientY };
+            dragCurrent = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (isDragging) {
+                dragCurrent = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        window.addEventListener('mouseup', e => {
+            if (isDragging) {
+                isDragging = false;
+                dragCurrent = { x: e.clientX, y: e.clientY };
+
+                // Minimum distance to count as a cut
+                const dx = dragCurrent.x - dragStart.x;
+                const dy = dragCurrent.y - dragStart.y;
+                if (Math.sqrt(dx * dx + dy * dy) > 20) {
+                    performCut(dragStart, dragCurrent);
+                    playScissorSound();
+                }
+
+                drawCtx.clearRect(0, 0, w, h);
+            }
+        });
+
+        // Touch support
+        window.addEventListener('touchstart', e => {
+            initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            isDragging = true;
+            dragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            dragCurrent = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+        window.addEventListener('touchmove', e => {
+            if (isDragging) {
+                dragCurrent = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+        });
+        window.addEventListener('touchend', e => {
+            if (isDragging) {
+                isDragging = false;
+                const dx = dragCurrent.x - dragStart.x;
+                const dy = dragCurrent.y - dragStart.y;
+                if (Math.sqrt(dx * dx + dy * dy) > 20) {
+                    performCut(dragStart, dragCurrent);
+                    playScissorSound();
+                }
+                drawCtx.clearRect(0, 0, w, h);
+            }
+        });
+
+        // Math line segment intersection helper
+        function getIntersection(a1, a2, b1, b2) {
+            const denom = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+            if (denom === 0) return null;
+            const ua = ((b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x)) / denom;
+            const ub = ((a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x)) / denom;
+            if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1) {
+                return {
+                    x: a1.x + ua * (a2.x - a1.x),
+                    y: a1.y + ua * (a2.y - a1.y)
+                };
+            }
+            return null;
+        }
+
+        // Determine which side of a line a point is
+        function pointSide(p, a, b) {
+            return (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+        }
+
+        function calculateCenter(points) {
+            let cx = 0, cy = 0;
+            for (let i = 0; i < points.length; i++) {
+                cx += points[i].x;
+                cy += points[i].y;
+            }
+            return { x: cx / points.length, y: cy / points.length };
+        }
+
+        // Sutherland-Hodgman style polygon clipping against a single line
+        function performCut(lineStart, lineEnd) {
+            // Extend the line infinitely covering the screen
+            const dirX = lineEnd.x - lineStart.x;
+            const dirY = lineEnd.y - lineStart.y;
+            const len = Math.sqrt(dirX * dirX + dirY * dirY);
+            const nx = dirX / len;
+            const ny = dirY / len;
+
+            const extendedStart = { x: lineStart.x - nx * 3000, y: lineStart.y - ny * 3000 };
+            const extendedEnd = { x: lineEnd.x + nx * 3000, y: lineEnd.y + ny * 3000 };
+
+            const newPolygons = [];
+
+            for (let i = 0; i < polygons.length; i++) {
+                const poly = polygons[i];
+
+                // Skip already falling polygons; only fixed ones can be cut
+                if (poly.isFalling) {
+                    newPolygons.push(poly);
+                    continue;
+                }
+
+                const leftPoly = [];
+                const rightPoly = [];
+
+                for (let j = 0; j < poly.points.length; j++) {
+                    const v1 = poly.points[j];
+                    const v2 = poly.points[(j + 1) % poly.points.length];
+
+                    const side1 = pointSide(v1, extendedStart, extendedEnd);
+                    const side2 = pointSide(v2, extendedStart, extendedEnd);
+
+                    if (side1 > 0) leftPoly.push(v1);
+                    else rightPoly.push(v1);
+
+                    if ((side1 > 0 && side2 < 0) || (side1 < 0 && side2 > 0)) {
+                        const intersect = getIntersection(v1, v2, extendedStart, extendedEnd);
+                        if (intersect) {
+                            leftPoly.push(intersect);
+                            rightPoly.push({ x: intersect.x, y: intersect.y }); // clone for independent ref
+                        }
+                    }
+                }
+
+                // If cut occurred and generated valid areas
+                if (leftPoly.length > 2 && rightPoly.length > 2) {
+                    const leftCenter = calculateCenter(leftPoly);
+                    const rightCenter = calculateCenter(rightPoly);
+
+                    // One piece falls (for example, the 'right' side based on cut direction), the other stays
+                    // Actually, let's make the smaller area or the bottom one fall
+                    // Simple heuristic: whichever center is lower (higher Y) falls.
+                    const leftFalls = leftCenter.y > rightCenter.y;
+
+                    newPolygons.push({
+                        points: leftPoly,
+                        velocity: { x: (Math.random() - 0.5) * 2, y: leftFalls ? 0 : 0 },
+                        rotation: 0,
+                        spin: leftFalls ? (Math.random() - 0.5) * 0.05 : 0,
+                        center: leftCenter,
+                        isFalling: poly.isFalling || leftFalls
+                    });
+
+                    newPolygons.push({
+                        points: rightPoly,
+                        velocity: { x: (Math.random() - 0.5) * 2, y: !leftFalls ? 0 : 0 },
+                        rotation: 0,
+                        spin: !leftFalls ? (Math.random() - 0.5) * 0.05 : 0,
+                        center: rightCenter,
+                        isFalling: poly.isFalling || !leftFalls
+                    });
+                } else {
+                    // No cut hit this polygon
+                    newPolygons.push(poly);
+                }
+            }
+
+            polygons = newPolygons;
+        }
+
+        // Drawing and Animation Loop
+        let lastTime = 0;
+        function animate(time) {
+            requestAnimationFrame(animate);
+
+            const dt = (time - lastTime) / 1000 || 0;
+            lastTime = time;
+
+            // Draw user dragging cut line
+            drawCtx.clearRect(0, 0, w, h);
+            if (isDragging) {
+                drawCtx.beginPath();
+                drawCtx.moveTo(dragStart.x, dragStart.y);
+                drawCtx.lineTo(dragCurrent.x, dragCurrent.y);
+                drawCtx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                drawCtx.lineWidth = 1;
+                drawCtx.setLineDash([4, 4]);
+                drawCtx.stroke();
+                drawCtx.setLineDash([]);
+            }
+
+            // Update and Draw Polygons
+            cutCtx.clearRect(0, 0, w, h);
+
+            for (let i = polygons.length - 1; i >= 0; i--) {
+                const poly = polygons[i];
+
+                // Physics update
+                if (poly.isFalling) {
+                    poly.velocity.y += 900 * dt; // Gravity
+                    poly.center.x += poly.velocity.x * dt;
+                    poly.center.y += poly.velocity.y * dt;
+                    poly.rotation += poly.spin;
+                }
+
+                // Draw Polygon
+                cutCtx.save();
+                cutCtx.translate(poly.center.x, poly.center.y);
+                if (poly.isFalling) {
+                    cutCtx.rotate(poly.rotation);
+                }
+
+                cutCtx.beginPath();
+                for (let j = 0; j < poly.points.length; j++) {
+                    const pt = poly.points[j];
+                    const rx = pt.x - poly.center.x;
+                    const ry = pt.y - poly.center.y;
+                    if (j === 0) cutCtx.moveTo(rx, ry);
+                    else cutCtx.lineTo(rx, ry);
+                }
+                cutCtx.closePath();
+
+                // Fill the piece
+                cutCtx.fillStyle = '#2a2824'; // Very dark gray, almost black
+                cutCtx.fill();
+
+                // Draw the edge/border slightly lighter to show cuts
+                cutCtx.strokeStyle = 'rgba(232, 230, 225, 0.1)'; // faint line
+                cutCtx.lineWidth = 1;
+                cutCtx.stroke();
+
+                cutCtx.restore();
+
+                // Memory cleanup: removed finished falling pieces
+                if (poly.center.y > h * 2) {
+                    polygons.splice(i, 1);
+                }
+            }
+        }
+
+        requestAnimationFrame(animate);
+    </script>
+</body>
+
+</html>

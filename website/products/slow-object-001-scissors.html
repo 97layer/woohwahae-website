@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slow Object Report #001 — 가위</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap');
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --text-sub: #5A5A5A;
+      --text-faint: #8E8E88;
+      --line: #CCCAC3;
+      --font-body: 'Pretendard Variable', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+      background: var(--bg);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    @media print {
+      body {
+        max-width: 100%;
+        padding: 1cm;
+        font-size: 11pt;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      h1, h2 {
+        page-break-after: avoid;
+      }
+    }
+
+    .cover {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 4rem;
+    }
+
+    .cover-title {
+      font-size: 2.5rem;
+      font-weight: 200;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .cover-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text-sub);
+      letter-spacing: 0.1em;
+      margin-bottom: 3rem;
+    }
+
+    .cover-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      line-height: 1.6;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 300;
+      margin: 4rem 0 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin: 2rem 0 1rem;
+      color: var(--text);
+    }
+
+    p {
+      margin-bottom: 1.2rem;
+      line-height: 1.95;
+    }
+
+    p.lead {
+      font-size: 1.05em;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 3rem 0;
+    }
+
+    .note {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-faint);
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--line);
+      margin: 2rem 0;
+    }
+
+    .footer-info {
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 표지 -->
+  <div class="cover">
+    <h1 class="cover-title">Slow Object Report<br>#001 가위</h1>
+    <p class="cover-subtitle">도구의 본질에 대한 탐구</p>
+    <div class="cover-meta">
+      WOOHWAHAE<br>
+      Quarterly Publication<br>
+      2026 Q1 Edition
+    </div>
+  </div>
+
+  <!-- 서문 -->
+  <div class="page-break"></div>
+  <h2>도구가 아닌 연장</h2>
+  <p class="lead">가위는 자르는 게 아니다.<br>형태를 만든다.</p>
+  <p>
+    12년간 미용 가위를 썼다.<br>
+    처음엔 그냥 도구였다.<br>
+    날카롭고, 빠르고, 가볍기만 하면 됐다.
+  </p>
+  <p>
+    하지만 시간이 지나며 알게 됐다.<br>
+    가위는 손의 연장이 아니라는 것을.<br>
+    <strong>손이 가위의 연장이다.</strong>
+  </p>
+  <p>
+    좋은 가위는 손이 따라간다.<br>
+    나쁜 가위는 손을 피곤하게 한다.<br>
+    가위가 손을 가르친다.
+  </p>
+  <hr class="divider">
+
+  <!-- Chapter 1 -->
+  <div class="page-break"></div>
+  <h2>Chapter 1. 무게 중심</h2>
+  <h3>가벼움이 답이 아니다</h3>
+  <p>
+    처음 미용 가위를 샀을 때 가장 가벼운 걸 골랐다.<br>
+    70g짜리 티타늄 가위.<br>
+    하루 종일 잡아도 손이 안 아플 거라 생각했다.
+  </p>
+  <p>
+    3개월 후 손목이 망가졌다.<br>
+    가벼워서 오히려 손에 힘이 들어갔다.<br>
+    무게가 없으니 손이 떠받쳐야 했다.
+  </p>
+  <p>
+    <strong>무게 중심이 중요하다.</strong>
+  </p>
+  <p>
+    엄지 구멍과 날 끝 사이의 밸런스.<br>
+    무게가 적당히 있어야 가위가 알아서 떨어진다.<br>
+    손은 방향만 잡으면 된다.
+  </p>
+
+  <h3>실전 체크</h3>
+  <p>가위를 엄지와 검지 끝에만 올려본다.<br>수평을 유지하면 무게 중심이 맞는 것이다.</p>
+  <p class="note">
+    현재 사용 중: Mizutani Acro Type Z (120g)<br>
+    무겁지만 손목은 편하다.<br>
+    무게가 일한다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Chapter 2 -->
+  <div class="page-break"></div>
+  <h2>Chapter 2. 날의 각도</h2>
+  <h3>보이지 않는 차이</h3>
+  <p>
+    가위날 각도는 대개 30-40도 사이다.<br>
+    5도 차이면 "비슷하겠지"라고 생각했다.<br>
+    하지만 머리카락은 거짓말하지 않는다.
+  </p>
+  <p>
+    30도 날: 단면이 날카롭다. 빠르게 자른다. 하지만 모발이 밀린다.<br>
+    40도 날: 저항이 있다. 느리다. 하지만 단면이 깨끗하다.
+  </p>
+  <p>
+    <strong>느린 가위가 결과는 빠르다.</strong>
+  </p>
+  <p>
+    한 번에 깨끗하게 자르면 수정이 없다.<br>
+    빠르게 자르고 다시 다듬으면 시간이 두 배다.<br>
+    날 각도가 작업 속도를 결정한다.
+  </p>
+
+  <p class="note">
+    PEEK-A-BOO 베이스 커트는 40도 날 권장.<br>
+    저항을 느끼며 자르는 게 구조를 만든다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Chapter 3 -->
+  <div class="page-break"></div>
+  <h2>Chapter 3. 손잡이의 철학</h2>
+  <h3>오프셋 vs 대칭</h3>
+  <p>
+    가위 손잡이는 두 가지다.<br>
+    대칭형(Classic)과 비대칭형(Offset).
+  </p>
+  <p>
+    대칭형은 전통이다.<br>
+    두 구멍이 일직선이다.<br>
+    팔꿈치를 올려야 한다.<br>
+    힘은 강하지만 피곤하다.
+  </p>
+  <p>
+    오프셋은 인체공학이다.<br>
+    엄지 구멍이 아래로 내려와 있다.<br>
+    팔꿈치가 편하다.<br>
+    힘은 약하지만 오래 간다.
+  </p>
+  <p>
+    <strong>1인 미용실에는 오프셋이 답이다.</strong>
+  </p>
+  <p>
+    하루 3-4명 시술.<br>
+    12년을 버티려면 손목이 살아야 한다.<br>
+    힘이 아니라 지속이 중요하다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Chapter 4 -->
+  <div class="page-break"></div>
+  <h2>Chapter 4. 재질의 차이</h2>
+  <h3>스테인리스 vs 코발트</h3>
+  <p>
+    미용 가위는 대개 세 가지 재질이다.<br>
+    스테인리스 / 코발트 / 티타늄.
+  </p>
+  <p>
+    스테인리스(440C): 가장 흔하다. 무겁다. 녹에 강하다. 날이 오래 간다.<br>
+    코발트(VG10): 날카롭다. 가볍다. 하지만 관리가 까다롭다.<br>
+    티타늄: 가볍다. 비싸다. 하지만 날이 빨리 무뎌진다.
+  </p>
+  <p>
+    <strong>초보는 스테인리스부터 시작해야 한다.</strong>
+  </p>
+  <p>
+    실수해도 괜찮다.<br>
+    바닥에 떨어뜨려도 괜찮다.<br>
+    관리가 단순하다.<br>
+    코발트는 그 다음이다.
+  </p>
+
+  <p class="note">
+    첫 가위: 20만원 스테인리스 (지금도 예비용으로 사용)<br>
+    현재 주력: 80만원 코발트 (8년째)<br>
+    비싼 게 오래 간다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Chapter 5 -->
+  <div class="page-break"></div>
+  <h2>Chapter 5. 날 연결부의 비밀</h2>
+  <h3>베어링 vs 히트</h3>
+  <p>
+    가위 두 날이 만나는 부분.<br>
+    여기에 두 가지 방식이 있다.<br>
+    베어링(Bearing)과 히트(Hit).
+  </p>
+  <p>
+    베어링: 볼이 들어있다. 부드럽다. 소음이 적다. 하지만 헐거워진다.<br>
+    히트: 날이 직접 닿는다. 단단하다. 하지만 마찰이 있다.
+  </p>
+  <p>
+    <strong>베어링은 속도. 히트는 정밀.</strong>
+  </p>
+  <p>
+    빠르게 자르는 스타일이면 베어링.<br>
+    구조적으로 쌓는 스타일이면 히트.<br>
+    PEEK-A-BOO는 히트를 권한다.
+  </p>
+
+  <p class="note">
+    베어링은 2년마다 재조정이 필요하다.<br>
+    히트는 5년 이상 간다.<br>
+    유지비도 설계 기준이다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Chapter 6 -->
+  <div class="page-break"></div>
+  <h2>Chapter 6. 가위와 손의 대화</h2>
+  <h3>손 위치가 실루엣을 바꾼다</h3>
+  <p>
+    같은 가위로 자르는데 결과가 다를 때가 있다.<br>
+    문제는 가위가 아니라 손이다.
+  </p>
+  <p>
+    손목 각도 5도 차이.<br>
+    엄지 위치 1cm 차이.<br>
+    이게 레이어 높이를 바꾼다.
+  </p>
+  <p>
+    <strong>가위는 정직하다.</strong>
+  </p>
+  <p>
+    손이 긴장하면 날이 모발을 민다.<br>
+    손이 떨리면 단면이 지저분하다.<br>
+    손이 편해야 가위가 제대로 작동한다.
+  </p>
+
+  <h3>손 훈련법</h3>
+  <p>
+    매일 아침 10분.<br>
+    가위를 들고 공중에서 개폐 100회.<br>
+    소리가 일정하면 손 위치가 맞는 것이다.
+  </p>
+
+  <p class="note">
+    손이 가위를 바꾸지 않는다.<br>
+    가위가 손을 가르친다.<br>
+    좋은 가위는 나쁜 습관을 드러낸다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Chapter 7 -->
+  <div class="page-break"></div>
+  <h2>Chapter 7. 관리의 원칙</h2>
+  <h3>닦지 말고 닦아내라</h3>
+  <p>
+    가위 관리는 단순하다.<br>
+    하지만 대부분 틀리게 한다.
+  </p>
+  <p>
+    티슈로 문지르지 않는다 → 날에 미세 흠집<br>
+    물로 씻지 않는다 → 히트 부분 녹슬음<br>
+    오일을 과하게 바르지 않는다 → 먼지 축적
+  </p>
+  <p>
+    <strong>올바른 관리:</strong><br>
+    시술 후 마른 천으로 한 방향 닦아내기.<br>
+    주 1회 날 연결부에 오일 1방울.<br>
+    월 1회 전문가 점검.
+  </p>
+
+  <p class="note">
+    8년째 쓰는 가위는 첫날과 같다.<br>
+    관리가 수명을 결정한다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- Chapter 8 -->
+  <div class="page-break"></div>
+  <h2>Chapter 8. 도구가 기술을 만든다</h2>
+  <h3>가위를 바꾸면 기술이 바뀐다</h3>
+  <p>
+    20만원 가위에서 80만원 가위로 바꿨을 때.<br>
+    실력이 늘었다고 느꼈다.<br>
+    하지만 착각이었다.
+  </p>
+  <p>
+    <strong>실력이 드러난 것이다.</strong>
+  </p>
+  <p>
+    나쁜 가위는 실수를 숨긴다.<br>
+    날이 무뎌서 모발이 밀려도 모른다.<br>
+    무게가 안 맞아서 손에 힘이 들어가도 모른다.
+  </p>
+  <p>
+    좋은 가위는 실수를 드러낸다.<br>
+    손 위치가 틀리면 즉시 알 수 있다.<br>
+    긴장하면 결과에 바로 나온다.
+  </p>
+  <p>
+    도구가 기술을 가르친다.<br>
+    비싼 가위는 투자가 아니라 피드백 시스템이다.
+  </p>
+
+  <hr class="divider">
+
+  <!-- 마무리 -->
+  <div class="page-break"></div>
+  <h2>결론: 가위는 철학이다</h2>
+  <p>
+    가위를 고를 때 가장 중요한 질문은 이것이다.<br>
+    <strong>"이 가위로 12년을 버틸 수 있는가?"</strong>
+  </p>
+  <p>
+    가벼운가?<br>
+    날카로운가?<br>
+    멋있는가?<br>
+    이건 나중 문제다.
+  </p>
+  <p>
+    손목이 편한가?<br>
+    관리가 단순한가?<br>
+    내 스타일에 맞는가?<br>
+    이게 먼저다.
+  </p>
+  <p>
+    가위는 도구가 아니라 파트너다.<br>
+    빠르게 자르는 게 아니라 오래 자를 수 있어야 한다.<br>
+    화려함이 아니라 지속이다.
+  </p>
+
+  <p class="note">
+    WOOHWAHAE는 3개의 가위만 쓴다.<br>
+    베이스 커트용 / 레이어 커트용 / 질감 커트용.<br>
+    많을 필요 없다.<br>
+    맞는 것 하나가 열 개보다 낫다.
+  </p>
+
+  <div class="footer-info">
+    <p>
+      <strong>Slow Object Report #001 — 가위</strong><br>
+      도구의 본질에 대한 탐구<br>
+      <br>
+      WOOHWAHAE<br>
+      Quarterly Publication<br>
+      hello@woohwahae.kr<br>
+      <br>
+      다음 호: #002 목빗 (2026 Q2)<br>
+      <br>
+      © 2026 WOOHWAHAE. All rights reserved.
+    </p>
+  </div>
+
+</body>
+</html>
