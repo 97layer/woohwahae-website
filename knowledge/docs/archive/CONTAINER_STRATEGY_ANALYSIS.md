@@ -1,4 +1,4 @@
-# 97layerOS Container 전략 분석 - Podman vs Docker
+# LAYER OS Container 전략 분석 - Podman vs Docker
 
 > **작성일**: 2026-02-18
 > **발견**: Podman 설치되어 있으나 Docker로 배포 중 (모순)
@@ -161,7 +161,7 @@ kompose convert
 
 ```bash
 # Podman Machine 필요 (macOS는 Linux 아님)
-podman machine start 97layerOS
+podman machine start LAYER OS
 # ↑ QEMU VM 실행 (메모리/CPU 소모)
 ```
 
@@ -341,7 +341,7 @@ cortex-admin, cortex-dashboard, cortex-engine, cortex-editor, cortex-tunnel
 **권장**:
 ```bash
 # GCP VM에서 확인
-ssh vm "cd ~/97layerOS && docker compose ps"
+ssh vm "cd ~/LAYER OS && docker compose ps"
 # 실제 실행 중인 서비스만 남기고 정리
 ```
 
@@ -352,7 +352,7 @@ ssh vm "cd ~/97layerOS && docker compose ps"
 **현재 문제**:
 ```bash
 # com.97layer.podman.plist
-podman machine start 97layerOS  # ← Machine 이름
+podman machine start LAYER OS  # ← Machine 이름
 podman start 97layer-os          # ← Container 이름
 ```
 

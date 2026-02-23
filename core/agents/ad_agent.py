@@ -79,7 +79,7 @@ class ArtDirector:
                 self.client = genai.Client(api_key=api_key)
                 self._model_name = 'gemini-2.5-pro'
                 self.mock_mode = False
-                print(f"Mia: 준비됨.")
+                print(f"AD: 준비됨.")
             else:
                 print(f"⚠️  {self.agent_id}: No API key, running in mock mode")
                 self.mock_mode = True
@@ -138,7 +138,7 @@ class ArtDirector:
         insights = analysis_data.get('key_insights', [])
         summary = analysis_data.get('summary', '')
 
-        print(f"Mia: {signal_id} 비주얼 컨셉 작업.")
+        print(f"AD: {signal_id} 비주얼 컨셉 작업.")
 
         if self.mock_mode:
             return self._mock_visual_concept(signal_id, themes, insights)
@@ -170,7 +170,7 @@ class ArtDirector:
                 'based_on': 'SA analysis',
             })
 
-            print(f"Mia: 완료.")
+            print(f"AD: 완료.")
             return concept
 
         except Exception as e:
@@ -304,7 +304,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 시각 아이덴티티를 기반�
 
         mode_str = "MOCK MODE" if self.mock_mode else "Gemini 2.5 Pro"
         nlm_status = "연결됨" if self.nlm else "fallback"
-        print(f"Mia: 큐 감시 시작.")
+        print(f"AD: 큐 감시 시작.")
         print(f"   LLM: {mode_str}")
         print(f"   Visual Reference: NotebookLM RAG ({nlm_status})")
         print(f"   Tasks: create_visual_concept, validate_visual")

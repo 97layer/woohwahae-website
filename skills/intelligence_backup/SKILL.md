@@ -1,10 +1,13 @@
 ---
 name: intelligence_backup
 description: 핵심 지능 자산(knowledge/, directives/, core/) 스냅샷 → Google Drive 동기화.
+argument-hint: "[full|incremental]"
+user-invocable: true
+context: fork
 tools:
   - Bash
-version: 2.0.0
-updated: 2026-02-18
+version: 2.1.0
+updated: 2026-02-23
 ---
 
 # Intelligence Backup Skill
@@ -25,7 +28,7 @@ bash scripts/sync_drive.sh
 
 # 수동 스냅샷 (긴급 시)
 tar --exclude='.git' --exclude='node_modules' --exclude='__pycache__' \
-    -czf /tmp/97layerOS_$(date +%Y%m%d_%H%M%S).tar.gz \
+    -czf /tmp/LAYER OS_$(date +%Y%m%d_%H%M%S).tar.gz \
     knowledge/ directives/ core/ CLAUDE.md .ai_rules
 ```
 

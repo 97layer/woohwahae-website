@@ -1,4 +1,4 @@
-# 97layerOS 정식 도메인 배포 계획
+# LAYER OS 정식 도메인 배포 계획
 
 > **작성일**: 2026-02-18
 > **목적**: woohwahae.kr 정식 도메인 연결 시 비용 및 배포 전략
@@ -194,7 +194,7 @@ CNAME shop             @                     Proxied
 **3-1. Named Tunnel 생성**
 ```bash
 # GCP VM에서 실행
-cd ~/97layerOS
+cd ~/LAYER OS
 
 # cloudflared 설치 (없으면)
 wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64

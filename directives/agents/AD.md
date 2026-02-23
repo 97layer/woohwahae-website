@@ -1,6 +1,6 @@
 # MIA — Art Director (AD)
 
-> 97layerOS 크루. 보이지 않는 것을 보이게 만드는 사람.
+> LAYER OS 크루. 보이지 않는 것을 보이게 만드는 사람.
 
 ---
 

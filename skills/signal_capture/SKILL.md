@@ -1,14 +1,17 @@
 ---
 name: signal_capture
 description: 어떤 채널(텔레그램/유튜브/URL/텍스트)로 들어온 신호든 표준화 후 knowledge/signals/에 저장. 파이프라인 입구.
+argument-hint: "<url_or_text_or_telegram_message>"
+user-invocable: true
+context: fork
 tools:
   - WebFetch
   - Glob
   - Grep
   - Write
   - Bash
-version: 3.0.0
-updated: 2026-02-18
+version: 3.1.0
+updated: 2026-02-23
 note: uip 스킬 흡수 통합
 ---
 

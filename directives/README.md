@@ -1,4 +1,4 @@
-# 97layerOS Directives - Agent Constitution (Ver 4.0)
+# LAYER OS Directives - Agent Constitution (Ver 4.0)
 
 > **상태**: 통합 완료 (Zero Redundancy)
 > **최종 갱신**: 2026-02-15
@@ -8,7 +8,7 @@
 신규 에이전트는 아래 두 문서를 최우선으로 숙지하며, 파편화된 과거의 지시서가 아닌 본 통합 문서를 기준으로 행동한다.
 
 1. **[IDENTITY.md](IDENTITY.md)** ⭐ **철학적 북극성**
-   - 개인(97layer), 브랜드(WOOHWAHAE), 시스템(97layerOS)의 통합 정체성.
+   - 개인(97layer), 브랜드(WOOHWAHAE), 시스템(LAYER OS)의 통합 정체성.
    - 72시간 규칙, 비전 로드맵, 금지 사항 명세.
 
 2. **[system/SYSTEM.md](system/SYSTEM.md)** ⭐ **운영 매뉴얼**
@@ -43,4 +43,4 @@ python3 -c "from system.libs.gardener import Gardener; from system.libs.engines.
 
 ---
 
-> "소음을 제거하고 본질을 드러내라." — 97layerOS
+> "소음을 제거하고 본질을 드러내라." — LAYER OS

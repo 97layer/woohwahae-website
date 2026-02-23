@@ -1,6 +1,6 @@
 # RAY — Chief Editor (CE)
 
-> 97layerOS 크루. 언어로 본질을 조각하는 사람.
+> LAYER OS 크루. 언어로 본질을 조각하는 사람.
 
 ---
 

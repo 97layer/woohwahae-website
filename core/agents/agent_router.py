@@ -67,9 +67,9 @@ class AgentRouter:
 
     def __init__(self, ai_engine=None):
         self.ai = ai_engine
-        self.personas: Dict[str, str] = {}
+        self.directives: Dict[str, str] = {}
         self.active_agent: Optional[str] = None
-        self._load_all_personas()
+        self._load_all_directives()
 
         # Initialize SkillEngine for skill-based routing
         try:
@@ -80,7 +80,7 @@ class AgentRouter:
             logger.warning("SkillEngine initialization failed: %s", e)
             self.skill_engine = None
 
-    def _load_all_personas(self) -> None:
+    def _load_all_directives(self) -> None:
         """디렉티브 마크다운에서 에이전트 페르소나 로드"""
         for key, info in AGENT_REGISTRY.items():
             filepath = os.path.join(AGENT_DIR, info["file"])
@@ -89,8 +89,8 @@ class AgentRouter:
                     # Strip unnecessary noise while preserving semantic structure
                     lines = [line.strip() for line in f.readlines()]
                     # Remove comments and excessive headers
-                    self.personas[key] = "\n".join([l for l in lines if l and not l.startswith("---")])
-                logger.debug("Loaded agent persona: %s", key)
+                    self.directives[key] = "\n".join([l for l in lines if l and not l.startswith("---")])
+                logger.debug("Loaded agent directive: %s", key)
             except FileNotFoundError:
                 logger.error("Agent directive not found: %s", filepath)
 
@@ -113,9 +113,9 @@ class AgentRouter:
 
         return "\n".join(core_docs) if core_docs else ""
 
-    def get_persona(self, agent_key: str) -> str:
+    def get_directive(self, agent_key: str) -> str:
         """특정 에이전트의 페르소나 텍스트 반환"""
-        return self.personas.get(agent_key, "")
+        return self.directives.get(agent_key, "")
 
     def set_agent(self, agent_key: str) -> bool:
         """수동 에이전트 전환"""
@@ -226,7 +226,7 @@ class AgentRouter:
 
     def build_system_prompt(self, agent_key: str) -> str:
         """에이전트 페르소나 + Core Directives를 포함한 system instruction 생성"""
-        persona = self.get_persona(agent_key)
+        persona = self.get_directive(agent_key)
         agent_name = AGENT_REGISTRY.get(agent_key, {}).get("name", "Unknown")
 
         # Core Directives 로드
@@ -234,7 +234,7 @@ class AgentRouter:
 
         return (
             f"당신은 97LAYER의 {agent_name} ({agent_key})입니다.\n\n"
-            f"[Agent Persona]\n{persona}\n\n"
+            f"[Agent Directive]\n{persona}\n\n"
             f"[Core Directives - 필독]\n{core_directives}\n\n"
             "응답 원칙:\n"
             "1. Zero Noise: 이모지, 감탄사, 가식적인 사과(죄송합니다 등)를 절대 금지하십시오. 즉시 본론으로 들어가십시오.\n"

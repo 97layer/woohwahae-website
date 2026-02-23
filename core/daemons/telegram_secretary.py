@@ -300,7 +300,7 @@ class TelegramSecretaryV6:
                 await update.message.reply_text(
                     f"💾 <b>Captured</b> (<code>{timestamp}</code>)\n\n"
                     f"\"{preview}\"\n\n"
-                    f"signals/ 저장 완료. Joon이 분석 중입니다.",
+                    f"signals/ 저장 완료. SA가 분석 중입니다.",
                     parse_mode=constants.ParseMode.HTML
                 )
             else:

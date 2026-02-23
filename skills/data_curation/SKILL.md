@@ -1,14 +1,17 @@
 ---
 name: data_curation
 description: knowledge/ 내 지식 자산 정화 + 온톨로지 태깅 + 중복 제거. INTELLIGENCE_QUANTA.md 밀도 유지.
+argument-hint: "[target_path_or_keyword]"
+user-invocable: true
+context: fork
 tools:
   - Grep
   - Glob
   - Read
   - Edit
   - Bash
-version: 2.0.0
-updated: 2026-02-18
+version: 2.1.0
+updated: 2026-02-23
 ---
 
 # Data Curation Skill

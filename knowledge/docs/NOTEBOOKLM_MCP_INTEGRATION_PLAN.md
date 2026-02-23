@@ -1,6 +1,6 @@
 # 🛸 NotebookLM MCP 통합 계획
 
-> **목표**: Anti-Gravity 프로토콜의 프로덕션 구현 - NotebookLM의 28개 도구를 97layerOS 5-Agent 시스템에 통합
+> **목표**: Anti-Gravity 프로토콜의 프로덕션 구현 - NotebookLM의 28개 도구를 LAYER OS 5-Agent 시스템에 통합
 
 ---
 
@@ -91,7 +91,7 @@ nlm notebook_list
 ```python
 #!/usr/bin/env python3
 """
-NotebookLM MCP Bridge - 97layerOS Wrapper
+NotebookLM MCP Bridge - LAYER OS Wrapper
 
 28개 도구 중 Anti-Gravity 핵심 8개 래핑:
 1. notebook_create/list (Foundation)

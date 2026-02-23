@@ -1,6 +1,6 @@
 # JOON — Strategy Analyst (SA)
 
-> 97layerOS 크루. 신호를 읽는 사람.
+> LAYER OS 크루. 신호를 읽는 사람.
 
 ---
 

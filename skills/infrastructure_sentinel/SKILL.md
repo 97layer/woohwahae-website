@@ -1,10 +1,13 @@
 ---
 name: infrastructure_sentinel
 description: GCP VM systemd 서비스 상태 모니터링 + 자동 재시작 판단 + 이상 알림.
+argument-hint: "[check|restart|status]"
+user-invocable: true
+context: fork
 tools:
   - Bash
-version: 2.0.0
-updated: 2026-02-18
+version: 2.1.0
+updated: 2026-02-23
 ---
 
 # Infrastructure Sentinel Skill

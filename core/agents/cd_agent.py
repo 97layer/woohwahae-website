@@ -68,10 +68,10 @@ class CreativeDirector:
         print(f"CD: 준비됨. 브랜드 기준 로드 완료.")
 
     def _load_criteria(self) -> str:
-        """CD_SUNHO.md + IDENTITY.md 브랜드 판단 기준 로드"""
+        """CD.md + IDENTITY.md 브랜드 판단 기준 로드"""
         parts = []
         for path in [
-            PROJECT_ROOT / 'directives' / 'agents' / 'CD_SUNHO.md',
+            PROJECT_ROOT / 'directives' / 'agents' / 'CD.md',
             PROJECT_ROOT / 'directives' / 'IDENTITY.md',
         ]:
             try:

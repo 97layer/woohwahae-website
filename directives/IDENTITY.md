@@ -122,7 +122,7 @@ The Story   — 개인 경험(Opening) → 보편 전환(Bridge) → 핵심(Core
 
 ## V. THE CYCLE — 순환 체계
 
-97layerOS가 구현하는 브랜드 생산 순환:
+LAYER OS가 구현하는 브랜드 생산 순환:
 
 ```
 입력 (텔레그램/신호)

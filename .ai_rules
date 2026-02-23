@@ -1,4 +1,4 @@
-# 97layerOS AI Agent Constitution
+# LAYER OS AI Agent Constitution
 # Priority: 0 (MAXIMUM - All AI models MUST obey)
 # Last Updated: 2026-02-18
 
@@ -24,7 +24,15 @@ cat knowledge/system/work_lock.json
 
 If lock exists and not expired → STOP. Wait or choose different task.
 
-### 3. Filesystem Cache (중복 방지)
+### 3. Filesystem Manifest (배치 규칙 확인)
+
+Before creating files/folders, check placement rules:
+
+```bash
+cat directives/system/FILESYSTEM_MANIFEST.md
+```
+
+### 4. Filesystem Cache (중복 방지)
 
 Before creating files/folders:
 
@@ -122,7 +130,7 @@ Session End
 
 ---
 
-## 🎯 CORE VALUES (97layerOS IDENTITY)
+## 🎯 CORE VALUES (LAYER OS IDENTITY)
 
 This system serves **97layer's THE CYCLE** — a living archive system:
 

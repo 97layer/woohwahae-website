@@ -5,8 +5,8 @@ Gardener — 97layerOS 자가진화 에이전트
 매일 새벽 3시 실행. 데이터를 분석하고 시스템을 진화시킨다.
 
 수정 권한 3단계:
-  FROZEN  — 절대 불가 (IDENTITY.md, CD_SUNHO.md)
-  PROPOSE — 순호 승인 후 적용 (JOON/MIA/RAY.md, intent 기준)
+  FROZEN  — 절대 불가 (IDENTITY.md, CD.md)
+  PROPOSE — 순호 승인 후 적용 (SA/AD/CE.md, intent 기준)
   AUTO    — 자동 갱신 (long_term_memory, QUANTA)
 
 Author: 97layerOS
@@ -39,14 +39,14 @@ logger = logging.getLogger(__name__)
 FROZEN = {
     # 순호의 본질 — 절대 불가
     "IDENTITY.md",
-    "CD_SUNHO.md",
+    "CD.md",
 }
 
 PROPOSE = {
     # 에이전트 행동 지침 — 순호 승인 필요
-    "JOON.md",
-    "MIA.md",
-    "RAY.md",
+    "SA.md",
+    "AD.md",
+    "CE.md",
 }
 
 # AUTO: long_term_memory.json, INTELLIGENCE_QUANTA.md → 기존 SA/CE가 이미 처리
@@ -91,11 +91,8 @@ class Gardener:
             'low_score_patterns': [],
         }
 
-        # signals/ 분석
+        # signals/ 카운트
         signals_dir = self.knowledge_dir / 'signals'
-        scores = []
-        theme_counter: Dict[str, int] = {}
-
         if signals_dir.exists():
             for sf in signals_dir.glob('**/*.json'):
                 try:
@@ -108,16 +105,33 @@ class Gardener:
                                 continue
                         except Exception:
                             pass
-
                     stats['signal_count'] += 1
-                    analysis = data.get('analysis', {})
-                    if analysis:
-                        stats['sa_analyzed'] += 1
-                        score = analysis.get('strategic_score', 0)
-                        if score:
-                            scores.append(score)
-                        for theme in analysis.get('themes', []):
-                            theme_counter[theme] = theme_counter.get(theme, 0) + 1
+                except Exception:
+                    pass
+
+        # corpus entries에서 SA 분석 점수/테마 수집 (signal 파일엔 analysis key 없음)
+        scores = []
+        theme_counter: Dict[str, int] = {}
+        corpus_entries_dir = self.knowledge_dir / 'corpus' / 'entries'
+
+        if corpus_entries_dir.exists():
+            for ef in corpus_entries_dir.glob('*.json'):
+                try:
+                    entry = json.loads(ef.read_text(encoding='utf-8'))
+                    indexed = entry.get('indexed_at', '')
+                    if indexed:
+                        try:
+                            dt = datetime.fromisoformat(indexed[:19])
+                            if dt < cutoff:
+                                continue
+                        except Exception:
+                            pass
+                    stats['sa_analyzed'] += 1
+                    score = entry.get('strategic_score', 0)
+                    if score:
+                        scores.append(score)
+                    for theme in entry.get('themes', []):
+                        theme_counter[theme] = theme_counter.get(theme, 0) + 1
                 except Exception:
                     pass
 
@@ -159,8 +173,8 @@ class Gardener:
         """
         proposals = []
 
-        # JOON.md 분석 — SA 집중 테마 업데이트 제안
-        joon_content = self._load_directive('JOON.md')
+        # SA.md 분석 — SA 집중 테마 업데이트 제안
+        joon_content = self._load_directive('SA.md')
         if joon_content and stats['top_themes']:
             themes_str = ', '.join(f"{t}({c}회)" for t, c in stats['top_themes'][:5])
             prompt = f"""너는 97layerOS Gardener다.
@@ -172,10 +186,10 @@ class Gardener:
 - 상위 테마: {themes_str}
 - 상위 개념: {', '.join(k for k, _ in stats['top_concepts'][:5])}
 
-현재 JOON.md 일부:
+현재 SA.md 일부:
 {joon_content[:800]}
 
-질문: 이 데이터를 보면 JOON.md에서 어떤 부분을 미세조정하면 좋을까?
+질문: 이 데이터를 보면 SA.md에서 어떤 부분을 미세조정하면 좋을까?
 - 집중할 테마/카테고리 업데이트가 필요한가?
 - 분석 기준에서 놓치고 있는 패턴이 있는가?
 
@@ -202,7 +216,7 @@ JSON만 출력."""
                     if result.get('needs_update'):
                         proposals.append({
                             'id': f"joon_{datetime.now().strftime('%Y%m%d')}",
-                            'target_file': 'JOON.md',
+                            'target_file': 'SA.md',
                             'section': result.get('section', '분석 집중 영역'),
                             'reason': result.get('reason', ''),
                             'proposed_addition': result.get('proposed_addition', ''),
@@ -210,7 +224,7 @@ JSON만 출력."""
                             'created_at': datetime.now().isoformat(),
                         })
             except Exception as e:
-                logger.warning("JOON.md 분석 실패: %s", e)
+                logger.warning("SA.md 분석 실패: %s", e)
 
         return proposals
 
@@ -537,6 +551,7 @@ JSON만 출력."""
 
         payload = {
             "mode": "corpus_essay",
+            "content_type": cluster.get("content_type", "archive"),
             "theme": cluster["theme"],
             "entry_count": cluster["entry_count"],
             "rag_context": rag_context,

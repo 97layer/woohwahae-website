@@ -1,4 +1,4 @@
-# 97layerOS Enforcement System - 강제화 아키텍처
+# LAYER OS Enforcement System - 강제화 아키텍처
 
 > **작성일**: 2026-02-18
 > **목적**: AI 세션이 바뀌어도 워크플로우가 끊기지 않도록 시스템 레벨에서 강제하는 메커니즘
@@ -122,7 +122,7 @@ fi
 **출력 예시**:
 ```
 ╔════════════════════════════════════════════════════════════════╗
-║  97layerOS Session Bootstrap - Enforced Protocol              ║
+║  LAYER OS Session Bootstrap - Enforced Protocol              ║
 ╚════════════════════════════════════════════════════════════════╝
 
 ✓ Python 3 detected: Python 3.9.6

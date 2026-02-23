@@ -1,4 +1,4 @@
-# 97layerOS Critical Assessment (2026-02-16)
+# LAYER OS Critical Assessment (2026-02-16)
 
 ## 냉정한 현황 진단
 

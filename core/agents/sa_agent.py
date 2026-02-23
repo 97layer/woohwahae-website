@@ -66,10 +66,10 @@ class StrategyAnalyst:
         self._model_name = 'gemini-2.5-flash'
         self._api_url = 'https://generativelanguage.googleapis.com/v1beta/models'
 
-        # Joon의 인격 지침 로드
-        self._persona = self._load_persona()
+        # SA 에이전트 지침 로드
+        self._persona = self._load_directive()
 
-        print(f"Joon: 준비됨. (Key: ...{self.api_key[-4:]})")
+        print(f"SA: 준비됨. (Key: ...{self.api_key[-4:]})")
 
     def analyze_signal(self, signal_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -92,7 +92,7 @@ class StrategyAnalyst:
         content = signal_data.get('content', '')
         source = signal_data.get('source', 'unknown')
 
-        print(f"Joon: 신호 {signal_id} 분석 시작. [API: {self._api_url}]")
+        print(f"SA: 신호 {signal_id} 분석 시작. [API: {self._api_url}]")
 
         # Construct prompt for strategic analysis
         prompt = self._build_analysis_prompt(content, source)
@@ -124,7 +124,7 @@ class StrategyAnalyst:
             score = analysis.get('strategic_score', 0)
             category = analysis.get('category', '')
             themes = ', '.join(analysis.get('themes', [])[:3])
-            print(f"Joon: 완료. 점수 {score}. 카테고리: {category}. 테마: {themes}.")
+            print(f"SA: 완료. 점수 {score}. 카테고리: {category}. 테마: {themes}.")
 
             # 자가발전: SA 분석 완료 → long_term_memory 피드백
             try:
@@ -143,7 +143,7 @@ class StrategyAnalyst:
                 from core.system.corpus_manager import CorpusManager
                 corpus = CorpusManager()
                 corpus.add_entry(signal_id, analysis, signal_data)
-                print(f"Joon: Corpus 누적 완료 → {signal_id}")
+                print(f"SA: Corpus 누적 완료 → {signal_id}")
             except Exception as corpus_e:
                 print(f"⚠️  Corpus skipped: {corpus_e}")
 
@@ -159,23 +159,23 @@ class StrategyAnalyst:
                     sig_json['status'] = 'analyzed'
                     sig_json['analyzed_at'] = datetime.now().isoformat()
                     sp.write_text(json.dumps(sig_json, indent=2, ensure_ascii=False))
-                    print(f"Joon: 신호 status → analyzed: {signal_id}")
+                    print(f"SA: 신호 status → analyzed: {signal_id}")
             except Exception as upd_e:
                 print(f"⚠️  Signal status update skipped: {upd_e}")
 
             return analysis
 
         except Exception as e:
-            print(f"Joon: 분석 실패. {e}")
+            print(f"SA: 분석 실패. {e}")
             return {
                 'signal_id': signal_id,
                 'error': str(e),
                 'status': 'failed'
             }
 
-    def _load_persona(self) -> str:
-        """JOON.md 인격 지침 로드"""
-        persona_path = PROJECT_ROOT / 'directives' / 'agents' / 'JOON.md'
+    def _load_directive(self) -> str:
+        """SA.md 에이전트 지침 로드"""
+        persona_path = PROJECT_ROOT / 'directives' / 'agents' / 'SA.md'
         try:
             if persona_path.exists():
                 return persona_path.read_text(encoding='utf-8')
@@ -271,8 +271,8 @@ class StrategyAnalyst:
             pass  # 브릿지 없으면 조용히 스킵
 
     def _build_analysis_prompt(self, content: str, source: str) -> str:
-        """Joon의 시각으로 신호 분석 프롬프트 구성"""
-        return f"""너는 Joon이다. 97layer 크루의 전략 분석가.
+        """SA의 시각으로 신호 분석 프롬프트 구성"""
+        return f"""너는 SA이다. 97layer 크루의 전략 분석가.
 
 {self._persona[:600]}
 
@@ -408,7 +408,7 @@ JSON만 출력. 설명 없이.
             agent_id=self.agent_id
         )
 
-        print(f"Joon: 큐 감시 시작.")
+        print(f"SA: 큐 감시 시작.")
 
         # Start watching (blocking)
         watcher.watch(

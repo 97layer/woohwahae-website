@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). Gardener가 매일 자동 갱신.
-> **마지막 갱신**: 2026-02-18 (Corpus 아키텍처 전환 + 개념 진화 기록 구조 추가)
+> **마지막 갱신**: 2026-02-24 (LAYER OS Rebuild Phase -1~1 완료: 서재 정리 + 기능화 + 리브랜딩 + 매니페스트)
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 🏗️ 시스템 아키텍처
 
-**버전**: Ver 5.0 — Corpus 군집 기반 발행 아키텍처
+**버전**: Ver 6.0 — LAYER OS Rebuild (5-Layer Brand OS + 기능화 에이전트)
 
 ```
 신호 유입 (텔레그램/유튜브/URL/텍스트)
@@ -80,12 +80,29 @@ woohwahae.kr/archive/ 발행
 - ✅ **Pipeline 데드락 수정** (2026-02-18): _scan_new_signals() 구현
 - ✅ **Corpus 아키텍처** (2026-02-18): 즉시발행 → 군집 기반 발행 전환
 - ✅ **개념 진화 기록** (2026-02-18): Gardener _evolve_concept_memory() 구현
+- ✅ **venv notebooklm-py 설치** (2026-02-19): GCP VM .venv에 notebooklm-py 패키지 설치. 시스템 Python이 아닌 venv 기준으로 설치
+- ✅ **NotebookLM Essay Archive 연동** (2026-02-19): storage_state.json VM 직접 scp 배포. Issue 013 "충만의 조건"부터 에세이 자동 저장 확인
+- ✅ **CE content_type 분기 설계** (2026-02-19): archive(한다체/사색적)/magazine(합니다체/독자지향) 어조+구조 분기 플랜 확정. 미구현 상태
+- ✅ **CE content_type 분기 구현** (2026-02-20): gardener.py payload에 content_type 추가 + ce_agent.py _write_corpus_essay() 어조 분기 로직 구현. VM 배포 + ecosystem 재시작 완료.
+- ✅ **WOOHWAHAE 대규모 업데이트 + nginx 도메인 배포 준비** (2026-02-20): nginx 80포트/server_name/root 수정, style.css v36 전체 통일(24개 파일), 레거시 CSS 제거, OG태그 보완, CDN 통일, 375px 미디어쿼리, 전체 VM 재배포. DNS BLOCKER 남음(아임웹 A레코드 136.109.201.201).
+- ✅ **LAYER OS Rebuild Phase -1~1** (2026-02-24): Claude Code 인프라(Memory 4개, 커맨드 4개, Hooks, Rules), 레거시 10파일 삭제, 배포스크립트 이동, 에이전트 기능화(persona→role: JOON→SA, MIA→AD, RAY→CE, CD_SUNHO→CD), OS 리브랜딩(97layerOS→LAYER OS), FILESYSTEM_MANIFEST.md 서재 맵 구축.
 
 ## 🎯 다음 작업
 
-1. Corpus entry 충분히 쌓이면 → Gardener 군집 탐지 검증
-2. 첫 에세이 발행 (CE corpus_essay 모드) → woohwahae.kr/archive/
-3. Brand Scout 텔레그램 `/scout` 명령 연동
+1. [BLOCKER] 아임웹 DNS A레코드 `136.109.201.201` 설정 (사용자 직접)
+2. Phase 2: Brand OS 문서 배치 — `directives/brand/` 11개 파일 생성
+3. Phase 3: 에이전트 코드 리빌딩 — 5-Layer 매핑, QA 삽입, directive 참조
+4. Phase 4: 신규 모듈 스키마 — Ritual/Growth JSON 스키마
+5. VM 배포: 기능화된 에이전트 코드 배포 + 서비스 재시작
+
+## 📐 콘텐츠 전략 (2026-02-19 확정)
+
+- **단일 렌즈**: WOOHWAHAE = "슬로우라이프"라는 렌즈로 세상을 읽는다
+- **카테고리 없음**: 헤어/오브제/에세이 모두 같은 질문("어떻게 살 것인가")으로 귀결
+- **어조 분기**: archive(한다체, 사색적) / magazine(합니다체, 독자 지향) — 사람이 명시 지정
+- **수익화**: 전자책 PDF → 구독화 (에세이 50개 이후)
+- **피드백 루프**: 에세이 50개 이후 설계
+- **현재 상태**: 에세이 13개, 신호 38개, 군집 20개 (ripe 1개)
 
 ---
 
@@ -109,3 +126,25 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 *미실행 — 다음 Gardener 사이클 시 자동 갱신*
 
+
+
+---
+
+## 📍 현재 상태 (CURRENT STATE)
+
+### [2026-02-24] Session Update - claude-opus-rebuild
+
+**완료한 작업**:
+- ✅ Phase -1: Claude Code 인프라 (Memory 서브파일 4개, 커맨드 4개, Hooks, Rules, 권한)
+- ✅ Phase 0: 물리적 정리 (레거시 10파일 삭제, archive flatten, orphan 제거, 스크립트 이동)
+- ✅ Phase 0.4: 에이전트 기능화 (JOON→SA, MIA→AD, RAY→CE, CD_SUNHO→CD)
+- ✅ Phase 0.5: OS 리브랜딩 (97layerOS → LAYER OS, 문서 41개 + .ai_rules 치환)
+- ✅ Phase 1: FILESYSTEM_MANIFEST.md 서재 맵 구축
+
+**다음 단계**:
+- ⏳ Phase 2: Brand OS 문서 배치 (directives/brand/ 11개)
+- ⏳ Phase 3: 에이전트 코드 리빌딩 (5-Layer 매핑)
+- ⏳ Phase 4: 신규 모듈 스키마 (Ritual/Growth)
+- ⏳ VM 배포 (기능화된 코드 반영)
+
+**업데이트 시간**: 2026-02-24T03:00:00

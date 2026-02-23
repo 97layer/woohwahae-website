@@ -244,7 +244,7 @@ Bot: [Brand Scout] 처리 대기 중인 후보: 3개
 ---
 
 **Last Updated**: 2026-02-17
-**Author**: 97layerOS
+**Author**: LAYER OS
 **Related**: [WEBSITE_STRUCTURE.md](WEBSITE_STRUCTURE.md), [brand_scout.py](../../core/agents/brand_scout.py)
 
 > "Remove the Noise, Reveal the Essence" — WOOHWAHAE

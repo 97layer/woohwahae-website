@@ -32,6 +32,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from core.system.agent_watcher import AgentWatcher
 from core.system.queue_manager import Task
+from core.system.agent_logger import get_logger
 
 try:
     import google.genai as genai
@@ -70,6 +71,10 @@ class ChiefEditor:
         self.agent_type = "CE"
         self._brand_voice_cache: Optional[str] = None
 
+        # AgentLogger 초기화
+        self.logger = get_logger("ce", PROJECT_ROOT)
+        self.logger.idle("CE Agent 시작")
+
         if not GEMINI_AVAILABLE:
             raise ImportError("google-generativeai required")
 
@@ -92,7 +97,7 @@ class ChiefEditor:
         except Exception as e:
             logger.warning("NotebookLM 초기화 실패: %s", e)
 
-        print(f"Ray: 준비됨.")
+        print(f"CE: 준비됨.")
 
     def _get_brand_voice(self) -> str:
         """
@@ -140,7 +145,7 @@ class ChiefEditor:
             }
         """
         signal_id = analysis.get('signal_id', 'unknown')
-        print(f"Ray: {signal_id} 초안 작업." + (f" (재작업 {retry_count}회차)" if retry_count > 0 else ""))
+        print(f"CE: {signal_id} 초안 작업." + (f" (재작업 {retry_count}회차)" if retry_count > 0 else ""))
 
         # 브랜드 보이스 참조 (NotebookLM 또는 fallback)
         brand_voice = self._get_brand_voice()
@@ -162,7 +167,7 @@ class ChiefEditor:
 
 """
 
-        prompt = f"""당신은 97layer의 Chief Editor Ray입니다.
+        prompt = f"""당신은 Chief Editor(CE)입니다.
 WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠를 작성합니다.
 
 **전략 분석 (SA 제공):**
@@ -236,7 +241,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
 
             caption_len = len(content.get('instagram_caption', ''))
             essay_len = len(content.get('archive_essay', ''))
-            print(f"Ray: 초안 완료. 캡션 {caption_len}자, 에세이 {essay_len}자.")
+            print(f"CE: 초안 완료. 캡션 {caption_len}자, 에세이 {essay_len}자.")
             return content
 
         except Exception as e:
@@ -247,7 +252,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
         task_type = task.task_type
         payload = task.payload
 
-        print(f"Ray: {task.task_id} ({task_type})")
+        print(f"CE: {task.task_id} ({task_type})")
 
         if task_type == 'write_content':
             # Orchestrator에서 오는 새 payload 구조 지원
@@ -299,9 +304,9 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
                     pub_result = publisher.publish(pub_payload)
                     result['published'] = pub_result.get('status') == 'success'
                     result['website_published'] = pub_result.get('website_published', False)
-                    print(f"Ray: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')}")
+                    print(f"CE: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')}")
                 except Exception as e:
-                    print(f"Ray: 홈페이지 발행 실패 — {e}")
+                    print(f"CE: 홈페이지 발행 실패 — {e}")
                     result['published'] = False
 
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
@@ -326,6 +331,17 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
         rag_context = payload.get("rag_context", [])
         entry_count = payload.get("entry_count", 0)
         instruction = payload.get("instruction", "")
+        content_type = payload.get("content_type", "archive")
+
+        # AgentLogger: 에세이 작성 시작
+        self.logger.think(f"에세이 작성 중: {theme}")
+
+        if content_type == "archive":
+            tone_guide = "문체: 한다체. 성격: 사색적, 깊은 호흡. 마무리: 열린 질문 또는 여백. 금지: 강한 호소, 행동 유도."
+        elif content_type == "magazine":
+            tone_guide = "문체: 합니다체. 성격: 독자 지향, 명확한 구조. 마무리: 온화한 실행 제안. 금지: 자기중심 관찰, 모호한 결론."
+        else:
+            tone_guide = "절제, 사색, 여백. 감탄사 없음."
 
         # RAG 컨텍스트 직렬화
         context_text = ""
@@ -351,7 +367,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
 - 한국어
 - 이모지 완전 금지
 - 볼드, 헤더 사용 금지
-- WOOHWAHAE 톤: 절제, 사색, 여백. 감탄사 없음.
+- WOOHWAHAE 톤: {tone_guide}
 
 응답 형식 (JSON):
 {{
@@ -386,7 +402,7 @@ JSON만 출력."""
                 result = json.loads(match.group())
                 formats = [k for k in ['archive_essay', 'instagram_caption', 'carousel_slides',
                                         'telegram_summary', 'pull_quote'] if k in result]
-                print(f"Ray: 원소스 멀티유즈 완료 — {theme} | 포맷: {', '.join(formats)}")
+                print(f"CE: 원소스 멀티유즈 완료 — {theme} | 타입: {content_type} | 포맷: {', '.join(formats)}")
             else:
                 result = {
                     "archive_essay": text,
@@ -400,7 +416,7 @@ JSON만 출력."""
                 self._save_essay_html(result, theme)
             except Exception as html_e:
                 # HTML 저장 실패는 에세이 생성 결과에 영향 없음
-                print(f"Ray: HTML 저장 실패 (무시) — {html_e}")
+                print(f"CE: HTML 저장 실패 (무시) — {html_e}")
 
             # ── NotebookLM Essay Archive 저장 ──────────────────────
             if self.nlm:
@@ -413,14 +429,14 @@ JSON만 출력."""
                         'instagram_caption': result.get('instagram_caption', ''),
                         'issue_num': result.get('issue_num', ''),
                     })
-                    print(f"Ray: NotebookLM Essay Archive 저장 완료 — {result.get('essay_title', theme)}")
+                    print(f"CE: NotebookLM Essay Archive 저장 완료 — {result.get('essay_title', theme)}")
                 except Exception as nlm_e:
-                    print(f"Ray: NotebookLM 저장 실패 (무시) — {nlm_e}")
+                    print(f"CE: NotebookLM 저장 실패 (무시) — {nlm_e}")
 
             return result
 
         except Exception as e:
-            print(f"Ray: corpus 에세이 실패 — {e}")
+            print(f"CE: corpus 에세이 실패 — {e}")
             return {"error": str(e), "theme": theme}
 
     def _save_essay_html(self, result: dict, theme: str):
@@ -428,6 +444,9 @@ JSON만 출력."""
         import re as _re
         from datetime import datetime as _dt
         from pathlib import Path as _Path
+
+        # AgentLogger: HTML 저장 시작
+        self.logger.write(f"HTML 생성 중: {theme}")
 
         # env_validator 경유 단일 진입점
         try:
@@ -585,13 +604,16 @@ JSON만 출력."""
 
         html_path = issue_dir / 'index.html'
         html_path.write_text(html, encoding='utf-8')
-        print(f"Ray: HTML 저장 완료 — {html_path.relative_to(PROJECT_ROOT)}")
-        print(f"Ray: Issue {issue_num_str} '{essay_title}' → archive/{folder_name}/")
+        print(f"CE: HTML 저장 완료 — {html_path.relative_to(PROJECT_ROOT)}")
+        print(f"CE: Issue {issue_num_str} '{essay_title}' → archive/{folder_name}/")
+
+        # AgentLogger: 작업 완료
+        self.logger.done(f"Issue {issue_num_str}: {essay_title}")
 
     def start_watching(self, interval: int = 5):
         watcher = AgentWatcher(agent_type=self.agent_type, agent_id=self.agent_id)
         nlm_status = "연결됨" if self.nlm else "fallback"
-        print(f"Ray: 큐 감시 시작.")
+        print(f"CE: 큐 감시 시작.")
         print(f"   LLM: Gemini 2.5 Pro")
         print(f"   Brand Voice: NotebookLM RAG ({nlm_status})")
         print(f"   Tasks: write_content")

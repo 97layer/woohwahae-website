@@ -1,4 +1,4 @@
-# 97layerOS 배포 가이드
+# LAYER OS 배포 가이드
 
 > 통합 배포 문서 — Last Updated: 2026-02-16
 > 기존 루트 배포 문서 8개 통합본
@@ -24,7 +24,7 @@
 
 ```bash
 # 로컬 MacBook에서 실행
-cd /Users/97layer/97layerOS
+cd /Users/97layer/LAYER OS
 ./deploy.sh
 ```
 
@@ -88,7 +88,7 @@ ls -lh ~/97layer-manual-deploy.tar.gz
 ### 4-3. VM에서 적용
 
 ```bash
-cd ~/97layerOS
+cd ~/LAYER OS
 
 # 백업
 tar -czf ~/97layer-backup-$(date +%Y%m%d-%H%M%S).tar.gz core/ directives/ knowledge/ 2>/dev/null || true
@@ -125,7 +125,7 @@ jobs:
           username: skyto5339_gmail_com
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/97layerOS
+            cd ~/LAYER OS
             git pull origin main
             sudo systemctl restart 97layer-telegram
 ```
@@ -224,7 +224,7 @@ python core/system/handoff.py --emergency-recovery
 
 # 수동 롤백
 ssh 97layer-vm
-cd ~/97layerOS
+cd ~/LAYER OS
 tar -xzf ~/97layer-backup-YYYYMMDD-HHMMSS.tar.gz
 sudo systemctl restart 97layer-telegram
 ```

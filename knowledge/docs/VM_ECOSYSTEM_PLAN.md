@@ -1,4 +1,4 @@
-# 97layerOS VM Ecosystem - True Multi-Agent Architecture
+# LAYER OS VM Ecosystem - True Multi-Agent Architecture
 
 > **목표**: LLM 연극놀이 → 진짜 독립 Agent들의 VM 생태계
 
@@ -23,7 +23,7 @@
 ### 1. 컨테이너 구성
 
 ```
-97layerOS VM Ecosystem:
+LAYER OS VM Ecosystem:
 
 ┌─────────────────────────────────────────────────────────────┐
 │ Host (macOS or GCP VM)                                      │
@@ -499,4 +499,4 @@ CMD ["python", "agent_sa.py", "--watch-queue"]
 
 ---
 
-> "진짜 협업은 독립된 주체들이 비동기로 소통할 때 일어난다." — 97layerOS
+> "진짜 협업은 독립된 주체들이 비동기로 소통할 때 일어난다." — LAYER OS

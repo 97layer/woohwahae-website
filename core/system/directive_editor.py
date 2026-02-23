@@ -43,15 +43,15 @@ logger = logging.getLogger(__name__)
 # ── 파일 경로 매핑 ─────────────────────────────────────────────
 DIRECTIVE_FILES = {
     "IDENTITY.md":  PROJECT_ROOT / "directives" / "IDENTITY.md",
-    "CD_SUNHO.md":  PROJECT_ROOT / "directives" / "agents" / "CD_SUNHO.md",
-    "JOON.md":      PROJECT_ROOT / "directives" / "agents" / "JOON.md",
-    "MIA.md":       PROJECT_ROOT / "directives" / "agents" / "MIA.md",
-    "RAY.md":       PROJECT_ROOT / "directives" / "agents" / "RAY.md",
+    "CD.md":  PROJECT_ROOT / "directives" / "agents" / "CD.md",
+    "SA.md":      PROJECT_ROOT / "directives" / "agents" / "SA.md",
+    "AD.md":       PROJECT_ROOT / "directives" / "agents" / "AD.md",
+    "CE.md":       PROJECT_ROOT / "directives" / "agents" / "CE.md",
     "SYSTEM.md":    PROJECT_ROOT / "directives" / "system" / "SYSTEM.md",
 }
 
 # 확인 필요한 파일 (FROZEN)
-REQUIRES_CONFIRM = {"IDENTITY.md", "CD_SUNHO.md"}
+REQUIRES_CONFIRM = {"IDENTITY.md", "CD.md"}
 
 # 확인 토큰 만료 시간 (분)
 CONFIRM_TTL_MINUTES = 10

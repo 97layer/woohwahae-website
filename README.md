@@ -125,4 +125,4 @@ ANTHROPIC_API_KEY=your_key_here
 
 ---
 
-> "Remove the Noise, Reveal the Essence" — 97layerOS
+> "Remove the Noise, Reveal the Essence" — LAYER OS

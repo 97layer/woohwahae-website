@@ -274,6 +274,6 @@ woohwahae.kr/
 **Last Updated**: 2026-02-17
 **Version**: 1.0
 **소유자**: 97layer
-**시스템**: 97layerOS
+**시스템**: LAYER OS
 
 > "archive for slowlife" — WOOHWAHAE
