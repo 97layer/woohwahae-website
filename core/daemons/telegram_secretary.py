@@ -161,7 +161,7 @@ class TelegramSecretaryV6:
 
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         message = update.message
-        if not message.text and not message.photo:
+        if not message.text and not message.photo and not message.document:
             return
 
         # 1. YouTube 전역 감지
@@ -175,7 +175,12 @@ class TelegramSecretaryV6:
             await self.process_image(update, context)
             return
 
-        # 3. 텍스트 의도 분석 및 처리
+        # 3. PDF 문서 처리
+        if message.document:
+            await self.process_document(update, context)
+            return
+
+        # 4. 텍스트 의도 분석 및 처리
         await self.process_text(update, context)
 
     async def process_youtube(self, update: Update, context: ContextTypes.DEFAULT_TYPE, url: str):
@@ -187,7 +192,7 @@ class TelegramSecretaryV6:
         try:
             # 1. 자막 수집 + Gemini 분석 + 로컬 JSON 저장
             await status_msg.edit_text("🛸 <code>Step 1/2</code>: 영상 자막 수집 중...", parse_mode=constants.ParseMode.HTML)
-            result = self.youtube.process_url(url)
+            result = self.youtube.process_url(url, source_channel="telegram")
 
             if not result['success']:
                 await status_msg.edit_text(
@@ -235,51 +240,205 @@ class TelegramSecretaryV6:
                 pass
 
     async def process_image(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """이미지 처리 — Gemini Vision 분석 + signals 저장 + 텍스트 메시지 함께 처리"""
+        """이미지 처리 — 통합 스키마로 signals/ 저장 + SA 큐 전달"""
         caption = update.message.caption or ""
         status_msg = await update.message.reply_text("🖼️ 이미지 분석 중...")
         try:
             photo = update.message.photo[-1]
             file = await context.bot.get_file(photo.file_id)
             import tempfile
+            import shutil
             with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
                 tmp_path = tmp.name
                 await file.download_to_drive(tmp_path)
 
-            # analyze_image()는 {'description', 'full_analysis', 'insights', ...} 반환
+            # Gemini Vision 분석
             result = self.image.analyze_image(tmp_path)
 
-            # signals에 저장 (caption 포함)
-            try:
-                self.image.save_image_and_analysis(tmp_path, {**result, 'caption': caption})
-            except Exception:
-                pass
+            # 통합 스키마로 저장
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            signal_id = "image_%s" % timestamp
+            files_dir = PROJECT_ROOT / 'knowledge' / 'signals' / 'files'
+            files_dir.mkdir(parents=True, exist_ok=True)
+
+            # 바이너리 복사
+            dest_path = files_dir / ("%s.jpg" % signal_id)
+            shutil.copy2(tmp_path, dest_path)
             os.unlink(tmp_path)
 
-            full_analysis = result.get('full_analysis') or result.get('description', '')
-            if full_analysis and '분석 실패' not in full_analysis:
-                # caption이 있으면 함께 처리
-                combined = full_analysis
-                if caption:
-                    combined = f"📝 **메모**: {caption}\n\n{full_analysis}"
+            # 통합 신호 JSON
+            description = result.get('full_analysis') or result.get('description', '')
+            content = description[:3000]
+            if caption:
+                content = "[메모] %s\n\n%s" % (caption, content)
 
-                # 4096자 제한
+            signal_data = {
+                'signal_id': signal_id,
+                'type': 'image',
+                'status': 'captured',
+                'content': content,
+                'captured_at': datetime.now().isoformat(),
+                'from_user': update.effective_user.username or update.effective_user.first_name,
+                'source_channel': 'telegram',
+                'metadata': {
+                    'image_path': str(dest_path),
+                    'title': caption[:100] if caption else 'telegram_image',
+                },
+            }
+
+            signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
+            signals_dir.mkdir(parents=True, exist_ok=True)
+            with open(signals_dir / ("%s.json" % signal_id), 'w', encoding='utf-8') as f:
+                json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+            # SA 큐 전달
+            try:
+                from core.system.queue_manager import QueueManager
+                qm = QueueManager()
+                qm.create_task(
+                    agent_type='SA',
+                    task_type='analyze_signal',
+                    payload={
+                        'signal_id': signal_id,
+                        'signal_path': str(signals_dir / ("%s.json" % signal_id)),
+                    }
+                )
+                logger.info("SA 큐 전달 (이미지): %s", signal_id)
+            except Exception as q_e:
+                logger.warning("SA 큐 전달 실패: %s", q_e)
+
+            # 응답
+            if description and '분석 실패' not in description:
+                combined = description
+                if caption:
+                    combined = "📝 **메모**: %s\n\n%s" % (caption, description)
                 if len(combined) > 4000:
                     combined = combined[:4000] + "\n\n..."
-
                 await status_msg.edit_text(combined)
-
-                # caption을 insight로도 저장
-                if caption:
-                    self._save_insight(f"[이미지 메모] {caption}", update.effective_user)
             else:
                 err = result.get('description', '알 수 없는 오류')
-                await status_msg.edit_text(f"❌ 이미지 분석 실패: {_escape_html(err)}", parse_mode=constants.ParseMode.HTML)
+                await status_msg.edit_text(
+                    "❌ 이미지 분석 실패: %s" % _escape_html(err),
+                    parse_mode=constants.ParseMode.HTML
+                )
 
         except Exception as e:
             logger.error("Image processing error: %s", e)
             try:
-                await status_msg.edit_text(f"❌ 이미지 처리 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+                await status_msg.edit_text(
+                    "❌ 이미지 처리 오류: %s" % _escape_html(str(e)),
+                    parse_mode=constants.ParseMode.HTML
+                )
+            except Exception:
+                pass
+
+    async def process_document(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """PDF/문서 처리 — 통합 스키마로 signals/ 저장 + SA 큐 전달"""
+        doc = update.message.document
+        file_name = doc.file_name or "unknown"
+        mime = doc.mime_type or ""
+
+        # PDF만 지원
+        if not (mime == "application/pdf" or file_name.lower().endswith(".pdf")):
+            await update.message.reply_text(
+                "현재 PDF 파일만 지원합니다. (%s)" % _escape_html(file_name),
+                parse_mode=constants.ParseMode.HTML,
+            )
+            return
+
+        status_msg = await update.message.reply_text("📄 PDF 수집 중...")
+        try:
+            import tempfile
+            import shutil
+
+            file = await context.bot.get_file(doc.file_id)
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                tmp_path = tmp.name
+                await file.download_to_drive(tmp_path)
+
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            signal_id = "pdf_document_%s" % timestamp
+
+            # 바이너리 복사
+            files_dir = PROJECT_ROOT / "knowledge" / "signals" / "files"
+            files_dir.mkdir(parents=True, exist_ok=True)
+            dest_path = files_dir / ("%s.pdf" % signal_id)
+            shutil.copy2(tmp_path, dest_path)
+
+            # 텍스트 추출 시도
+            content = "PDF 수집: %s" % file_name
+            pages_extracted = 0
+            try:
+                import pdfplumber
+                with pdfplumber.open(tmp_path) as pdf:
+                    pages_text = []
+                    for page in pdf.pages[:10]:
+                        text = page.extract_text()
+                        if text:
+                            pages_text.append(text)
+                    if pages_text:
+                        content = "\n".join(pages_text)[:3000]
+                        pages_extracted = len(pages_text)
+            except ImportError:
+                logger.info("pdfplumber 미설치 — 텍스트 추출 생략")
+            except Exception as pdf_e:
+                logger.warning("PDF 추출 실패: %s", pdf_e)
+
+            os.unlink(tmp_path)
+
+            # 통합 신호 JSON
+            signal_data = {
+                "signal_id": signal_id,
+                "type": "pdf_document",
+                "status": "captured",
+                "content": content,
+                "captured_at": datetime.now().isoformat(),
+                "from_user": update.effective_user.username or update.effective_user.first_name,
+                "source_channel": "telegram",
+                "metadata": {
+                    "pdf_path": str(dest_path),
+                    "title": Path(file_name).stem,
+                },
+            }
+
+            signals_dir = PROJECT_ROOT / "knowledge" / "signals"
+            signals_dir.mkdir(parents=True, exist_ok=True)
+            with open(signals_dir / ("%s.json" % signal_id), "w", encoding="utf-8") as f:
+                json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+            # SA 큐 전달
+            try:
+                from core.system.queue_manager import QueueManager
+                qm = QueueManager()
+                qm.create_task(
+                    agent_type="SA",
+                    task_type="analyze_signal",
+                    payload={
+                        "signal_id": signal_id,
+                        "signal_path": str(signals_dir / ("%s.json" % signal_id)),
+                    },
+                )
+                logger.info("SA 큐 전달 (PDF): %s", signal_id)
+            except Exception as q_e:
+                logger.warning("SA 큐 전달 실패: %s", q_e)
+
+            extract_info = ""
+            if pages_extracted:
+                extract_info = "\n텍스트 추출: %d페이지, %d자" % (pages_extracted, len(content))
+            await status_msg.edit_text(
+                "📄 <b>PDF 수집 완료</b>\n\n"
+                "파일: %s%s\n"
+                "SA 분석 큐 전달됨." % (_escape_html(file_name), extract_info),
+                parse_mode=constants.ParseMode.HTML,
+            )
+
+        except Exception as e:
+            logger.error("Document processing error: %s", e)
+            try:
+                await status_msg.edit_text(
+                    "❌ PDF 처리 오류: %s" % _escape_html(str(e)),
+                    parse_mode=constants.ParseMode.HTML,
+                )
             except Exception:
                 pass
 
@@ -335,10 +494,12 @@ class TelegramSecretaryV6:
         signal_data = {
             'signal_id': signal_id,
             'type': 'text_insight',
+            'status': 'captured',
             'content': text,
             'captured_at': datetime.now().isoformat(),
             'from_user': user.username or user.first_name,
-            'status': 'captured'
+            'source_channel': 'telegram',
+            'metadata': {},
         }
 
         # 1. signals/ 저장 (항상)
@@ -850,7 +1011,7 @@ class TelegramSecretaryV6:
         application.add_handler(CommandHandler("reject", self.reject_command))
         application.add_handler(CommandHandler("pending", self.pending_command))
         application.add_handler(CallbackQueryHandler(self.handle_draft_callback, pattern=r'^draft_'))
-        application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO, self.handle_message))
+        application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO | filters.Document.ALL, self.handle_message))
 
         # 매일 08:00 브리핑 자동 푸시
         from datetime import time as _time

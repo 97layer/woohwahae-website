@@ -61,11 +61,16 @@ def classify_signal(signal: dict) -> tuple[str, str]:
         return ("SA", "urgent_analyze")
 
     routing = {
-        "youtube_video": ("SA", "analyze_youtube"),
-        "text":          ("SA", "analyze_text"),
-        "image":         ("AD", "analyze_image"),
-        "link":          ("SA", "analyze_text"),
-        "memo":          ("SA", "analyze_text"),
+        # 통합 스키마 타입 (signal.schema.json 기준)
+        "text_insight":   ("SA", "analyze_text"),
+        "youtube_video":  ("SA", "analyze_youtube"),
+        "image":          ("SA", "analyze_image"),
+        "url_content":    ("SA", "analyze_url"),
+        "pdf_document":   ("SA", "analyze_pdf"),
+        # 레거시 호환
+        "text":           ("SA", "analyze_text"),
+        "link":           ("SA", "analyze_text"),
+        "memo":           ("SA", "analyze_text"),
     }
 
     return routing.get(sig_type, ("SA", "analyze"))

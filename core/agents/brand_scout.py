@@ -556,23 +556,42 @@ JSON만 출력하세요."""
             print(f"⚠️ 크롤링 중 오류: {e}")
             # 크롤링 실패해도 기존 파일로 분석 시도
             
-        # 2. 파일 로드
-        signals_dir = PROJECT_ROOT / "knowledge" / "signals" / "wellness"
+        # 2. 파일 로드 (통합 스키마: signals/*.json, type=url_content)
+        signals_dir = PROJECT_ROOT / "knowledge" / "signals"
         if not signals_dir.exists():
             print("⚠️ 수집된 웰니스 데이터가 없습니다.")
             return None
-            
-        # 최신 10개 파일만 분석 (토큰 제한 고려)
-        files = sorted(signals_dir.glob("*.md"), key=os.path.getmtime, reverse=True)[:10]
+
+        # url_content 타입 신호만 필터 (최신 10개)
+        url_signals = []
+        for f in sorted(signals_dir.glob("url_content_*.json"), key=os.path.getmtime, reverse=True):
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+                if data.get("type") == "url_content":
+                    url_signals.append(data)
+            except Exception:
+                pass
+            if len(url_signals) >= 10:
+                break
+
+        # 레거시 .md 파일도 탐색 (호환)
+        legacy_dir = signals_dir / "wellness"
+        if legacy_dir.exists():
+            for f in sorted(legacy_dir.glob("*.md"), key=os.path.getmtime, reverse=True)[:5]:
+                url_signals.append({"content": f.read_text(encoding="utf-8"), "type": "legacy_md"})
+
+        files = url_signals
         if not files:
             print("⚠️ 분석할 파일이 없습니다.")
             return None
-            
-        print(f"[Scout] 분석 대상 파일: {len(files)}개")
-        
+
+        print("[Scout] 분석 대상: %d개" % len(files))
+
         combined_content = ""
-        for f in files:
-            combined_content += f.read_text(encoding="utf-8") + "\n\n---\n\n"
+        for sig in files:
+            title = sig.get("metadata", {}).get("title", "") if isinstance(sig.get("metadata"), dict) else ""
+            content = sig.get("content", "")
+            combined_content += "## %s\n\n%s\n\n---\n\n" % (title, content)
             
         # 3. Gemini 분석 (한국어 프롬프트)
         prompt = f"""
@@ -635,23 +654,22 @@ Kinfolk와 Cereal의 최근 아티클들은 매끈하게 다듬어진 공간보�
 - 기술적 튜토리얼보다는 '머무름'과 '비움'에 대한 철학적 고찰.
 """
 
-        # 4. 저장
-        insights_dir = PROJECT_ROOT / "knowledge" / "insights"
-        insights_dir.mkdir(parents=True, exist_ok=True)
-        
-        filename = f"wellness_report_{datetime.now().strftime('%Y%m%d')}.md"
-        report_path = insights_dir / filename
-        
-        final_md = f"""# 🌿 Global Wellness Trend Report
-**Date**: {datetime.now().strftime('%Y-%m-%d')}
-**Sources**: {len(files)} articles analyzed (Processed via Scout)
+        # 4. 저장 → knowledge/reports/ (FILESYSTEM_MANIFEST 규칙)
+        reports_dir = PROJECT_ROOT / "knowledge" / "reports"
+        reports_dir.mkdir(parents=True, exist_ok=True)
 
----
+        filename = "wellness_%s.md" % datetime.now().strftime('%Y%m%d')
+        report_path = reports_dir / filename
 
-{report_content}
-"""
+        final_md = (
+            "# Global Wellness Trend Report\n"
+            "**Date**: %s\n"
+            "**Sources**: %d signals analyzed (Processed via Scout)\n\n"
+            "---\n\n"
+            "%s\n"
+        ) % (datetime.now().strftime('%Y-%m-%d'), len(files), report_content)
         report_path.write_text(final_md, encoding="utf-8")
-        print(f"[Scout] 리포트 생성 완료: {report_path}")
+        print("[Scout] 리포트 생성 완료: %s" % report_path)
         
         # 5. 아티클 자동 발행 (Auto-Publishing)
         self.create_article_from_report(report_path)

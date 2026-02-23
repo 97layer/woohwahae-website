@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). Gardener가 매일 자동 갱신.
-> **마지막 갱신**: 2026-02-24 (LAYER OS Rebuild Phase -1~1 완료: 서재 정리 + 기능화 + 리브랜딩 + 매니페스트)
+> **마지막 갱신**: 2026-02-24 (통합 신호 수집 코드 완료: 5개 소스 통일 + CLI 입력 + SA 큐 자동 연결)
 
 ---
 
@@ -31,14 +31,14 @@
 
 ## 🏗️ 시스템 아키텍처
 
-**버전**: Ver 7.0 — LAYER OS Rebuild Complete (Brand OS + 통합 스키마 + 파이프라인 재설계)
+**버전**: Ver 7.1 — 통합 신호 수집 코드 완료 (5개 소스 × 통합 스키마 + CLI 입력 + SA 큐 자동 연결)
 
 ```
-신호 유입 (텔레그램/유튜브/URL/텍스트)
-    ↓
-knowledge/signals/  ← 원시 신호 보관
-    ↓  SA 분석 완료
-knowledge/corpus/entries/  ← 구조화된 지식 풀 (NEW)
+신호 유입 (텔레그램/CLI/유튜브/URL/이미지/PDF/크롤러 — 전부 통합 스키마)
+    ↓  signal.schema.json 통일
+knowledge/signals/{type}_{YYYYMMDD}_{HHMMSS}.json
+    ↓  SignalRouter → SA 큐 자동 전달
+SA 분석 → knowledge/corpus/entries/
     ↓  Gardener 매일 군집 성숙도 점검
 군집 성숙 (동일 테마 5개+ / 72시간+ 분포)
     ↓
@@ -87,14 +87,14 @@ woohwahae.kr/archive/ 발행
 - ✅ **WOOHWAHAE 대규모 업데이트 + nginx 도메인 배포 준비** (2026-02-20): nginx 80포트/server_name/root 수정, style.css v36 전체 통일(24개 파일), 레거시 CSS 제거, OG태그 보완, CDN 통일, 375px 미디어쿼리, 전체 VM 재배포. DNS BLOCKER 남음(아임웹 A레코드 136.109.201.201).
 - ✅ **LAYER OS Rebuild Phase -1~1** (2026-02-24): Claude Code 인프라(Memory 4개, 커맨드 4개, Hooks, Rules), 레거시 10파일 삭제, 배포스크립트 이동, 에이전트 기능화(persona→role: JOON→SA, MIA→AD, RAY→CE, CD_SUNHO→CD), OS 리브랜딩(97layerOS→LAYER OS), FILESYSTEM_MANIFEST.md 서재 맵 구축.
 - ✅ **LAYER OS Rebuild Phase 2A~4** (2026-02-24): 2차 파편제거(빈폴더 20개/worktree 7개/이벤트 479개 삭제, 파편 4건 통합), Brand OS 11개 문서(directives/brand/), IDENTITY v7(brand/ 참조 체계), SYSTEM v6(5-Layer 매핑), agent_router v2(AGENT_REGISTRY 수정+brand/ 로딩), CE/AD/SA brand/ 문서 로딩, 파이프라인 재설계(SA→CE→Ralph→AD→CD), 통합 신호 스키마(signal/ritual/growth 3종).
+- ✅ **통합 신호 수집 코드** (2026-02-24): 7개 파일 수정. telegram_secretary(source_channel+이미지 통합스키마+PDF 핸들러), youtube_analyzer(signal_id+from_user+source_channel+SA큐연결), image_analyzer(signals/images/→signals/+signals/files/), signal_router(5개 통합타입+레거시 호환), scout_crawler(.md→.json 통합스키마), pipeline_orchestrator(새 타입 호환), scripts/signal_inject.py(CLI 수동 입력 도구).
 
 ## 🎯 다음 작업
 
 1. [BLOCKER] 아임웹 DNS A레코드 `136.109.201.201` 설정 (사용자 직접)
-2. VM 배포: 기능화된 에이전트 코드 + Brand OS 문서 배포 + 서비스 재시작
-3. 통합 신호 수집 코드 구현: telegram_secretary(이미지/PDF 핸들러), youtube_analyzer(통합 스키마), scout_crawler(.md→.json)
-4. CLI 신호 입력 도구: scripts/signal_inject.py
-5. Ritual/Growth 코드 구현 (스키마 기반)
+2. VM 배포: Brand OS + 통합 신호 수집 코드 전체 배포 + 서비스 재시작
+3. Ritual/Growth 코드 구현 (스키마 기반)
+4. 레거시 신호 마이그레이션 (signals/wellness/*.md → JSON 또는 archive)
 
 ## 📐 콘텐츠 전략 (2026-02-19 확정)
 

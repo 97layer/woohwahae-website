@@ -5,10 +5,12 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import hashlib
+from pathlib import Path
 
 # 설정
-SOURCES_FILE = "/Users/97layer/97layerOS/knowledge/brands/wellness_sources.json"
-SIGNALS_DIR = "/Users/97layer/97layerOS/knowledge/signals/wellness"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+SOURCES_FILE = str(PROJECT_ROOT / "knowledge" / "brands" / "wellness_sources.json")
+SIGNALS_DIR = str(PROJECT_ROOT / "knowledge" / "signals")
 USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
@@ -122,29 +124,40 @@ def parse_source(source_config):
 
 def save_signal(source, title, url, content):
     ensure_dir(SIGNALS_DIR)
-    
-    # ID 생성 (URL 기반 해시)
-    doc_id = hashlib.md5(url.encode()).hexdigest()[:10]
-    filename = f"{datetime.now().strftime('%Y%m%d')}_{source}_{doc_id}.md"
+
+    # 중복 체크 (URL 해시)
+    doc_hash = hashlib.md5(url.encode()).hexdigest()[:10]
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    signal_id = "url_content_%s_%s" % (timestamp[:8], timestamp[9:])
+
+    # 기존 동일 URL 신호 확인
+    for existing in os.listdir(SIGNALS_DIR):
+        if existing.endswith(".json") and doc_hash in existing:
+            print("  Skipping duplicate: %s" % title)
+            return
+
+    # 통합 스키마 JSON
+    signal_data = {
+        "signal_id": signal_id,
+        "type": "url_content",
+        "status": "captured",
+        "content": content[:3000],
+        "captured_at": datetime.now().isoformat(),
+        "from_user": "97layer",
+        "source_channel": "crawler",
+        "metadata": {
+            "title": title,
+            "source_url": url,
+            "crawler_source": source,
+            "doc_hash": doc_hash,
+        },
+    }
+
+    filename = "%s_%s.json" % (signal_id, doc_hash)
     filepath = os.path.join(SIGNALS_DIR, filename)
-    
-    if os.path.exists(filepath):
-        print(f"  Skipping duplicate: {title}")
-        return
-
-    md_content = f"""# {title}
-
-- **Source**: {source}
-- **URL**: {url}
-- **Date**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
----
-
-{content}
-"""
-    with open(filepath, 'w') as f:
-        f.write(md_content)
-    print(f"  Saved: {filename}")
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(signal_data, f, ensure_ascii=False, indent=2)
+    print("  Saved: %s" % filename)
 
 def main():
     if not os.path.exists(SOURCES_FILE):

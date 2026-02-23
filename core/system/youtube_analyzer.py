@@ -135,7 +135,7 @@ class YouTubeAnalyzer:
             logger.warning("No transcript found")
             return None
         except Exception as e:
-            logger.error(f"Transcript extraction failed: {e}")
+            logger.error("Transcript extraction failed: %s", e)
             return None
 
     def analyze_with_gemini(self, transcript: str, video_url: str) -> Dict:
@@ -191,7 +191,7 @@ class YouTubeAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Gemini analysis failed: {e}")
+            logger.error("Gemini analysis failed: %s", e)
             return {
                 'summary': '분석 실패',
                 'key_insights': [],
@@ -209,35 +209,67 @@ class YouTubeAnalyzer:
                 bullets.append(line[1:].strip())
         return bullets[:5]  # Top 5
 
-    def save_to_knowledge_base(self, analysis: Dict, video_url: str, transcript: str = None) -> str:
+    def save_to_knowledge_base(self, analysis: Dict, video_url: str, transcript: str = None,
+                               source_channel: str = "manual") -> str:
         """
-        Save analysis to knowledge/signals/
+        통합 스키마로 knowledge/signals/ 저장 + SA 큐 전달.
 
         Returns: Path to saved file
         """
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         video_id = self.extract_video_id(video_url)
-        filename = f'youtube_{video_id}_{timestamp}.json'
-        filepath = self.signals_dir / filename
+        signal_id = "youtube_video_%s_%s" % (timestamp[:8], timestamp[9:])
+
+        # 요약 텍스트 → content 필드
+        summary = analysis.get('summary', '') or analysis.get('full_analysis', '')
+        content = summary[:3000] if summary else "YouTube 수집: %s" % video_url
 
         data = {
+            'signal_id': signal_id,
             'type': 'youtube_video',
-            'source': video_url,
-            'video_id': video_id,
+            'status': 'captured',
+            'content': content,
             'captured_at': datetime.now().isoformat(),
-            'transcript': transcript[:2000] + '...' if transcript and len(transcript) > 2000 else transcript,
-            'full_transcript_length': len(transcript) if transcript else 0,
-            'analysis': analysis,
-            'status': 'captured'  # Will be processed by Multi-Agent later
+            'from_user': '97layer',
+            'source_channel': source_channel,
+            'metadata': {
+                'title': analysis.get('title', ''),
+                'video_id': video_id,
+                'source_url': video_url,
+                'transcript_length': len(transcript) if transcript else 0,
+                'transcript_preview': (transcript[:2000] + '...') if transcript and len(transcript) > 2000 else transcript,
+                'analysis': {
+                    'key_insights': analysis.get('key_insights', []),
+                    'summary': summary[:500] if summary else '',
+                },
+            },
         }
 
+        filepath = self.signals_dir / ("%s.json" % signal_id)
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-        logger.info(f"✅ Saved to {filepath}")
+        logger.info("저장: %s", filepath)
+
+        # SA 큐 전달
+        try:
+            from core.system.queue_manager import QueueManager
+            qm = QueueManager()
+            qm.create_task(
+                agent_type='SA',
+                task_type='analyze_signal',
+                payload={
+                    'signal_id': signal_id,
+                    'signal_path': str(filepath),
+                }
+            )
+            logger.info("SA 큐 전달 (유튜브): %s", signal_id)
+        except Exception as q_e:
+            logger.warning("SA 큐 전달 실패: %s", q_e)
+
         return str(filepath)
 
-    def process_url(self, video_url: str) -> Dict:
+    def process_url(self, video_url: str, source_channel: str = "manual") -> Dict:
         """
         Complete processing pipeline for YouTube URL
 
@@ -251,7 +283,7 @@ class YouTubeAnalyzer:
                 'error': Optional[str]
             }
         """
-        logger.info(f"Processing YouTube URL: {video_url}")
+        logger.info("Processing YouTube URL: %s", video_url)
 
         # Step 1: Extract video ID
         video_id = self.extract_video_id(video_url)
@@ -261,21 +293,21 @@ class YouTubeAnalyzer:
                 'error': 'Invalid YouTube URL'
             }
 
-        logger.info(f"Video ID: {video_id}")
+        logger.info("Video ID: %s", video_id)
 
         # Step 2: Get transcript
         transcript = self.get_transcript(video_id)
 
         if not transcript:
             # Save without transcript (URL + metadata only)
-            logger.warning(f"No transcript available, saving URL only")
+            logger.warning("No transcript available, saving URL only")
             analysis = {
                 'summary': 'Transcript unavailable (video from cloud IP blocked by YouTube)',
                 'key_insights': [],
                 'topics': [],
                 'note': 'Manual review needed'
             }
-            saved_path = self.save_to_knowledge_base(analysis, video_url, transcript=None)
+            saved_path = self.save_to_knowledge_base(analysis, video_url, transcript=None, source_channel=source_channel)
             return {
                 'success': True,  # Changed to True - partial success
                 'video_id': video_id,
@@ -285,13 +317,13 @@ class YouTubeAnalyzer:
                 'warning': 'Transcript unavailable - saved URL for manual review'
             }
 
-        logger.info(f"Transcript length: {len(transcript)} characters")
+        logger.info("Transcript length: %d characters", len(transcript))
 
         # Step 3: Analyze with Gemini
         analysis = self.analyze_with_gemini(transcript, video_url)
 
         # Step 4: Save to knowledge base
-        saved_path = self.save_to_knowledge_base(analysis, video_url, transcript)
+        saved_path = self.save_to_knowledge_base(analysis, video_url, transcript, source_channel=source_channel)
 
         return {
             'success': True,

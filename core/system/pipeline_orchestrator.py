@@ -215,7 +215,7 @@ class PipelineOrchestrator:
             try:
                 signal_data = json.loads(signal_file.read_text())
             except Exception as e:
-                logger.warning(f"[Orchestrator] 신호 파일 읽기 실패: {signal_file.name} - {e}")
+                logger.warning("[Orchestrator] 신호 파일 읽기 실패: %s - %s", signal_file.name, e)
                 continue
 
             signal_id = signal_data.get("signal_id", signal_file.stem)
@@ -229,15 +229,18 @@ class PipelineOrchestrator:
 
             # 필터링: 빈 신호 제거
             if signal_type == "youtube_video":
-                # YouTube: transcript 없으면 스킵
-                if not signal_data.get("transcript"):
-                    logger.debug(f"[Orchestrator] 스킵: {signal_id} (transcript 없음)")
+                # YouTube: content 또는 transcript 없으면 스킵
+                has_content = len(signal_data.get("content", "").strip()) > 20
+                has_transcript = bool(signal_data.get("transcript") or
+                                      signal_data.get("metadata", {}).get("transcript_preview"))
+                if not has_content and not has_transcript:
+                    logger.debug("[Orchestrator] 스킵: %s (transcript 없음)", signal_id)
                     continue
-            elif signal_type == "text_insight":
-                # Text: 내용 너무 짧으면 스킵 (최소 10자)
+            elif signal_type in ("text_insight", "url_content", "pdf_document", "image"):
+                # 최소 내용 검증
                 content = signal_data.get("content", "")
                 if len(content.strip()) < 10:
-                    logger.debug(f"[Orchestrator] 스킵: {signal_id} (내용 부족: {len(content)}자)")
+                    logger.debug("[Orchestrator] 스킵: %s (내용 부족: %d자)", signal_id, len(content))
                     continue
 
             # SA 태스크 페이로드 구성
@@ -251,14 +254,16 @@ class PipelineOrchestrator:
                 "metadata": signal_data.get("metadata", {}),
             }
             if signal_type == "youtube_video":
-                payload["transcript"] = signal_data.get("transcript", "")
-                payload["video_id"] = signal_data.get("video_id", "")
-                payload["title"] = signal_data.get("title", "")
+                meta = signal_data.get("metadata", {})
+                payload["transcript"] = (signal_data.get("transcript", "")
+                                         or meta.get("transcript_preview", ""))
+                payload["video_id"] = meta.get("video_id", signal_data.get("video_id", ""))
+                payload["title"] = meta.get("title", signal_data.get("title", ""))
 
             task_id = self._create_task("SA", "analyze_signal", payload)
 
             # 즉시 처리됨으로 마킹 (재시작 시 중복 방지)
-            self._orchestrated[f"queued_{signal_id}"] = {
+            self._orchestrated["queued_%s" % signal_id] = {
                 "orchestrated_at": datetime.now().isoformat(),
                 "next_task_id": task_id,
                 "signal_id": signal_id,

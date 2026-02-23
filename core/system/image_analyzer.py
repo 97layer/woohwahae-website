@@ -66,8 +66,9 @@ class ImageAnalyzer:
 
         # Output directories
         self.signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
-        self.images_dir = self.signals_dir / 'images'
-        self.images_dir.mkdir(parents=True, exist_ok=True)
+        self.files_dir = self.signals_dir / 'files'
+        self.signals_dir.mkdir(parents=True, exist_ok=True)
+        self.files_dir.mkdir(parents=True, exist_ok=True)
 
     def analyze_image(self, image_path: str) -> Dict:
         """
@@ -138,7 +139,7 @@ class ImageAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Gemini Vision analysis failed: {e}")
+            logger.error("Gemini Vision analysis failed: %s", e)
             return {
                 'description': f'분석 실패: {str(e)}',
                 'objects': [],
@@ -169,39 +170,50 @@ class ImageAnalyzer:
                 bullets.append(line[1:].strip())
         return bullets[:5]
 
-    def save_image_and_analysis(self, image_path: str, analysis: Dict) -> str:
+    def save_image_and_analysis(self, image_path: str, analysis: Dict,
+                               source_channel: str = "manual") -> str:
         """
-        Save image and analysis to knowledge/signals/images/
+        통합 스키마로 signals/ 저장 + 바이너리는 signals/files/.
 
         Returns: Path to saved JSON file
         """
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        image_filename = Path(image_path).name
-        base_name = Path(image_path).stem
-
-        # Copy image to signals directory
         import shutil
-        new_image_path = self.images_dir / f"{base_name}_{timestamp}{Path(image_path).suffix}"
-        shutil.copy(image_path, new_image_path)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        signal_id = "image_%s_%s" % (timestamp[:8], timestamp[9:])
+        suffix = Path(image_path).suffix or '.jpg'
 
-        # Save analysis
-        json_filename = f"image_{base_name}_{timestamp}.json"
-        json_path = self.images_dir / json_filename
+        # 바이너리 복사 → signals/files/
+        new_image_path = self.files_dir / ("%s%s" % (signal_id, suffix))
+        shutil.copy2(image_path, new_image_path)
 
+        # content 생성
+        description = analysis.get('full_analysis') or analysis.get('description', '')
+        caption = analysis.get('caption', '')
+        content = description[:3000] if description else "이미지 수집: %s" % Path(image_path).name
+        if caption:
+            content = "[메모] %s\n\n%s" % (caption, content)
+
+        # 통합 스키마 JSON → signals/ 루트
         data = {
+            'signal_id': signal_id,
             'type': 'image',
-            'source': str(image_path),
-            'saved_image': str(new_image_path),
+            'status': 'captured',
+            'content': content,
             'captured_at': datetime.now().isoformat(),
-            'analysis': analysis,
-            'status': 'captured'
+            'from_user': '97layer',
+            'source_channel': source_channel,
+            'metadata': {
+                'image_path': str(new_image_path),
+                'title': caption[:100] if caption else Path(image_path).stem,
+            },
         }
 
+        json_path = self.signals_dir / ("%s.json" % signal_id)
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-        logger.info(f"✅ Saved image to {new_image_path}")
-        logger.info(f"✅ Saved analysis to {json_path}")
+        logger.info("이미지 저장: %s", new_image_path)
+        logger.info("신호 저장: %s", json_path)
         return str(json_path)
 
     def process_image(self, image_path: str) -> Dict:
@@ -217,7 +229,7 @@ class ImageAnalyzer:
                 'error': Optional[str]
             }
         """
-        logger.info(f"Processing image: {image_path}")
+        logger.info("Processing image: %s", image_path)
 
         if not Path(image_path).exists():
             return {
