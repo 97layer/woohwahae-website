@@ -42,17 +42,31 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# 브랜드 보이스 fallback (NotebookLM 연결 불가 시 사용)
-_BRAND_VOICE_FALLBACK = """
-97layer 브랜드 보이스 (WOOHWAHAE 슬로우 라이프 아틀리에):
-- 톤: 사색적, 느리고 깊은 호흡, 과도한 흥분 없음
-- 금지어: 혁신, 가속, 트렌드, 최신, 최고, 압도적
-- 허용어: 본질, 느림, 깊이, 일상, 사유, 여백, 단단함
-- 문장 구조: 짧고 명료. 단문 위주. 50-100자 이내.
-- 결말 선호: 질문으로 끝내기 (해답 제시가 아닌 탐색 권유)
-- 시제: 현재형 중심. "~이다" 보다 "~일 수 있다"
-- 인칭: 2인칭(당신) 지양, 보편적 1인칭("우리는", "나는")
-"""
+# Brand OS 문서 로딩 (NotebookLM 연결 불가 시 primary source)
+BRAND_DIR = PROJECT_ROOT / "directives" / "brand"
+
+def _load_brand_directives() -> str:
+    """brand/voice_tone.md + brand/content_system.md 로드 → CE 브랜드 보이스"""
+    docs = []
+    for filename in ["voice_tone.md", "content_system.md"]:
+        filepath = BRAND_DIR / filename
+        try:
+            content = filepath.read_text(encoding="utf-8")
+            # 토큰 절약: 처음 1500자
+            docs.append(content[:1500])
+        except FileNotFoundError:
+            pass
+    if docs:
+        return "\n---\n".join(docs)
+    # 최소 fallback
+    return (
+        "97layer 브랜드 보이스:\n"
+        "- 톤: 사색적, 절제된, 밀도 있는\n"
+        "- 금지어: 대박, 꿀팁, 핫, 트렌디, 과장 형용사\n"
+        "- 허용어: 본질, 기록, 순간, 흔적, 절제, 고요함\n"
+        "- 캡션: 50-100단어. 에세이: 5000-8000자\n"
+        "- 어조: Archive=한다체, Magazine=합니다체"
+    )
 
 
 class ChiefEditor:
@@ -122,7 +136,7 @@ class ChiefEditor:
             except Exception as e:
                 logger.warning("%s: NotebookLM 쿼리 실패, fallback 사용: %s", self.agent_id, e)
 
-        self._brand_voice_cache = _BRAND_VOICE_FALLBACK
+        self._brand_voice_cache = _load_brand_directives()
         return self._brand_voice_cache
 
     def write_content(self, analysis: Dict[str, Any], visual_concept: Dict[str, Any],
@@ -149,7 +163,7 @@ class ChiefEditor:
 
         # 브랜드 보이스 참조 (NotebookLM 또는 fallback)
         brand_voice = self._get_brand_voice()
-        brand_source = "NotebookLM RAG" if self.nlm and self._brand_voice_cache != _BRAND_VOICE_FALLBACK else "fallback"
+        brand_source = "NotebookLM RAG" if self.nlm else "Brand OS directives"
         logger.info("%s: 브랜드 보이스 출처 — %s", self.agent_id, brand_source)
 
         # 재작업 컨텍스트

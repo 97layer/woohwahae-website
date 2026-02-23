@@ -22,7 +22,7 @@
         %}>Archive</a>
       <a href="{{ url_for('pipeline') }}" {% if request.path.startswith('/pipeline') %}class="active" {% endif
         %}>Pipeline</a>
-      <form action="{{ url_for('publish') }}" method="post" style="display:inline;">
+      <form action="{{ url_for('publish') }}" method="post" class="admin-publish-form">
         <button type="submit" class="admin-publish-btn">발행</button>
       </form>
       <a href="{{ url_for('logout') }}" class="admin-logout">Logout</a>

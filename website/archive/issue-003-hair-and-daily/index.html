@@ -3,17 +3,24 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Issue 003 — Hair and Daily. 머리카락은 매일의 자기 대화다.">
+  <meta property="og:title" content="Issue 003: Hair and Daily — WOOHWAHAE Archive">
+  <meta property="og:description" content="머리카락은 매일의 자기 대화다.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://woohwahae.kr/archive/issue-003-hair-and-daily/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>Issue 003: Hair and Daily — WOOHWAHAE Archive</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
-  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="../../assets/css/style.css?v=typo_v38">
+  <meta name="theme-color" content="#F0EFEB">
+  <link rel="icon" href="../../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=renewal_v1">
+  <script src="../../assets/js/analytics.js" defer></script>
 </head>
 
 <body>
+  <div class="reading-progress-container"><div class="reading-progress-bar"></div></div>
 
   <nav>
     <a href="/" class="nav-logo">
@@ -24,6 +31,7 @@
       <li><a href="../../offering.html">Offering</a></li>
       <li><a href="../../about.html">About</a></li>
       <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../lab/">Lab</a></li>
     </ul>
     <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
@@ -31,15 +39,34 @@
     </button>
   </nav>
 
-  <div class="article-container">
+  <article class="art">
+    <canvas id="art-wave" class="art-wave-canvas"></canvas>
+    <div class="art-container">
 
-    <header class="article-header">
-      <p class="article-meta fade-in">Issue 003 &nbsp;·&nbsp; Practice &nbsp;·&nbsp; 2026.02.17</p>
-      <h1 class="article-title fade-in">Hair and Daily</h1>
-      <p class="article-subtitle fade-in">머리카락은 매일의 자기 대화다.</p>
-    </header>
+      <div class="art-back fade-in">
+        <a href="../../archive/">← Archive</a>
+      </div>
 
-    <div class="article-body">
+      <header class="art-header">
+        <div class="art-header-rule fade-in"></div>
+
+        <div class="art-header-grid fade-in">
+          <div class="art-header-meta">
+            <p class="art-issue">Issue 003</p>
+            <p class="art-date">2026.02.17</p>
+            <p class="art-readtime" id="read-time"></p>
+          </div>
+          <div class="art-header-main">
+            <span class="art-category">Practice</span>
+            <h1 class="art-title">Hair and Daily</h1>
+            <p class="art-subtitle">머리카락은 매일의 자기 대화다.</p>
+          </div>
+        </div>
+
+        <div class="art-header-rule fade-in"></div>
+      </header>
+
+      <div class="art-body" id="article-content">
 
       <p class="fade-in">
         아침에 거울 앞에 서는 시간이 있습니다.
@@ -121,9 +148,22 @@
         그게 전부입니다.
       </p>
 
-    </div>
+      </div>
 
-  </div>
+      <footer class="art-outro fade-in">
+        <div class="art-outro-rule"></div>
+        <div class="art-outro-meta">
+          <span>Issue 003</span>
+          <span>2026.02.17</span>
+        </div>
+        <div class="art-outro-nav">
+          <a href="../issue-002-slow-life/" class="art-nav-link">← Prev: Slow Life</a>
+          <a href="../../archive/" class="art-nav-link">Archive ↑</a>
+        </div>
+      </footer>
+
+    </div>
+  </article>
 
   <footer class="section--light">
     <div class="footer-inner">
@@ -154,6 +194,18 @@
   </footer>
 
   <script src="../../assets/js/main.js"></script>
+  <script>
+    /* 읽기시간 */
+    (function () {
+      var content = document.getElementById('article-content');
+      var rt = document.getElementById('read-time');
+      if (!content || !rt) return;
+      var words = content.innerText.trim().split(/\s+/).length;
+      var mins = Math.max(1, Math.round(words / 200));
+      rt.textContent = mins + 'min read';
+    })();
+  </script>
+
 </body>
 
 </html>

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="WOOHWAHAE — Archive for Slow Life. 가속화된 세상에서 주체적으로 살아가기 위한 생각과 실천의 아카이브.">
   <meta property="og:title" content="WOOHWAHAE">
   <meta property="og:description" content="Archive for Slow Life">
@@ -12,23 +12,24 @@
   <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>WOOHWAHAE</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#E8E6E1">
+  <meta name="theme-color" content="#F0EFEB">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
   <link rel="icon" href="assets/img/symbol.png" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
-  <link rel="preload" href="assets/css/style.css?v=typo_v38" as="style">
-  <link rel="stylesheet" href="assets/css/style.css?v=typo_v38">
+  <link rel="preload" href="assets/css/style.css?v=home_v3" as="style">
+  <link rel="stylesheet" href="assets/css/style.css?v=home_v3">
   <script src="assets/js/analytics.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 
-<body>
+<body class="home-radical">
 
-  <!-- Navigation -->
-  <nav>
+  <!-- 전체 페이지 배경 필드 캔버스 — fixed, z=0 -->
+  <canvas id="field-bg" class="field-bg-canvas"></canvas>
+
+  <!-- Nav — 최소화, 투명 배경 -->
+  <nav class="nav-radical">
     <a href="/" class="nav-logo">
       <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
     </a>
@@ -36,71 +37,49 @@
       <li><a href="archive/">Archive</a></li>
       <li><a href="offering.html">Offering</a></li>
       <li><a href="about.html">About</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="lab/">Lab</a></li>
     </ul>
-    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
 
-  <!-- 1. Hero — 풀스크린 -->
-  <section class="hero hero--fullscreen section--light">
+  <!-- 단일 스크롤 공간 — 섹션 없음, 텍스트 블록만 -->
+  <main class="field-main">
 
-    <!-- Three.js 캔버스: 섹션 전체 채움 -->
-    <canvas id="hero-canvas" class="hero-canvas-full" aria-hidden="true"></canvas>
-
-    <!-- 오버레이 레이어 -->
-    <div class="hero-overlay">
-      <!-- 중앙 하단 카피 + nav -->
-      <div class="hero-tagline">
-        <div class="hero-platform-def"></div>
-        <div class="hero-stmt-nav">
-          <a href="archive/">Archive</a>
-          <a href="offering.html">Offering</a>
-          <a href="about.html">About</a>
-        </div>
-      </div>
+    <!-- Block 0: 브랜드 — 화면 중앙 하단 -->
+    <div class="fb fb--brand">
+      <p class="fb-statement">Archive for Slow Life.</p>
+      <p class="fb-brand">WOOHWAHAE</p>
     </div>
 
-  </section>
-
-  <!-- 3. Recent + Newsletter — 병렬 2열 -->
-  <section class="section--light" id="archive-section">
-    <div class="container--wide">
-      <div class="mag-row fade-in">
-        <div class="mag-label">
-          <p class="section-label">Recent</p>
-          <a href="archive/" class="mag-cta-link fade-in">View All →</a>
-        </div>
-        <div>
-          <div class="archive-grid" id="recent-grid"></div>
-        </div>
-      </div>
+    <!-- Block 1: 우화 -->
+    <div class="fb fb--uwh">
+      <p class="fb-label">우화(羽化)</p>
+      <p class="fb-ko">번데기가 나비가 되는 과정.<br>각자의 속도로, 내면의 美를 성찰하며.</p>
     </div>
-  </section>
 
-  <!-- 4. Newsletter -->
-  <section class="section--light" id="newsletter-section">
-    <div class="container--wide">
-      <div class="mag-row fade-in" style="border-bottom:1px solid var(--line);">
-        <div class="mag-label">
-          <p class="section-label">Newsletter</p>
-        </div>
-        <div class="mag-body">
-          <p class="lead">Archive updates, curated thoughts.</p>
-          <form id="newsletter-form" class="newsletter-form">
-            <input type="email" id="newsletter-email" placeholder="Your email" required aria-label="Email address">
-            <button type="submit">Subscribe</button>
-          </form>
-          <p id="newsletter-message" class="newsletter-message"></p>
-        </div>
-      </div>
+    <!-- Block 3: 최신 에세이 -->
+    <div class="fb fb--essay">
+      <a href="#" class="fb-essay-link" id="featured-article">
+        <span class="fb-essay-meta">
+          <span id="featured-issue">—</span>
+          <span class="fb-essay-sep">·</span>
+          <span id="featured-date">—</span>
+        </span>
+        <strong class="fb-essay-title" id="featured-title"></strong>
+      </a>
     </div>
-  </section>
 
-  <!-- 5. Footer -->
+    <!-- Block 4: 하단 링크 -->
+    <div class="fb fb--nav">
+      <a href="archive/">Archive</a>
+      <a href="offering.html">Offering</a>
+      <a href="about.html">About</a>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
   <footer class="section--light">
     <div class="footer-inner">
       <div class="footer-brand-row">
@@ -129,194 +108,317 @@
     </div>
   </footer>
 
-  <script src="assets/js/newsletter.js"></script>
-  <script src="assets/js/hero-animation.js"></script>
   <script src="assets/js/main.js"></script>
-
-  <!-- Three.js Hero Symbol -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
-    }
-  }
-  </script>
-  <script type="module">
-    import * as THREE from 'three';
-
-    const canvas = document.getElementById('hero-canvas');
-    if (!canvas) throw new Error('hero-canvas not found');
-
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, precision: 'highp' });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 3));
-    renderer.setClearColor(0x000000, 0);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    camera.position.set(0, 0, 5.5);
-
-    function setSize() {
-      const W = innerWidth;
-      const H = innerHeight;
-      renderer.setSize(W, H, false);
-      camera.aspect = W / H;
-      camera.updateProjectionMatrix();
-    }
-    setSize();
-    window.addEventListener('resize', setSize);
-
-    scene.add(new THREE.AmbientLight(0xE8E6E1, 1.1));
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
-    keyLight.position.set(2, 3, 4); scene.add(keyLight);
-    const fillLight = new THREE.DirectionalLight(0xdde8f0, 0.9);
-    fillLight.position.set(-3, -1, 2); scene.add(fillLight);
-    const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    rimLight.position.set(0, -4, -3); scene.add(rimLight);
-
-    function roughen(geo, amount) {
-      const pos = geo.attributes.position;
-      for (let i = 0; i < pos.count; i++) {
-        const nx = Math.sin(i * 127.1 + 311.7) * 43758.5453;
-        const ny = Math.sin(i * 269.5 + 183.3) * 43758.5453;
-        const nz = Math.sin(i * 419.2 + 631.4) * 43758.5453;
-        pos.setX(i, pos.getX(i) + (nx - Math.floor(nx) - 0.5) * amount);
-        pos.setY(i, pos.getY(i) + (ny - Math.floor(ny) - 0.5) * amount);
-        pos.setZ(i, pos.getZ(i) + (nz - Math.floor(nz) - 0.5) * amount);
-      }
-      pos.needsUpdate = true; geo.computeVertexNormals(); return geo;
-    }
-
-    function roughCirclePts(r, n, wobble) {
-      const pts = [];
-      for (let i = 0; i <= n; i++) {
-        const t = i / n, a = t * Math.PI * 2;
-        const w = 1 + Math.sin(a*2.3+r*5.7)*wobble + Math.sin(a*5.1+r*3.1)*wobble*0.6
-                    + Math.sin(a*9.7+r*7.3)*wobble*0.3 + Math.cos(a*4.2-r*2.9)*wobble*0.5;
-        const zOff = Math.sin(a*3.1+r*4.1)*wobble*r*0.45 + Math.cos(a*6.7-r*1.8)*wobble*r*0.25;
-        pts.push(new THREE.Vector3(Math.cos(a)*r*w, Math.sin(a)*r*w, zOff));
-      }
-      return pts;
-    }
-
-    function makeMat(color, opacity, roughness=0.88, metalness=0.04) {
-      return new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent:true, opacity });
-    }
-
-    const root = new THREE.Group(); scene.add(root);
-
-    const ringDefs = [
-      { r:1.10, tube:0.005,  tX: 0.32, tY: 0.08, tZ: 0.05, spin: 0.038, wobble:0.065, op:0.78 },
-      { r:0.84, tube:0.004,  tX:-0.42, tY:-0.12, tZ: 0.10, spin:-0.055, wobble:0.055, op:0.60 },
-      { r:0.58, tube:0.0032, tX: 0.18, tY: 0.24, tZ:-0.08, spin: 0.072, wobble:0.048, op:0.44 },
-      { r:0.30, tube:0.0025, tX:-0.14, tY:-0.28, tZ: 0.12, spin:-0.088, wobble:0.038, op:0.32 },
-    ];
-    const rings = ringDefs.map(def => {
-      const pts = roughCirclePts(def.r, 260, def.wobble);
-      const geo = roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true,'centripetal',0.4),320,def.tube,12,true), def.tube*0.7);
-      const mesh = new THREE.Mesh(geo, makeMat(0x2a2820, def.op));
-      mesh.rotation.set(def.tX, def.tY, def.tZ); root.add(mesh);
-      return { mesh, def };
-    });
-
-    const spiralPts = [];
-    for (let i = 0; i <= 600; i++) {
-      const t = i/600, angle = t*3.8*Math.PI*2 - Math.PI/2, r = 0.10+(1.12-0.10)*t;
-      const z = Math.sin(t*Math.PI*2.2)*0.20 + Math.sin(t*17.3)*0.025;
-      const w = Math.sin(t*11.3)*0.048 + Math.sin(t*27.9+1.3)*0.022;
-      spiralPts.push(new THREE.Vector3(Math.cos(angle)*(r+w), Math.sin(angle)*(r+w), z));
-    }
-    const sc = new THREE.CatmullRomCurve3(spiralPts,false,'centripetal',0.3);
-    const spts = sc.getPoints(1000);
-    const spiralInner = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spts.slice(0,510),false,'centripetal'),500,0.005,12,false),0.004), makeMat(0x252320,0.86));
-    const spiralOuter = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spts.slice(500),false,'centripetal'),500,0.003,10,false),0.003), makeMat(0x252320,0.60));
-    spiralInner.rotation.x = spiralOuter.rotation.x = 0.10;
-    root.add(spiralInner); root.add(spiralOuter);
-
-    const ecgRaw = [[-1.0,0,0],[-0.66,0,0.01],[-0.60,-0.11,0.02],[-0.54,0,0.01],[-0.36,0.01,-0.01],[-0.26,0.09,0.02],[-0.16,-0.68,0.04],[-0.08,0.14,0.02],[0,0.01,-0.01],[0.24,-0.24,0.02],[0.46,0.01,-0.01],[1.0,0,0]].map(([x,y,z])=>new THREE.Vector3(x,y,z));
-    const ecgMesh = new THREE.Mesh(roughen(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ecgRaw,false,'centripetal',0.25),360,0.004,12,false),0.003), makeMat(0x2a2820,0.72));
-    ecgMesh.rotation.set(0.08,0,0); root.add(ecgMesh);
-
-    const dotMesh = new THREE.Mesh(roughen(new THREE.SphereGeometry(0.040,32,32),0.006), makeMat(0x1a1814,0.92,0.72,0.08));
-    root.add(dotMesh);
-
-    const mouse = {x:0,y:0}, smooth = {x:0,y:0};
-    window.addEventListener('mousemove', e => {
-      mouse.x = (e.clientX/innerWidth-0.5)*2;
-      mouse.y = (e.clientY/innerHeight-0.5)*2;
-    }, {passive:true});
-
-    setTimeout(() => { canvas.style.opacity = '1'; }, 120);
-
-    const clock = new THREE.Clock();
-    (function animate() {
-      requestAnimationFrame(animate);
-      const dt = clock.getDelta(), t = clock.getElapsedTime();
-      smooth.x += (mouse.x - smooth.x) * 0.04;
-      smooth.y += (mouse.y - smooth.y) * 0.04;
-      root.rotation.y = t*0.028 + smooth.x*0.22;
-      root.rotation.x = smooth.y*-0.16;
-      rings.forEach(({mesh,def}) => { mesh.rotation.z += def.spin*dt; });
-      spiralInner.rotation.y += 0.004*dt;
-      spiralOuter.rotation.y += 0.004*dt;
-      dotMesh.scale.setScalar(1+Math.sin(t*2.8)*0.06);
-      keyLight.position.x = 2+smooth.x*1.8;
-      keyLight.position.y = 3-smooth.y*1.2;
-      renderer.render(scene, camera);
-    })();
-  </script>
   <script>
-    /* Recent Archive — 3-column card grid (same system as archive page) */
-    fetch('archive/index.json')
-      .then(r => r.json())
-      .then(posts => {
-        const grid = document.getElementById('recent-grid');
-        const section = document.getElementById('archive-section');
-        if (!grid || !posts.length) {
-          if (section) section.style.display = 'none';
-          return;
-        }
+    /* ══════════════════════════════════════════════════════
+       FIELD BG — 전체 페이지 배경 쌍극자 자기장 (Three.js)
+       스크롤에 따라 극 위치 · 씨앗 · 회전속도 변형
+    ══════════════════════════════════════════════════════ */
+    (function () {
+      var canvas = document.getElementById('field-bg');
+      if (!canvas || typeof THREE === 'undefined') return;
 
-        posts.slice(0, 6).forEach((post, idx) => {
-          const card = document.createElement('a');
-          card.href = 'archive/' + post.slug + '/';
-          card.className = 'archive-card fade-in';
-          card.dataset.delay = idx;
-
-          const issueNum = post.issue ? post.issue.replace('Issue ', '') : '00';
-          const hasImage = post.image_url && post.image_url.trim() !== '';
-          const imageContent = hasImage
-            ? '<img src="' + post.image_url + '" alt="' + post.title + '" loading="lazy">'
-            : '<span class="archive-card-ghost">' + issueNum + '</span>';
-
-          card.innerHTML =
-            '<div class="archive-card-image">' + imageContent + '</div>' +
-            '<span class="archive-card-category">' + post.category + '</span>' +
-            '<h3 class="archive-card-title">' + post.title + '</h3>' +
-            '<div class="archive-card-meta"><span>' + post.issue + '</span><span>' + post.date + '</span></div>' +
-            '<p class="archive-card-preview">' + post.preview + '</p>';
-
-          grid.appendChild(card);
-        });
-
-        grid.querySelectorAll('.archive-card.fade-in').forEach((el, i) => {
-          const obs = new IntersectionObserver(([e]) => {
-            if (e.isIntersecting) {
-              setTimeout(() => e.target.classList.add('visible'), i * 80);
-              obs.unobserve(e.target);
-            }
-          }, { threshold: 0.05 });
-          obs.observe(el);
-        });
-      })
-      .catch(() => {
-        const grid = document.getElementById('recent-grid');
-        if (grid) {
-          grid.innerHTML = '<p class="archive-error" style="color: var(--text-faint); font-family: var(--font-mono); font-size: 0.8rem;">아카이브 데이터를 동기화할 수 없습니다.</p>';
-        } else {
-          const section = document.getElementById('archive-section');
-          if (section) section.style.display = 'none';
-        }
+      /* ── Renderer ── */
+      var renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true
       });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+
+      /* ── Scene & Camera ── */
+      var scene    = new THREE.Scene();
+      var fieldGroup = new THREE.Group();  /* 회전 그룹 — 씬에 먼저 등록 */
+      scene.add(fieldGroup);
+
+      var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+      camera.position.set(0, 1.5, 20);
+      camera.lookAt(0, 0, 0);
+
+      /* ── 마우스 추적 ── */
+      var mouse = { x: 0, y: 0 };
+      document.addEventListener('mousemove', function (e) {
+        mouse.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+        mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+
+      /* ── 쌍극자 필드라인 파라미터 — 밀도 강화 ── */
+      var LINE_COUNT = 24;    /* φ 슬라이스 수 — 돌의 복잡한 결 (18 → 24) */
+      var SEEDS      = 10;    /* r0 씨앗 수 */
+      var POINTS_PER = 220;
+      var MAX_R      = 15.0;
+      var SCALE      = 2.8;   /* 지질학적 안착감 (3.2 → 2.8) */
+
+      function buildFieldLine(r0, phi) {
+        var pts   = new Float32Array(POINTS_PER * 3);
+        var baseZ = new Float32Array(POINTS_PER);
+        var tMin  = 0.04;
+        var tMax  = Math.PI - 0.04;
+        for (var i = 0; i < POINTS_PER; i++) {
+          var theta = tMin + (i / (POINTS_PER - 1)) * (tMax - tMin);
+          var sinT  = Math.sin(theta);
+          var cosT  = Math.cos(theta);
+          var r     = r0 * sinT * sinT;
+          if (r > MAX_R) r = MAX_R;
+          pts[i * 3]     = r * sinT * Math.cos(phi) * SCALE;
+          pts[i * 3 + 1] = r * cosT * SCALE;
+          pts[i * 3 + 2] = r * sinT * Math.sin(phi) * SCALE;
+          baseZ[i]       = pts[i * 3 + 2];
+        }
+        return { pts: pts, baseZ: baseZ };
+      }
+
+      var fieldLines = [];
+
+      /* r0 씨앗: 안쪽 조밀, 바깥 성긴 — 중심 수렴감 강화 */
+      var seeds = [];
+      for (var si = 0; si < SEEDS; si++) {
+        seeds.push(0.8 + Math.pow((si + 1) / SEEDS, 1.8) * 11.0);
+      }
+
+      for (var li = 0; li < LINE_COUNT; li++) {
+        var phi = (li / LINE_COUNT) * Math.PI * 2;
+        for (var si2 = 0; si2 < SEEDS; si2++) {
+          var r0 = seeds[si2];
+          var frac = (si2 + 1) / SEEDS;
+          /* 안쪽(소): 진함. 바깥(대): 연함 — 중심 집중감 */
+          var baseOp = 0.75 - frac * 0.35;
+          /* 색상: 안쪽 다크, 바깥 네이비 — 주파수/에너지 레이어 */
+          var col = frac < 0.5 ? 0x1a1a1a : 0x1B2D4F;
+
+          var mat = new THREE.LineBasicMaterial({
+            color: col,
+            opacity: baseOp,
+            transparent: true
+          });
+
+          var built = buildFieldLine(r0, phi);
+          var geo   = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(built.pts, 3));
+          fieldGroup.add(new THREE.Line(geo, mat));
+
+          fieldLines.push({
+            mat:    mat,
+            baseOp: baseOp,
+            phase:  li * (Math.PI * 2 / LINE_COUNT) + si2 * 0.35,
+            geo:    geo,
+            pts:    built.pts,
+            baseZ:  built.baseZ,
+            frac:   frac
+          });
+        }
+      }
+
+      /* ── 중심 극점: 발광 링 3개 (맥동) ── */
+      var pulseRings = [];
+      [0.18, 0.38, 0.65].forEach(function (r, idx) {
+        var segs = 80;
+        var pts  = [];
+        for (var a = 0; a <= segs; a++) {
+          var ang = (a / segs) * Math.PI * 2;
+          pts.push(new THREE.Vector3(Math.cos(ang) * r, Math.sin(ang) * r, 0));
+        }
+        var geo = new THREE.BufferGeometry().setFromPoints(pts);
+        var mat = new THREE.LineBasicMaterial({
+          color: 0x1a1a1a, opacity: 0.5 - idx * 0.12, transparent: true
+        });
+        fieldGroup.add(new THREE.Line(geo, mat));
+        pulseRings.push({ mat: mat, baseOp: 0.5 - idx * 0.12, phase: idx * 1.2 });
+      });
+
+      /* ── 중심 심볼: 나비 로고 텍스처 Plane ── */
+      var symbolMesh = null;
+      (function () {
+        var loader = new THREE.TextureLoader();
+        loader.load('assets/img/symbol.png', function (tex) {
+          tex.minFilter = THREE.LinearFilter;
+          /* 원본 비율 유지 (정사각형 가정, 아니면 PlaneGeometry 비율 조정) */
+          var geo = new THREE.PlaneGeometry(0.72, 0.72);
+          var mat = new THREE.MeshBasicMaterial({
+            map:         tex,
+            transparent: true,
+            opacity:     0.55,
+            depthTest:   false,
+            alphaTest:   0.02
+          });
+          symbolMesh = new THREE.Mesh(geo, mat);
+          symbolMesh.renderOrder = 10;  /* 필드선 위에 렌더 */
+          fieldGroup.add(symbolMesh);
+        });
+      })();
+
+      /* ── 리사이즈 ── */
+      function onResize() {
+        var W = window.innerWidth;
+        var H = window.innerHeight;
+        renderer.setSize(W, H, false);
+        camera.aspect = W / H;
+        camera.updateProjectionMatrix();
+      }
+      onResize();
+      window.addEventListener('resize', onResize);
+
+      /* ── 애니메이션 루프 ── */
+      var clock   = new THREE.Clock();
+      var camX    = 0;
+      var camY    = 2;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = clock.getElapsedTime();
+
+        /* 스크롤 상태 읽기 — _fieldState는 별도 IIFE에서 정의 */
+        var sr = (window._fieldState && window._fieldState.ratio) || 0;
+
+        /* 씬 Y축 회전 — 돌의 무거운 자전 (기존 대비 약 60% 감속) */
+        var rotSpeed = 0.002 + sr * 0.003;
+        fieldGroup.rotation.y = t * rotSpeed;
+
+        /* X축 회전 — 돌의 최소 기울기 (±0.08rad), 느린 lerp */
+        fieldGroup.rotation.x += (-mouse.y * 0.08 - fieldGroup.rotation.x) * 0.015;
+
+        /* 카메라 z + FOV — 돌 무게감, 완만한 수렴 + 무거운 관성 */
+        var targetZ = 20 - sr * 10;
+        camera.position.z += (targetZ - camera.position.z) * 0.015;
+        camera.fov += (45 - sr * 9 - camera.fov) * 0.015;
+        camera.updateProjectionMatrix();
+
+        /* 각 필드라인: opacity 맥동 + z-wobble */
+        for (var i = 0; i < fieldLines.length; i++) {
+          var fl = fieldLines[i];
+
+          /* opacity — 완만한 밝기 변화 */
+          var waveBase = 0.38 + sr * 0.10;
+          var wave     = 0.5 + 0.5 * Math.sin(t * 0.7 + fl.phase);  /* 느린 맥동 (~9s 주기) */
+          /* scrollPulse — 중간(sr≈0.5)에서 최고조, 처음/끝에서 약해짐 (0.7~1.0) */
+          var scrollPulse = 0.7 + 0.3 * Math.sin(sr * Math.PI);
+          fl.mat.opacity = fl.baseOp * scrollPulse * (waveBase + 0.60 * wave);
+
+          /* z-wobble — 돌의 억제된 진동 (진폭 최소화, 느린 지각 호흡 ~7s) */
+          var wobbleMax = 0.15 + sr * 0.12;
+          var pos = fl.pts;
+          for (var p = 0; p < POINTS_PER; p++) {
+            var frac = p / (POINTS_PER - 1);
+            var amp  = Math.sin(frac * Math.PI) * wobbleMax;
+            pos[p * 3 + 2] = fl.baseZ[p] +
+              amp * Math.sin(t * 0.9 + fl.phase + frac * 6.2832); /* 느린 호흡 ~7s = 2π/0.9 */
+          }
+          fl.geo.attributes.position.needsUpdate = true;
+        }
+
+        /* 중심 링 맥동 — 돌의 느린 극점 진동 (~3.5s 주기) */
+        for (var ri = 0; ri < pulseRings.length; ri++) {
+          var ring = pulseRings[ri];
+          ring.mat.opacity = ring.baseOp * (0.4 + 0.6 * Math.sin(t * 1.8 + ri * 2.094));
+        }
+
+        /* 나비 심볼 — 필드 호흡과 동기화 (느린 맥동) */
+        if (symbolMesh) {
+          symbolMesh.material.opacity = (0.35 + sr * 0.3) * (0.8 + 0.2 * Math.sin(t * 0.9)); /* 느린 호흡 동기화 */
+          /* 필드 그룹 회전에 역방향 보정 — 심볼은 항상 정면을 향함 */
+          symbolMesh.rotation.y = -fieldGroup.rotation.y;
+        }
+
+        /* 카메라 x/y — 돌의 둔감한 마우스 반응 */
+        camX += (mouse.x * 1.2 - camX) * 0.012;
+        camY += (1.5 - mouse.y * 1.0 - camY) * 0.012;
+        camera.position.x = camX;
+        camera.position.y = camY;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    })();
+
+    /* ─── Scroll → 씬 상태 변형 ───
+       스크롤 진행률에 따라 극 위치 · 씨앗 수 · 회전속도 lerp.
+       상태는 Three.js 루프에서 읽어 fieldGroup / camera에 적용.
+    ─── */
+    (function () {
+      var scrollRatio = 0;  /* 0 ~ 1 */
+      var lerpRatio   = 0;  /* 부드러운 추종 */
+
+      function updateScroll() {
+        var docH = document.documentElement.scrollHeight - window.innerHeight;
+        scrollRatio = docH > 0 ? window.scrollY / docH : 0;
+      }
+      window.addEventListener('scroll', updateScroll, { passive: true });
+      updateScroll();
+
+      /* Three.js 루프에 공유할 상태 객체 */
+      window._fieldState = {
+        get ratio() { return lerpRatio; }
+      };
+
+      /* lerp 루프 */
+      (function lerpLoop() {
+        lerpRatio += (scrollRatio - lerpRatio) * 0.04;
+        requestAnimationFrame(lerpLoop);
+      })();
+    })();
+
+    /* ─── Featured Article 로드 ─── */
+    fetch('archive/index.json')
+      .then(function(r) { return r.json(); })
+      .then(function(posts) {
+        if (!posts || !posts.length) return;
+        var post = posts[0];
+        var link = document.getElementById('featured-article');
+        var issueNum = post.issue ? post.issue.replace('Issue ', '') : '00';
+        link.href = 'archive/' + post.slug + '/';
+        document.getElementById('featured-issue').textContent = 'ISSUE ' + issueNum;
+        document.getElementById('featured-date').textContent   = post.date;
+        document.getElementById('featured-title').textContent  = post.title;
+        setTimeout(function() { link.classList.add('visible'); }, 200);
+      })
+      .catch(function() {
+        var blk = document.querySelector('.fb--essay');
+        if (blk) blk.style.display = 'none';
+      });
+
+    /* ─── FB 블록 스크롤 reveal ─── */
+    (function () {
+      var blocks = Array.from(document.querySelectorAll('.fb'));
+      var activeIdx = -1;
+
+      function updateActive() {
+        var fieldMain = document.querySelector('.field-main');
+        if (!fieldMain) return;
+        var vh = window.innerHeight;
+        var total = fieldMain.offsetHeight - vh;
+        var sy = Math.max(0, window.scrollY);
+        var n = blocks.length;
+        var segH = total / n;
+        var idx = Math.min(Math.floor(sy / segH), n - 1);
+
+        if (idx === activeIdx) return; /* 변화 없으면 skip */
+        activeIdx = idx;
+
+        blocks.forEach(function (b, i) {
+          var shouldShow = (i === idx) || (i === 0); /* brand 항상 */
+          if (shouldShow) {
+            b.classList.add('fb--visible');
+          } else {
+            b.classList.remove('fb--visible');
+          }
+        });
+
+        /* essay-link */
+        var essayLink = document.getElementById('featured-article');
+        if (essayLink) {
+          var essayBlock = document.querySelector('.fb--essay');
+          var essayIdx = blocks.indexOf(essayBlock);
+          if (idx === essayIdx) essayLink.classList.add('visible');
+        }
+      }
+
+      window.addEventListener('scroll', updateActive, { passive: true });
+      window.addEventListener('resize', updateActive);
+      updateActive();
+    })();
   </script>
 
 </body>

@@ -36,20 +36,22 @@ class PipelineOrchestrator:
     PIPELINE_STAGES = {
         "SA": {
             "task_types": ["analyze_signal", "analyze"],
-            "next_agent": "AD",
-            "next_task_type": "create_visual_concept"
-        },
-        "AD": {
-            "task_types": ["create_visual_concept"],
             "next_agent": "CE",
             "next_task_type": "write_content"
         },
         "CE": {
             "task_types": ["write_content"],
+            "next_agent": "AD",
+            "next_task_type": "create_visual_concept"
+        },
+        "AD": {
+            "task_types": ["create_visual_concept"],
             "next_agent": "CD",
             "next_task_type": "review_content"
         }
     }
+    # Pipeline: SA → CE → Ralph(inline QA) → AD → CD
+    # Ralph는 CE 완료 후 인라인 품질 게이트로 동작 (별도 스테이지 아님)
 
     MAX_CE_RETRIES = 2  # CD 거절 후 CE 재작업 최대 횟수
     RALPH_PASS_SCORE = 70  # Ralph 품질 게이트
@@ -224,6 +226,19 @@ class PipelineOrchestrator:
                 continue
             if signal_id in processed_ids:
                 continue
+
+            # 필터링: 빈 신호 제거
+            if signal_type == "youtube_video":
+                # YouTube: transcript 없으면 스킵
+                if not signal_data.get("transcript"):
+                    logger.debug(f"[Orchestrator] 스킵: {signal_id} (transcript 없음)")
+                    continue
+            elif signal_type == "text_insight":
+                # Text: 내용 너무 짧으면 스킵 (최소 10자)
+                content = signal_data.get("content", "")
+                if len(content.strip()) < 10:
+                    logger.debug(f"[Orchestrator] 스킵: {signal_id} (내용 부족: {len(content)}자)")
+                    continue
 
             # SA 태스크 페이로드 구성
             payload = {

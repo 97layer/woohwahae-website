@@ -1,35 +1,72 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Issue 008 — 날것의 물성. 매끄러운 표면 위에서는 시선이 미끄러진다.">
+  <meta property="og:title" content="Issue 008: 날것의 물성 — WOOHWAHAE Archive">
+  <meta property="og:description" content="매끄러운 표면 위에서는 시선이 미끄러진다.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://woohwahae.kr/archive/issue-008-raw-materiality/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>Issue 008: 날것의 물성 — WOOHWAHAE Archive</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
-  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="../../assets/css/style.css?v=typo_v38">
+  <meta name="theme-color" content="#F0EFEB">
+  <link rel="icon" href="../../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=renewal_v1">
+  <script src="../../assets/js/analytics.js" defer></script>
 </head>
+
 <body>
+  <div class="reading-progress-container"><div class="reading-progress-bar"></div></div>
+
   <nav>
-    <a href="/" class="nav-logo"><img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE"></a>
+    <a href="/" class="nav-logo">
+      <img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
     <ul class="nav-links">
       <li><a href="../../archive/" class="active">Archive</a></li>
       <li><a href="../../offering.html">Offering</a></li>
       <li><a href="../../about.html">About</a></li>
       <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../lab/">Lab</a></li>
     </ul>
     <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
-    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
-  <div class="article-container">
-    <header class="article-header">
-      <p class="article-meta fade-in">Issue 008 &nbsp;·&nbsp; Essay &nbsp;·&nbsp; 2026.02.18</p>
-      <h1 class="article-title fade-in">날것의 물성</h1>
-      <p class="article-subtitle fade-in">매끄러운 표면 위에서는 시선이 미끄러진다.</p>
-    </header>
-    <div class="article-body">
+
+  <article class="art">
+    <canvas id="art-wave" class="art-wave-canvas"></canvas>
+    <div class="art-container">
+
+      <div class="art-back fade-in">
+        <a href="../../archive/">← Archive</a>
+      </div>
+
+      <header class="art-header">
+        <div class="art-header-rule fade-in"></div>
+
+        <div class="art-header-grid fade-in">
+          <div class="art-header-meta">
+            <p class="art-issue">Issue 008</p>
+            <p class="art-date">2026.02.18</p>
+            <p class="art-readtime" id="read-time"></p>
+          </div>
+          <div class="art-header-main">
+            <span class="art-category">Essay</span>
+            <h1 class="art-title">날것의 물성</h1>
+            <p class="art-subtitle">매끄러운 표면 위에서는 시선이 미끄러진다.</p>
+          </div>
+        </div>
+
+        <div class="art-header-rule fade-in"></div>
+      </header>
+
+      <div class="art-body" id="article-content">
       <p class="fade-in">손끝에 닿는 감각이 무뎌진 시대입니다.</p>
       <p class="fade-in">하루의 대부분을 매끄러운 유리 액정을 문지르며 보냅니다.<br>티끌 하나 없는 화면, 보정된 피부, 코팅된 가구.<br>마찰이 없는 세상은 편리하지만,<br>동시에 감각을 부유하게 만듭니다.<br>닿아 있지만 닿지 않은 느낌.<br>그것이 현대의 특수한 권태입니다.</p>
       <p class="fade-in">웰니스 흐름이 '세련됨'에서 '거칠어짐'으로 이동하는 것은<br>우연이 아닙니다.<br>완벽하게 마감된 대리석 대신,<br>쪼개진 단면이 드러난 돌을 테이블로 씁니다.<br>유약을 바르지 않아 흙의 질감이 그대로 느껴지는 찻잔을 찾습니다.<br>사람들은 눈으로 보기에 완벽한 것보다,<br>손으로 만졌을 때 '실재감'을 주는 무언가를 갈망합니다.</p>
@@ -44,8 +81,23 @@
       <p class="fade-in">공간도 마찬가지입니다.<br>아틀리에는 완벽하게 인테리어된 공간이 아닙니다.<br>콘크리트 벽, 원목 테이블, 자연광.<br>보정하지 않은 물성들로 채웠습니다.<br>그 거칠음이 오히려 사람을 편안하게 만듭니다.<br>완벽한 공간에서는 긴장하지만,<br>불완전한 공간에서는 이완됩니다.</p>
       <p class="fade-in">당신의 공간을 한번, 그리고 당신의 거울을 한번 돌아보세요.<br>너무 매끄러워서 미끄러지고 있지는 않은지.<br>때로는 투박하고 덜 다듬어진 것들이<br>우리를 더 단단하게 지탱합니다.</p>
       <p class="article-closing fade-in">날것의 물성을 만지는 그 까끌한 마찰 속에서,<br>우리는 비로소 살아있음을 느낍니다.</p>
+      </div>
+
+      <footer class="art-outro fade-in">
+        <div class="art-outro-rule"></div>
+        <div class="art-outro-meta">
+          <span>Issue 008</span>
+          <span>2026.02.18</span>
+        </div>
+        <div class="art-outro-nav">
+          <a href="../issue-007-noise-removal/" class="art-nav-link">← Prev: 소음 제거</a>
+          <a href="../../archive/" class="art-nav-link">Archive ↑</a>
+        </div>
+      </footer>
+
     </div>
-  </div>
+  </article>
+
   <footer class="section--light">
     <div class="footer-inner">
       <div class="footer-brand-row">
@@ -73,6 +125,20 @@
       </div>
     </div>
   </footer>
+
   <script src="../../assets/js/main.js"></script>
+  <script>
+    /* 읽기시간 */
+    (function () {
+      var content = document.getElementById('article-content');
+      var rt = document.getElementById('read-time');
+      if (!content || !rt) return;
+      var words = content.innerText.trim().split(/\s+/).length;
+      var mins = Math.max(1, Math.round(words / 200));
+      rt.textContent = mins + 'min read';
+    })();
+  </script>
+
 </body>
+
 </html>

@@ -3,17 +3,24 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Issue 001 — Beginning. 울산의 작은 공간에서 시작된 아카이브의 첫 이야기.">
+  <meta property="og:title" content="Issue 001: Beginning — WOOHWAHAE Archive">
+  <meta property="og:description" content="울산의 작은 공간에서 시작된 아카이브의 첫 이야기.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://woohwahae.kr/archive/issue-001-beginning/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>Issue 001: Beginning — WOOHWAHAE Archive</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
-  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="../../assets/css/style.css?v=typo_v38">
+  <meta name="theme-color" content="#F0EFEB">
+  <link rel="icon" href="../../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=renewal_v1">
+  <script src="../../assets/js/analytics.js" defer></script>
 </head>
 
 <body>
+  <div class="reading-progress-container"><div class="reading-progress-bar"></div></div>
 
   <nav>
     <a href="/" class="nav-logo">
@@ -24,6 +31,7 @@
       <li><a href="../../offering.html">Offering</a></li>
       <li><a href="../../about.html">About</a></li>
       <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../lab/">Lab</a></li>
     </ul>
     <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
@@ -31,22 +39,34 @@
     </button>
   </nav>
 
-  <div class="reading-progress-container">
-    <div class="reading-progress-bar" id="reading-progress"></div>
-  </div>
+  <article class="art">
+    <canvas id="art-wave" class="art-wave-canvas"></canvas>
+    <div class="art-container">
 
-  <div class="article-container">
+      <div class="art-back fade-in">
+        <a href="../../archive/">← Archive</a>
+      </div>
 
-    <header class="article-header">
-      <p class="article-meta fade-in">
-        Issue 001 &nbsp;·&nbsp; Essay &nbsp;·&nbsp; 2026.02.17
-        <span class="article-meta-read-time" id="read-time"></span>
-      </p>
-      <h1 class="article-title fade-in">Beginning</h1>
-      <p class="article-subtitle fade-in">처음 시작하는 순간의 기록.</p>
-    </header>
+      <header class="art-header">
+        <div class="art-header-rule fade-in"></div>
 
-    <div class="article-body" id="article-content">
+        <div class="art-header-grid fade-in">
+          <div class="art-header-meta">
+            <p class="art-issue">Issue 001</p>
+            <p class="art-date">2026.02.17</p>
+            <p class="art-readtime" id="read-time"></p>
+          </div>
+          <div class="art-header-main">
+            <span class="art-category">Essay</span>
+            <h1 class="art-title">Beginning</h1>
+            <p class="art-subtitle">처음 시작하는 순간의 기록.</p>
+          </div>
+        </div>
+
+        <div class="art-header-rule fade-in"></div>
+      </header>
+
+      <div class="art-body" id="article-content">
 
       <p class="fade-in">
         공간을 열기 전, 오래 생각했습니다.
@@ -126,9 +146,22 @@
         작지만 온전한 시작.
       </p>
 
-    </div>
+      </div>
 
-  </div>
+      <footer class="art-outro fade-in">
+        <div class="art-outro-rule"></div>
+        <div class="art-outro-meta">
+          <span>Issue 001</span>
+          <span>2026.02.17</span>
+        </div>
+        <div class="art-outro-nav">
+          <a href="../issue-00/" class="art-nav-link">← Prev: Manifesto</a>
+          <a href="../../archive/" class="art-nav-link">Archive ↑</a>
+        </div>
+      </footer>
+
+    </div>
+  </article>
 
   <footer class="section--light">
     <div class="footer-inner">
@@ -160,19 +193,17 @@
 
   <script src="../../assets/js/main.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const text = document.getElementById('article-content').innerText;
-      const words = text.trim().split(/\s+/).length;
-      const time = Math.ceil(words / 200);
-      document.getElementById('read-time').innerText = `·  ${time} min read`;
-      window.addEventListener('scroll', () => {
-        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (scrollTop / scrollHeight) * 100;
-        document.getElementById('reading-progress').style.width = scrolled + "%";
-      });
-    });
+    /* 읽기시간 */
+    (function () {
+      var content = document.getElementById('article-content');
+      var rt = document.getElementById('read-time');
+      if (!content || !rt) return;
+      var words = content.innerText.trim().split(/\s+/).length;
+      var mins = Math.max(1, Math.round(words / 200));
+      rt.textContent = mins + 'min read';
+    })();
   </script>
+
 </body>
 
 </html>

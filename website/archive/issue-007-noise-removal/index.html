@@ -1,35 +1,72 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Issue 007 — 소음 제거. 쓰지 않는 단어가 정체성을 드러낸다.">
+  <meta property="og:title" content="Issue 007: 소음 제거 — WOOHWAHAE Archive">
+  <meta property="og:description" content="쓰지 않는 단어가 정체성을 드러낸다.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://woohwahae.kr/archive/issue-007-noise-removal/">
+  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>Issue 007: 소음 제거 — WOOHWAHAE Archive</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
-  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="../../assets/css/style.css?v=typo_v38">
+  <meta name="theme-color" content="#F0EFEB">
+  <link rel="icon" href="../../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=renewal_v1">
+  <script src="../../assets/js/analytics.js" defer></script>
 </head>
+
 <body>
+  <div class="reading-progress-container"><div class="reading-progress-bar"></div></div>
+
   <nav>
-    <a href="/" class="nav-logo"><img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE"></a>
+    <a href="/" class="nav-logo">
+      <img src="../../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
     <ul class="nav-links">
       <li><a href="../../archive/" class="active">Archive</a></li>
       <li><a href="../../offering.html">Offering</a></li>
       <li><a href="../../about.html">About</a></li>
       <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../lab/">Lab</a></li>
     </ul>
     <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
-    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
-  <div class="article-container">
-    <header class="article-header">
-      <p class="article-meta fade-in">Issue 007 &nbsp;·&nbsp; Manifesto &nbsp;·&nbsp; 2026.02.18</p>
-      <h1 class="article-title fade-in">소음 제거</h1>
-      <p class="article-subtitle fade-in">쓰지 않는 단어가 정체성을 드러낸다.</p>
-    </header>
-    <div class="article-body">
+
+  <article class="art">
+    <canvas id="art-wave" class="art-wave-canvas"></canvas>
+    <div class="art-container">
+
+      <div class="art-back fade-in">
+        <a href="../../archive/">← Archive</a>
+      </div>
+
+      <header class="art-header">
+        <div class="art-header-rule fade-in"></div>
+
+        <div class="art-header-grid fade-in">
+          <div class="art-header-meta">
+            <p class="art-issue">Issue 007</p>
+            <p class="art-date">2026.02.18</p>
+            <p class="art-readtime" id="read-time"></p>
+          </div>
+          <div class="art-header-main">
+            <span class="art-category">Manifesto</span>
+            <h1 class="art-title">소음 제거</h1>
+            <p class="art-subtitle">쓰지 않는 단어가 정체성을 드러낸다.</p>
+          </div>
+        </div>
+
+        <div class="art-header-rule fade-in"></div>
+      </header>
+
+      <div class="art-body" id="article-content">
       <p class="fade-in">무엇을 하는지보다 무엇을 하지 않는지가<br>정체성을 더 명확하게 드러냅니다.</p>
       <p class="fade-in">우리가 쓰지 않는 단어들이 있습니다.<br>"대박", "꿀팁", "핫", "트렌디", "감성적인".<br>이 단어들이 나쁜 건 아닙니다.<br>다만 우리가 전달하려는 밀도와 맞지 않습니다.<br>넓게 퍼지는 단어는 정확한 사람에게 닿지 않습니다.</p>
       <p class="fade-in">금지어 목록은 곧 철학입니다.<br>어떤 단어를 선택하느냐는<br>어떤 독자를 선택하느냐와 같습니다.</p>
@@ -44,8 +81,23 @@
       <p class="fade-in">소음을 제거하면 본질이 남습니다.<br>유행을 제거하면 개인이 남습니다.<br>과잉을 제거하면 핵심이 남습니다.<br>결국 같은 말입니다.</p>
       <p class="fade-in">콘텐츠에서도, 서비스에서도, 삶에서도.<br>제거가 창조보다 어렵습니다.<br>무엇을 더할지는 쉽게 결정할 수 있지만,<br>무엇을 뺄지는 기준이 있어야 가능합니다.<br>그 기준을 세우는 것이 정체성 구축입니다.</p>
       <p class="article-closing fade-in">조용히, 확실하게.</p>
+      </div>
+
+      <footer class="art-outro fade-in">
+        <div class="art-outro-rule"></div>
+        <div class="art-outro-meta">
+          <span>Issue 007</span>
+          <span>2026.02.18</span>
+        </div>
+        <div class="art-outro-nav">
+          <a href="../issue-006-8pyeong/" class="art-nav-link">← Prev: 8평</a>
+          <a href="../../archive/" class="art-nav-link">Archive ↑</a>
+        </div>
+      </footer>
+
     </div>
-  </div>
+  </article>
+
   <footer class="section--light">
     <div class="footer-inner">
       <div class="footer-brand-row">
@@ -73,6 +125,20 @@
       </div>
     </div>
   </footer>
+
   <script src="../../assets/js/main.js"></script>
+  <script>
+    /* 읽기시간 */
+    (function () {
+      var content = document.getElementById('article-content');
+      var rt = document.getElementById('read-time');
+      if (!content || !rt) return;
+      var words = content.innerText.trim().split(/\s+/).length;
+      var mins = Math.max(1, Math.round(words / 200));
+      rt.textContent = mins + 'min read';
+    })();
+  </script>
+
 </body>
+
 </html>

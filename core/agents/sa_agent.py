@@ -174,14 +174,24 @@ class StrategyAnalyst:
             }
 
     def _load_directive(self) -> str:
-        """SA.md 에이전트 지침 로드"""
-        persona_path = PROJECT_ROOT / 'directives' / 'agents' / 'SA.md'
+        """SA.md 에이전트 지침 + brand/audience.md 로드"""
+        parts = []
+        # SA 기본 지침
+        directive_path = PROJECT_ROOT / 'directives' / 'agents' / 'SA.md'
         try:
-            if persona_path.exists():
-                return persona_path.read_text(encoding='utf-8')
+            if directive_path.exists():
+                parts.append(directive_path.read_text(encoding='utf-8'))
         except Exception:
             pass
-        return "냉정하게 분석하라. 필요한 것만 말해라."
+        # Brand OS 타겟 독자 기준
+        audience_path = PROJECT_ROOT / 'directives' / 'brand' / 'audience.md'
+        try:
+            if audience_path.exists():
+                content = audience_path.read_text(encoding='utf-8')
+                parts.append(content[:1500])
+        except Exception:
+            pass
+        return "\n---\n".join(parts) if parts else "냉정하게 분석하라. 필요한 것만 말해라."
 
     def _feedback_to_memory(self, analysis: Dict[str, Any], original_content: str):
         """

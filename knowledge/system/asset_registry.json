@@ -772,18 +772,134 @@
       "created_at": "2026-02-18T22:29:42",
       "source": "manual",
       "size_bytes": 2145
+    },
+    {
+      "id": "AST-2026-02-078",
+      "type": "documentation",
+      "source": "manual",
+      "created_at": "2026-02-20T00:29:06.324063",
+      "path": "knowledge/docs/WOOHWAHAE_BRAND_MANUAL.md",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-20T00:29:06.324065",
+          "by": "manual"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-02-079",
+      "type": "report",
+      "source": "audit",
+      "created_at": "2026-02-20T08:32:44.628781",
+      "path": "knowledge/reports/web_interface_consistency_audit_20260220.md",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-20T08:32:44.628784",
+          "by": "audit"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-02-080",
+      "type": "report",
+      "source": "ux_plan",
+      "created_at": "2026-02-20T08:45:45.198439",
+      "path": "knowledge/reports/gui_ux_improvement_plan_20260220.md",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-20T08:45:45.198442",
+          "by": "ux_plan"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-02-081",
+      "type": "document",
+      "source": "sa_agent",
+      "created_at": "2026-02-20T18:16:41.296769",
+      "path": "website/products/slow-object-001-scissors.html",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-20T18:16:41.296772",
+          "by": "sa_agent"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-02-082",
+      "type": "page",
+      "source": "sa_agent",
+      "created_at": "2026-02-20T18:49:34.410177",
+      "path": "website/cut-anatomy.html",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-20T18:49:34.410180",
+          "by": "sa_agent"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-02-083",
+      "type": "page",
+      "source": "sa_agent",
+      "created_at": "2026-02-20T18:52:04.942103",
+      "path": "website/brand-audit-form.html",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-20T18:52:04.942106",
+          "by": "sa_agent"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-02-084",
+      "type": "document",
+      "source": "sa_agent",
+      "created_at": "2026-02-20T18:52:05.015098",
+      "path": "website/products/brand-audit-report-template.html",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-20T18:52:05.015101",
+          "by": "sa_agent"
+        }
+      ]
     }
   ],
   "stats": {
-    "total": 77,
+    "total": 84,
     "by_type": {
       "signal": 39,
       "content": 24,
       "media": 10,
-      "skill": 4
+      "skill": 4,
+      "documentation": 1,
+      "report": 2,
+      "document": 2,
+      "page": 2
     },
     "by_status": {
-      "captured": 23,
+      "captured": 30,
       "completed": 1,
       "analyzed": 14,
       "stored": 1,

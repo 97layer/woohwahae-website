@@ -265,11 +265,24 @@ class YouTubeAnalyzer:
 
         # Step 2: Get transcript
         transcript = self.get_transcript(video_id)
+
         if not transcript:
+            # Save without transcript (URL + metadata only)
+            logger.warning(f"No transcript available, saving URL only")
+            analysis = {
+                'summary': 'Transcript unavailable (video from cloud IP blocked by YouTube)',
+                'key_insights': [],
+                'topics': [],
+                'note': 'Manual review needed'
+            }
+            saved_path = self.save_to_knowledge_base(analysis, video_url, transcript=None)
             return {
-                'success': False,
+                'success': True,  # Changed to True - partial success
                 'video_id': video_id,
-                'error': 'Failed to get transcript (disabled or unavailable)'
+                'transcript': None,
+                'analysis': analysis,
+                'saved_path': saved_path,
+                'warning': 'Transcript unavailable - saved URL for manual review'
             }
 
         logger.info(f"Transcript length: {len(transcript)} characters")

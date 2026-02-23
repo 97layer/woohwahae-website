@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Archive — WOOHWAHAE. 인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.">
   <meta property="og:title" content="Archive — WOOHWAHAE">
   <meta property="og:description" content="인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.">
@@ -12,110 +12,19 @@
   <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>Archive — WOOHWAHAE</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
+  <meta name="theme-color" content="#F0EFEB">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
   <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
-  <link rel="preload" href="../assets/css/style.css?v=breath_v1" as="style">
-  <link rel="stylesheet" href="../assets/css/style.css?v=breath_v1">
+  <link rel="preload" href="../assets/css/style.css?v=renewal_v1" as="style">
+  <link rel="stylesheet" href="../assets/css/style.css?v=renewal_v1">
   <script src="../assets/js/analytics.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 
-<body>
+<body class="home-radical">
 
-  <!-- Breath Gate -->
-  <div id="breath-gate" aria-hidden="true">
-    <!-- 텍스트 레이어 -->
-    <div id="bg-text-layer">
-      <p class="bg-issue"></p>
-      <p class="bg-title"></p>
-      <p class="bg-time"></p>
-    </div>
-    <!-- 도트 해체 캔버스 -->
-    <canvas id="bg-canvas"></canvas>
-  </div>
-
-  <style>
-    #breath-gate {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      pointer-events: none;
-      visibility: hidden;
-    }
-    #breath-gate.active {
-      pointer-events: all;
-      visibility: visible;
-    }
-    /* 도트 캔버스 — 전체 덮음 */
-    #bg-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-    /* 텍스트 레이어 — 캔버스 위 */
-    #bg-text-layer {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.9rem;
-      z-index: 1;
-    }
-    .bg-issue, .bg-title, .bg-time {
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-    #breath-gate.active .bg-issue {
-      opacity: 1; transform: translateY(0); transition-delay: 0.1s;
-    }
-    #breath-gate.active .bg-title {
-      opacity: 1; transform: translateY(0); transition-delay: 0.24s;
-    }
-    #breath-gate.active .bg-time {
-      opacity: 1; transform: translateY(0); transition-delay: 0.4s;
-    }
-    /* 해체 시 텍스트도 같이 사라짐 */
-    #breath-gate.leaving .bg-issue,
-    #breath-gate.leaving .bg-title,
-    #breath-gate.leaving .bg-time {
-      opacity: 0;
-      transition: opacity 0.2s ease;
-      transition-delay: 0s !important;
-    }
-    .bg-issue {
-      font-family: 'IBM Plex Mono', 'DM Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-faint, #8E8E88);
-      margin: 0;
-    }
-    .bg-title {
-      font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
-      font-size: clamp(1.6rem, 5vw, 2.6rem);
-      font-weight: 200;
-      letter-spacing: -0.025em;
-      color: var(--text, #2C2C2C);
-      margin: 0;
-      line-height: 1.2;
-    }
-    .bg-time {
-      font-family: 'IBM Plex Mono', 'DM Mono', monospace;
-      font-size: 0.56rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-faint, #8E8E88);
-      margin: 0;
-      margin-top: 0.2rem;
-    }
-  </style>
+  <canvas id="field-bg" class="field-bg-canvas"></canvas>
 
   <nav>
     <a href="/" class="nav-logo">
@@ -137,31 +46,38 @@
   <main class="container--wide">
 
     <!-- Archive Header -->
-    <div class="archive-header fade-in">
+    <div class="arc-header fade-in">
       <p class="section-label">Archive</p>
-      <div class="archive-stats">
-        <span id="stat-entries">—</span>
-        <span class="archive-stat-divider">·</span>
-        <span id="stat-categories">—</span>
-        <span class="archive-stat-divider">·</span>
-        <span id="stat-since">—</span>
-      </div>
-      <div class="archive-timeline" id="archive-timeline"></div>
-      <p class="archive-tagline">인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.</p>
     </div>
 
-    <!-- Filter + Grid -->
-    <div class="archive-section">
-      <div class="archive-filter-bar" id="archive-filters">
-        <button class="archive-filter active" data-filter="all">All</button>
-        <button class="archive-filter" data-filter="essay">Essay</button>
-        <button class="archive-filter" data-filter="journal">Journal</button>
-        <button class="archive-filter" data-filter="lab">Lab</button>
-      </div>
-      <p class="archive-count" id="archive-count"></p>
-      <div class="archive-grid" id="archive-grid"></div>
-      <p id="archive-empty" class="archive-empty">해당하는 기록이 없습니다.</p>
+    <!-- Filter -->
+    <div class="arc-filter-bar fade-in" id="archive-filters">
+      <button class="arc-filter active" data-filter="all">All</button>
+      <button class="arc-filter" data-filter="essay">Essay</button>
+      <button class="arc-filter" data-filter="journal">Journal</button>
     </div>
+
+    <!-- Featured Block -->
+    <div class="arc-featured" id="arc-featured" style="display:none">
+      <div class="arc-featured-meta">
+        <span class="arc-featured-issue" id="feat-issue"></span>
+        <span class="arc-featured-cat" id="feat-cat"></span>
+        <span class="arc-featured-date" id="feat-date"></span>
+        <span class="arc-featured-read" id="feat-read"></span>
+      </div>
+      <a class="arc-featured-link" id="feat-link" href="#">
+        <h2 class="arc-featured-title" id="feat-title"></h2>
+        <p class="arc-featured-preview" id="feat-preview"></p>
+        <span class="arc-featured-cta">읽기 →</span>
+      </a>
+    </div>
+
+    <!-- 목차 리스트 -->
+    <div class="arc-divider"></div>
+    <div class="arc-list" id="archive-list"></div>
+    <div class="arc-divider"></div>
+
+    <p id="archive-empty" class="arc-empty" style="display:none;">해당하는 기록이 없습니다.</p>
 
   </main>
 
@@ -196,229 +112,170 @@
   <script src="../assets/js/main.js"></script>
   <script>
     (function () {
-      const grid = document.getElementById('archive-grid');
-      const emptyMsg = document.getElementById('archive-empty');
-      const countEl = document.getElementById('archive-count');
-      const filtersEl = document.getElementById('archive-filters');
-
-      let posts = [];
-      let activeFilter = 'all';
+      var list = document.getElementById('archive-list');
+      var emptyMsg = document.getElementById('archive-empty');
+      var filtersEl = document.getElementById('archive-filters');
+      var posts = [];
+      var activeFilter = 'all';
 
       fetch('index.json')
-        .then(r => r.json())
-        .then(data => {
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
           posts = data;
-          renderStats(data);
-          renderTimeline(data);
           render();
           bindEvents();
         })
-        .catch(() => {
-          grid.innerHTML = '<p class="archive-empty">아카이브를 불러오지 못했습니다.</p>';
+        .catch(function () {
+          list.innerHTML = '<p class="arc-empty">아카이브를 불러오지 못했습니다.</p>';
         });
 
-      function renderStats(data) {
-        const entries = data.length + 1;
-        const cats = [...new Set(data.map(p => p.category))];
-        cats.push('Lab');
-        const dates = data.map(p => p.date).sort();
-        const since = dates[0] || '—';
-        document.getElementById('stat-entries').textContent = entries + ' entries';
-        document.getElementById('stat-categories').textContent = cats.length + ' categories';
-        document.getElementById('stat-since').textContent = 'since ' + since;
+      function renderFeatured() {
+        if (!posts || posts.length === 0) return;
+        var p = posts[0];
+        var featuredEl = document.getElementById('arc-featured');
+        document.getElementById('feat-issue').textContent = p.issue || '';
+        document.getElementById('feat-cat').textContent = p.category ? p.category.toUpperCase() : '';
+        document.getElementById('feat-date').textContent = p.date || '';
+        document.getElementById('feat-read').textContent = p.readMin ? p.readMin + ' min' : '';
+        document.getElementById('feat-title').textContent = p.title || '';
+        document.getElementById('feat-preview').textContent = p.preview || '';
+        document.getElementById('feat-link').href = p.slug + '/';
+        featuredEl.style.display = 'block';
       }
-
-      function renderTimeline(data) {
-        const el = document.getElementById('archive-timeline');
-        const total = data.length + 1;
-        let dots = '';
-        for (let i = 0; i < total; i++) dots += '<span class="timeline-dot filled"></span>';
-        for (let i = 0; i < 3; i++) dots += '<span class="timeline-dot empty"></span>';
-        el.innerHTML = dots;
-      }
-
-      const LAB_CARD = {
-        slug: null,
-        href: '../lab/',
-        title: 'Lab',
-        issue: 'Ongoing',
-        category: 'Lab',
-        preview: '웹 렌더링, 커트 아키텍처, 플랫폼 구축. 만들어가는 과정의 기록.'
-      };
 
       function render() {
-        const showLab = activeFilter === 'all' || activeFilter === 'lab';
-        const filtered = posts.filter(p =>
-          activeFilter === 'all' || p.category.toLowerCase() === activeFilter
-        );
+        /* Featured: 항상 posts[0] 고정 (필터 무관) */
+        renderFeatured();
 
-        grid.innerHTML = '';
-
-        const totalCount = filtered.length + (showLab ? 1 : 0);
-
-        if (totalCount === 0) {
-          emptyMsg.style.display = 'block';
-          countEl.textContent = '';
-        } else {
-          emptyMsg.style.display = 'none';
-          countEl.textContent = totalCount + ' issues';
-        }
-
-        filtered.forEach(post => {
-          const card = document.createElement('a');
-          card.href = post.slug + '/';
-          card.className = 'archive-card fade-in';
-          card.innerHTML = `
-            <div class="archive-card-image">
-              <div style="width:100%;height:100%;background:var(--bg-dark);"></div>
-            </div>
-            <div class="archive-card-meta">
-              <span>${post.issue}</span>
-              <span>${post.category}</span>
-            </div>
-            <h3 class="archive-card-title">${post.title}</h3>
-            <p class="archive-card-preview">${post.preview}</p>
-          `;
-
-          // Breath Gate — 도트 해체 전환
-          card.addEventListener('click', function (e) {
-            e.preventDefault();
-            var dest = card.href + '?from=gate';
-            var gate = document.getElementById('breath-gate');
-            var canvas = document.getElementById('bg-canvas');
-            var ctx = canvas.getContext('2d');
-            var readMins = post.readMin || Math.max(1, Math.round((post.preview || '').length / 80));
-
-            // 텍스트 세팅 + 초기화
-            gate.querySelector('.bg-issue').textContent = post.issue;
-            gate.querySelector('.bg-title').textContent = post.title;
-            gate.querySelector('.bg-time').textContent = readMins + ' min read';
-            gate.classList.remove('active', 'leaving');
-
-            // 캔버스 사이즈
-            var W = canvas.width  = window.innerWidth;
-            var H = canvas.height = window.innerHeight;
-
-            // 도트 설정
-            var DOT = 9;          // 도트 크기(px)
-            var GAP = 1;          // 간격
-            var STEP = DOT + GAP;
-            var COLS = Math.ceil(W / STEP) + 1;
-            var ROWS = Math.ceil(H / STEP) + 1;
-            var TOTAL = COLS * ROWS;
-
-            // 배경색 읽기
-            var bg = getComputedStyle(document.documentElement)
-                       .getPropertyValue('--bg').trim() || '#FAFAF7';
-
-            // 도트 전체 즉시 그리기 (화면 덮음)
-            ctx.clearRect(0, 0, W, H);
-            ctx.fillStyle = bg;
-            for (var r = 0; r < ROWS; r++) {
-              for (var c = 0; c < COLS; c++) {
-                ctx.beginPath();
-                ctx.arc(
-                  c * STEP + DOT / 2,
-                  r * STEP + DOT / 2,
-                  DOT / 2, 0, Math.PI * 2
-                );
-                ctx.fill();
-              }
-            }
-
-            // gate 보이기 + 텍스트 등장
-            gate.classList.add('active');
-
-            // 인덱스 섞기 (랜덤 해체 순서)
-            var indices = Array.from({length: TOTAL}, function(_, i) { return i; });
-            for (var i = indices.length - 1; i > 0; i--) {
-              var j = Math.floor(Math.random() * (i + 1));
-              var tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
-            }
-
-            // 텍스트 등장 후(~0.85s) + 유지(0.65s) → 도트 해체 시작
-            setTimeout(function () {
-              gate.classList.add('leaving'); // 텍스트 페이드
-
-              var DURATION = 600;  // 해체 총 시간(ms)
-              var start = null;
-
-              function dissolve(ts) {
-                if (!start) start = ts;
-                var elapsed = ts - start;
-                var progress = Math.min(elapsed / DURATION, 1);
-
-                // 이번 프레임까지 지워야 할 도트 수
-                var target = Math.floor(progress * TOTAL);
-                ctx.clearRect(0, 0, W, H);
-
-                // 아직 살아있는 도트만 다시 그림
-                ctx.fillStyle = bg;
-                for (var k = target; k < TOTAL; k++) {
-                  var idx = indices[k];
-                  var col = idx % COLS;
-                  var row = Math.floor(idx / COLS);
-                  ctx.beginPath();
-                  ctx.arc(
-                    col * STEP + DOT / 2,
-                    row * STEP + DOT / 2,
-                    DOT / 2, 0, Math.PI * 2
-                  );
-                  ctx.fill();
-                }
-
-                if (progress < 1) {
-                  requestAnimationFrame(dissolve);
-                } else {
-                  // 해체 완료 → 이동
-                  window.location.href = dest;
-                }
-              }
-
-              requestAnimationFrame(dissolve);
-            }, 1500);
-          });
-
-          grid.appendChild(card);
+        /* 목록: featured(posts[0])를 제외한 나머지 + 필터 적용 */
+        var filtered = posts.slice(1).filter(function (p) {
+          return activeFilter === 'all' || p.category.toLowerCase() === activeFilter;
         });
 
-        if (showLab) {
-          const labCard = document.createElement('a');
-          labCard.href = LAB_CARD.href;
-          labCard.className = 'archive-card fade-in';
-          labCard.innerHTML = `
-            <div class="archive-card-image">
-              <div style="width:100%;height:100%;background:var(--bg-dark);"></div>
-            </div>
-            <div class="archive-card-meta">
-              <span>${LAB_CARD.issue}</span>
-              <span>${LAB_CARD.category}</span>
-            </div>
-            <h3 class="archive-card-title">${LAB_CARD.title}</h3>
-            <p class="archive-card-preview">${LAB_CARD.preview}</p>
-          `;
-          grid.appendChild(labCard);
+        list.innerHTML = '';
+
+        if (filtered.length === 0) {
+          emptyMsg.style.display = 'block';
+        } else {
+          emptyMsg.style.display = 'none';
         }
 
-        grid.querySelectorAll('.fade-in').forEach(el => {
-          const obs = new IntersectionObserver(([e]) => {
-            if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-          }, { threshold: 0.1 });
+        filtered.forEach(function (post, idx) {
+          var issueNum = post.issue ? post.issue.replace('Issue ', '').replace('Issue', '').trim() : '00';
+          var row = document.createElement('a');
+          row.href = post.slug + '/';
+          row.className = 'arc-row';
+          row.setAttribute('data-index', idx);
+
+          row.innerHTML =
+            '<span class="arc-row-num">' + issueNum.padStart(3, '0') + '</span>' +
+            '<span class="arc-row-title">' + post.title + '</span>' +
+            '<span class="arc-row-date">' + post.date + '</span>' +
+            '<span class="arc-row-cat">' + post.category.toUpperCase() + '</span>';
+
+          list.appendChild(row);
+        });
+
+        /* slide-in observer with staggered delay */
+        list.querySelectorAll('.arc-row').forEach(function (el) {
+          var obs = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) {
+              var delay = parseInt(el.getAttribute('data-index'), 10) * 0.05;
+              el.style.transitionDelay = delay + 's';
+              el.classList.add('visible');
+              obs.unobserve(entries[0].target);
+            }
+          }, { threshold: 0.05 });
           obs.observe(el);
         });
       }
 
       function bindEvents() {
-        filtersEl.addEventListener('click', e => {
-          if (!e.target.classList.contains('archive-filter')) return;
-          filtersEl.querySelectorAll('.archive-filter').forEach(b => b.classList.remove('active'));
+        filtersEl.addEventListener('click', function (e) {
+          if (!e.target.classList.contains('arc-filter')) return;
+          filtersEl.querySelectorAll('.arc-filter').forEach(function (b) {
+            b.classList.remove('active');
+          });
           e.target.classList.add('active');
           activeFilter = e.target.dataset.filter;
           render();
         });
       }
     })();
+
+    /* ── Three.js dipole field background (full-page) ── */
+    (function () {
+      var canvas = document.getElementById('field-bg');
+      if (!canvas || typeof THREE === 'undefined') return;
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      var scene = new THREE.Scene();
+      var fieldGroup = new THREE.Group();
+      scene.add(fieldGroup);
+      var camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+      camera.position.set(0, 1.5, 18);
+      camera.lookAt(0, 0, 0);
+      var LINE_COUNT = 10; var SEEDS = 6; var POINTS_PER = 160; var MAX_R = 12.0; var SCALE = 3.0;
+      function buildFieldLine(r0, phi) {
+        var pts = new Float32Array(POINTS_PER * 3);
+        var baseZ = new Float32Array(POINTS_PER);
+        var tMin = 0.04, tMax = Math.PI - 0.04;
+        for (var i = 0; i < POINTS_PER; i++) {
+          var theta = tMin + (i / (POINTS_PER - 1)) * (tMax - tMin);
+          var sinT = Math.sin(theta), cosT = Math.cos(theta);
+          var r = r0 * sinT * sinT; if (r > MAX_R) r = MAX_R;
+          pts[i*3] = r*sinT*Math.cos(phi)*SCALE;
+          pts[i*3+1] = r*cosT*SCALE;
+          pts[i*3+2] = r*sinT*Math.sin(phi)*SCALE;
+          baseZ[i] = pts[i*3+2];
+        }
+        return { pts: pts, baseZ: baseZ };
+      }
+      var fieldLines = [];
+      var seeds = [];
+      for (var si = 0; si < SEEDS; si++) seeds.push(0.8 + Math.pow((si+1)/SEEDS, 1.8) * 11.0);
+      for (var li = 0; li < LINE_COUNT; li++) {
+        var phi = (li / LINE_COUNT) * Math.PI * 2;
+        for (var si2 = 0; si2 < SEEDS; si2++) {
+          var r0 = seeds[si2]; var frac = (si2+1)/SEEDS;
+          var baseOp = 0.65 - frac * 0.3;
+          var col = frac < 0.5 ? 0x1a1a1a : 0x1B2D4F;
+          var mat = new THREE.LineBasicMaterial({ color: col, opacity: baseOp, transparent: true });
+          var built = buildFieldLine(r0, phi);
+          var geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(built.pts, 3));
+          fieldGroup.add(new THREE.Line(geo, mat));
+          fieldLines.push({ mat: mat, baseOp: baseOp, phase: li*(Math.PI*2/LINE_COUNT)+si2*0.35, geo: geo, pts: built.pts, baseZ: built.baseZ });
+        }
+      }
+      function onResize() {
+        var W = window.innerWidth, H = window.innerHeight;
+        renderer.setSize(W, H, false);
+        camera.aspect = W / H; camera.updateProjectionMatrix();
+      }
+      onResize(); window.addEventListener('resize', onResize);
+      var clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = clock.getElapsedTime();
+        fieldGroup.rotation.y = t * 0.003;
+        for (var i = 0; i < fieldLines.length; i++) {
+          var fl = fieldLines[i];
+          fl.mat.opacity = fl.baseOp * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 1.0 + fl.phase)));
+          var pos = fl.pts;
+          for (var p = 0; p < POINTS_PER; p++) {
+            var frac2 = p / (POINTS_PER - 1);
+            pos[p*3+2] = fl.baseZ[p] + Math.sin(frac2*Math.PI)*0.2*Math.sin(t*0.7+fl.phase+frac2*6.28);
+          }
+          fl.geo.attributes.position.needsUpdate = true;
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
   </script>
+
 </body>
 
 </html>

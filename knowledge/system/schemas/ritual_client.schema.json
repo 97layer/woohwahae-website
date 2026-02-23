@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ritual Module Client",
+  "description": "아틀리에 고객 프로필 (L4 Service Layer)",
+  "type": "object",
+  "required": ["client_id", "name"],
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "고유 식별자"
+    },
+    "name": {
+      "type": "string"
+    },
+    "rhythm": {
+      "type": "string",
+      "enum": ["느린", "보통", "빠른"],
+      "description": "방문 리듬 성향",
+      "default": "보통"
+    },
+    "hair_type": {
+      "type": "string",
+      "description": "모발 특성 메모"
+    },
+    "preference_notes": {
+      "type": "string",
+      "description": "스타일 선호도 메모"
+    },
+    "visits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "service"],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "service": { "type": "string" },
+          "notes": { "type": "string" },
+          "satisfaction": { "type": "integer", "minimum": 1, "maximum": 5 }
+        }
+      }
+    },
+    "last_visit": {
+      "type": "string",
+      "format": "date"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

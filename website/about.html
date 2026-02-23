@@ -4,23 +4,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="About — WOOHWAHAE. 가속화된 세상에서 주체적으로 살아가기 위한 생각과 실천의 아카이브.">
+  <meta name="description" content="About — WOOHWAHAE. 흐트러진 의식의 구심점으로 돌아오는 순환. 슬로우 라이프를 매개로 내면의 변화를 기록합니다.">
   <meta property="og:title" content="About — WOOHWAHAE">
-  <meta property="og:description" content="가속화된 세상에서 주체적으로 살아가기 위한 생각과 실천의 아카이브.">
+  <meta property="og:description" content="흐트러진 의식의 구심점으로 돌아오는 순환. 슬로우 라이프를 매개로 내면의 변화를 기록합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://woohwahae.kr/about.html">
   <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>About — WOOHWAHAE</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
+  <meta name="theme-color" content="#F0EFEB">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
   <link rel="icon" href="assets/img/symbol.png" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/css/style.css?v=typo_v38">
+  <link rel="stylesheet" href="assets/css/style.css?v=about_v5">
   <script src="assets/js/analytics.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 
-<body>
+<body class="home-radical">
+
+  <canvas id="field-bg" class="field-bg-canvas"></canvas>
 
   <nav>
     <a href="/" class="nav-logo">
@@ -41,148 +44,222 @@
 
   <main class="container--wide">
 
-    <!-- Row 1 -->
-    <div class="mag-row mag-row--intro fade-in">
-      <div class="mag-label">
-        <p class="section-label">About</p>
-        <p class="mag-heading">우화해<br><span style="font-style:italic;color:var(--text-faint)">羽化</span></p>
-      </div>
-      <div class="mag-body">
-        <p class="lead" data-lang-ko="번데기가 나비가 되는 과정.<br>각자의 속도로 내면의 美를 성찰하며,<br>보다 나다운 모습으로 살아가는 것."
-          data-lang-en="The process of emergence.<br>Reflecting on inner beauty at one's own pace,<br>living as a truer version of oneself.">
-          번데기가 나비가 되는 과정.<br>
-          각자의 속도로 내면의 美를 성찰하며,<br>
-          보다 나다운 모습으로 살아가는 것.
+    <!-- About Hero — 우화 Dictionary Entry -->
+    <section class="about-hero">
+      <div class="woohwa-entry">
+
+        <!-- SVG: Chrysalis Unfurling Symbol -->
+        <svg class="about-hero-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
+             aria-hidden="true" focusable="false">
+          <style>
+            .ah-wing-l {
+              opacity: 0;
+              stroke-dasharray: 320;
+              stroke-dashoffset: 320;
+              animation:
+                ah-draw 2.4s cubic-bezier(0.25, 0, 0.4, 1) 0.3s forwards,
+                ah-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 2.7s infinite;
+            }
+            .ah-wing-r {
+              opacity: 0;
+              stroke-dasharray: 320;
+              stroke-dashoffset: 320;
+              animation:
+                ah-draw 2.4s cubic-bezier(0.25, 0, 0.4, 1) 0.7s forwards,
+                ah-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 3.1s infinite;
+            }
+            .ah-thread {
+              opacity: 0;
+              stroke-dasharray: 180;
+              stroke-dashoffset: 180;
+              animation:
+                ah-draw 2s cubic-bezier(0.25, 0, 0.4, 1) 1.2s forwards,
+                ah-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 3.2s infinite;
+            }
+            .ah-seed {
+              opacity: 0;
+              animation:
+                ah-seed-appear 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards,
+                ah-seed-pulse 3.8s cubic-bezier(0.37, 0, 0.63, 1) 0.7s infinite;
+            }
+            @keyframes ah-draw {
+              0%   { stroke-dashoffset: inherit; opacity: 0; }
+              8%   { opacity: 0.6; }
+              100% { stroke-dashoffset: 0; opacity: 0.5; }
+            }
+            @keyframes ah-breathe {
+              0%, 100% { opacity: 0.35; }
+              50%      { opacity: 0.55; }
+            }
+            @keyframes ah-seed-appear {
+              to { opacity: 0.7; }
+            }
+            @keyframes ah-seed-pulse {
+              0%, 100% { opacity: 0.5; }
+              50%      { opacity: 0.8; }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .ah-wing-l, .ah-wing-r, .ah-thread {
+                animation: none;
+                opacity: 0.4;
+                stroke-dashoffset: 0;
+              }
+              .ah-seed {
+                animation: none;
+                opacity: 0.6;
+              }
+            }
+          </style>
+
+          <!-- Seed — origin of transformation (stone monument mark) -->
+          <!-- Concentric circles + rough exterior -->
+          <circle class="ah-seed" cx="100" cy="100" r="2.5" fill="none" stroke="currentColor" stroke-width="0.8"/>
+          <circle class="ah-seed" cx="100" cy="100" r="4" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.6"/>
+
+          <!-- Left wing-curve — carved, rough stone edge -->
+          <path class="ah-wing-l"
+                d="M100,100 L96,88 L92,76 L85,65 L75,52 L68,48 L58,44 L48,42 L38,48 L32,58 L35,68 L42,76 L55,84 L70,88 L85,92"
+                fill="none" stroke="currentColor" stroke-width="1.2"
+                stroke-linecap="round"/>
+
+          <!-- Right wing-curve — carved, rough stone edge (asymmetric) -->
+          <path class="ah-wing-r"
+                d="M100,100 L108,112 L116,126 L126,140 L136,150 L148,158 L160,162 L168,158 L172,148 L168,138 L160,130 L148,122 L135,116 L120,112 L115,108"
+                fill="none" stroke="currentColor" stroke-width="1.2"
+                stroke-linecap="round"/>
+
+          <!-- Spiral thread — rough, carved spiral (transformation pathway) -->
+          <path class="ah-thread"
+                d="M100,100 L103,96 L108,94 L112,96 L112,102 L108,106 L102,104 L98,98 L99,90 L107,88 L114,92 L118,100 L116,110 L108,112 L100,108 L96,100 L98,90 L108,86 L118,90"
+                fill="none" stroke="currentColor" stroke-width="0.8"
+                stroke-linecap="round" stroke-dasharray="3,2"/>
+        </svg>
+
+        <h1 class="woohwa-word page-title"
+            data-lang-ko="우화"
+            data-lang-en="Wooha">우화</h1>
+        <p class="woohwa-hanja"
+           data-lang-ko="羽化 · <span class='en'>Metamorphosis</span>"
+           data-lang-en="羽化 · <span class='en'>Metamorphosis</span>">
+          羽化 · <span class="en">Metamorphosis</span>
         </p>
-        <p data-lang-ko="우리는 슬로우 라이프 양식을 매개로, 흐트러진 의식의 구심점으로 회귀하는 일종의 순환입니다."
-          data-lang-en="We are a cycle of returning to the center of consciousness through the medium of slow life.">
-          우리는 슬로우 라이프 양식을 매개로,
-          흐트러진 의식의 구심점으로 회귀하는 일종의 순환입니다.
-        </p>
-        <p>시대의 표준화된 속도는 우리의 감각을 무디게 하고, 타인의 시선은 고유한 색채를 희미하게 만듭니다.</p>
-        <p data-lang-ko="내·외면의 균형을 찾고 자신을 긍정하는 삶을 돕기 위해 시작되었습니다."
-          data-lang-en="It began to help people find balance between inner and outer selves, and affirm who they are.">
-          내·외면의 균형을 찾고 자신을 긍정하는 삶을 돕기 위해 시작되었습니다.
-        </p>
       </div>
-    </div>
+    </section>
 
-    <!-- Row 2 -->
-    <div class="mag-row fade-in">
-      <div class="mag-label">
-        <p class="section-label">Slow</p>
-        <p class="mag-heading">느림이 아닌<br>재조율</p>
-      </div>
-      <div class="mag-body">
-        <p>우리가 정의하는 Slow는 느림이나 도태가 아닙니다.
-          시대가 요구하는 맹목적 관성에 제동을 걸고,
-          자신의 파동과 호흡을 기준으로 속도를 다시 조율하는 태도입니다.</p>
-        <p>빠르게 소비되는 정보 속에서 감각은 쉽게 무뎌집니다.
-          누군가의 기준에 맞추다 보면, 자신이 무엇을 원하는지조차 잊게 됩니다.
-          Slow는 그 망각에 저항하는 방식입니다.</p>
-        <p class="accent">우화(羽化) — 번데기가 나비가 되는 과정처럼.</p>
-        <p class="accent">"지름길이 아니더라도 내 걸음에 책임감을 지고 묵묵히 걷는다. 돌아보면 길이 만들어져 있다."</p>
-      </div>
-    </div>
+    <!-- Manifesto — About 선언문 -->
+    <div class="manifesto">
 
-    <!-- Row 3: What We Do -->
-    <div class="mag-row fade-in">
-      <div class="mag-label">
-        <p class="section-label">What We Do</p>
-        <p class="mag-heading">세 가지<br>방식</p>
-      </div>
-      <div class="mag-grid-3">
-        <div class="mag-grid-item">
-          <p class="mag-grid-num">001</p>
-          <p class="mag-grid-title">실천<span class="en">Practice</span></p>
-          <p class="mag-grid-desc">직접 만들고, 자르고, 찍고, 기록합니다. 머리카락의 결, 빛의 방향, 사람의 분위기. 손끝에서 만들어지는 것들이 철학의 실체입니다.</p>
-          <div class="mag-grid-tags">
-            <span>Hair</span><span>Photo</span><span>Handmade</span>
-          </div>
-        </div>
-        <div class="mag-grid-item">
-          <p class="mag-grid-num">002</p>
-          <p class="mag-grid-title">전수<span class="en">Transfer</span></p>
-          <p class="mag-grid-desc">쌓인 기준을 나눕니다. 12년의 경험은 단순한 기술이 아니라 관점입니다. 왜 이렇게 자르는지, 어떻게 읽는지, 그 기준을 나누는 일이 전수입니다.</p>
-          <div class="mag-grid-tags">
-            <span>Cut Program</span><span>Brand Consulting</span>
-          </div>
-        </div>
-        <div class="mag-grid-item">
-          <p class="mag-grid-num">003</p>
-          <p class="mag-grid-title">기록<span class="en">Archive</span></p>
-          <p class="mag-grid-desc">모든 과정을 시스템으로 남깁니다. 기억은 흐려지지만 기록은 남습니다. 97layerOS는 일상의 감각을 축적하고 연결하는 인프라입니다.</p>
-          <div class="mag-grid-tags">
-            <span>97layerOS</span><span>Archive</span>
-          </div>
-        </div>
-      </div>
-    </div>
+      <p class="mani-p fade-in"
+        data-lang-ko="시대의 표준화된 속도는 고유한 감각을 무디게 합니다.<br>맹목적 관성은 멈춤을 허용하지 않고,<br>타인의 시선은 내면의 주파수를 서서히 바래게 합니다.<br>늦은 것과 다른 것은 다릅니다.<br>그러나 이 세계는 그 차이를 쉽게 허용하지 않습니다."
+        data-lang-en="The standardized pace of this age dulls one's unique perception.<br>Blind inertia permits no pause,<br>and others' gaze slowly fades the frequency within.<br>Being late is different from being different.<br>But this world does not easily allow that distinction.">
+        시대의 표준화된 속도는 고유한 감각을 무디게 합니다.<br>
+        맹목적 관성은 멈춤을 허용하지 않고,<br>
+        타인의 시선은 내면의 주파수를 서서히 바래게 합니다.<br>
+        늦은 것과 다른 것은 다릅니다.<br>
+        그러나 이 세계는 그 차이를 쉽게 허용하지 않습니다.
+      </p>
 
-    <!-- Row 4 -->
-    <div class="mag-row fade-in">
-      <div class="mag-label">
-        <p class="section-label">The Cycle</p>
-        <p class="mag-heading">세 가지<br>순환</p>
-      </div>
-      <div class="mag-grid-3">
-        <div class="mag-grid-item">
-          <p class="mag-grid-num">001</p>
-          <p class="mag-grid-title">실용적 미학<span class="en">Essence</span></p>
-          <p class="mag-grid-desc">미(美)는 단순 심미성 넘어, 삶의 맥락을 해치지 않는 무해함과 마음을 어지럽히지 않는 간결함에 있습니다.</p>
-        </div>
-        <div class="mag-grid-item">
-          <p class="mag-grid-num">002</p>
-          <p class="mag-grid-title">무언의 교감<span class="en">Wave</span></p>
-          <p class="mag-grid-desc">침묵 속 고유한 파동을 마주합니다. 감각으로 전해지는 공명이 곧 우리가 믿는 가장 깊은 소통입니다.</p>
-        </div>
-        <div class="mag-grid-item">
-          <p class="mag-grid-num">003</p>
-          <p class="mag-grid-title">자기 긍정<span class="en">Self Care</span></p>
-          <p class="mag-grid-desc">인간의 불완전함과 생애주기의 자연스러운 굴곡을 긍정하며, 타인의 인정으로부터 독립된 내면의 질서를 세웁니다.</p>
-        </div>
-      </div>
-    </div>
+      <p class="mani-p fade-in"
+        data-lang-ko="우화(羽化).<br>번데기가 성충이 되는 변태를 뜻하는 생물학 용어이자,<br>동양에서는 허물을 벗고 새로운 경지에 이르는 것을 의미합니다.<br>내면의 변화는 외부의 속도와 무관하게 고요히 퇴적됩니다.<br>그것은 완성을 향한 이동이 아닙니다.<br>흐트러진 의식이 구심점으로 돌아오는, 반복되는 과정 그 자체입니다."
+        data-lang-en="Wooha (羽化).<br>A biological term for metamorphosis — a pupa becoming an imago —<br>and in Eastern philosophy, shedding one's shell to reach a new plane of being.<br>Inner change accumulates quietly, independent of external pace.<br>It is not a movement toward completion.<br>It is the recurring process itself — scattered consciousness returning to its center.">
+        우화(羽化).<br>
+        번데기가 성충이 되는 변태를 뜻하는 생물학 용어이자,<br>
+        동양에서는 허물을 벗고 새로운 경지에 이르는 것을 의미합니다.<br>
+        내면의 변화는 외부의 속도와 무관하게 고요히 퇴적됩니다.<br>
+        그것은 완성을 향한 이동이 아닙니다.<br>
+        흐트러진 의식이 구심점으로 돌아오는, 반복되는 과정 그 자체입니다.
+      </p>
 
-    <!-- Row 5 -->
-    <div class="mag-row fade-in">
-      <div class="mag-label">
-        <p class="section-label">For</p>
-        <p class="mag-heading">이런 분과<br>함께합니다</p>
-      </div>
-      <div class="mag-grid-3">
-        <div class="mag-grid-item">
-          <p class="mag-grid-desc">빠른 유행보다<br>변하지 않는 본질을 찾는 분</p>
-          <p class="mag-grid-sub">트렌드가 바뀌어도 흔들리지 않는 기준을 가진 분.</p>
-        </div>
-        <div class="mag-grid-item">
-          <p class="mag-grid-desc">소란스러운 대화보다<br>결이 맞는 침묵이 편안한 분</p>
-          <p class="mag-grid-sub">굳이 설명하지 않아도 통하는 파동이 있습니다.</p>
-        </div>
-        <div class="mag-grid-item">
-          <p class="mag-grid-desc">타인의 인정보다<br>자신의 리듬이 중요한 분</p>
-          <p class="mag-grid-sub">남의 속도에 맞추지 않고 자신의 페이스를 지키는 분.</p>
-        </div>
-      </div>
-    </div>
+      <p class="mani-p fade-in"
+        data-lang-ko="이 과정을 지키는 태도를, 우리는 Slow라 부릅니다.<br>느림이나 도태가 아닙니다.<br>관성에 제동을 걸고,<br>자신의 파동과 호흡을 기준으로 삶의 리듬을 다시 조율하는 것.<br>고유한 시차(時差)를 온전히 수용하는 수행적 태도입니다."
+        data-lang-en="The stance of honoring this process — we call it Slow.<br>Not slowness, not falling behind.<br>It is braking against inertia,<br>recalibrating life's rhythm by one's own wave and breath.<br>A contemplative posture of fully accepting one's unique time-difference.">
+        이 과정을 지키는 태도를, 우리는 Slow라 부릅니다.<br>
+        느림이나 도태가 아닙니다.<br>
+        관성에 제동을 걸고,<br>
+        자신의 파동과 호흡을 기준으로 삶의 리듬을 다시 조율하는 것.<br>
+        고유한 시차(時差)를 온전히 수용하는 수행적 태도입니다.
+      </p>
 
-    <!-- Row 6: Editor Link -->
-    <div class="mag-row fade-in">
-      <div class="mag-label">
-        <p class="section-label">Editor</p>
-        <p class="mag-heading">우순호</p>
-      </div>
-      <div class="mag-body">
-        <p class="lead">헤어 디자이너의 경험을 바탕으로 한 슬로우 라이프 실천자.</p>
-        <p>12년의 여정과 그 기록. 우화해를 운영하는 사람에 대해.</p>
-        <a href="detail/editor.html" class="cta-inline">Editor Profile →</a>
-      </div>
+      <p class="mani-p fade-in"
+        data-lang-ko="이 재조율은 언어로 전달되지 않습니다.<br>언어는 때로 진실을 왜곡하기 때문입니다.<br>여담을 거두고, 서늘한 침묵 속에서 공명하는 파동을 마주합니다.<br>감각으로 전해지는 공명이, 가장 깊은 소통입니다."
+        data-lang-en="This recalibration cannot be conveyed through language.<br>Because language sometimes distorts truth.<br>We set aside small talk and face the resonant wave within cool silence.<br>The resonance that reaches through sensation is the deepest form of communication.">
+        이 재조율은 언어로 전달되지 않습니다.<br>
+        언어는 때로 진실을 왜곡하기 때문입니다.<br>
+        여담을 거두고, 서늘한 침묵 속에서 공명하는 파동을 마주합니다.<br>
+        감각으로 전해지는 공명이, 가장 깊은 소통입니다.
+      </p>
+
+      <p class="mani-p fade-in"
+        data-lang-ko="그리고 그 감각이 온전해질 때,<br>인간의 불완전함과 생애주기의 자연스러운 굴곡을 긍정할 수 있습니다.<br>타인의 인정으로부터 독립된 내면의 질서가 세워집니다.<br>삶의 주권은 시스템이 아닌,<br>사유와 감각이 머무는 그 자리에서 시작됩니다."
+        data-lang-en="And when that sensation becomes whole,<br>one can affirm human imperfection and the natural turns of life's cycle.<br>An inner order, independent from others' approval, takes form.<br>The sovereignty of one's life begins not in the system,<br>but in the very place where thought and sensation dwell.">
+        그리고 그 감각이 온전해질 때,<br>
+        인간의 불완전함과 생애주기의 자연스러운 굴곡을 긍정할 수 있습니다.<br>
+        타인의 인정으로부터 독립된 내면의 질서가 세워집니다.<br>
+        삶의 주권은 시스템이 아닌,<br>
+        사유와 감각이 머무는 그 자리에서 시작됩니다.
+      </p>
+
+      <p class="mani-p fade-in"
+        data-lang-ko="그 자리에서 — 머리카락의 결을 다듬을 때도, 글을 발행할 때도.<br>같은 주파수가 모든 손끝에 흐릅니다.<br>이 순환은 하나의 영역에 머물지 않습니다."
+        data-lang-en="From that very place — when shaping the grain of hair, when publishing a piece of writing.<br>The same frequency flows through every fingertip.<br>This cycle does not remain within a single domain.">
+        그 자리에서 — 머리카락의 결을 다듬을 때도, 글을 발행할 때도.<br>
+        같은 주파수가 모든 손끝에 흐릅니다.<br>
+        이 순환은 하나의 영역에 머물지 않습니다.
+      </p>
+
+      <p class="mani-p mani-p--declaration fade-in"
+        data-lang-ko="그 순환 안에서 일어나는 모든 변화를, 우리는 기록합니다."
+        data-lang-en="Every change that happens within that cycle — we archive it.">
+        그 순환 안에서 일어나는 모든 변화를, 우리는 기록합니다.
+      </p>
+
     </div>
 
     <!-- CTA -->
+    <!-- Breath line — organic wave SVG -->
+    <svg class="about-breath-line" viewBox="0 0 40 6" xmlns="http://www.w3.org/2000/svg"
+         aria-hidden="true" focusable="false">
+      <style>
+        .abl-wave {
+          stroke-dasharray: 52;
+          stroke-dashoffset: 52;
+          animation:
+            abl-draw 1.6s cubic-bezier(0.25, 0, 0.4, 1) forwards,
+            abl-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 1.6s infinite;
+        }
+        @keyframes abl-draw {
+          0%   { stroke-dashoffset: 52; opacity: 0; }
+          10%  { opacity: 0.12; }
+          100% { stroke-dashoffset: 0; opacity: 0.20; }
+        }
+        @keyframes abl-breathe {
+          0%, 100% { opacity: 0.12; }
+          50%      { opacity: 0.30; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .abl-wave {
+            animation: none;
+            opacity: 0.20;
+            stroke-dashoffset: 0;
+          }
+        }
+      </style>
+      <!-- Rough, carved ripple pattern -->
+      <path class="abl-wave"
+            d="M0,3 L2,1.2 L4,1.8 L6,2.8 L8,1.5 L10,3.5 L12,2.2 L14,2.5 L16,3.8 L18,1 L20,3 L22,1.8 L24,3.2 L26,2 L28,3.5 L30,1.5 L32,3.5 L34,2 L36,3 L38,1.8 L40,3"
+            fill="none" stroke="currentColor" stroke-width="1.2"
+            stroke-linecap="round"/>
+    </svg>
     <div class="page-cta">
-      <p class="page-cta-note fade-in">잘 맞는 곳이면, 다음에 또 옵니다.</p>
-      <a href="offering.html" class="cta fade-in">Offering →</a>
+      <p class="page-cta-note fade-in"
+        data-lang-ko="우화(羽化) — 고요한 농도로 삶을 기록하는 아카이브."
+        data-lang-en="Wooha — an archive that records life with quiet density.">
+        우화(羽化) — 고요한 농도로 삶을 기록하는 아카이브.
+      </p>
+      <div style="display:flex;gap:1.5rem;align-items:center;justify-content:center;flex-wrap:wrap;">
+        <a href="archive/" class="cta-inline fade-in">Archive →</a>
+        <a href="offering.html" class="cta fade-in">Offering →</a>
+      </div>
     </div>
 
   </main>
@@ -198,6 +275,7 @@
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
         <a href="lab/">Lab</a>
+        <a href="detail/editor.html">Editor</a>
       </div>
       <div class="footer-connect-row">
         <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
@@ -215,7 +293,115 @@
     </div>
   </footer>
 
+  <script>
+    /* ── Three.js dipole field background (full-page, mouse-tracked) ── */
+    (function () {
+      var canvas = document.getElementById('field-bg');
+      if (!canvas || typeof THREE === 'undefined') return;
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      var scene = new THREE.Scene();
+      var fieldGroup = new THREE.Group();
+      scene.add(fieldGroup);
+      var camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+      camera.position.set(0, 1.5, 18);
+      camera.lookAt(0, 0, 0);
+      var mouse={x:0,y:0}; document.addEventListener('mousemove',function(e){mouse.x=(e.clientX/window.innerWidth-0.5)*2; mouse.y=(e.clientY/window.innerHeight-0.5)*2;});
+      var LINE_COUNT = 12; var SEEDS = 7; var POINTS_PER = 180; var MAX_R = 12.0; var SCALE = 3.0;
+      function buildFieldLine(r0, phi) {
+        var pts = new Float32Array(POINTS_PER * 3);
+        var baseZ = new Float32Array(POINTS_PER);
+        var tMin = 0.04, tMax = Math.PI - 0.04;
+        for (var i = 0; i < POINTS_PER; i++) {
+          var theta = tMin + (i / (POINTS_PER - 1)) * (tMax - tMin);
+          var sinT = Math.sin(theta), cosT = Math.cos(theta);
+          var r = r0 * sinT * sinT; if (r > MAX_R) r = MAX_R;
+          pts[i*3] = r*sinT*Math.cos(phi)*SCALE;
+          pts[i*3+1] = r*cosT*SCALE;
+          pts[i*3+2] = r*sinT*Math.sin(phi)*SCALE;
+          baseZ[i] = pts[i*3+2];
+        }
+        return { pts: pts, baseZ: baseZ };
+      }
+      var fieldLines = [];
+      var seeds = [];
+      for (var si = 0; si < SEEDS; si++) seeds.push(0.8 + Math.pow((si+1)/SEEDS, 1.8) * 11.0);
+      for (var li = 0; li < LINE_COUNT; li++) {
+        var phi = (li / LINE_COUNT) * Math.PI * 2;
+        for (var si2 = 0; si2 < SEEDS; si2++) {
+          var r0 = seeds[si2]; var frac = (si2+1)/SEEDS;
+          var baseOp = 0.65 - frac * 0.3;
+          var col = frac < 0.5 ? 0x1a1a1a : 0x1B2D4F;
+          var mat = new THREE.LineBasicMaterial({ color: col, opacity: baseOp, transparent: true });
+          var built = buildFieldLine(r0, phi);
+          var geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(built.pts, 3));
+          fieldGroup.add(new THREE.Line(geo, mat));
+          fieldLines.push({ mat: mat, baseOp: baseOp, phase: li*(Math.PI*2/LINE_COUNT)+si2*0.35, geo: geo, pts: built.pts, baseZ: built.baseZ });
+        }
+      }
+      function onResize() {
+        var W = window.innerWidth, H = window.innerHeight;
+        renderer.setSize(W, H, false);
+        camera.aspect = W / H; camera.updateProjectionMatrix();
+      }
+      onResize(); window.addEventListener('resize', onResize);
+      var clock = new THREE.Clock();
+      var camX=0, camY=1.5;
+      /* 스크롤 연동: canvas 읽기 집중 포물선 */
+      var _aboutScroll = { ratio: 0, lerped: 0 };
+      window.addEventListener('scroll', function () {
+        var docH = document.documentElement.scrollHeight - window.innerHeight;
+        _aboutScroll.ratio = docH > 0 ? window.scrollY / docH : 0;
+      }, { passive: true });
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = clock.getElapsedTime();
+        fieldGroup.rotation.y = t * 0.002;
+        var breathScale = 1.0 + 0.005 * Math.sin(t * 1.653);
+        fieldGroup.scale.set(breathScale, breathScale, breathScale);
+        fieldGroup.rotation.x += (-mouse.y * 0.12 - fieldGroup.rotation.x) * 0.02;
+        for (var i = 0; i < fieldLines.length; i++) {
+          var fl = fieldLines[i];
+          /* 호흡 주기 1.653 rad/s (3.8s 주기) — 홈페이지와 동일 주파수 */
+          fl.mat.opacity = fl.baseOp * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 1.653 + fl.phase)));
+          var pos = fl.pts;
+          for (var p = 0; p < POINTS_PER; p++) {
+            var frac2 = p / (POINTS_PER - 1);
+            var jitter = (Math.sin(p * 73.17 + t * 0.2) * 0.008);
+            pos[p*3+2] = fl.baseZ[p] + Math.sin(frac2*Math.PI)*0.2*Math.sin(t*1.653+fl.phase+frac2*6.28) + jitter;
+          }
+          fl.geo.attributes.position.needsUpdate = true;
+        }
+        camX+=(mouse.x*1.5-camX)*0.015; camY+=(1.5-mouse.y*0.8-camY)*0.015; camera.position.x=camX; camera.position.y=camY; camera.lookAt(0,0,0);
+        /* canvas opacity — 포물선: 상단 0.72 → 중간 0.50 → 하단 0.72 */
+        _aboutScroll.lerped += (_aboutScroll.ratio - _aboutScroll.lerped) * 0.03;
+        canvas.style.opacity = 0.72 - 0.22 * Math.sin(_aboutScroll.lerped * Math.PI);
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
+  </script>
   <script src="assets/js/main.js"></script>
+  <script>
+    /* ── About: manifesto 전용 reveal observer (main.js 글로벌 observer 오버라이드) ── */
+    (function () {
+      if (!document.querySelector('.manifesto')) return;
+      var maniObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            maniObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+      document.querySelectorAll('.manifesto .mani-p').forEach(function (el) {
+        el.classList.remove('visible');
+        maniObserver.observe(el);
+      });
+    })();
+  </script>
 </body>
 
 </html>

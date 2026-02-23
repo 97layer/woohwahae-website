@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="{{issue}} — {{title}}. {{preview}}">
   <meta property="og:title" content="{{issue}}: {{title}} — WOOHWAHAE Archive">
   <meta property="og:description" content="{{preview}}">
@@ -12,156 +12,12 @@
   <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>{{issue}}: {{title}} — WOOHWAHAE Archive</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#FAFAF7">
-  <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
-  <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
-  <link rel="stylesheet" href="../../assets/css/style.css?v=ssg_v1">
+  <meta name="theme-color" content="#F0EFEB">
+  <link rel="icon" href="../../assets/img/symbol.png" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=renewal_v2">
   <script src="../../assets/js/analytics.js" defer></script>
-  <style>
-    .article-container {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: calc(80px + 2rem) 1.5rem 0;
-    }
-    .article-header {
-      border-top: 1px solid #1a1a1a;
-      padding-top: 1.2rem;
-      margin-bottom: 0;
-    }
-    .article-back-row { margin-bottom: 1.4rem; }
-    .article-back {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #888;
-      text-decoration: none;
-    }
-    .article-back:hover { color: #1a1a1a; }
-    .article-header-grid {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 0 2.4rem;
-      align-items: start;
-    }
-    .article-header-left {
-      display: flex;
-      flex-direction: column;
-      gap: 1.4rem;
-      padding-top: 0.2rem;
-    }
-    .article-issue-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #aaa;
-      line-height: 1.8;
-    }
-    .article-issue-label strong {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 400;
-      color: #555;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.1rem;
-    }
-    .article-header-right {
-      display: flex;
-      flex-direction: column;
-    }
-    .article-category-tag {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #888;
-      border: 1px solid #ccc;
-      padding: 0.2em 0.6em;
-      align-self: flex-start;
-      margin-bottom: 1.2rem;
-    }
-    .article-title {
-      font-family: 'Pretendard', sans-serif;
-      font-size: clamp(2rem, 5.5vw, 3.2rem);
-      font-weight: 300;
-      font-style: normal;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      color: #1a1a1a;
-      margin: 0 0 1.4rem;
-    }
-    .article-subtitle {
-      font-family: 'Pretendard', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 300;
-      color: #666;
-      line-height: 1.75;
-      border-left: 2px solid #1a1a1a;
-      padding-left: 1rem;
-      margin: 0;
-    }
-    .article-header-divider {
-      height: 1px;
-      background: #e0e0e0;
-      margin: 1.8rem 0 0;
-    }
-    .article-body {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.4rem;
-    }
-    .article-body p {
-      font-family: 'Pretendard', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 300;
-      line-height: 1.95;
-      color: #2a2a2a;
-      letter-spacing: -0.01em;
-      margin: 0;
-    }
-    .article-body blockquote {
-      margin: 0;
-      padding: 1.2rem 1.4rem;
-      border-left: 2px solid #1a1a1a;
-      background: #f2f0eb;
-      font-family: 'Pretendard', sans-serif;
-      font-style: normal;
-      font-size: 0.95rem;
-      font-weight: 400;
-      line-height: 1.8;
-      color: #1a1a1a;
-    }
-    .viz-line-draw { padding: 0.2rem 0; margin: 0; color: #bbb; }
-    .article-outro { margin-top: 3rem; padding-bottom: 3rem; }
-    .article-outro-rule { height: 1px; background: #1a1a1a; margin-bottom: 1.2rem; }
-    .article-outro-meta {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #aaa;
-      margin-bottom: 1.5rem;
-      display: flex;
-      gap: 1.5rem;
-    }
-    .article-outro-nav { display: flex; justify-content: space-between; }
-    .article-nav-prev, .article-nav-archive {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.62rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #888;
-      text-decoration: none;
-    }
-    .article-nav-prev:hover, .article-nav-archive:hover { color: #1a1a1a; }
-    @media (max-width: 580px) {
-      .article-header-grid { grid-template-columns: 1fr; gap: 1.6rem 0; }
-      .article-header-left { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 1.2rem; }
-      .article-title { font-size: clamp(1.8rem, 8vw, 2.6rem); }
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 
 <body>
@@ -183,53 +39,66 @@
     </button>
   </nav>
 
-  <div class="article-container">
+  <div class="reading-progress-container">
+    <div class="reading-progress-bar" id="reading-progress-bar"></div>
+  </div>
 
-    <header class="article-header">
+  <div class="art-progress-side" id="art-progress-side">
+    <div class="art-progress-side-fill" id="art-progress-side-fill"></div>
+  </div>
 
-      <div class="article-back-row fade-in">
-        <a href="../../archive/" class="article-back">← Archive</a>
+  <article class="art">
+    <canvas id="art-wave" class="art-wave-canvas"></canvas>
+    <div class="art-container">
+
+      <div class="art-back fade-in">
+        <a href="../../archive/">← Archive</a>
       </div>
 
-      <div class="article-header-grid">
+      <header class="art-header">
+        <div class="art-header-rule fade-in"></div>
 
-        <div class="article-header-left fade-in">
-          <div class="article-issue-label">
-            <strong>{{issue}}</strong>
-            {{date}}<br>
-            <span id="read-time"></span>
+        <div class="art-header-grid fade-in">
+          <div class="art-header-meta">
+            <p class="art-issue">{{issue}}</p>
+            <p class="art-date">{{date}}</p>
+            <p class="art-readtime" id="read-time"></p>
+          </div>
+          <div class="art-header-main">
+            <p class="art-meta-line fade-in"><span class="art-category-inline">{{category}}</span> · {{issue}} · <span id="read-time-inline"></span></p>
+            <h1 class="art-title">{{title}}</h1>
+            <p class="art-subtitle">{{preview}}</p>
+            <hr class="art-rule">
           </div>
         </div>
 
-        <div class="article-header-right fade-in">
-          <span class="article-category-tag">{{category}}</span>
-          <h1 class="article-title">{{title}}</h1>
-          <p class="article-subtitle">{{preview}}</p>
-        </div>
+        <div class="art-header-rule fade-in"></div>
+      </header>
 
-      </div>
-
-      <div class="article-header-divider fade-in"></div>
-
-    </header>
-
-    <div class="article-body" id="article-content">
+      <div class="art-content-grid">
+        <aside class="art-sidebar fade-in">
+          <p class="art-sidebar-issue">{{issue}}</p>
+          <p class="art-sidebar-cat">{{category}}</p>
+        </aside>
+        <div class="art-body" id="article-content">
 {{content}}
-    </div>
-
-    <div class="article-outro fade-in">
-      <div class="article-outro-rule"></div>
-      <div class="article-outro-meta">
-        <span class="article-outro-issue">{{issue}}</span>
-        <span class="article-outro-date">{{date}}</span>
+        </div>
       </div>
-      <div class="article-outro-nav">
-        {{prev_link}}
-        <a href="../../archive/" class="article-nav-archive">Archive ↑</a>
-      </div>
-    </div>
 
-  </div>
+      <footer class="art-outro fade-in">
+        <div class="art-outro-rule"></div>
+        <div class="art-outro-meta">
+          <span>{{issue}}</span>
+          <span>{{date}}</span>
+        </div>
+        <div class="art-outro-nav">
+          {{prev_link}}
+          <a href="../../archive/" class="art-nav-link">Archive ↑</a>
+        </div>
+      </footer>
+
+    </div>
+  </article>
 
   <footer class="section--light">
     <div class="footer-inner">
@@ -259,45 +128,144 @@
     </div>
   </footer>
 
+  <nav class="art-float-nav" id="art-float-nav">
+    <a class="art-float-prev" href="#" id="art-prev-link">← 이전</a>
+    <a class="art-float-next" href="#" id="art-next-link">다음 →</a>
+  </nav>
+
   <script src="../../assets/js/main.js"></script>
   <script>
-    // Gate 진입 시 fade-in 즉시 표시
-    (function () {
-      if (new URLSearchParams(window.location.search).get('from') === 'gate') {
-        document.querySelectorAll('.fade-in, .fade-in-slow').forEach(function (el) {
-          el.classList.add('visible');
-        });
-        history.replaceState(null, '', window.location.pathname);
-      }
-    })();
-
-    // 읽기시간
+    /* 읽기시간 */
     (function () {
       var content = document.getElementById('article-content');
       var rt = document.getElementById('read-time');
-      if (!content || !rt) return;
+      var rtInline = document.getElementById('read-time-inline');
+      if (!content) return;
       var words = content.innerText.trim().split(/\s+/).length;
       var mins = Math.max(1, Math.round(words / 200));
-      rt.textContent = mins + 'min read';
+      var label = mins + ' min';
+      if (rt) rt.textContent = label + ' read';
+      if (rtInline) rtInline.textContent = label;
     })();
 
-    // SVG 라인 드로잉
+    /* Reading progress bar (가로 + 세로) */
     (function () {
-      var path = document.querySelector('.line-path');
-      if (!path) return;
-      var len = path.getTotalLength();
-      path.style.strokeDasharray = len;
-      path.style.strokeDashoffset = len;
-      var fired = false;
-      var obs = new IntersectionObserver(function (entries) {
-        if (fired || !entries[0].isIntersecting) return;
-        fired = true;
-        path.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1)';
-        path.style.strokeDashoffset = '0';
-      }, { threshold: 0.5 });
-      obs.observe(path.closest('.viz-line-draw'));
+      var bar = document.getElementById('reading-progress-bar');
+      var sideFill = document.getElementById('art-progress-side-fill');
+      if (!bar && !sideFill) return;
+      function updateProgress() {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        if (bar) bar.style.width = pct + '%';
+        if (sideFill) sideFill.style.height = pct + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+    })();
+
+    /* Floating nav — scroll 표시 */
+    (function () {
+      var floatNav = document.getElementById('art-float-nav');
+      if (!floatNav) return;
+      window.addEventListener('scroll', function () {
+        floatNav.classList.toggle('visible', window.scrollY > 200);
+      }, { passive: true });
+    })();
+
+    /* Floating nav — prev/next 링크 */
+    (function () {
+      var pathParts = window.location.pathname.split('/').filter(Boolean);
+      var currentSlug = pathParts[pathParts.length - 2] || pathParts[pathParts.length - 1];
+      if (!currentSlug) return;
+      fetch('/archive/index.json').then(function (r) { return r.json(); }).then(function (posts) {
+        var idx = posts.findIndex(function (p) { return p.slug === currentSlug; });
+        if (idx === -1) return;
+        var prevLink = document.getElementById('art-prev-link');
+        var nextLink = document.getElementById('art-next-link');
+        if (prevLink && idx < posts.length - 1) {
+          prevLink.href = '/archive/' + posts[idx + 1].slug + '/index.html';
+          prevLink.textContent = '← ' + posts[idx + 1].issue;
+        }
+        if (nextLink && idx > 0) {
+          nextLink.href = '/archive/' + posts[idx - 1].slug + '/index.html';
+          nextLink.textContent = posts[idx - 1].issue + ' →';
+        }
+      }).catch(function () {});
+    })();
+
+    /* Three.js dipole field banner (article header strip) */
+    (function () {
+      var canvas = document.getElementById('art-wave');
+      if (!canvas || typeof THREE === 'undefined') return;
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      var scene = new THREE.Scene();
+      var fieldGroup = new THREE.Group();
+      scene.add(fieldGroup);
+      var camera = new THREE.PerspectiveCamera(65, 1, 0.1, 500);
+      camera.position.set(0, 1, 10);
+      camera.lookAt(0, 0, 0);
+      var LINE_COUNT = 6, SEEDS = 4, POINTS_PER = 80, MAX_R = 8.0, SCALE = 1.8;
+      function buildFieldLine(r0, phi) {
+        var pts = new Float32Array(POINTS_PER * 3);
+        var baseZ = new Float32Array(POINTS_PER);
+        var tMin = 0.05, tMax = Math.PI - 0.05;
+        for (var i = 0; i < POINTS_PER; i++) {
+          var theta = tMin + (i / (POINTS_PER - 1)) * (tMax - tMin);
+          var sinT = Math.sin(theta), cosT = Math.cos(theta);
+          var r = r0 * sinT * sinT; if (r > MAX_R) r = MAX_R;
+          pts[i*3] = r*sinT*Math.cos(phi)*SCALE;
+          pts[i*3+1] = r*cosT*SCALE;
+          pts[i*3+2] = r*sinT*Math.sin(phi)*SCALE;
+          baseZ[i] = pts[i*3+2];
+        }
+        return { pts: pts, baseZ: baseZ };
+      }
+      var fieldLines = [];
+      var seeds = [];
+      for (var si = 0; si < SEEDS; si++) seeds.push(0.8 + Math.pow((si+1)/SEEDS, 1.8) * 8.0);
+      for (var li = 0; li < LINE_COUNT; li++) {
+        var phi = (li / LINE_COUNT) * Math.PI * 2;
+        for (var si2 = 0; si2 < SEEDS; si2++) {
+          var r0 = seeds[si2]; var frac = (si2+1)/SEEDS;
+          var baseOp = 0.45 - frac * 0.2;
+          var col = frac < 0.5 ? 0x1a1a1a : 0x1B2D4F;
+          var mat = new THREE.LineBasicMaterial({ color: col, opacity: baseOp, transparent: true });
+          var built = buildFieldLine(r0, phi);
+          var geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(built.pts, 3));
+          fieldGroup.add(new THREE.Line(geo, mat));
+          fieldLines.push({ mat: mat, baseOp: baseOp, phase: li*(Math.PI*2/LINE_COUNT)+si2*0.35, geo: geo, pts: built.pts, baseZ: built.baseZ });
+        }
+      }
+      function onResize() {
+        var W = canvas.offsetWidth, H = canvas.offsetHeight || 100;
+        renderer.setSize(W, H, false);
+        camera.aspect = W / H; camera.updateProjectionMatrix();
+      }
+      onResize(); window.addEventListener('resize', onResize);
+      var clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = clock.getElapsedTime();
+        fieldGroup.rotation.y = t * 0.002;
+        for (var i = 0; i < fieldLines.length; i++) {
+          var fl = fieldLines[i];
+          fl.mat.opacity = fl.baseOp * (0.5 + 0.5 * Math.sin(t * 0.8 + fl.phase));
+          var pos = fl.pts;
+          for (var p = 0; p < POINTS_PER; p++) {
+            var frac2 = p / (POINTS_PER - 1);
+            pos[p*3+2] = fl.baseZ[p] + Math.sin(frac2*Math.PI)*0.15*Math.sin(t*0.6+fl.phase+frac2*6.28);
+          }
+          fl.geo.attributes.position.needsUpdate = true;
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
     })();
   </script>
+
 </body>
 
 </html>

@@ -31,7 +31,7 @@ CD는 **97layer(순호)의 판단 기준** 그 자체다.
 
 ### 수정 (Revise)
 - 방향은 맞는데 언어가 틀렸을 때
-- 아이디어는 좋은데 Mia/Ray가 아직 가능성을 다 꺼내지 못했을 때
+- 아이디어는 좋은데 AD/CE가 아직 가능성을 다 꺼내지 못했을 때
 
 ---
 
@@ -55,3 +55,30 @@ Anti-Uniformity — 관습 파괴, 새로운 정의.
 1. 이게 WOOHWAHAE 공간에 들어온 손님에게 보여줄 수 있는 것인가?
 2. 10년 후에도 살아있는 언어인가?
 3. 순호 본인이 이 콘텐츠를 자랑스러워할 것인가?
+
+---
+
+## brand_score 출력 포맷
+
+CD 승인 시 아래 JSON 구조로 점수를 기록한다:
+
+```json
+{
+  "brand_score": {
+    "authenticity": 0,
+    "practicality": 0,
+    "elegance": 0,
+    "precision": 0,
+    "innovation": 0,
+    "total": 0
+  },
+  "verdict": "approve|revise|reject",
+  "concerns": [],
+  "note": ""
+}
+```
+
+- 각 pillar 0-20점 (총 100점)
+- 70점+ → approve, 50-69 → revise, 49 이하 → reject
+- concerns[]: 구체적 수정 사항 (revise 시 필수)
+- → 상세 기준: `brand/foundation.md` §4, `brand/content_system.md` §4

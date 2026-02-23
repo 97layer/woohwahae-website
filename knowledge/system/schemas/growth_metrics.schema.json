@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Growth Module Metrics",
+  "description": "월별 수익/성장 지표 (L5 Business Layer)",
+  "type": "object",
+  "required": ["period"],
+  "properties": {
+    "period": {
+      "type": "string",
+      "description": "집계 기간 (YYYY-MM)",
+      "pattern": "^\\d{4}-\\d{2}$"
+    },
+    "revenue": {
+      "type": "object",
+      "properties": {
+        "atelier": { "type": "number", "description": "헤어 아틀리에 수익", "default": 0 },
+        "consulting": { "type": "number", "description": "컨설팅 수익", "default": 0 },
+        "products": { "type": "number", "description": "제품 판매 수익", "default": 0 },
+        "total": { "type": "number", "description": "총 수익" }
+      }
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "essays_published": { "type": "integer", "default": 0 },
+        "signals_captured": { "type": "integer", "default": 0 },
+        "clusters_ripe": { "type": "integer", "default": 0 },
+        "instagram_posts": { "type": "integer", "default": 0 }
+      }
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "total_visits": { "type": "integer", "default": 0 },
+        "new_clients": { "type": "integer", "default": 0 },
+        "returning_clients": { "type": "integer", "default": 0 }
+      }
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

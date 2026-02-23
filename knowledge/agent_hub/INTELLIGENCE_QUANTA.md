@@ -31,7 +31,7 @@
 
 ## 🏗️ 시스템 아키텍처
 
-**버전**: Ver 6.0 — LAYER OS Rebuild (5-Layer Brand OS + 기능화 에이전트)
+**버전**: Ver 7.0 — LAYER OS Rebuild Complete (Brand OS + 통합 스키마 + 파이프라인 재설계)
 
 ```
 신호 유입 (텔레그램/유튜브/URL/텍스트)
@@ -47,7 +47,7 @@ CE Agent: corpus RAG → Magazine B 에세이
 woohwahae.kr/archive/ 발행
 ```
 
-**즉시발행 파이프라인(SA→AD→CE→CD) 비활성화** — Gardener 주도 발행으로 전환.
+**파이프라인 재설계**: SA → CE → Ralph(인라인 QA) → AD → CD. Gardener 주도 발행.
 
 ### 인프라
 - **GCP VM**: `97layer-vm` = `136.109.201.201` (Static IP)
@@ -61,7 +61,7 @@ woohwahae.kr/archive/ 발행
 
 ### 핵심 설계 원칙
 - **신뢰 기반**: 할 수 없는 건 "못 한다". 거짓 구현 절대 금지
-- **FROZEN 파일**: IDENTITY.md, CD_SUNHO.md — `/confirm [token]` 확인 필요
+- **FROZEN 파일**: IDENTITY.md, CD.md, brand/story.md — `/confirm [token]` 확인 필요
 - **모델 비의존성**: 모든 성장 기록이 파일로. 어떤 모델도 QUANTA만 읽으면 동일 수준 출발
 
 ---
@@ -86,14 +86,15 @@ woohwahae.kr/archive/ 발행
 - ✅ **CE content_type 분기 구현** (2026-02-20): gardener.py payload에 content_type 추가 + ce_agent.py _write_corpus_essay() 어조 분기 로직 구현. VM 배포 + ecosystem 재시작 완료.
 - ✅ **WOOHWAHAE 대규모 업데이트 + nginx 도메인 배포 준비** (2026-02-20): nginx 80포트/server_name/root 수정, style.css v36 전체 통일(24개 파일), 레거시 CSS 제거, OG태그 보완, CDN 통일, 375px 미디어쿼리, 전체 VM 재배포. DNS BLOCKER 남음(아임웹 A레코드 136.109.201.201).
 - ✅ **LAYER OS Rebuild Phase -1~1** (2026-02-24): Claude Code 인프라(Memory 4개, 커맨드 4개, Hooks, Rules), 레거시 10파일 삭제, 배포스크립트 이동, 에이전트 기능화(persona→role: JOON→SA, MIA→AD, RAY→CE, CD_SUNHO→CD), OS 리브랜딩(97layerOS→LAYER OS), FILESYSTEM_MANIFEST.md 서재 맵 구축.
+- ✅ **LAYER OS Rebuild Phase 2A~4** (2026-02-24): 2차 파편제거(빈폴더 20개/worktree 7개/이벤트 479개 삭제, 파편 4건 통합), Brand OS 11개 문서(directives/brand/), IDENTITY v7(brand/ 참조 체계), SYSTEM v6(5-Layer 매핑), agent_router v2(AGENT_REGISTRY 수정+brand/ 로딩), CE/AD/SA brand/ 문서 로딩, 파이프라인 재설계(SA→CE→Ralph→AD→CD), 통합 신호 스키마(signal/ritual/growth 3종).
 
 ## 🎯 다음 작업
 
 1. [BLOCKER] 아임웹 DNS A레코드 `136.109.201.201` 설정 (사용자 직접)
-2. Phase 2: Brand OS 문서 배치 — `directives/brand/` 11개 파일 생성
-3. Phase 3: 에이전트 코드 리빌딩 — 5-Layer 매핑, QA 삽입, directive 참조
-4. Phase 4: 신규 모듈 스키마 — Ritual/Growth JSON 스키마
-5. VM 배포: 기능화된 에이전트 코드 배포 + 서비스 재시작
+2. VM 배포: 기능화된 에이전트 코드 + Brand OS 문서 배포 + 서비스 재시작
+3. 통합 신호 수집 코드 구현: telegram_secretary(이미지/PDF 핸들러), youtube_analyzer(통합 스키마), scout_crawler(.md→.json)
+4. CLI 신호 입력 도구: scripts/signal_inject.py
+5. Ritual/Growth 코드 구현 (스키마 기반)
 
 ## 📐 콘텐츠 전략 (2026-02-19 확정)
 
@@ -132,19 +133,21 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24] Session Update - claude-opus-rebuild
+### [2026-02-24] Session Update - claude-opus-rebuild (Phase 2)
 
 **완료한 작업**:
-- ✅ Phase -1: Claude Code 인프라 (Memory 서브파일 4개, 커맨드 4개, Hooks, Rules, 권한)
-- ✅ Phase 0: 물리적 정리 (레거시 10파일 삭제, archive flatten, orphan 제거, 스크립트 이동)
-- ✅ Phase 0.4: 에이전트 기능화 (JOON→SA, MIA→AD, RAY→CE, CD_SUNHO→CD)
-- ✅ Phase 0.5: OS 리브랜딩 (97layerOS → LAYER OS, 문서 41개 + .ai_rules 치환)
-- ✅ Phase 1: FILESYSTEM_MANIFEST.md 서재 맵 구축
+- ✅ Phase 2A: 2차 물리 정리 — 빈폴더 20개, worktree 7개, 이벤트 479개 삭제. 파편 4건 통합.
+- ✅ Phase 2B: Brand OS 11개 문서 생성 (directives/brand/). IDENTITY v7.0, SYSTEM v6.0 업그레이드.
+- ✅ Phase 2B: agent_router.py CRITICAL FIX — AGENT_REGISTRY 파일명 수정, brand/ 로딩 추가.
+- ✅ Phase 2B: 에이전트 directive 기능화 완료 — persona 이름/성격 서술 0건.
+- ✅ Phase 3: CE _load_brand_directives(), AD _load_design_tokens(), SA audience.md 로딩.
+- ✅ Phase 3: 파이프라인 재설계 — SA→CE→Ralph(인라인)→AD→CD.
+- ✅ Phase 4: 통합 신호 스키마 + Ritual + Growth (JSON Schema 3종).
 
 **다음 단계**:
-- ⏳ Phase 2: Brand OS 문서 배치 (directives/brand/ 11개)
-- ⏳ Phase 3: 에이전트 코드 리빌딩 (5-Layer 매핑)
-- ⏳ Phase 4: 신규 모듈 스키마 (Ritual/Growth)
-- ⏳ VM 배포 (기능화된 코드 반영)
+- ⏳ VM 배포 (기능화된 코드 + Brand OS 문서)
+- ⏳ 통합 신호 수집 코드 구현 (이미지/PDF/URL 핸들러)
+- ⏳ CLI signal_inject.py
+- ⏳ Ritual/Growth 코드 구현
 
-**업데이트 시간**: 2026-02-24T03:00:00
+**업데이트 시간**: 2026-02-24T08:00:00

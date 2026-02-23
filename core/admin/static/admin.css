@@ -4,21 +4,23 @@
    ============================================= */
 
 :root {
-  --bg:          #FAFAF7;
-  --bg-dark:     #F2F1EC;
-  --text:        #1A1A1A;
-  --text-sub:    #6B6B6B;
-  --text-faint:  #AEAEA8;
-  --line:        #E4E3DC;
-  --accent:      #1B2D4F;
-  --danger:      #8B3A3A;
-  --success:     #3A6B4A;
-  --font-kr:     'Noto Serif KR', 'Georgia', serif;
-  --font-en:     'Crimson Text', 'Georgia', serif;
-  --ease:        cubic-bezier(0.25, 0.1, 0.25, 1);
+  --bg: #FAFAF7;
+  --bg-dark: #F2F1EC;
+  --text: #1A1A1A;
+  --text-sub: #6B6B6B;
+  --text-faint: #AEAEA8;
+  --line: #E4E3DC;
+  --accent: #1B2D4F;
+  --danger: #8B3A3A;
+  --success: #3A6B4A;
+  --font-kr: 'Noto Serif KR', 'Georgia', serif;
+  --font-en: 'Crimson Text', 'Georgia', serif;
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -109,6 +111,10 @@ a {
 
 .admin-publish-btn:hover {
   opacity: 0.7;
+}
+
+.admin-publish-form {
+  display: inline;
 }
 
 /* ─── Main ─── */
@@ -377,11 +383,28 @@ a {
   line-height: 1.8;
 }
 
-.admin-preview h1 { font-size: 1.4rem; margin: 1em 0 0.5em; }
-.admin-preview h2 { font-size: 1.2rem; margin: 1em 0 0.5em; }
-.admin-preview h3 { font-size: 1rem; margin: 1em 0 0.5em; }
-.admin-preview p { margin-bottom: 1em; }
-.admin-preview strong { font-weight: 500; }
+.admin-preview h1 {
+  font-size: 1.4rem;
+  margin: 1em 0 0.5em;
+}
+
+.admin-preview h2 {
+  font-size: 1.2rem;
+  margin: 1em 0 0.5em;
+}
+
+.admin-preview h3 {
+  font-size: 1rem;
+  margin: 1em 0 0.5em;
+}
+
+.admin-preview p {
+  margin-bottom: 1em;
+}
+
+.admin-preview strong {
+  font-weight: 500;
+}
 
 .admin-preview-placeholder {
   color: var(--text-faint);

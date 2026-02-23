@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LAYER OS Unified Signal",
+  "description": "모든 소스(텍스트/유튜브/이미지/URL/PDF)의 통합 신호 스키마",
+  "type": "object",
+  "required": ["signal_id", "type", "status", "content", "captured_at", "from_user", "source_channel"],
+  "properties": {
+    "signal_id": {
+      "type": "string",
+      "description": "고유 식별자. 형식: {type}_{YYYYMMDD}_{HHMMSS}",
+      "pattern": "^(text_insight|youtube_video|image|url_content|pdf_document)_\\d{8}_\\d{6}$"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["text_insight", "youtube_video", "image", "url_content", "pdf_document"],
+      "description": "신호 유형"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["captured", "analyzing", "analyzed", "published", "archived"],
+      "default": "captured"
+    },
+    "content": {
+      "type": "string",
+      "description": "주요 텍스트. 이미지=설명, 유튜브=요약, PDF=발췌"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 캡처 시각"
+    },
+    "from_user": {
+      "type": "string",
+      "description": "신호 출처 사용자",
+      "default": "97layer"
+    },
+    "source_channel": {
+      "type": "string",
+      "enum": ["telegram", "cli", "web_dashboard", "crawler", "manual"],
+      "description": "수집 채널"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "video_id": { "type": "string", "description": "유튜브 영상 ID" },
+        "source_url": { "type": "string", "format": "uri" },
+        "image_path": { "type": "string", "description": "이미지 바이너리 경로 (signals/files/)" },
+        "pdf_path": { "type": "string", "description": "PDF 바이너리 경로 (signals/files/)" },
+        "analysis": {
+          "type": "object",
+          "description": "SA 분석 결과 (분석 후 채워짐)",
+          "properties": {
+            "themes": { "type": "array", "items": { "type": "string" } },
+            "strategic_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "key_insights": { "type": "array", "items": { "type": "string" } },
+            "summary": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

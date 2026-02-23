@@ -43,17 +43,26 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# 시각 레퍼런스 fallback (NotebookLM 연결 불가 시 사용)
-_VISUAL_REFERENCE_FALLBACK = """
-WOOHWAHAE 시각 아이덴티티 (97layer 브랜드):
-- 색상 팔레트: 탈채도 중성 톤 (웜 그레이, 더스티 베이지, 오프화이트, 딥 차콜)
-- 금지 색상: 채도 높은 원색, 네온, 과도한 대비
-- 사진 스타일: 35mm 필름 그레인, 소프트 자연광, 얕은 피사계 심도
-- 벤치마크 레퍼런스: Aesop, Kinfolk, 와비사비 미학
-- 구도: 여백 강조, 중앙 정렬보다 오프센터, 오가닉 텍스처
-- 폰트: 세리프 계열 본문, 클린 산세리프 헤더, 넉넉한 행간
-- 절대 회피: 코퍼레이트 스톡 이미지, 과도하게 광택나는 제품사진, 빠른 줌인
-"""
+# Brand OS 디자인 토큰 로딩
+BRAND_DIR = PROJECT_ROOT / "directives" / "brand"
+
+def _load_design_tokens() -> str:
+    """brand/design_tokens.md 로드 → AD 시각 기준"""
+    filepath = BRAND_DIR / "design_tokens.md"
+    try:
+        content = filepath.read_text(encoding="utf-8")
+        return content[:2000]  # 토큰 절약
+    except FileNotFoundError:
+        pass
+    # 최소 fallback
+    return (
+        "WOOHWAHAE 시각 아이덴티티:\n"
+        "- 색상: #E4E2DC(배경), #1a1a1a(텍스트), #1B2D4F(네이비)\n"
+        "- 서체: Pretendard Variable(본문), Crimson Text(세리프)\n"
+        "- 여백: 60%+, max-content: 680px\n"
+        "- 사진: muted, desaturated, 35mm 필름 그레인, 자연광\n"
+        "- 금지: 과포화, 플래시, 복잡한 배경"
+    )
 
 
 class ArtDirector:
@@ -125,7 +134,7 @@ class ArtDirector:
             except Exception as e:
                 logger.warning("%s: NotebookLM 쿼리 실패, fallback 사용: %s", self.agent_id, e)
 
-        self._visual_ref_cache = _VISUAL_REFERENCE_FALLBACK
+        self._visual_ref_cache = _load_design_tokens()
         return self._visual_ref_cache
 
     def create_visual_concept(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -147,8 +156,8 @@ class ArtDirector:
         visual_ref = self._get_visual_reference()
         ref_source = (
             "NotebookLM RAG"
-            if self.nlm and self._visual_ref_cache != _VISUAL_REFERENCE_FALLBACK
-            else "fallback"
+            if self.nlm
+            else "Brand OS design_tokens"
         )
         logger.info("%s: 시각 레퍼런스 출처 — %s", self.agent_id, ref_source)
 

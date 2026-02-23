@@ -31,8 +31,8 @@ class CorpusManager:
     """
 
     # 군집 성숙 임계점
-    CLUSTER_MIN_ENTRIES = 5       # 동일 테마 최소 entry 수
-    CLUSTER_MIN_HOURS = 72        # 최소 시간 분포 (3일 이상에 걸쳐 쌓인 것만)
+    CLUSTER_MIN_ENTRIES = 3       # 동일 테마 최소 entry 수 (5→3: 초기 corpus 대응)
+    CLUSTER_MIN_HOURS = 72        # first_seen 이후 경과 시간 (72h = 3일 숙성)
     CLUSTER_MIN_SOURCES = 2       # 최소 소스 다양성 (텍스트만 or 유튜브만 금지)
 
     def __init__(self, project_root: Path = PROJECT_ROOT):
@@ -165,25 +165,23 @@ class CorpusManager:
             if len(entry_ids) < self.CLUSTER_MIN_ENTRIES:
                 continue
 
-            # 시간 분포 확인
+            # 시간 숙성 확인 (first_seen 이후 경과 시간 기준)
+            # 버그 수정: entries 간 간격이 아닌, 클러스터가 시스템에 존재한 기간으로 측정
             entries = self._load_entries(entry_ids)
-            timestamps = []
             source_types = set()
             for e in entries:
-                if e.get("captured_at"):
-                    try:
-                        timestamps.append(datetime.fromisoformat(e["captured_at"][:19]))
-                    except Exception:
-                        pass
                 source_types.add(e.get("signal_type", "text_insight"))
 
-            if len(timestamps) < 2:
+            try:
+                first_seen = datetime.fromisoformat(cluster["first_seen"][:19])
+                hours_since_first = (datetime.now() - first_seen).total_seconds() / 3600
+            except Exception:
+                hours_since_first = 0
+
+            if hours_since_first < self.CLUSTER_MIN_HOURS:
                 continue
 
-            hours_span = (max(timestamps) - min(timestamps)).total_seconds() / 3600
-
-            if hours_span < self.CLUSTER_MIN_HOURS:
-                continue
+            hours_span = hours_since_first  # 리포트용
 
             if len(source_types) < self.CLUSTER_MIN_SOURCES:
                 # 소스 다양성 조건은 경고만, 차단하지 않음 (유연성)
