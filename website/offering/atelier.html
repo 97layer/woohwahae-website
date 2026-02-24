@@ -16,11 +16,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
   <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
-  <link rel="stylesheet" href="../assets/css/style.css?v=renewal_v2">
+  <link rel="preload" href="../assets/css/style.css?v=renewal_v3" as="style">
+  <link rel="stylesheet" href="../assets/css/style.css?v=renewal_v3">
   <script src="../assets/js/analytics.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
 
-<body>
+<body class="home-radical">
+  <canvas id="field-bg" class="field-bg-canvas"></canvas>
 
   <nav>
     <a href="/" class="nav-logo">
@@ -31,7 +34,6 @@
       <li><a href="../offering.html" class="active">Offering</a></li>
       <li><a href="../about.html">About</a></li>
       <li><a href="../contact.html">Contact</a></li>
-      <li><a href="../lab/">Lab</a></li>
     </ul>
     <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
@@ -209,6 +211,7 @@
   </footer>
 
   <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/bg-field.js" defer></script>
 
 </body>
 </html>

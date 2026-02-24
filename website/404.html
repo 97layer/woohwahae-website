@@ -4,43 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 — WOOHWAHAE</title>
-    <link rel="apple-touch-icon" href="/assets/img/symbol.png">
-  <link rel="stylesheet" href="/assets/css/style.css?v=renewal_v2">
+  <link rel="apple-touch-icon" href="/assets/img/symbol.png">
+  <link rel="icon" href="/assets/img/symbol.png" type="image/svg+xml">
+  <link rel="preload" href="/assets/css/style.css?v=renewal_v3" as="style">
+  <link rel="stylesheet" href="/assets/css/style.css?v=renewal_v3">
   <meta name="robots" content="noindex">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
-<body>
+<body class="home-radical">
+
+  <canvas id="field-bg" class="field-bg-canvas"></canvas>
 
   <nav>
     <a href="/" class="nav-logo">
       <img src="/assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="atelier.html">Atelier</a></li>
-      <li><a href="shop.html">Shop</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="lab/">Lab</a></li>
+      <li><a href="/archive/">Archive</a></li>
+      <li><a href="/offering.html">Offering</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
     </ul>
+    <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
 
-  <section class="section--light" style="min-height: 70vh; display: flex; align-items: center;">
-    <div class="container" style="text-align: center;">
-      <p class="section-label fade-in visible">404</p>
-      <h1 class="fade-in visible" style="margin-bottom: 2rem;">
-        길을 잃으셨군요
-      </h1>
-      <p class="fade-in visible" style="color: var(--text-sub); margin-bottom: 3rem;">
-        찾으시는 페이지가 존재하지 않습니다.<br>
-        잠시 멈춰 서서, 다시 돌아가보세요.
-      </p>
-      <div class="fade-in visible">
-        <a href="/" class="cta">홈으로 돌아가기 →</a>
+  <main class="container--wide">
+    <div style="min-height: 70vh; display: flex; align-items: center; justify-content: center; text-align: center;">
+      <div>
+        <p class="section-label fade-in visible">404</p>
+        <h1 class="fade-in visible" style="margin-bottom: 2rem;">
+          길을 잃으셨군요
+        </h1>
+        <p class="fade-in visible" style="color: var(--text-sub); margin-bottom: 3rem;">
+          찾으시는 페이지가 존재하지 않습니다.<br>
+          잠시 멈춰 서서, 다시 돌아가보세요.
+        </p>
+        <div class="fade-in visible">
+          <a href="/" class="cta">홈으로 돌아가기 →</a>
+        </div>
       </div>
     </div>
-  </section>
+  </main>
 
   <footer class="section--light">
     <div class="footer-inner">
@@ -71,5 +78,6 @@
   </footer>
 
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/bg-field.js" defer></script>
 </body>
 </html>

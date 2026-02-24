@@ -16,8 +16,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
   <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
-  <link rel="preload" href="../assets/css/style.css?v=renewal_v2" as="style">
-  <link rel="stylesheet" href="../assets/css/style.css?v=renewal_v2">
+  <link rel="preload" href="../assets/css/style.css?v=renewal_v3" as="style">
+  <link rel="stylesheet" href="../assets/css/style.css?v=renewal_v3">
   <script src="../assets/js/analytics.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
@@ -35,7 +35,6 @@
       <li><a href="../offering.html">Offering</a></li>
       <li><a href="../about.html">About</a></li>
       <li><a href="../contact.html">Contact</a></li>
-      <li><a href="../lab/">Lab</a></li>
     </ul>
     <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
     <button class="nav-toggle" aria-label="Menu">
@@ -203,78 +202,8 @@
       }
     })();
 
-    /* ── Three.js dipole field background (full-page) ── */
-    (function () {
-      var canvas = document.getElementById('field-bg');
-      if (!canvas || typeof THREE === 'undefined') return;
-      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setClearColor(0x000000, 0);
-      var scene = new THREE.Scene();
-      var fieldGroup = new THREE.Group();
-      scene.add(fieldGroup);
-      var camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-      camera.position.set(0, 1.5, 18);
-      camera.lookAt(0, 0, 0);
-      var LINE_COUNT = 10; var SEEDS = 6; var POINTS_PER = 160; var MAX_R = 12.0; var SCALE = 3.0;
-      function buildFieldLine(r0, phi) {
-        var pts = new Float32Array(POINTS_PER * 3);
-        var baseZ = new Float32Array(POINTS_PER);
-        var tMin = 0.04, tMax = Math.PI - 0.04;
-        for (var i = 0; i < POINTS_PER; i++) {
-          var theta = tMin + (i / (POINTS_PER - 1)) * (tMax - tMin);
-          var sinT = Math.sin(theta), cosT = Math.cos(theta);
-          var r = r0 * sinT * sinT; if (r > MAX_R) r = MAX_R;
-          pts[i*3] = r*sinT*Math.cos(phi)*SCALE;
-          pts[i*3+1] = r*cosT*SCALE;
-          pts[i*3+2] = r*sinT*Math.sin(phi)*SCALE;
-          baseZ[i] = pts[i*3+2];
-        }
-        return { pts: pts, baseZ: baseZ };
-      }
-      var fieldLines = [];
-      var seeds = [];
-      for (var si = 0; si < SEEDS; si++) seeds.push(0.8 + Math.pow((si+1)/SEEDS, 1.8) * 11.0);
-      for (var li = 0; li < LINE_COUNT; li++) {
-        var phi = (li / LINE_COUNT) * Math.PI * 2;
-        for (var si2 = 0; si2 < SEEDS; si2++) {
-          var r0 = seeds[si2]; var frac = (si2+1)/SEEDS;
-          var baseOp = 0.65 - frac * 0.3;
-          var col = frac < 0.5 ? 0x1a1a1a : 0x1B2D4F;
-          var mat = new THREE.LineBasicMaterial({ color: col, opacity: baseOp, transparent: true });
-          var built = buildFieldLine(r0, phi);
-          var geo = new THREE.BufferGeometry();
-          geo.setAttribute('position', new THREE.BufferAttribute(built.pts, 3));
-          fieldGroup.add(new THREE.Line(geo, mat));
-          fieldLines.push({ mat: mat, baseOp: baseOp, phase: li*(Math.PI*2/LINE_COUNT)+si2*0.35, geo: geo, pts: built.pts, baseZ: built.baseZ });
-        }
-      }
-      function onResize() {
-        var W = window.innerWidth, H = window.innerHeight;
-        renderer.setSize(W, H, false);
-        camera.aspect = W / H; camera.updateProjectionMatrix();
-      }
-      onResize(); window.addEventListener('resize', onResize);
-      var clock = new THREE.Clock();
-      function animate() {
-        requestAnimationFrame(animate);
-        var t = clock.getElapsedTime();
-        fieldGroup.rotation.y = t * 0.003;
-        for (var i = 0; i < fieldLines.length; i++) {
-          var fl = fieldLines[i];
-          fl.mat.opacity = fl.baseOp * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 1.0 + fl.phase)));
-          var pos = fl.pts;
-          for (var p = 0; p < POINTS_PER; p++) {
-            var frac2 = p / (POINTS_PER - 1);
-            pos[p*3+2] = fl.baseZ[p] + Math.sin(frac2*Math.PI)*0.2*Math.sin(t*0.7+fl.phase+frac2*6.28);
-          }
-          fl.geo.attributes.position.needsUpdate = true;
-        }
-        renderer.render(scene, camera);
-      }
-      animate();
-    })();
   </script>
+  <script src="../assets/js/bg-field.js" defer></script>
 
 </body>
 
