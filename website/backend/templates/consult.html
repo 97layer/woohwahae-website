@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
   <link rel="preload" href="/assets/css/style.css?v=renewal_v5" as="style">
   <link rel="stylesheet" href="/assets/css/style.css?v=renewal_v5">
@@ -95,9 +95,9 @@
     }
 
     .option-grid input:checked + label {
-      background: var(--navy);
+      background: var(--stone-dark);  /* Changed from var(--navy) — Stone palette for selection state */
       color: var(--white);
-      border-color: var(--navy);
+      border-color: var(--stone-dark);  /* Changed from var(--navy) */
     }
 
     /* ── Textarea ── */
@@ -130,7 +130,7 @@
     }
 
     .upload-area:hover,
-    .upload-area:active { border-color: var(--navy); }
+    .upload-area:active { border-color: var(--stone-mid); }  /* Changed from var(--navy) */
 
     .upload-area p {
       font-family: var(--font-body);
@@ -173,7 +173,7 @@
     /* ── Submit ── */
     .submit-btn {
       width: 100%;
-      background: var(--navy);
+      background: var(--stone-dark);  /* Changed from var(--navy) — Stone dark for CTA */
       color: var(--white);
       border: none;
       font-family: var(--font-mono);

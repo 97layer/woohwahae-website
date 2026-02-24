@@ -266,14 +266,21 @@
     <div class="nexus-cursor-follower" id="cursor-follower"></div>
     <div class="nexus-axis" id="axis"></div>
 
-    <nav
-        style="position:fixed; top:0; width:100%; padding:2rem 3rem; background:transparent; z-index:1000; display:flex; justify-content:space-between; align-items:center;">
-        <a href="/" style="text-decoration:none;"><img src="../assets/img/symbol.png"
-                style="width:30px; mix-blend-mode:multiply;"></a>
-        <div style="font-family:'DM Mono'; font-size:0.6rem; letter-spacing:0.5em;">NEXUS_STRUCTURE // V5.1</div>
-        <a href="../lab/"
-            style="font-family:'DM Mono'; font-size:0.6rem; text-decoration:none; color:var(--text);">BACK</a>
-    </nav>
+    <nav>
+    <a href="/" class="nav-logo">
+      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links">
+      <li><a href="archive/">Archive</a></li>
+      <li><a href="offering.html">Offering</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="lab/">Lab</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
 
     <header class="nexus-hero">
         <div class="monolith-wrap" id="monolith">
