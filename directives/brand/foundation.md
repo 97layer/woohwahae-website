@@ -27,8 +27,9 @@ LAYER OS는 브랜드를 운영 체제로 추상화한다. 5개 레이어가 수
 
 ```
 IDENTITY.md (핵심 선언, ~100줄)
-  └── directives/brand/ (상세 규칙, 10개 파일)
-        ├── foundation.md    ← 이 문서
+  └── directives/brand/ (상세 규칙, 11개 파일)
+        ├── philosophy.md    ← 브랜드 철학 (3원칙, 동아시아 렌즈)
+        ├── foundation.md    ← 이 문서 (5-Layer, 권한, 5 Pillars)
         ├── voice_tone.md
         ├── content_system.md
         ├── design_tokens.md
@@ -54,7 +55,9 @@ SYSTEM.md (운영 프로토콜)
 
 ---
 
-## 4. 5 Pillars — 상세 정의
+## 4. 5 Pillars — 품질 게이트 (Quality Gate)
+
+> **주의**: 5 Pillars는 산출물을 **평가하는 기준**이다. 브랜드가 향하는 방향은 `philosophy.md` §2 (3원칙) 참조.
 
 WOOHWAHAE 브랜드의 모든 산출물은 이 5가지 기둥으로 평가된다.
 

@@ -28,7 +28,9 @@ woohwahae.kr/
 ### `/about/` — 철학 선언
 - Manifesto: "Remove the Noise, Reveal the Essence"
 - 97layer(순호) 소개 + 공간(반지하 8평) 철학
+- 내러티브 구조: 동아시아 수행 감각 → 헤어 아틀리에 → 일상의 철학 → 플랫폼
 - 톤: 1인칭 에세이. 개인적이지만 보편적.
+- 참조: `philosophy.md` (동아시아 렌즈, 3원칙)
 
 ### `/archive/` — 매거진 (핵심 섹션)
 - 이슈 단위 발행 (Issue NN)
