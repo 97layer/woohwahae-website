@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). Gardener가 매일 자동 갱신.
-> **마지막 갱신**: 2026-02-24 (Sprint 4+5: Ritual/Growth Telegram 연동 + 전면 보안 강화 15개 항목)
+> **마지막 갱신**: 2026-02-24 (Sprint 6: woohwahae.kr 슈퍼앱 통합 — 고객 포털 + 사전상담 + Growth Dashboard + Component Standard Layer)
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 🏗️ 시스템 아키텍처
 
-**버전**: Ver 7.3 — Telegram 실사용 연동 + 전면 보안 강화 완료
+**버전**: Ver 7.4 — woohwahae.kr 슈퍼앱 통합 완료 (고객 포털 + 사전상담 + Growth Dashboard)
 
 ```
 신호 유입 (텔레그램/CLI/유튜브/URL/이미지/PDF/크롤러 — 전부 통합 스키마)
@@ -96,17 +96,16 @@ woohwahae.kr/archive/ 발행
 - ✅ **Ritual/Growth Telegram 연동** (2026-02-24): /client(list|add|info|due), /visit 신규 커맨드. /growth → Growth Module 월별 지표. @admin_only 데코레이터 12개 커맨드 전체.
 - ✅ **Gardener Growth 자동 집계** (2026-02-24): _record_growth_snapshot() + run_cycle() step5 연동. 매일 새벽 3시 Growth 스냅샷 자동 갱신.
 - ✅ **전면 보안 강화** (2026-02-24): B1 Secret강제/B2 Cookie/B3 CSRF/B4 Telegram인증/B5 CORS/B6 SSRF/B7 보안헤더/B8 RateLimit/B9 PathTraversal/B10 AuditLog/B11 ErrorHandler/B12 HTTPS준비. 자가검증 전수 통과. nginx security headers VM 라이브 확인.
+- ✅ **Sprint 6 — 슈퍼앱 통합** (2026-02-24): nginx /api/+/me/+/consult/ 프록시 추가. Ritual Module portal_token/email/find_client_by_token()/add_visit() 확장. website/backend Flask → core/modules 연결. /me/<token> 고객 시술일지 포털. /consult/<token> 사전상담 폼 + 사진 업로드. style_matcher.py 무드 키워드→레퍼런스 이미지 알고리즘. portal.html/consult.html/consult_done.html 신규. Component Standard Layer v1.0 (style.css + admin.css 포팅). Growth Dashboard /admin/growth + /admin/growth/revenue. growth.html 신규. base.html Growth 네비. VM woohwahae-backend 서비스 신규 + ADMIN_SECRET_KEY .env 추가. 3개 라우트 smoke test 통과.
 
 ## 🎯 다음 작업
 
 1. [BLOCKER] 아임웹 DNS A레코드 `136.109.201.201` 설정 (사용자 직접)
-2. [BLOCKER] .env에 `ADMIN_SECRET_KEY` 추가 필요 (admin panel 시작 전 필수)
-3. 프론트엔드 빌드업 — 옵션 3개 중 선택:
-   - **옵션1**: Growth Dashboard (Flask Admin /admin/growth + Chart.js, 2-3h)
-   - **옵션2**: Ritual Client Portal (정적 HTML + QR코드, 4-5h)
-   - **옵션3**: Archive+Admin 통합 리빌드 (동적 발행 파이프라인, 1-2d)
-4. THE CYCLE E2E 자동화 테스트
+2. [BLOCKER] 실제 고객 데이터 입력 — Ritual Module에 첫 고객 등록 후 portal_token 생성 → `/me/{token}` URL 테스트
+3. 사전상담 URL 첫 실사용 — `/consult/{token}` 카톡 전송 → 제출 → consult_done 확인
+4. Growth Dashboard 첫 수익 입력 — `/admin/growth`에서 2026-02 수익 기록
 5. DNS 연결 후: certbot + HTTPS/HSTS 활성화 (nginx 준비 블록 해제)
+6. 재방문 알림 자동화 — Gardener가 `get_due_clients()` 실행 → 카카오 Alimtalk or 텔레그램
 
 ## 📐 콘텐츠 전략 (2026-02-19 확정)
 
@@ -145,23 +144,31 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24] Session Update - claude-sonnet-sprint4+5 (Sprint 4+5 완료)
+### [2026-02-24] Session Update - claude-sonnet-sprint6 (Sprint 6 완료)
 
 **이번 세션 완료**:
-- ✅ Telegram /client, /visit 신규 커맨드 (Ritual Module 연동)
-- ✅ Telegram /growth 업그레이드 (Growth Module 월별 지표)
-- ✅ @admin_only 데코레이터 12개 커맨드 전체 적용
-- ✅ Gardener _record_growth_snapshot() + run_cycle() step5
-- ✅ VM 재배포 (core/modules/ + security 반영, 3서비스 active)
-- ✅ admin/app.py: secret강제/CSRF/Cookie/RateLimit/PathTraversal/AuditLog/ErrorHandler
-- ✅ scout_crawler: SSRF _validate_url() (내부IP+메타데이터 차단)
-- ✅ agent_stream_server: CORS localhost 제한, /agents/status 인증
-- ✅ nginx: 보안헤더 5종 + rate limit zone — VM 라이브 확인
-- ✅ Commit 1: feat(35d664d3) / Commit 2: security(1ec77d64)
+- ✅ Component Standard Layer v1.0 — style.css + admin.css에 `.btn--text/.btn--filter/.btn--solid/.card/.card--stat/.stat-grid/.label/.badge` 구현
+- ✅ nginx 프록시 3개 — /api/+/me/+/consult/ → Flask 5000 (시스템 /etc/nginx/nginx.conf 직접 수정)
+- ✅ Ritual Module 확장 — portal_token/email, find_client_by_token(), add_visit(color_formula/public_note/next_visit_weeks/amount)
+- ✅ website/backend/app.py → core/modules 연결 + /me/<token> + /consult/<token> 라우트
+- ✅ style_matcher.py — 무드 키워드 + 길이 → 레퍼런스 이미지 최대 3개 (점수 매칭)
+- ✅ portal.html / consult.html / consult_done.html 신규 (WOOHWAHAE 미감 통일)
+- ✅ Growth Dashboard — core/admin/app.py 라우트 2개 + growth.html (지표 카드/추세 테이블/수익 입력)
+- ✅ base.html Growth 네비 링크 추가
+- ✅ VM woohwahae-backend.service 신규 생성 + 포트 5000 라이브
+- ✅ ADMIN_SECRET_KEY VM .env 추가 → cortex-admin 정상 기동
+- ✅ smoke test: /api/archive(200/JSON), /me/token(404 정상), /consult/token(404 정상)
+- ✅ 커밋: feat(4020b7be) Sprint 6 13개 파일 2389 insertions
 
 **다음**:
-- ⏳ .env에 ADMIN_SECRET_KEY 추가 (admin panel 가동 필수)
-- ⏳ 프론트엔드 빌드업 옵션 선택 (Growth Dashboard / Ritual Portal / Archive 통합)
-- ⏳ DNS A레코드 설정 후 certbot + HTTPS 활성화
+- ⏳ 첫 고객 Ritual Module 등록 → /me/{token} URL 실사용 검증
+- ⏳ /consult/{token} 카톡 전송 → 실제 폼 제출 → consult_done 확인
+- ⏳ Growth Dashboard 첫 수익 입력 (2026-02 데이터)
+- ⏳ DNS A레코드 설정 (아임웹, 사용자 직접)
 
-**업데이트 시간**: 2026-02-24T11:30:00
+**인프라 현황**:
+- port 5001: cortex-admin (Growth Dashboard `/admin/growth`)
+- port 5000: woohwahae-backend (고객포털 `/me/`, 상담폼 `/consult/`, API `/api/`)
+- nginx: 3개 프록시 + 보안헤더 + rate limit 라이브
+
+**업데이트 시간**: 2026-02-24T12:50:00

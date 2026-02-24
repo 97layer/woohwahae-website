@@ -193,16 +193,44 @@ class TelegramSecretaryV6:
 
             elif subcmd == 'add':
                 if len(args) < 2:
-                    await update.message.reply_text("사용법: /client add <이름>")
+                    await update.message.reply_text("사용법: /client add <이름> [전화번호]")
                     return
                 name = args[1]
-                client = rm.create_client(name)
+                phone = args[2] if len(args) > 2 else ""
+                client = rm.create_client(name, phone=phone)
+                base = os.getenv('SITE_BASE_URL', 'http://136.109.201.201')
+                token = client['portal_token']
                 msg = (
-                    f"✅ 고객 등록\n"
+                    f"✅ <b>{_escape_html(name)}</b> 등록완료\n"
                     f"ID: {_escape_html(client['client_id'])}\n"
-                    f"이름: {_escape_html(client['name'])}"
+                    + (f"연락처: {_escape_html(phone)}\n" if phone else "")
+                    + f"\n📋 사전상담 링크 (방문 전 전송):\n"
+                    f"{base}/consult/{token}\n"
+                    f"\n📁 시술일지 링크:\n"
+                    f"{base}/me/{token}"
                 )
-                await update.message.reply_text(msg)
+                await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
+
+            elif subcmd == 'link':
+                if len(args) < 2:
+                    await update.message.reply_text("사용법: /client link <이름>")
+                    return
+                name = args[1]
+                client = rm.find_client(name)
+                if not client:
+                    await update.message.reply_text("고객을 찾을 수 없음")
+                    return
+                base = os.getenv('SITE_BASE_URL', 'http://136.109.201.201')
+                token = client.get('portal_token', '')
+                if not token:
+                    await update.message.reply_text("portal_token 없음. 재등록 필요.")
+                    return
+                msg = (
+                    f"<b>{_escape_html(client['name'])}</b>\n"
+                    f"\n📋 사전상담:\n{base}/consult/{token}\n"
+                    f"\n📁 시술일지:\n{base}/me/{token}"
+                )
+                await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
 
             elif subcmd == 'info':
                 if len(args) < 2:

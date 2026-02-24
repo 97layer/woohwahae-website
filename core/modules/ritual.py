@@ -39,6 +39,7 @@ class RitualModule:
         hair_type: str = "",
         preference_notes: str = "",
         rhythm: str = "보통",
+        phone: str = "",
     ) -> Dict:
         """신규 고객 생성. client_id 자동 부여."""
         existing = self.list_clients()
@@ -48,6 +49,7 @@ class RitualModule:
         client = {
             "client_id": client_id,
             "name": name,
+            "phone": phone,
             "rhythm": rhythm,
             "hair_type": hair_type,
             "preference_notes": preference_notes,
@@ -98,7 +100,7 @@ class RitualModule:
             logger.warning("고객 없음: %s", client_id)
             return None
 
-        allowed = {"name", "rhythm", "hair_type", "preference_notes", "email"}
+        allowed = {"name", "phone", "rhythm", "hair_type", "preference_notes", "email"}
         for key, value in kwargs.items():
             if key in allowed:
                 client[key] = value
