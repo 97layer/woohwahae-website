@@ -363,39 +363,31 @@
             if (e.key === 'Enter') handleSend();
         });
 
-        // 3. Real-time SSE Integration (Cortex Dashboard)
+        // 3. Real-time SSE (내부 /api/stream)
         const queueStatus = document.getElementById('queue-status');
         const heartbeat = document.getElementById('system-heartbeat');
-        const signalsList = document.getElementById('signals-list');
 
         const connectSSE = () => {
-            console.log('Connecting to Cortex SSE...');
-            // Dashboard Server (Port 8000)
-            const evs = new EventSource('http://localhost:8000/api/stream');
+            const evs = new EventSource('/api/stream');
 
             evs.onmessage = (e) => {
-                const data = JSON.parse(e.data);
-                console.log('SSE Data:', data);
+                try {
+                    const data = JSON.parse(e.data);
+                    heartbeat.classList.remove('offline');
 
-                // Update Heartbeat
-                heartbeat.classList.remove('offline');
-
-                // Update Queue Status
-                if (data.queue) {
-                    queueStatus.innerText = `Queue: ${data.queue.pending} pending, ${data.queue.processing} processing`;
-                }
-
-                // Update Concepts (하단 클라우드 자동 갱신은 복잡하므로 로그만 출력하거나 부분 갱신 가능)
-                if (data.cortex && data.cortex.intelligence) {
-                    // 필요시 UI 업데이트 추가
-                }
+                    if (data.type === 'pipeline') {
+                        queueStatus.innerText = `Pipeline: ${data.count} 대기`;
+                    }
+                    if (data.type === 'service') {
+                        // 서비스 상태 표시 (선택적)
+                    }
+                } catch {}
             };
 
             evs.onerror = () => {
-                console.warn('SSE Disconnected. Retrying...');
                 heartbeat.classList.add('offline');
                 evs.close();
-                setTimeout(connectSSE, 5000);
+                setTimeout(connectSSE, 10000);
             };
         };
 

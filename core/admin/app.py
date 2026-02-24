@@ -6,8 +6,10 @@ Flask-based CMS for managing archive posts and reviewing 97layerOS pipeline outp
 import os
 import sys
 import json
+import time
 import logging
 import secrets
+import subprocess
 import functools
 from collections import defaultdict
 from datetime import datetime
@@ -15,7 +17,7 @@ from pathlib import Path
 
 from flask import (
     Flask, render_template, request, redirect, url_for,
-    session, flash, jsonify, abort
+    session, flash, jsonify, abort, Response, stream_with_context
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -47,6 +49,9 @@ UPLOAD_DIR = WEBSITE_DIR / 'assets' / 'img' / 'uploads'
 SIGNALS_DIR = BASE_DIR / 'knowledge' / 'signals'
 MEMORY_FILE = BASE_DIR / 'knowledge' / 'long_term_memory.json'
 AUDIT_LOG_FILE = BASE_DIR / 'knowledge' / 'reports' / 'audit.log'
+OFFERING_FILE = BASE_DIR / 'knowledge' / 'offering' / 'items.json'
+TELEGRAM_LOG_FILE = BASE_DIR / 'logs' / 'telegram.log'
+SYSTEMD_SERVICES = ['97layer-telegram', '97layer-ecosystem', '97layer-gardener']
 
 # ─── App ───
 app = Flask(
@@ -186,9 +191,36 @@ def logout():
 def dashboard():
     posts = _load_index()
     pipeline_count = _count_pipeline_items()
+    today = datetime.now().strftime('%Y-%m-%d')
+    period = datetime.now().strftime('%Y-%m')
+
+    due_clients = []
+    growth_snapshot = {}
+    if _MODULES_AVAILABLE:
+        try:
+            due_clients = get_ritual_module().get_due_clients()
+        except Exception as e:
+            logger.error("dashboard due_clients error: %s", e)
+        try:
+            gm = get_growth_module()
+            month_data = gm.get_month(period)
+            growth_snapshot = {
+                'period': period,
+                'total': month_data.get('atelier', 0) + month_data.get('consulting', 0) + month_data.get('products', 0),
+                'atelier': month_data.get('atelier', 0),
+                'consulting': month_data.get('consulting', 0),
+                'products': month_data.get('products', 0),
+            }
+        except Exception as e:
+            logger.error("dashboard growth_snapshot error: %s", e)
+
     return render_template('dashboard.html',
                            post_count=len(posts),
-                           pipeline_count=pipeline_count)
+                           pipeline_count=pipeline_count,
+                           due_clients=due_clients,
+                           growth_snapshot=growth_snapshot,
+                           today=today,
+                           period=period)
 
 
 # ─── Archive CRUD ───
@@ -643,6 +675,290 @@ def ritual_portal_link(client_id):
         'consult_url': '%s/consult/%s' % (SITE_BASE_URL, token),
         'token': token,
     })
+
+
+# ─── SSE 실시간 스트림 ───
+
+def _check_service_status(name: str) -> str:
+    """systemctl is-active 결과 반환. 비-VM 환경에서는 'unknown'."""
+    try:
+        result = subprocess.run(
+            ['systemctl', 'is-active', name],
+            capture_output=True, text=True, timeout=3
+        )
+        return result.stdout.strip()
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return 'unknown'
+
+
+def _current_period() -> str:
+    return datetime.now().strftime('%Y-%m')
+
+
+def _sse_event(data: dict) -> str:
+    return 'data: %s\n\n' % json.dumps(data, ensure_ascii=False)
+
+
+@app.route('/api/stream')
+@login_required
+def event_stream():
+    """SSE: 대시보드 실시간 이벤트 스트림 (30초 폴링)."""
+    @stream_with_context
+    def generate():
+        while True:
+            try:
+                # L4: 재방문 알림
+                if _MODULES_AVAILABLE:
+                    try:
+                        due = get_ritual_module().get_due_clients()
+                        yield _sse_event({'type': 'clients_due', 'count': len(due), 'clients': due[:5]})
+                    except Exception as e:
+                        logger.error("sse due_clients: %s", e)
+
+                # L3: 파이프라인
+                pipeline_count = _count_pipeline_items()
+                yield _sse_event({'type': 'pipeline', 'count': pipeline_count})
+
+                # L5: 성장
+                if _MODULES_AVAILABLE:
+                    try:
+                        month_data = get_growth_module().get_month(_current_period())
+                        total = month_data.get('atelier', 0) + month_data.get('consulting', 0) + month_data.get('products', 0)
+                        yield _sse_event({'type': 'growth', 'total': total, 'period': _current_period()})
+                    except Exception as e:
+                        logger.error("sse growth: %s", e)
+
+                # System: 서비스 상태
+                for svc in SYSTEMD_SERVICES:
+                    status = _check_service_status(svc)
+                    yield _sse_event({'type': 'service', 'name': svc, 'status': status})
+
+                yield _sse_event({'type': 'heartbeat', 'ts': int(time.time())})
+
+            except GeneratorExit:
+                break
+            except Exception as e:
+                logger.error("sse generate error: %s", e)
+
+            time.sleep(30)
+
+    return Response(
+        generate(),
+        mimetype='text/event-stream',
+        headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no', 'Connection': 'keep-alive'}
+    )
+
+
+# ─── 명령 API ───
+
+def _cmd_restart_service(params: dict) -> dict:
+    name = params.get('name', '')
+    if name not in SYSTEMD_SERVICES:
+        return {'ok': False, 'error': '허용되지 않은 서비스'}
+    try:
+        result = subprocess.run(
+            ['sudo', 'systemctl', 'restart', name],
+            capture_output=True, text=True, timeout=10
+        )
+        return {'ok': result.returncode == 0, 'output': result.stderr.strip()}
+    except subprocess.TimeoutExpired:
+        return {'ok': False, 'error': 'timeout'}
+
+
+def _cmd_trigger_gardener(params: dict) -> dict:
+    try:
+        gardener_path = BASE_DIR / 'core' / 'agents' / 'gardener.py'
+        if not gardener_path.exists():
+            return {'ok': False, 'error': 'gardener.py 없음'}
+        result = subprocess.Popen(
+            [sys.executable, str(gardener_path), '--once'],
+            cwd=str(BASE_DIR), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        return {'ok': True, 'pid': result.pid}
+    except Exception as e:
+        return {'ok': False, 'error': str(e)}
+
+
+def _cmd_inject_signal(params: dict) -> dict:
+    text = params.get('text', '').strip()
+    if not text:
+        return {'ok': False, 'error': '텍스트 없음'}
+    try:
+        signal_id = 'manual_%s' % int(time.time())
+        signal = {
+            'signal_id': signal_id,
+            'type': 'text',
+            'content': text,
+            'source': 'admin_command',
+            'created_at': datetime.now().isoformat(),
+        }
+        SIGNALS_DIR.mkdir(parents=True, exist_ok=True)
+        out_path = SIGNALS_DIR / ('%s.json' % signal_id)
+        out_path.write_text(json.dumps(signal, ensure_ascii=False, indent=2), encoding='utf-8')
+        return {'ok': True, 'signal_id': signal_id}
+    except Exception as e:
+        return {'ok': False, 'error': str(e)}
+
+
+_COMMAND_HANDLERS = {
+    'restart_service': _cmd_restart_service,
+    'trigger_gardener': _cmd_trigger_gardener,
+    'inject_signal': _cmd_inject_signal,
+}
+
+
+@app.route('/api/command', methods=['POST'])
+@login_required
+def command_api():
+    data = request.get_json(silent=True) or {}
+    action = data.get('action', '')
+    params = data.get('params', {})
+
+    if action not in _COMMAND_HANDLERS:
+        return jsonify({'ok': False, 'error': '알 수 없는 명령: %s' % action}), 400
+
+    result = _COMMAND_HANDLERS[action](params)
+    _audit('command', 'action=%s' % action)
+    return jsonify(result)
+
+
+# ─── 오퍼링 관리 ───
+
+def _load_offering_items() -> list:
+    if not OFFERING_FILE.exists():
+        return []
+    try:
+        return json.loads(OFFERING_FILE.read_text(encoding='utf-8'))
+    except (json.JSONDecodeError, IOError):
+        return []
+
+
+def _save_offering_items(items: list) -> None:
+    OFFERING_FILE.parent.mkdir(parents=True, exist_ok=True)
+    OFFERING_FILE.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding='utf-8')
+
+
+@app.route('/offering')
+@login_required
+def offering_admin():
+    items = _load_offering_items()
+    _audit('offering_view')
+    return render_template('offering.html', items=items)
+
+
+@app.route('/offering/add', methods=['POST'])
+@login_required
+def offering_add():
+    name = request.form.get('name', '').strip()
+    if not name:
+        flash('이름은 필수입니다.')
+        return redirect(url_for('offering_admin'))
+
+    items = _load_offering_items()
+    item_id = 'item_%03d' % (len(items) + 1)
+    items.append({
+        'item_id': item_id,
+        'name': name,
+        'category': request.form.get('category', 'service'),
+        'price': int(request.form.get('price', 0) or 0),
+        'active': True,
+        'description': request.form.get('description', '').strip(),
+        'url': request.form.get('url', '').strip(),
+        'created_at': datetime.now().strftime('%Y-%m-%d'),
+    })
+    _save_offering_items(items)
+    _audit('offering_add', 'name=%s' % name)
+    flash('"%s" 추가되었습니다.' % name)
+    return redirect(url_for('offering_admin'))
+
+
+@app.route('/offering/<item_id>/toggle', methods=['POST'])
+@login_required
+def offering_toggle(item_id):
+    items = _load_offering_items()
+    for item in items:
+        if item.get('item_id') == item_id:
+            item['active'] = not item.get('active', True)
+            break
+    _save_offering_items(items)
+    _audit('offering_toggle', 'item=%s' % item_id)
+    return redirect(url_for('offering_admin'))
+
+
+# ─── 도구 ───
+
+@app.route('/tools')
+@login_required
+def tools_panel():
+    clients = []
+    if _MODULES_AVAILABLE:
+        try:
+            clients = get_ritual_module().list_clients()
+        except Exception as e:
+            logger.error("tools list_clients: %s", e)
+    _audit('tools_view')
+    return render_template('tools.html', clients=clients, site_base_url=SITE_BASE_URL)
+
+
+# ─── 서비스 헬스 ───
+
+@app.route('/services')
+@login_required
+def services_panel():
+    service_status = []
+    for svc in SYSTEMD_SERVICES:
+        status = _check_service_status(svc)
+        service_status.append({'name': svc, 'status': status})
+
+    env_keys = [
+        'TELEGRAM_BOT_TOKEN', 'GEMINI_API_KEY',
+        'ANTHROPIC_API_KEY', 'ADMIN_SECRET_KEY', 'SITE_BASE_URL',
+    ]
+    env_status = []
+    for key in env_keys:
+        val = os.getenv(key)
+        env_status.append({'key': key, 'set': bool(val)})
+
+    _audit('services_view')
+    return render_template('services.html',
+                           service_status=service_status,
+                           env_status=env_status)
+
+
+# ─── 설정 ───
+
+@app.route('/settings')
+@login_required
+def settings_panel():
+    _audit('settings_view')
+    return render_template('settings.html', site_base_url=SITE_BASE_URL)
+
+
+@app.route('/settings/password', methods=['POST'])
+@login_required
+def settings_password():
+    global ADMIN_PASSWORD_HASH
+    current = request.form.get('current', '')
+    new_pw = request.form.get('new_password', '').strip()
+    confirm = request.form.get('confirm', '').strip()
+
+    if not check_password_hash(ADMIN_PASSWORD_HASH, current):
+        flash('현재 비밀번호가 올바르지 않습니다.')
+        return redirect(url_for('settings_panel'))
+
+    if len(new_pw) < 8:
+        flash('새 비밀번호는 8자 이상이어야 합니다.')
+        return redirect(url_for('settings_panel'))
+
+    if new_pw != confirm:
+        flash('새 비밀번호가 일치하지 않습니다.')
+        return redirect(url_for('settings_panel'))
+
+    # 세션 내 해시 갱신 (재시작 전까지 유효)
+    ADMIN_PASSWORD_HASH = generate_password_hash(new_pw, method='pbkdf2:sha256')
+    _audit('password_changed')
+    flash('비밀번호가 변경되었습니다. .env의 ADMIN_PASSWORD_HASH도 업데이트하세요.')
+    return redirect(url_for('settings_panel'))
 
 
 # ─── B11: 에러 핸들러 ───

@@ -15,39 +15,145 @@
 
 <body>
 
-  <nav class="admin-nav">
-    <a href="{{ url_for('dashboard') }}" class="admin-logo">WOOHWAHAE <span>Admin</span></a>
-    <div class="admin-nav-links">
-      <a href="{{ url_for('cockpit') }}" {% if request.path=='/cockpit' %}class="active" {% endif %}>Cockpit</a>
-      <a href="{{ url_for('archive_list') }}" {% if request.path.startswith('/archive') %}class="active" {% endif
-        %}>Archive</a>
-      <a href="{{ url_for('pipeline') }}" {% if request.path.startswith('/pipeline') %}class="active" {% endif
-        %}>Pipeline</a>
-      <a href="{{ url_for('ritual_dashboard') }}" {% if request.path.startswith('/ritual') %}class="active" {% endif
-        %}>Ritual</a>
-      <a href="{{ url_for('growth_dashboard') }}" {% if request.path.startswith('/growth') %}class="active" {% endif
-        %}>Growth</a>
-      <form action="{{ url_for('publish') }}" method="post" class="admin-publish-form">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="admin-publish-btn">발행</button>
-      </form>
-      <a href="{{ url_for('logout') }}" class="admin-logout">Logout</a>
-    </div>
-  </nav>
+  <div class="admin-layout">
 
-  <main class="admin-main">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="admin-flash">
-      {% for msg in messages %}
-      <p>{{ msg }}</p>
-      {% endfor %}
-    </div>
-    {% endif %}
-    {% endwith %}
+    <!-- ─── Sidebar ─── -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="sidebar-header">
+        <a href="{{ url_for('dashboard') }}" class="sidebar-logo">
+          LAYER OS
+          <span>WOOHWAHAE</span>
+        </a>
+        <button class="sidebar-close" id="sidebar-close" aria-label="닫기">✕</button>
+      </div>
 
-    {% block content %}{% endblock %}
-  </main>
+      <nav class="sidebar-nav">
+
+        <!-- THE DAILY -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">THE DAILY</div>
+          <a href="{{ url_for('dashboard') }}"
+            class="sidebar-link {% if request.path == '/' %}active{% endif %}">
+            오늘
+          </a>
+        </div>
+
+        <!-- LAYER 4 -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">LAYER 4 — SERVICE</div>
+          <a href="{{ url_for('ritual_dashboard') }}"
+            class="sidebar-link {% if request.path.startswith('/ritual') %}active{% endif %}">
+            고객
+          </a>
+        </div>
+
+        <!-- LAYER 3 -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">LAYER 3 — CONTENT</div>
+          <a href="{{ url_for('archive_list') }}"
+            class="sidebar-link {% if request.path.startswith('/archive') %}active{% endif %}">
+            아카이브
+          </a>
+          <a href="{{ url_for('pipeline') }}"
+            class="sidebar-link {% if request.path.startswith('/pipeline') %}active{% endif %}">
+            파이프라인
+          </a>
+          <a href="{{ url_for('cockpit') }}"
+            class="sidebar-link {% if request.path == '/cockpit' %}active{% endif %}">
+            두뇌
+          </a>
+        </div>
+
+        <!-- LAYER 5 -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">LAYER 5 — BUSINESS</div>
+          <a href="{{ url_for('growth_dashboard') }}"
+            class="sidebar-link {% if request.path.startswith('/growth') %}active{% endif %}">
+            성장
+          </a>
+          <a href="/offering"
+            class="sidebar-link {% if request.path.startswith('/offering') %}active{% endif %}">
+            오퍼링
+          </a>
+        </div>
+
+        <!-- SYSTEM -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">SYSTEM</div>
+          <a href="/tools"
+            class="sidebar-link {% if request.path == '/tools' %}active{% endif %}">
+            도구
+          </a>
+          <a href="/services"
+            class="sidebar-link {% if request.path == '/services' %}active{% endif %}">
+            서비스
+          </a>
+          <a href="/settings"
+            class="sidebar-link {% if request.path == '/settings' %}active{% endif %}">
+            설정
+          </a>
+        </div>
+
+      </nav>
+
+      <div class="sidebar-footer">
+        <form action="{{ url_for('publish') }}" method="post">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="sidebar-publish-btn">발행</button>
+        </form>
+        <a href="{{ url_for('logout') }}" class="sidebar-logout">Logout</a>
+      </div>
+    </aside>
+
+    <!-- ─── Overlay (mobile) ─── -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ─── Main ─── -->
+    <div class="admin-body">
+
+      <!-- Mobile header -->
+      <header class="mobile-header">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="메뉴">☰</button>
+        <span class="mobile-title">LAYER OS</span>
+      </header>
+
+      <main class="admin-main">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="admin-flash">
+          {% for msg in messages %}
+          <p>{{ msg }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+  </div>
+
+  <script>
+    // Sidebar toggle (mobile)
+    const toggle = document.getElementById('sidebar-toggle');
+    const close = document.getElementById('sidebar-close');
+    const overlay = document.getElementById('sidebar-overlay');
+    const sidebar = document.getElementById('admin-sidebar');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('visible');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('visible');
+    }
+
+    if (toggle) toggle.addEventListener('click', openSidebar);
+    if (close) close.addEventListener('click', closeSidebar);
+    if (overlay) overlay.addEventListener('click', closeSidebar);
+  </script>
 
 </body>
 

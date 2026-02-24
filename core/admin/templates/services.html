@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}서비스{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">SYSTEM</p>
+  <h1 class="admin-title">서비스</h1>
+  <p class="admin-desc">VM 서비스 상태 모니터링</p>
+</div>
+
+<!-- 서비스 카드 -->
+<div class="admin-section">
+  <p class="admin-label">Systemd Services</p>
+  <div class="svc-grid">
+    {% for svc in service_status %}
+    <div class="svc-card svc-card--{{ 'active' if svc.status == 'active' else 'inactive' if svc.status in ['inactive', 'failed'] else 'unknown' }}">
+      <p class="svc-name">{{ svc.name }}</p>
+      <p class="svc-status-text">{{ svc.status }}</p>
+      <form method="post" action="/api/command" onsubmit="return restartViaForm(this, '{{ svc.name }}')">
+        <button type="button" class="svc-restart-btn"
+                onclick="restartService('{{ svc.name }}', this)">재시작</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 환경변수 상태 -->
+<div class="admin-section">
+  <p class="admin-label">Environment Variables</p>
+  <table class="env-table">
+    <thead>
+      <tr>
+        <th>키</th>
+        <th>상태</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for env in env_status %}
+      <tr>
+        <td class="env-key">{{ env.key }}</td>
+        <td>
+          {% if env.set %}
+          <span class="env-badge env-badge--set">등록됨</span>
+          {% else %}
+          <span class="env-badge env-badge--missing">미등록</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<style>
+.svc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.svc-card {
+  border: 1px solid var(--line);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.svc-card--active { border-left: 3px solid var(--success); }
+.svc-card--inactive { border-left: 3px solid var(--danger); }
+.svc-card--unknown { border-left: 3px solid var(--line); }
+
+.svc-name {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.svc-status-text {
+  font-family: var(--font-en);
+  font-size: 0.82rem;
+  color: var(--text-sub);
+}
+
+.svc-card--active .svc-status-text { color: var(--success); }
+.svc-card--inactive .svc-status-text { color: var(--danger); }
+
+.svc-restart-btn {
+  background: none;
+  border: 1px solid var(--line);
+  font-size: 0.72rem;
+  font-family: var(--font-kr);
+  cursor: pointer;
+  padding: 0.3rem 0.8rem;
+  color: var(--text-sub);
+  margin-top: 0.5rem;
+  width: fit-content;
+}
+
+.svc-restart-btn:hover { border-color: var(--text); color: var(--text); }
+.svc-restart-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.env-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.env-table th {
+  text-align: left;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.env-table td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.env-key {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+}
+
+.env-badge {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid;
+}
+
+.env-badge--set { border-color: var(--success); color: var(--success); }
+.env-badge--missing { border-color: var(--danger); color: var(--danger); }
+
+@media (max-width: 768px) {
+  .svc-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+async function restartService(name, btn) {
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '재시작 중...';
+  try {
+    const res = await fetch('/api/command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
+      body: JSON.stringify({ action: 'restart_service', params: { name } })
+    });
+    const d = await res.json();
+    btn.textContent = d.ok ? '완료' : '실패';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+  } catch {
+    btn.textContent = '오류';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+  }
+}
+</script>
+{% endblock %}

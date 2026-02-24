@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}오퍼링{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">LAYER 5 — BUSINESS</p>
+  <h1 class="admin-title">오퍼링</h1>
+  <p class="admin-desc">서비스·오브제·디지털 상품 관리</p>
+</div>
+
+<!-- 목록 -->
+{% if items %}
+<div class="admin-section">
+  <table class="offering-table">
+    <thead>
+      <tr>
+        <th>이름</th>
+        <th>카테고리</th>
+        <th>가격</th>
+        <th>URL</th>
+        <th>상태</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr class="{% if not item.active %}row-inactive{% endif %}">
+        <td>{{ item.name }}</td>
+        <td><span class="badge">{{ item.category }}</span></td>
+        <td class="price-cell">{% if item.price %}₩{{ "{:,}".format(item.price) }}{% else %}—{% endif %}</td>
+        <td>{% if item.url %}<a href="{{ item.url }}" target="_blank" class="url-link">{{ item.url }}</a>{% else %}—{% endif %}</td>
+        <td>
+          <span class="status-dot-inline {% if item.active %}dot-active{% else %}dot-inactive{% endif %}"></span>
+          {{ '활성' if item.active else '비활성' }}
+        </td>
+        <td>
+          <form method="post" action="/offering/{{ item.item_id }}/toggle" style="display:inline;">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="tbl-btn">{{ '비활성화' if item.active else '활성화' }}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="admin-desc" style="margin-bottom:2rem;">등록된 오퍼링 없음.</p>
+{% endif %}
+
+<!-- 추가 폼 -->
+<div class="admin-section">
+  <p class="admin-label">신규 등록</p>
+  <form method="post" action="/offering/add" class="offering-form">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="form-group">
+        <label>이름 *</label>
+        <input type="text" name="name" required placeholder="Atelier Cut">
+      </div>
+      <div class="form-group">
+        <label>카테고리</label>
+        <select name="category">
+          <option value="service">service</option>
+          <option value="object">object</option>
+          <option value="digital">digital</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>가격 (원)</label>
+        <input type="number" name="price" placeholder="80000" min="0">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group form-group--wide">
+        <label>설명</label>
+        <input type="text" name="description" placeholder="간단한 설명">
+      </div>
+      <div class="form-group form-group--wide">
+        <label>링크 URL</label>
+        <input type="text" name="url" placeholder="/offering/atelier.html">
+      </div>
+    </div>
+    <button type="submit" class="admin-action-btn">추가</button>
+  </form>
+</div>
+
+<style>
+.offering-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.offering-table th {
+  text-align: left;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.offering-table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.row-inactive td { opacity: 0.4; }
+
+.badge {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+}
+
+.price-cell { font-family: var(--font-en); }
+
+.url-link {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.status-dot-inline {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.dot-active { background: var(--success); }
+.dot-inactive { background: var(--text-faint); }
+
+.tbl-btn {
+  background: none;
+  border: 1px solid var(--line);
+  font-size: 0.72rem;
+  font-family: var(--font-kr);
+  cursor: pointer;
+  padding: 0.2rem 0.6rem;
+  color: var(--text-sub);
+}
+
+.tbl-btn:hover { border-color: var(--text); color: var(--text); }
+
+.offering-form { display: flex; flex-direction: column; gap: 1rem; }
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.form-group--wide { flex: 2; }
+
+.form-group label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.form-group input,
+.form-group select {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.88rem;
+  font-family: var(--font-kr);
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus { border-color: var(--text); }
+
+@media (max-width: 768px) {
+  .form-row { flex-direction: column; }
+}
+</style>
+{% endblock %}

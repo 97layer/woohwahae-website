@@ -1,33 +1,268 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}오늘{% endblock %}
 
 {% block content %}
 <div class="admin-section">
-  <p class="admin-label">Dashboard</p>
-  <h1 class="admin-title">관리</h1>
+  <p class="admin-label">THE DAILY</p>
+  <h1 class="admin-title">{{ today }}</h1>
 </div>
 
-<div class="admin-stats">
-  <div class="admin-stat-card">
-    <p class="admin-stat-num">{{ post_count }}</p>
-    <p class="admin-stat-label">Archive Posts</p>
-    <a href="{{ url_for('archive_list') }}" class="admin-stat-link">관리 →</a>
+<!-- ─── 3-Panel Overview ─── -->
+<div class="daily-grid">
+
+  <!-- L4: 고객 -->
+  <div class="daily-card" id="card-clients">
+    <p class="daily-card-label">LAYER 4 — 고객</p>
+    <p class="daily-card-num" id="due-count">{{ due_clients|length }}</p>
+    <p class="daily-card-desc">재방문 대기</p>
+    {% if due_clients %}
+    <ul class="due-list">
+      {% for c in due_clients[:3] %}
+      <li class="due-item">
+        <span class="due-name">{{ c.name }}</span>
+        <span class="due-days">D+{{ c.days_since_visit }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <a href="{{ url_for('ritual_dashboard') }}" class="daily-card-link">고객 관리 →</a>
   </div>
-  <div class="admin-stat-card">
-    <p class="admin-stat-num">{{ pipeline_count }}</p>
-    <p class="admin-stat-label">Pipeline Items</p>
-    <a href="{{ url_for('pipeline') }}" class="admin-stat-link">검토 →</a>
+
+  <!-- L3: 콘텐츠 -->
+  <div class="daily-card" id="card-content">
+    <p class="daily-card-label">LAYER 3 — 콘텐츠</p>
+    <p class="daily-card-num" id="pipeline-count">{{ pipeline_count }}</p>
+    <p class="daily-card-desc">파이프라인 대기</p>
+    <p class="daily-card-sub">Archive {{ post_count }}편</p>
+    <a href="{{ url_for('pipeline') }}" class="daily-card-link">파이프라인 →</a>
+  </div>
+
+  <!-- L5: 비즈니스 -->
+  <div class="daily-card" id="card-growth">
+    <p class="daily-card-label">LAYER 5 — 비즈니스</p>
+    <p class="daily-card-num" id="growth-total">
+      {% if growth_snapshot.total %}
+      ₩{{ "{:,}".format(growth_snapshot.total) }}
+      {% else %}—{% endif %}
+    </p>
+    <p class="daily-card-desc">{{ period }} 매출</p>
+    <a href="{{ url_for('growth_dashboard') }}" class="daily-card-link">성장 →</a>
+  </div>
+
+</div>
+
+<!-- ─── System Status ─── -->
+<div class="admin-section" style="margin-top:2.5rem;">
+  <p class="admin-label">SYSTEM STATUS</p>
+  <div class="system-status-bar" id="system-status">
+    <span class="svc-badge svc-loading" id="svc-telegram">97layer-telegram ···</span>
+    <span class="svc-badge svc-loading" id="svc-ecosystem">97layer-ecosystem ···</span>
+    <span class="svc-badge svc-loading" id="svc-gardener">97layer-gardener ···</span>
+    <span class="svc-ts" id="svc-last-update"></span>
   </div>
 </div>
 
-<div class="admin-section" style="margin-top: 4rem;">
-  <p class="admin-label">Quick Actions</p>
-  <div class="admin-actions">
-    <a href="{{ url_for('archive_new') }}" class="admin-action-btn">새 글 작성</a>
-    <form action="{{ url_for('publish') }}" method="post" style="display:inline;">
-      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-      <button type="submit" class="admin-action-btn admin-action-btn--publish">사이트 발행</button>
-    </form>
+<!-- ─── Quick Commands ─── -->
+<div class="admin-section">
+  <p class="admin-label">QUICK COMMANDS</p>
+  <div class="cmd-bar">
+    <button class="cmd-btn" onclick="runCommand('trigger_gardener', {})">Gardener 실행</button>
+    <button class="cmd-btn" onclick="restartSvc('97layer-ecosystem')">ecosystem 재시작</button>
+    <button class="cmd-btn" onclick="restartSvc('97layer-telegram')">telegram 재시작</button>
+    <a href="{{ url_for('archive_new') }}" class="cmd-btn cmd-btn--link">새 글 작성</a>
   </div>
 </div>
+
+<style>
+.daily-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.daily-card {
+  border: 1px solid var(--line);
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.daily-card-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.5rem;
+}
+
+.daily-card-num {
+  font-family: var(--font-en);
+  font-size: 2.2rem;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.daily-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  margin-top: 0.2rem;
+}
+
+.daily-card-sub {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.daily-card-link {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--text-sub);
+  border-top: 1px solid var(--line);
+}
+
+.daily-card-link:hover { color: var(--text); }
+
+.due-list {
+  list-style: none;
+  margin: 0.5rem 0;
+}
+
+.due-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  padding: 0.2rem 0;
+  color: var(--text-sub);
+}
+
+.due-days {
+  font-family: var(--font-en);
+  color: var(--danger);
+  font-size: 0.72rem;
+}
+
+/* System Status */
+.system-status-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.svc-badge {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--line);
+}
+
+.svc-loading { color: var(--text-faint); }
+.svc-active { border-color: var(--success); color: var(--success); }
+.svc-inactive { border-color: var(--danger); color: var(--danger); }
+.svc-unknown { color: var(--text-faint); }
+
+.svc-ts {
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  margin-left: auto;
+}
+
+/* Commands */
+.cmd-bar {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.cmd-btn {
+  background: none;
+  border: 1px solid var(--line);
+  padding: 0.45rem 1rem;
+  font-size: 0.78rem;
+  font-family: var(--font-kr);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  color: var(--text-sub);
+  transition: border-color 0.2s, color 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cmd-btn:hover { border-color: var(--text); color: var(--text); }
+
+@media (max-width: 768px) {
+  .daily-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+// SSE 실시간 업데이트
+const es = new EventSource('/api/stream');
+
+es.onmessage = (e) => {
+  try {
+    const data = JSON.parse(e.data);
+    handleSSE(data);
+  } catch {}
+};
+
+es.onerror = () => {
+  document.getElementById('svc-last-update').textContent = '연결 끊김';
+};
+
+function handleSSE(data) {
+  if (data.type === 'clients_due') {
+    document.getElementById('due-count').textContent = data.count;
+  }
+  if (data.type === 'pipeline') {
+    document.getElementById('pipeline-count').textContent = data.count;
+  }
+  if (data.type === 'growth') {
+    if (data.total) {
+      document.getElementById('growth-total').textContent = '₩' + data.total.toLocaleString();
+    }
+  }
+  if (data.type === 'service') {
+    const el = document.getElementById('svc-' + data.name.replace('97layer-', ''));
+    if (el) {
+      el.textContent = data.name + ' ' + data.status;
+      el.className = 'svc-badge svc-' + (data.status === 'active' ? 'active' : data.status === 'unknown' ? 'unknown' : 'inactive');
+    }
+  }
+  if (data.type === 'heartbeat') {
+    const d = new Date(data.ts * 1000);
+    document.getElementById('svc-last-update').textContent = '갱신 ' + d.toLocaleTimeString('ko-KR');
+  }
+}
+
+async function runCommand(action, params) {
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '실행 중...';
+  try {
+    const res = await fetch('/api/command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
+      body: JSON.stringify({ action, params })
+    });
+    const d = await res.json();
+    btn.textContent = d.ok ? '완료' : '실패';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+  } catch {
+    btn.textContent = '오류';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+  }
+}
+
+function restartSvc(name) {
+  runCommand('restart_service', { name });
+}
+</script>
 {% endblock %}
