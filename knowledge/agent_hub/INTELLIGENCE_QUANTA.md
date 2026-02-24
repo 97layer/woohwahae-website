@@ -93,32 +93,43 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 19:10] Brand OS A-Z v2 완료 — claude-sonnet
+### [2026-02-24 21:18] Auto-Update — auto-session
 
-**완료한 작업**:
-- ✅ `directives/brand/philosophy.md` 신규 생성 — 동아시아 수행 문화, 3원칙(본질주의/공명/자기돌봄), 내부 포지셔닝 선언, "인문학적 사유와 아틀리에" 폐기 선언
-- ✅ `directives/IDENTITY.md` — 내부 포지셔닝 + Archetype + Why(W)/Zero Point(Z) 추가
-- ✅ `directives/brand/foundation.md` — 5 Pillars "품질 게이트" 라벨 명시, 문서 계층 11개로 갱신
-- ✅ `directives/brand/audience.md` — 동아시아 감수성 공명 맵 신규 섹션 추가
-- ✅ `directives/brand/experience_map.md` — about 섹션 동아시아 내러티브 구조 명시
-- ✅ `directives/brand/roadmap.md` — 포지셔닝 궤적 + 2027 동아시아 확장 추가
-- ✅ `directives/brand/voice_tone.md` — §8 이중 모드 웹 카피 (짜임새 C1-C6 / 담백 P1-P6) 신규 추가
-- ✅ `directives/brand/README.md` — philosophy.md #0으로 인덱스 + 사용법 갱신
-- ✅ `directives/brand/BRAND_MANUAL.md` — §1C 3원칙 vs 5 Pillars 구분 신규 추가, Ch1 소스맵 갱신
-- ✅ `website/about.html` — 동아시아 수행 단락 추가(7→8단락), 파동/주파수→리듬/의식 교체, 메타 업데이트
-- ✅ `website/assets/css/style.css` — manifesto nth-child(6)→(7) 업데이트
-- ✅ VM 배포 완료 (directives 9개 + website 2개)
+**이번 세션 커밋**:
+- ✅ feat: 파일시스템 자가진화 하네스 구축
 
-**핵심 변경 정리**:
-- 3원칙(나침반) ≠ 5 Pillars(품질 게이트) — 역할 명확히 분리됨
-- "인문학적 사유와 아틀리에" → 금지 표현 선언
-- 금지 언어: 파동/주파수 → 리듬/의식/호흡으로 전환
-- 이중 모드 웹 카피 기준 확립 (짜임새/담백)
+**미커밋 변경**:
+- ⚠️  .claude/hooks/code-quality-check.sh
+- ⚠️  .claude/hooks/validate-path.sh
+- ⚠️  .gitignore
+- ⚠️  core/agents/brand_scout.py
+- ⚠️  core/agents/cd_agent.py
+- ⚠️  core/bridges/notebooklm_bridge.py
+- ⚠️  core/daemons/dashboard_server.py
+- ⚠️  core/daemons/nightguard_v2.py
+- ⚠️  core/daemons/telegram_secretary.py
+- ⚠️  core/system/auto_reporter.py
+- ⚠️  core/system/content_publisher.py
+- ⚠️  core/system/conversation_engine.py
+- ⚠️  core/system/corpus_manager.py
+- ⚠️  core/system/cortex_edge.py
+- ⚠️  core/system/gemini_engine.py
+- ⚠️  core/system/intent_classifier.py
+- ⚠️  core/system/knowledge_rag.py
+- ⚠️  core/system/pipeline_orchestrator.py
+- ⚠️  core/system/signal_processor.py
+- ⚠️  core/system/youtube_analyzer.py
+- ⚠️  core/utils/instagram_crawler.py
+- ⚠️  core/utils/parsers/command_parser.py
+- ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+- ⚠️  knowledge/system/guard_rules.json
+- ⚠️  knowledge/system/session_start.txt
+- ⚠️  knowledge/system/token_usage_log.jsonl
+- ⚠️  website/about.html
+- ⚠️  core/agents/code_agent.py
+- ⚠️  core/system/propose_gate.py
+- ⚠️  knowledge/docs/archive/2026/02_february/reports_cleanup/
+- ⚠️  knowledge/docs/archive/quarantine/
+- ⚠️  knowledge/docs/deployment/97layer-code-agent.service
 
-**다음 단계**:
-- ⏳ git 커밋 (Brand OS A-Z v2 전체)
-- ⏳ Growth Dashboard 2월 수익 입력 (`/admin/growth`)
-- ⏳ 재방문 알림 자동화 (Gardener `get_due_clients()` → 텔레그램)
-- ⏳ 첫 고객 Ritual Module 실사용 검증
-
-**업데이트 시간**: 2026-02-24T19:10:00
+**업데이트 시간**: 2026-02-24T21:18:39.151843
