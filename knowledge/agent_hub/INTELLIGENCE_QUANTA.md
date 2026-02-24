@@ -102,52 +102,16 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 17:06] Auto-Update — auto-session
+### [2026-02-24 17:21] Auto-Update — auto-session
 
 **이번 세션 커밋**:
-- ✅ feat: QUANTA 개념 사고 수준 초안 — 판단 기준, 의사결정 패턴, 시스템 철학
-- ✅ refactor: shop·objects 브랜드 보이스 정리 — Coming Soon 제거, 반복 카피 축약, objects nav Lab 추가
-- ✅ feat: 스킬 강제 매핑 — CLAUDE.md + QUANTA 트리거 테이블 추가
-- ✅ feat: /deploy 스킬 + 커맨드 추가 — 전체/서비스/파일 타겟 배포
-- ✅ fix: AgentWatcher 시작 시 stale processing 태스크 자동 회수 (30분 임계값)
-- ✅ refactor: QUANTA 구조 최적화 — 178줄 → 65줄, 완료 이력 분리
-- ✅ refactor: 훅 최적화 — 중복 JSON 파싱 통합, QUANTA 체크 제거, compact-reminder 삭제
-- ✅ fix: CE published 상태 체크 수정 + telegram_sent 추적
-- ✅ feat: 세션 연속성 고도화 — QUANTA 자동갱신 + 선택 로드 + 토큰 추적
-- ✅ fix: ecosystem 좀비 프로세스 제거 — trap 핸들러 + 서비스 스크립트 전환
-- ✅ fix: orchestrator 이중 로그 제거 — FileHandler 삭제 (StreamHandler 단일화)
-- ✅ chore: 전수 조사 기반 파일시스템 구조 정리
-- ✅ refactor: start_*.sh + sync*.sh 루트 → scripts/ 이동 (루트 체계화)
-- ✅ fix: Gemini가 삭제한 tools.html + /tools 라우트 + 사이드바 링크 복원
-- ✅ chore: Gemini 잔재 plan_dispatcher.py 삭제 (미사용, 문법 오류)
-- ✅ fix: copyright year 2026 → 2024 복원
-- ✅ style: 웹사이트 일관성 패치 — 모바일 nav slide-out, footer 통일, CSS 버전 bump
-- ✅ fix: gardener 트리거 플래그 --once → --run-now 수정
-- ✅ feat: Admin 지휘소 통합 — 사이드바 + SSE 실시간 + 4개 신규 패널
-- ✅ feat: Admin Ritual 패널 신설 — 고객 관리 웹 UI
-- ✅ feat: /client add 링크 자동 출력 + phone 필드 + /client link 커맨드
-- ✅ feat: Sprint 6 — woohwahae.kr 슈퍼앱 통합 구조 구축
-- ✅ chore: QUANTA v7.3 갱신 — Sprint 4+5 완료 상태 반영
-- ✅ security: CSRF+SSRF+AuthZ+Cookie+Headers+AuditLog+RateLimit 전면 적용
-- ✅ feat: Ritual/Growth Telegram 연동 + Gardener 자동 집계
-- ✅ feat: 미추적 신규 파일 5개 추적 시작
-- ✅ feat: Ritual Module (L4) + Growth Module (L5) + VM 배포 + 레거시 마이그레이션
-- ✅ feat: Claude Code 인프라 강화 — 보안 hooks + 세션 라이프사이클 + 품질 게이트
+- ✅ fix: nginx.conf — auth_basic 복원 + 프록시/라우팅 정비
+- ✅ fix: nginx auth_basic 제거 + 프록시 연결 + 사이트 정상화
 
 **미커밋 변경**:
+- ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+- ⚠️  knowledge/system/filesystem_cache.json
 - ⚠️  knowledge/system/token_usage_log.jsonl
-- ⚠️  website/DEPLOYMENT.md
-- ⚠️  website/FINAL_VALIDATION.md
-- ⚠️  website/LAUNCH_CHECKLIST.md
-- ⚠️  website/OFFERING_MONETIZATION_GUIDE.md
-- ⚠️  website/STRUCTURE.md
-- ⚠️  website/assets/css/style.css
-- ⚠️  website/index.html
-- ⚠️  knowledge/docs/archive/FINAL_VALIDATION.md
-- ⚠️  knowledge/docs/archive/LAUNCH_CHECKLIST.md
-- ⚠️  knowledge/docs/archive/legacy_signals/
-- ⚠️  knowledge/docs/deployment/DEPLOYMENT.md
-- ⚠️  knowledge/docs/system/OFFERING_MONETIZATION_GUIDE.md
-- ⚠️  knowledge/docs/system/WEBSITE_STRUCTURE.md
+- ⚠️  knowledge/system/session_start.txt
 
-**업데이트 시간**: 2026-02-24T17:06:28.210950
+**업데이트 시간**: 2026-02-24T17:21:40.421715
