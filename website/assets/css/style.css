@@ -4875,8 +4875,16 @@ body.home-radical::after {
 
 /* Mobile */
 @media (max-width: 640px) {
+  /* 모바일: 캔버스 opacity 낮춰 텍스트 가독성 확보 */
+  .field-bg-canvas {
+    opacity: 0.48;
+  }
+
   .fb {
-    padding: calc(60px + var(--space-lg)) var(--space-sm) var(--space-lg);
+    /* iOS Safari 주소창 포함 오버플로 방지 — dvh 사용 */
+    height: 100dvh;
+    /* 좌우 여백 1rem으로 확대 (0.5rem → 1rem) */
+    padding: calc(60px + var(--space-lg)) 1rem var(--space-lg);
   }
 
   .fb--brand {
@@ -4904,8 +4912,26 @@ body.home-radical::after {
     text-align: left;
   }
 
+  /* 모바일: 링크 수직 배열 + 터치 타겟 확보 */
   .fb--nav {
-    gap: var(--space-lg);
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .fb--nav a {
+    font-size: 0.85rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+    width: 100%;
+    letter-spacing: var(--ls-label);
+  }
+
+  .fb--nav a:last-child {
+    border-bottom: none;
   }
 
   .fb-word {

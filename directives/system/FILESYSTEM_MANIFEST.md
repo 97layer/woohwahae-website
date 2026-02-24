@@ -2,7 +2,7 @@
 
 > **Authority**: 모든 에이전트(Claude/Gemini/GPT)는 파일 생성 전 이 문서를 반드시 참조한다.
 > **갱신 정책**: 구조 변경 시에만 수정. 덮어쓰기.
-> **마지막 갱신**: 2026-02-24
+> **마지막 갱신**: 2026-02-24 (archive/ 삭제, core/system/ 분류 명시, website/ 정책 갱신)
 
 ---
 
@@ -23,12 +23,23 @@
 
 | 경로 | 용도 |
 |------|------|
-| `core/agents/` | 에이전트 코드. 1 에이전트 = 1 파일 |
+| `core/agents/` | 에이전트 코드. 1 에이전트 = 1 파일. **새 에이전트 = 여기** |
 | `core/modules/` | 레이어별 모듈 (L4 Ritual, L5 Growth) |
-| `core/system/` | 파이프라인, 큐, 유틸리티 |
-| `core/daemons/` | 상주 프로세스 (텔레그램, 감시자) |
-| `core/bridges/` | 외부 API 연동 (NotebookLM 등) |
-| `core/admin/` | 웹 대시보드 |
+| `core/system/` | 파이프라인, 큐, AI엔진, 유틸리티. **아래 카테고리 참조** |
+| `core/daemons/` | 상주 프로세스 (24/7 실행). **새 데몬 = 여기** |
+| `core/bridges/` | 외부 API 연동 (NotebookLM, GDrive 등) |
+| `core/admin/` | 웹 대시보드 (Flask) |
+
+#### core/system/ 카테고리 가이드 (파일 추가 시 참고)
+
+| 카테고리 | 해당 파일 예시 | 새 파일 기준 |
+|---------|--------------|-------------|
+| 파이프라인 | pipeline_orchestrator, queue_manager, signal_router, handoff | 신호→에세이 흐름 관련 |
+| AI 엔진 | gemini_engine, knowledge_rag, intent_classifier, conversation_engine | LLM 호출/RAG 관련 |
+| 크롤러 | scout_crawler, youtube_analyzer, image_analyzer | 외부 데이터 수집 |
+| 모니터링 | agent_logger, agent_watcher, heartbeat, token_tracker | 상태 감시/로깅 |
+| 퍼블리셔 | content_publisher, auto_reporter | 콘텐츠 최종 발행 |
+| 관리도구 | env_validator, directive_editor, corpus_manager | 시스템 관리 유틸 |
 
 ### knowledge/ — 지식 (데이터, 기록, 상태)
 
@@ -49,14 +60,17 @@
 | `knowledge/reports/growth/` | 월별 성장 지표 JSON (Growth Module) |
 | `knowledge/long_term_memory.json` | 장기 기억 |
 
-### website/ — 웹사이트 (정적 HTML/CSS/JS)
+### website/ — 웹사이트 (정적 HTML/CSS/JS만)
 
 | 경로 | 용도 |
 |------|------|
+| `website/` 루트 | 주요 공개 페이지 (index, about, contact 등) + 리다이렉터 |
 | `website/archive/` | 발행된 에세이 (issue-NNN-slug/) |
-| `website/offering/` | 서비스 페이지 |
+| `website/offering/` | 서비스 상세 페이지. **새 서비스 페이지 = 여기** |
 | `website/lab/` | 실험/프로토타입 (본 사이트 미포함) |
 | `website/assets/` | CSS, JS, 이미지 |
+
+**❌ website/ 내 .md 파일 생성 금지** → `knowledge/docs/`에 넣을 것
 
 ### scripts/ — 자동화 스크립트
 
@@ -72,11 +86,10 @@
 |------|------|
 | `skills/<skill_name>/SKILL.md` | 스킬별 매뉴얼 |
 
-### archive/ — 과거 코드 백업
+### knowledge/signals/ — 신호 형식 규칙
 
-| 경로 | 용도 |
-|------|------|
-| `archive/` | 레거시 코드 보관. 실행 대상 아님 |
+**허용**: `*.json` (명명규칙: `{type}_{YYYYMMDD}_{HHMMSS}.json`)
+**금지**: `*.md` 형식 신호 파일 (구버전 형식. `knowledge/docs/archive/legacy_signals/`에 보관)
 
 ---
 

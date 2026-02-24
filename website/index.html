@@ -17,8 +17,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
   <link rel="icon" href="assets/img/symbol.png" type="image/svg+xml">
-  <link rel="preload" href="assets/css/style.css?v=home_v3" as="style">
-  <link rel="stylesheet" href="assets/css/style.css?v=home_v3">
+  <link rel="preload" href="assets/css/style.css?v=home_v4" as="style">
+  <link rel="stylesheet" href="assets/css/style.css?v=home_v4">
   <script src="assets/js/analytics.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
@@ -118,13 +118,22 @@
       var canvas = document.getElementById('field-bg');
       if (!canvas || typeof THREE === 'undefined') return;
 
+      /* ── prefers-reduced-motion: 접근성 — 애니메이션 비활성화 ── */
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+      }
+
+      /* ── 모바일 감지 — 렌더 품질 조절 ── */
+      var isMobile = window.innerWidth < 768;
+
       /* ── Renderer ── */
       var renderer = new THREE.WebGLRenderer({
         canvas: canvas,
         alpha: true,
-        antialias: true
+        antialias: !isMobile  /* 모바일: antialias 비활성화로 GPU 부하 감소 */
       });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
       renderer.setClearColor(0x000000, 0);
 
       /* ── Scene & Camera ── */
@@ -143,10 +152,10 @@
         mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
       });
 
-      /* ── 쌍극자 필드라인 파라미터 — 밀도 강화 ── */
-      var LINE_COUNT = 24;    /* φ 슬라이스 수 — 돌의 복잡한 결 (18 → 24) */
-      var SEEDS      = 10;    /* r0 씨앗 수 */
-      var POINTS_PER = 220;
+      /* ── 쌍극자 필드라인 파라미터 — 모바일/데스크탑 분기 ── */
+      var LINE_COUNT = isMobile ? 12 : 24;   /* 모바일: φ 슬라이스 절반 */
+      var SEEDS      = isMobile ? 5  : 10;   /* 모바일: 씨앗 수 절반 */
+      var POINTS_PER = isMobile ? 110 : 220; /* 모바일: 포인트 수 절반 */
       var MAX_R      = 15.0;
       var SCALE      = 2.8;   /* 지질학적 안착감 (3.2 → 2.8) */
 

@@ -102,9 +102,10 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 17:05] Auto-Update — auto-session
+### [2026-02-24 17:06] Auto-Update — auto-session
 
 **이번 세션 커밋**:
+- ✅ feat: QUANTA 개념 사고 수준 초안 — 판단 기준, 의사결정 패턴, 시스템 철학
 - ✅ refactor: shop·objects 브랜드 보이스 정리 — Coming Soon 제거, 반복 카피 축약, objects nav Lab 추가
 - ✅ feat: 스킬 강제 매핑 — CLAUDE.md + QUANTA 트리거 테이블 추가
 - ✅ feat: /deploy 스킬 + 커맨드 추가 — 전체/서비스/파일 타겟 배포
@@ -134,9 +135,19 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 - ✅ feat: Claude Code 인프라 강화 — 보안 hooks + 세션 라이프사이클 + 품질 게이트
 
 **미커밋 변경**:
-- ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
 - ⚠️  knowledge/system/token_usage_log.jsonl
+- ⚠️  website/DEPLOYMENT.md
+- ⚠️  website/FINAL_VALIDATION.md
+- ⚠️  website/LAUNCH_CHECKLIST.md
+- ⚠️  website/OFFERING_MONETIZATION_GUIDE.md
+- ⚠️  website/STRUCTURE.md
 - ⚠️  website/assets/css/style.css
 - ⚠️  website/index.html
+- ⚠️  knowledge/docs/archive/FINAL_VALIDATION.md
+- ⚠️  knowledge/docs/archive/LAUNCH_CHECKLIST.md
+- ⚠️  knowledge/docs/archive/legacy_signals/
+- ⚠️  knowledge/docs/deployment/DEPLOYMENT.md
+- ⚠️  knowledge/docs/system/OFFERING_MONETIZATION_GUIDE.md
+- ⚠️  knowledge/docs/system/WEBSITE_STRUCTURE.md
 
-**업데이트 시간**: 2026-02-24T17:05:25.357603
+**업데이트 시간**: 2026-02-24T17:06:28.210950
