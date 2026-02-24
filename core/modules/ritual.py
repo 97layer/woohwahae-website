@@ -14,6 +14,7 @@ Ritual Module — L4 Service Layer
 
 import json
 import logging
+import secrets
 from datetime import datetime, date
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -50,6 +51,8 @@ class RitualModule:
             "rhythm": rhythm,
             "hair_type": hair_type,
             "preference_notes": preference_notes,
+            "email": "",
+            "portal_token": secrets.token_hex(16),
             "visits": [],
             "last_visit": None,
             "created_at": datetime.now().isoformat(),
@@ -95,7 +98,7 @@ class RitualModule:
             logger.warning("고객 없음: %s", client_id)
             return None
 
-        allowed = {"name", "rhythm", "hair_type", "preference_notes"}
+        allowed = {"name", "rhythm", "hair_type", "preference_notes", "email"}
         for key, value in kwargs.items():
             if key in allowed:
                 client[key] = value
@@ -106,6 +109,13 @@ class RitualModule:
 
     # ─── 방문 기록 ────────────────────────────────────────────
 
+    def find_client_by_token(self, token: str) -> Optional[Dict]:
+        """portal_token으로 고객 조회."""
+        for client in self.list_clients():
+            if client.get("portal_token") == token:
+                return client
+        return None
+
     def add_visit(
         self,
         client_id: str,
@@ -113,6 +123,10 @@ class RitualModule:
         notes: str = "",
         satisfaction: Optional[int] = None,
         visit_date: Optional[str] = None,
+        color_formula: str = "",
+        public_note: str = "",
+        next_visit_weeks: int = 0,
+        amount: int = 0,
     ) -> Optional[Dict]:
         """방문 기록 추가."""
         client = self.get_client(client_id)
@@ -126,6 +140,10 @@ class RitualModule:
             "date": today,
             "service": service,
             "notes": notes,
+            "color_formula": color_formula,
+            "public_note": public_note,
+            "next_visit_weeks": next_visit_weeks,
+            "amount": amount,
         }
         if satisfaction is not None:
             visit["satisfaction"] = max(1, min(5, satisfaction))

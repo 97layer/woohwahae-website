@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ client.name }}님의 시술 기록 — WOOHWAHAE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FAF9F6;
+      --text: #1A1A1A;
+      --text-sub: #6B6B6B;
+      --text-faint: #AEAEA8;
+      --line: #E4E3DC;
+      --accent: #1B2D4F;
+      --font: 'Noto Serif KR', serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .portal-header {
+      padding: 48px 24px 32px;
+      border-bottom: 1px solid var(--line);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .portal-brand {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .portal-name {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .portal-name span {
+      color: var(--text-sub);
+      font-size: 16px;
+    }
+
+    .portal-meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .portal-meta-item strong {
+      display: block;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    /* Hair info */
+    .portal-hair {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 24px 24px 0;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-sub);
+      background: var(--line);
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    /* Timeline */
+    .timeline {
+      max-width: 560px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+    }
+
+    .timeline-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .visit-item {
+      padding: 20px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .visit-item:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .visit-date {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      margin-bottom: 6px;
+    }
+
+    .visit-service {
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .visit-note {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.7;
+    }
+
+    .visit-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .visit-next {
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .visit-amount {
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-faint);
+      font-size: 14px;
+    }
+
+    /* Footer */
+    .portal-footer {
+      max-width: 560px;
+      margin: 48px auto 0;
+      padding: 24px 24px 64px;
+      border-top: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .portal-footer p {
+      font-size: 12px;
+      color: var(--text-faint);
+      line-height: 1.8;
+    }
+
+    .portal-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      display: inline-block;
+      margin-top: 16px;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="portal-header">
+    <p class="portal-brand">WOOHWAHAE · 시술 기록</p>
+    <h1 class="portal-name">
+      {{ client.name }}<span>님</span>
+    </h1>
+    <div class="portal-meta">
+      <div class="portal-meta-item">
+        <strong>{{ visits | length }}</strong>
+        방문
+      </div>
+      <div class="portal-meta-item">
+        <strong>{{ "{:,}".format(total_paid) }}</strong>
+        누적 (원)
+      </div>
+      {% if client.last_visit %}
+      <div class="portal-meta-item">
+        <strong>{{ client.last_visit }}</strong>
+        마지막 방문
+      </div>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if client.hair_type or client.rhythm %}
+  <section class="portal-hair">
+    <div class="tag-row">
+      {% if client.hair_type %}
+        <span class="tag">{{ client.hair_type }}</span>
+      {% endif %}
+      {% if client.rhythm %}
+        <span class="tag">{{ client.rhythm }} 리듬</span>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="timeline">
+    <p class="timeline-label">방문 이력</p>
+
+    {% if visits %}
+      {% for visit in visits %}
+      <div class="visit-item">
+        <p class="visit-date">{{ visit.date }}</p>
+        <p class="visit-service">{{ visit.service }}</p>
+        {% if visit.public_note %}
+          <p class="visit-note">{{ visit.public_note }}</p>
+        {% endif %}
+        <div class="visit-footer">
+          {% if visit.next_visit_weeks and visit.next_visit_weeks > 0 %}
+            <span class="visit-next">다음 방문 권장 {{ visit.next_visit_weeks }}주 후</span>
+          {% else %}
+            <span></span>
+          {% endif %}
+          {% if visit.amount and visit.amount > 0 %}
+            <span class="visit-amount">{{ "{:,}".format(visit.amount) }}원</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">아직 기록된 방문이 없습니다.</div>
+    {% endif %}
+  </section>
+
+  <footer class="portal-footer">
+    <p>WOOHWAHAE<br>울산 삼산동 · 예약제 운영</p>
+    <a href="https://booking.naver.com/booking/13/bizes/1171799" target="_blank" rel="noopener">
+      예약하기 →
+    </a>
+  </footer>
+
+</body>
+</html>

@@ -4,18 +4,56 @@
    ============================================= */
 
 :root {
+  /* ── Admin-specific colors (lighter, management feel) ── */
   --bg: #FAFAF7;
   --bg-dark: #F2F1EC;
   --text: #1A1A1A;
   --text-sub: #6B6B6B;
   --text-faint: #AEAEA8;
   --line: #E4E3DC;
-  --accent: #1B2D4F;
+  --white: #FFFFFF;
+  --navy: #1B2D4F;
+  --accent: #1B2D4F;      /* alias for --navy */
   --danger: #8B3A3A;
   --success: #3A6B4A;
+
+  /* ── Admin-specific fonts ── */
   --font-kr: 'Noto Serif KR', 'Georgia', serif;
   --font-en: 'Crimson Text', 'Georgia', serif;
-  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* ── Shared with main CSS (Component Standard Layer 호환) ── */
+  --font-body: 'Noto Serif KR', 'Georgia', serif;
+  --font-mono: 'IBM Plex Mono', 'DM Mono', 'Menlo', monospace;
+  --font-serif: 'Crimson Text', 'Georgia', serif;
+
+  /* Letter-spacing (main CSS와 동일) */
+  --ls-label: 0.10em;
+  --ls-wide: 0.16em;
+  --ls-heading: -0.03em;
+  --ls-tight: -0.01em;
+
+  /* Font-weight */
+  --fw-thin: 200;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+
+  /* Spacing (main CSS와 동일) */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 8rem;
+  --space-2xl: 12rem;
+
+  /* Max widths */
+  --max-content: 680px;
+  --max-wide: 960px;
+
+  /* Transitions (main CSS ease-out expo 일치) */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration: 0.6s;
+  --duration-slow: 1.2s;
 }
 
 *,
@@ -598,5 +636,238 @@ a {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+}
+
+
+/* =============================================
+   COMPONENT STANDARD LAYER — Admin 적용
+   website/assets/css/style.css와 동일 구조.
+   admin.css의 CSS 변수로 렌더링됨.
+   ============================================= */
+
+/* ─── Typography ─── */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ─── Buttons ─── */
+.btn--text {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.btn--text:hover { color: var(--text); border-color: var(--text); }
+
+.btn--filter {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 0;
+  transition: color 0.3s ease;
+}
+.btn--filter:hover { color: var(--text-sub); }
+.btn--filter.active { color: var(--text); }
+
+.btn--solid {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--navy);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+.btn--solid:hover { opacity: 0.8; }
+
+/* ─── Cards ─── */
+.card {
+  padding: var(--space-md);
+  border: 1px solid var(--line);
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+.card--stat {
+  padding: 1.5rem 2rem;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+.card--stat .card-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.5rem;
+}
+.card--stat .card-value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: var(--fw-thin);
+  color: var(--text);
+  letter-spacing: var(--ls-heading);
+  line-height: 1;
+}
+.card--stat .card-sub {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  margin-top: 0.5rem;
+}
+
+/* ─── Stat Grid ─── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.stat-grid > * { background: var(--white); }
+
+/* ─── Badge ─── */
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.60rem;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+}
+.badge--active { color: var(--success); }
+.badge--warn   { color: #8B6A1B; }
+.badge--muted  { color: var(--text-faint); }
+
+/* ─── Empty State ─── */
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: var(--ls-label);
+}
+
+/* ─── Growth Dashboard ─── */
+.growth-period-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.growth-trend-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+.growth-trend-table th,
+.growth-trend-table td {
+  padding: 0.75rem 1rem;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-sub);
+}
+.growth-trend-table th {
+  color: var(--text-faint);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  font-size: 0.60rem;
+}
+.growth-trend-table td:first-child,
+.growth-trend-table th:first-child {
+  text-align: left;
+}
+.growth-trend-table tr:last-child td { border-bottom: none; }
+
+.growth-revenue-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  align-items: end;
+  margin-top: 1.5rem;
+}
+.growth-revenue-form > * { background: var(--white); padding: 1rem 1.5rem; }
+
+.growth-revenue-field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.60rem;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.5rem;
+}
+.growth-revenue-field input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: var(--fw-light);
+  color: var(--text);
+  padding: 0.25rem 0;
+  outline: none;
+}
+.growth-revenue-field input:focus { border-color: var(--navy); }
+
+.growth-section {
+  margin-bottom: 3rem;
+}
+.growth-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 768px) {
+  .growth-revenue-form {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

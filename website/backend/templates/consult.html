@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사전 상담 — WOOHWAHAE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FAF9F6;
+      --text: #1A1A1A;
+      --text-sub: #6B6B6B;
+      --text-faint: #AEAEA8;
+      --line: #E4E3DC;
+      --accent: #1B2D4F;
+      --font: 'Noto Serif KR', serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    .consult-header {
+      padding: 48px 24px 32px;
+      border-bottom: 1px solid var(--line);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .consult-brand {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .consult-title {
+      font-size: 26px;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .consult-desc {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.8;
+    }
+
+    /* Form */
+    form {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    .form-section {
+      margin-bottom: 36px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* Radio / Checkbox grid */
+    .option-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .option-grid input[type="radio"],
+    .option-grid input[type="checkbox"] {
+      display: none;
+    }
+
+    .option-grid label {
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: var(--text-sub);
+      border: 1px solid var(--line);
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .option-grid input:checked + label {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* Textarea */
+    textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text);
+      padding: 12px 0;
+      resize: none;
+      outline: none;
+      line-height: 1.8;
+      min-height: 80px;
+    }
+
+    textarea::placeholder { color: var(--text-faint); }
+
+    /* Photo upload */
+    .upload-area {
+      border: 1px dashed var(--line);
+      padding: 32px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .upload-area:hover { border-color: var(--accent); }
+
+    .upload-area p {
+      font-size: 13px;
+      color: var(--text-faint);
+      line-height: 1.8;
+    }
+
+    .upload-area input[type="file"] {
+      display: none;
+    }
+
+    .upload-preview {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .upload-preview img {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+    }
+
+    /* Duration select */
+    select {
+      appearance: none;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text);
+      padding: 12px 24px 12px 0;
+      outline: none;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-family: var(--font);
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      padding: 18px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: opacity 0.15s;
+    }
+
+    .submit-btn:hover { opacity: 0.85; }
+
+    .form-note {
+      font-size: 11px;
+      color: var(--text-faint);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="consult-header">
+    <p class="consult-brand">WOOHWAHAE · 사전 상담</p>
+    <h1 class="consult-title">{{ client.name }}님,<br>방문 전 알려주세요.</h1>
+    <p class="consult-desc">
+      입력해주신 내용을 바탕으로<br>
+      이번 시술 방향을 미리 준비하겠습니다.
+    </p>
+  </header>
+
+  <form method="post" enctype="multipart/form-data">
+
+    <!-- 원하는 길이 -->
+    <div class="form-section">
+      <label class="form-label">원하는 길이</label>
+      <div class="option-grid">
+        <input type="radio" name="length_pref" id="len_short" value="숏">
+        <label for="len_short">숏</label>
+
+        <input type="radio" name="length_pref" id="len_mid" value="미디엄" checked>
+        <label for="len_mid">미디엄</label>
+
+        <input type="radio" name="length_pref" id="len_long" value="롱">
+        <label for="len_long">롱</label>
+      </div>
+    </div>
+
+    <!-- 무드 -->
+    <div class="form-section">
+      <label class="form-label">원하는 무드 (복수 선택)</label>
+      <div class="option-grid">
+        <input type="checkbox" name="mood" id="mood_minimal" value="미니멀">
+        <label for="mood_minimal">미니멀</label>
+
+        <input type="checkbox" name="mood" id="mood_natural" value="자연스러운">
+        <label for="mood_natural">자연스러운</label>
+
+        <input type="checkbox" name="mood" id="mood_bold" value="볼드">
+        <label for="mood_bold">볼드</label>
+
+        <input type="checkbox" name="mood" id="mood_classic" value="클래식">
+        <label for="mood_classic">클래식</label>
+
+        <input type="checkbox" name="mood" id="mood_texture" value="텍스처">
+        <label for="mood_texture">텍스처</label>
+      </div>
+    </div>
+
+    <!-- 라이프스타일 -->
+    <div class="form-section">
+      <label class="form-label">라이프스타일</label>
+      <div class="option-grid">
+        <input type="radio" name="lifestyle" id="ls_active" value="활동적">
+        <label for="ls_active">활동적</label>
+
+        <input type="radio" name="lifestyle" id="ls_daily" value="일상" checked>
+        <label for="ls_daily">일상</label>
+
+        <input type="radio" name="lifestyle" id="ls_formal" value="포멀">
+        <label for="ls_formal">포멀</label>
+      </div>
+    </div>
+
+    <!-- 디자인 메모 -->
+    <div class="form-section">
+      <label class="form-label">원하는 스타일 메모</label>
+      <textarea name="design_memo" rows="3" placeholder="자유롭게 적어주세요. 참고 인물, 키워드, 걱정되는 부분 등"></textarea>
+    </div>
+
+    <!-- 사진 업로드 -->
+    <div class="form-section">
+      <label class="form-label">레퍼런스 사진 (선택)</label>
+      <div class="upload-area" onclick="document.getElementById('design_photo').click()">
+        <p>사진을 탭하여 업로드<br><span style="font-size:11px">JPG, PNG, HEIC</span></p>
+        <input type="file" name="design_photo" id="design_photo" accept="image/*" onchange="previewPhoto(this)">
+        <div class="upload-preview" id="photo_preview">
+          <img id="preview_img" src="" alt="">
+        </div>
+      </div>
+    </div>
+
+    <!-- 예상 소요시간 -->
+    <div class="form-section">
+      <label class="form-label">예상 소요시간</label>
+      <select name="expected_duration">
+        <option value="1">1시간</option>
+        <option value="1.5">1시간 30분</option>
+        <option value="2" selected>2시간</option>
+        <option value="2.5">2시간 30분</option>
+        <option value="3">3시간 이상</option>
+      </select>
+    </div>
+
+    <button type="submit" class="submit-btn">상담 내용 전달하기</button>
+    <p class="form-note">제출 후 이달의 스타일 제안을 확인할 수 있습니다.</p>
+  </form>
+
+  <script>
+    function previewPhoto(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('preview_img').src = e.target.result;
+          document.getElementById('photo_preview').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -3,14 +3,28 @@ WOOHWAHAE CMS Backend
 Simple Flask-based content management system
 """
 
-from flask import Flask, request, jsonify, session
-from flask_cors import CORS
+import sys
 from pathlib import Path
+
+# LAYER OS core modules 접근 (프로젝트 루트 추가)
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(_PROJECT_ROOT))
+
+from flask import Flask, request, jsonify, session, render_template, abort, redirect, url_for
+from flask_cors import CORS
 import json
 import os
 from datetime import datetime
 from functools import wraps
 import config
+
+# Ritual / Growth 모듈
+try:
+    from core.modules.ritual import get_ritual_module
+    from core.modules.growth import get_growth_module
+    _MODULES_AVAILABLE = True
+except ImportError:
+    _MODULES_AVAILABLE = False
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -250,5 +264,90 @@ def generate_post_html(data):
 """
 
 
+# ─── 고객 시술일지 포털 (/me/{token}) ──────────────────────────
+
+@app.route('/me/<token>')
+def client_portal(token):
+    """고객 전용 시술일지 페이지 — 로그인 없음, 토큰 기반 접근."""
+    if not _MODULES_AVAILABLE:
+        abort(503)
+    rm = get_ritual_module()
+    client = rm.find_client_by_token(token)
+    if not client:
+        abort(404)
+
+    # 내부 전용 필드 제거 (notes, color_formula 고객에게 비공개)
+    visits = []
+    for v in reversed(client.get('visits', [])):
+        visits.append({
+            'date': v.get('date', ''),
+            'service': v.get('service', ''),
+            'public_note': v.get('public_note', ''),
+            'next_visit_weeks': v.get('next_visit_weeks', 0),
+            'satisfaction': v.get('satisfaction'),
+            'amount': v.get('amount', 0),
+        })
+
+    total_paid = sum(v.get('amount', 0) for v in client.get('visits', []))
+
+    return render_template('portal.html',
+        client=client,
+        visits=visits,
+        total_paid=total_paid,
+    )
+
+
+# ─── 사전상담 폼 (/consult/{token}) ────────────────────────────
+
+@app.route('/consult/<token>', methods=['GET', 'POST'])
+def consultation(token):
+    """예약 확정 후 고객에게 전송하는 사전상담 폼."""
+    if not _MODULES_AVAILABLE:
+        abort(503)
+    rm = get_ritual_module()
+    client = rm.find_client_by_token(token)
+    if not client:
+        abort(404)
+
+    if request.method == 'POST':
+        # 상담 내용 저장
+        design_memo = request.form.get('design_memo', '')
+        lifestyle = request.form.get('lifestyle', '')
+        length_pref = request.form.get('length_pref', '')
+        mood_keywords = request.form.getlist('mood')
+        expected_duration = request.form.get('expected_duration', '')
+
+        preference_notes = (
+            f"[{datetime.now().strftime('%Y-%m-%d')} 사전상담] "
+            f"길이: {length_pref} / 무드: {', '.join(mood_keywords)} / "
+            f"라이프스타일: {lifestyle} / 예상시간: {expected_duration}시간\n"
+            f"{design_memo}"
+        )
+        rm.update_client(client['client_id'], preference_notes=preference_notes)
+
+        # 사진 업로드 처리
+        if 'design_photo' in request.files:
+            photo = request.files['design_photo']
+            if photo and photo.filename:
+                ext = photo.filename.rsplit('.', 1)[-1].lower()
+                if ext in {'jpg', 'jpeg', 'png', 'webp', 'heic'}:
+                    save_dir = _PROJECT_ROOT / 'website' / 'assets' / 'uploads' / 'consult'
+                    save_dir.mkdir(parents=True, exist_ok=True)
+                    ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    photo.save(save_dir / f"{client['client_id']}_{ts}.{ext}")
+
+        # 스타일 시안 생성
+        from style_matcher import match_style
+        matched = match_style(mood_keywords, length_pref)
+
+        return render_template('consult_done.html',
+            client=client,
+            matched_styles=matched,
+            portal_token=token,
+        )
+
+    return render_template('consult.html', client=client)
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=config.DEBUG)
+    app.run(host='127.0.0.1', port=5000, debug=config.DEBUG)

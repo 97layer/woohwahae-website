@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Growth{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+
+  <!-- 기간 네비게이션 -->
+  <div class="growth-period-nav">
+    <p class="label">Growth</p>
+    {% if periods %}
+      <span class="label" style="color: var(--text); font-size:1rem; letter-spacing: -0.01em; font-family: var(--font-kr);">{{ current_period }}</span>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        {% for p in periods|sort(reverse=True)|list %}
+          <a href="{{ url_for('growth_dashboard', period=p) }}"
+             class="btn--filter {% if p == current_period %}active{% endif %}">
+            {{ p }}
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <span class="label">{{ current_period }}</span>
+    {% endif %}
+  </div>
+
+  <!-- ─── 이번달 지표 ─── -->
+  <div class="growth-section">
+    <p class="growth-section-title">이달 지표</p>
+    <div class="stat-grid">
+
+      <div class="card--stat">
+        <p class="card-label">총 수익</p>
+        <p class="card-value">
+          {% if data.revenue %}
+            {{ "{:,}".format((data.revenue.atelier or 0) + (data.revenue.consulting or 0) + (data.revenue.products or 0)) }}
+          {% else %}—{% endif %}
+        </p>
+        <p class="card-sub">원 (세전)</p>
+      </div>
+
+      <div class="card--stat">
+        <p class="card-label">아틀리에</p>
+        <p class="card-value">
+          {{ "{:,}".format(data.revenue.atelier or 0) if data.revenue else "—" }}
+        </p>
+        <p class="card-sub">원</p>
+      </div>
+
+      <div class="card--stat">
+        <p class="card-label">컨설팅</p>
+        <p class="card-value">
+          {{ "{:,}".format(data.revenue.consulting or 0) if data.revenue else "—" }}
+        </p>
+        <p class="card-sub">원</p>
+      </div>
+
+      <div class="card--stat">
+        <p class="card-label">제품</p>
+        <p class="card-value">
+          {{ "{:,}".format(data.revenue.products or 0) if data.revenue else "—" }}
+        </p>
+        <p class="card-sub">원</p>
+      </div>
+
+      <div class="card--stat">
+        <p class="card-label">시술 건수</p>
+        <p class="card-value">
+          {{ data.service_count if data.service_count is not none else "—" }}
+        </p>
+        <p class="card-sub">건</p>
+      </div>
+
+      <div class="card--stat">
+        <p class="card-label">콘텐츠 발행</p>
+        <p class="card-value">
+          {{ data.content_count if data.content_count is not none else "—" }}
+        </p>
+        <p class="card-sub">편</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── 고객 현황 ─── -->
+  {% if stats %}
+  <div class="growth-section">
+    <p class="growth-section-title">고객 현황</p>
+    <div class="stat-grid">
+
+      <div class="card--stat">
+        <p class="card-label">총 고객</p>
+        <p class="card-value">{{ stats.total_clients or "—" }}</p>
+        <p class="card-sub">명</p>
+      </div>
+
+      {% if stats.active_clients is defined %}
+      <div class="card--stat">
+        <p class="card-label">활성 고객</p>
+        <p class="card-value">{{ stats.active_clients or "—" }}</p>
+        <p class="card-sub">3개월 내 방문</p>
+      </div>
+      {% endif %}
+
+      {% if stats.avg_visit_interval is defined and stats.avg_visit_interval %}
+      <div class="card--stat">
+        <p class="card-label">평균 주기</p>
+        <p class="card-value">{{ "%.1f"|format(stats.avg_visit_interval) }}</p>
+        <p class="card-sub">주</p>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ─── 6개월 추세 ─── -->
+  {% if trend %}
+  <div class="growth-section">
+    <p class="growth-section-title">추세 (최근 6개월)</p>
+    <table class="growth-trend-table">
+      <thead>
+        <tr>
+          <th>기간</th>
+          <th>아틀리에</th>
+          <th>컨설팅</th>
+          <th>제품</th>
+          <th>합계</th>
+          <th>시술</th>
+          <th>콘텐츠</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in trend|sort(attribute='period', reverse=True) %}
+        <tr {% if row.period == current_period %}style="color: var(--text);"{% endif %}>
+          <td>
+            <a href="{{ url_for('growth_dashboard', period=row.period) }}"
+               class="btn--text">{{ row.period }}</a>
+          </td>
+          <td>{% if row.revenue %}{{ "{:,}".format(row.revenue.atelier or 0) }}{% else %}—{% endif %}</td>
+          <td>{% if row.revenue %}{{ "{:,}".format(row.revenue.consulting or 0) }}{% else %}—{% endif %}</td>
+          <td>{% if row.revenue %}{{ "{:,}".format(row.revenue.products or 0) }}{% else %}—{% endif %}</td>
+          <td style="color: var(--text);">
+            {% if row.revenue %}
+              {{ "{:,}".format((row.revenue.atelier or 0) + (row.revenue.consulting or 0) + (row.revenue.products or 0)) }}
+            {% else %}—{% endif %}
+          </td>
+          <td>{{ row.service_count if row.service_count is not none else "—" }}</td>
+          <td>{{ row.content_count if row.content_count is not none else "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- ─── 수익 입력 ─── -->
+  <div class="growth-section">
+    <p class="growth-section-title">수익 입력 — {{ current_period }}</p>
+    <form method="post" action="{{ url_for('growth_revenue') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="period" value="{{ current_period }}">
+      <div class="growth-revenue-form">
+
+        <div class="growth-revenue-field">
+          <label>아틀리에 (원)</label>
+          <input type="number" name="atelier" min="0" step="1000"
+                 value="{{ data.revenue.atelier if data.revenue else '' }}"
+                 placeholder="0">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>컨설팅 (원)</label>
+          <input type="number" name="consulting" min="0" step="1000"
+                 value="{{ data.revenue.consulting if data.revenue else '' }}"
+                 placeholder="0">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>제품 (원)</label>
+          <input type="number" name="products" min="0" step="1000"
+                 value="{{ data.revenue.products if data.revenue else '' }}"
+                 placeholder="0">
+        </div>
+
+        <div class="growth-revenue-field" style="display:flex; align-items:flex-end;">
+          <button type="submit" class="btn--solid" style="width:100%;">저장</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- ─── 데이터 없는 경우 ─── -->
+  {% if not data and not trend %}
+  <div class="empty-state">
+    이 기간의 데이터가 없습니다.<br>
+    수익을 입력하면 자동 생성됩니다.
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

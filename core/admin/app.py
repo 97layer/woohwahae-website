@@ -4,6 +4,7 @@ Flask-based CMS for managing archive posts and reviewing 97layerOS pipeline outp
 """
 
 import os
+import sys
 import json
 import logging
 import secrets
@@ -29,6 +30,15 @@ except ImportError:
 
 # ─── Paths ───
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # 97layerOS root
+sys.path.insert(0, str(BASE_DIR))  # core.modules 접근용
+
+# Ritual / Growth 모듈
+try:
+    from core.modules.ritual import get_ritual_module
+    from core.modules.growth import get_growth_module
+    _MODULES_AVAILABLE = True
+except ImportError:
+    _MODULES_AVAILABLE = False
 WEBSITE_DIR = BASE_DIR / 'website'
 ARCHIVE_DIR = WEBSITE_DIR / 'archive'
 PUBLISHED_DIR = BASE_DIR / 'knowledge' / 'assets' / 'published'
@@ -413,6 +423,69 @@ def upload_image():
         'url': f'/assets/img/uploads/{filename}',
         'filename': filename
     })
+
+
+# ─── Growth Dashboard ───
+
+@app.route('/growth')
+@login_required
+def growth_dashboard():
+    if not _MODULES_AVAILABLE:
+        flash('모듈 로드 실패. core/modules 경로 확인.')
+        return redirect(url_for('dashboard'))
+
+    gm = get_growth_module()
+    rm = get_ritual_module()
+    period = request.args.get('period', datetime.now().strftime('%Y-%m'))
+
+    try:
+        gm.auto_count_content(period)
+        gm.auto_count_service(period)
+    except Exception as e:
+        logger.error("growth auto_count error: %s", e)
+
+    try:
+        data = gm.get_month(period)
+        trend = gm.get_trend(months=6)
+        periods = gm.list_periods()
+        stats = rm.get_stats()
+    except Exception as e:
+        logger.error("growth data fetch error: %s", e)
+        data, trend, periods, stats = {}, [], [], {}
+
+    _audit('growth_view', 'period=%s' % period)
+    return render_template('growth.html',
+        data=data,
+        trend=trend,
+        periods=periods,
+        stats=stats,
+        current_period=period,
+    )
+
+
+@app.route('/growth/revenue', methods=['POST'])
+@login_required
+def growth_revenue():
+    if not _MODULES_AVAILABLE:
+        return jsonify({'error': '모듈 없음'}), 503
+
+    period = request.form.get('period', datetime.now().strftime('%Y-%m'))
+    gm = get_growth_module()
+
+    try:
+        gm.record_revenue(
+            period,
+            atelier=int(request.form.get('atelier', 0) or 0),
+            consulting=int(request.form.get('consulting', 0) or 0),
+            products=int(request.form.get('products', 0) or 0),
+        )
+    except Exception as e:
+        logger.error("growth record_revenue error: %s", e)
+        flash('수익 저장 실패')
+        return redirect(url_for('growth_dashboard', period=period))
+
+    _audit('revenue_recorded', 'period=%s' % period)
+    return redirect(url_for('growth_dashboard', period=period))
 
 
 # ─── B11: 에러 핸들러 ───

@@ -5604,3 +5604,267 @@ body.home-radical::after {
 }
 
 /* time-morning, time-afternoon: 기본값 유지 */
+
+
+/* =============================================
+   COMPONENT STANDARD LAYER v1.0
+   새로 만드는 페이지는 이 클래스를 사용할 것.
+   기존 클래스(arc-filter, cta-inline 등)는 건드리지 않음.
+   ============================================= */
+
+/* ─── Layout ─── */
+.container {
+  width: 100%;
+  max-width: var(--max-content);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.container--wide {
+  max-width: var(--max-wide);
+}
+
+.section {
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
+}
+
+.section--sm {
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
+}
+
+/* ─── Typography Utilities ─── */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-sub);
+  margin-bottom: var(--space-lg);
+}
+
+/* ─── Buttons ─── */
+
+/* .btn--text: 밑줄 텍스트 링크 버튼 (cta-inline 패턴)
+   용도: "자세히 보기", "→ 이동" 같은 인라인 액션 */
+.btn--text {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  transition: color var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+
+.btn--text:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+/* .btn--filter: 필터/탭 버튼 (arc-filter 패턴)
+   용도: 카테고리 필터, 탭 전환 */
+.btn--filter {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 0;
+  transition: color var(--duration) var(--ease);
+}
+
+.btn--filter:hover {
+  color: var(--text-sub);
+}
+
+.btn--filter.active {
+  color: var(--text);
+}
+
+/* .btn--solid: 채워진 버튼
+   용도: 주요 액션, 제출, 저장 */
+.btn--solid {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--navy);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity var(--duration) var(--ease);
+}
+
+.btn--solid:hover {
+  opacity: 0.8;
+}
+
+.btn--solid--danger {
+  background: #8B3A3A;
+}
+
+/* ─── Cards ─── */
+
+/* .card: 기본 카드
+   용도: 정보 표시, 리스트 아이템 */
+.card {
+  padding: var(--space-md);
+  border: 1px solid var(--line);
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+/* .card--stat: 수치/통계 카드 (admin-stat-card 패턴)
+   용도: Growth Dashboard 지표, 요약 수치 */
+.card--stat {
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.card--stat .card-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--space-xs);
+}
+
+.card--stat .card-value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: var(--fw-thin);
+  color: var(--text);
+  letter-spacing: var(--ls-heading);
+  line-height: 1;
+}
+
+.card--stat .card-sub {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  margin-top: var(--space-xs);
+}
+
+/* .card--lift: 호버 시 들어올려지는 카드 (content-card 패턴)
+   용도: 콘텐츠 프리뷰 그리드 */
+.card--lift {
+  padding: var(--space-md);
+  border: 1px solid var(--line);
+  background: var(--white);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+}
+
+.card--lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Grid Layouts ─── */
+
+/* stat-grid: 통계 카드 레이아웃 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.stat-grid > * {
+  background: var(--white);
+}
+
+/* ─── Divider ─── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: var(--space-lg) 0;
+}
+
+/* ─── Status Badge ─── */
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.60rem;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+}
+
+.badge--active { color: #3A6B4A; }
+.badge--warn   { color: #8B6A1B; }
+.badge--muted  { color: var(--text-faint); }
+
+/* ─── Empty State ─── */
+.empty-state {
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: var(--ls-label);
+}
+
+/* ─── Mobile Adjustments ─── */
+@media (max-width: 768px) {
+  .container {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+
+  .section {
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+  }
+
+  .card--stat {
+    padding: var(--space-md);
+  }
+
+  .card--stat .card-value {
+    font-size: 1.6rem;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

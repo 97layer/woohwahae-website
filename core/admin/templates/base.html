@@ -23,6 +23,8 @@
         %}>Archive</a>
       <a href="{{ url_for('pipeline') }}" {% if request.path.startswith('/pipeline') %}class="active" {% endif
         %}>Pipeline</a>
+      <a href="{{ url_for('growth_dashboard') }}" {% if request.path.startswith('/growth') %}class="active" {% endif
+        %}>Growth</a>
       <form action="{{ url_for('publish') }}" method="post" class="admin-publish-form">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="admin-publish-btn">발행</button>
