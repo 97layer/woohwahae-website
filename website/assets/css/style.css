@@ -14,22 +14,28 @@
 
 /* ─── CSS Variables ─── */
 :root {
-  /* Colors — 낡은 종이 위의 잉크 */
-  --bg: #E4E2DC;
-  --bg-dark: #E8E7E2;
-  --text: #1a1a1a;
-  --text-sub: #4a4a4a;
-  --text-faint: #8E8E88;
-  --navy: #1B2D4F;
-  --white: #FFFFFF;
-  --line: #D5D4CF;
-  --text-main: var(--text);
-  --border: var(--line);
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     PRIMARY PALETTE (Monochrome 90%+)
+     "낡은 종이 위의 잉크"
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --bg: #E4E2DC;              /* 메인 배경 (낡은 종이) */
+  --bg-dark: #E8E7E2;         /* 보조 배경, hover 상태 */
+  --text: #1a1a1a;            /* 본문 텍스트 (잉크) */
+  --text-sub: #4a4a4a;        /* 보조 텍스트 (nav 링크) */
+  --text-faint: #8E8E88;      /* 희미한 텍스트 (캡션, 날짜) */
+  --white: #FFFFFF;           /* selection 텍스트, 반전 */
+  --line: #D5D4CF;            /* 구분선, a 태그 border */
+  --text-main: var(--text);   /* alias */
+  --border: var(--line);      /* alias */
 
-  /* Stone Palette — 돌 영감 */
-  --stone-dark: #7A6E5A;    /* 어두운 갈색 (그림자) */
-  --stone-mid: #8B7355;     /* 중간 갈색 (텍스트) */
-  --stone-light: #A89880;   /* 밝은 갈색 (배경 톤) */
+  /* ━━━ SECONDARY (Warm Gray 포인트 10%) ━━━ */
+  --stone-dark: #7A6E5A;      /* 어두운 갈색 (그림자, 강조) */
+  --stone-mid: #8B7355;       /* 중간 갈색 (텍스트 포인트) */
+  --stone-light: #A89880;     /* 밝은 갈색 (배경 톤) */
+
+  /* ━━━ OPTIONAL (Deep Navy 절제 — 10% max) ━━━ */
+  --navy: #1B2D4F;            /* ::selection, blockquote border ONLY */
+  /* 금지: placeholder, 범용 border, button background */
 
   /* Typography */
   --font-body: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
@@ -895,8 +901,8 @@ section+section {
 .toc-item-num {
   font-family: var(--font-body);
   font-size: 0.85rem;
-  color: var(--navy);
-  /* Deep Navy for numbers */
+  color: var(--stone-mid);
+  /* Warm Gray for numbers */
   font-style: italic;
   opacity: 0.5;
   transition: opacity var(--duration) var(--ease);
@@ -920,7 +926,7 @@ section+section {
 }
 
 .toc-item:hover .toc-item-title {
-  color: var(--navy);
+  color: var(--stone-dark);
 }
 
 .toc-item-desc {
@@ -1464,7 +1470,7 @@ section+section {
 
 .page-title {
   font-family: var(--font-body);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   font-size: clamp(1.4rem, 3vw, 2.2rem);
   letter-spacing: var(--ls-heading);
   line-height: 1.15;
@@ -1565,7 +1571,7 @@ main.container--wide {
 .mag-row--intro .mag-heading {
   font-family: var(--font-body);
   font-size: clamp(1.0rem, 2vw, 1.3rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   line-height: 1.35;
   max-width: none;
   letter-spacing: -0.02em;
@@ -2771,8 +2777,9 @@ main.container--wide {
 }
 
 .woohwa-hanja .en {
-  font-family: 'Crimson Text', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-body);  /* Changed from Crimson Text — 세리프 제거 */
+  font-style: normal;  /* Changed from italic — 과도한 장식 제거 */
+  font-weight: var(--fw-regular);
 }
 
 .woohwa-def {
@@ -3482,7 +3489,7 @@ footer.section--light {
 .gateway-title {
   font-family: var(--font-body);
   font-size: clamp(1.6rem, 3vw, 2.4rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   letter-spacing: var(--ls-heading);
   line-height: 1.1;
   margin-bottom: var(--space-sm);
@@ -3557,7 +3564,7 @@ footer.section--light {
 
 .atelier-index {
   font-size: clamp(2rem, 4vw, 3.2rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   letter-spacing: -0.04em;
   line-height: 1;
   color: var(--text-faint);
@@ -3581,7 +3588,7 @@ footer.section--light {
 .atelier-price {
   font-size: 1rem;
   font-weight: 400;
-  color: var(--navy);
+  color: var(--stone-dark);  /* Changed from var(--navy) */
 }
 
 .atelier-price-mod {
@@ -3920,7 +3927,7 @@ footer.section--light {
 .home-featured-title {
   font-family: var(--font-body);
   font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   letter-spacing: var(--ls-heading);
   line-height: 1.2;
   transition: color var(--duration) var(--ease);
@@ -4110,7 +4117,7 @@ footer.section--light {
 .home-chapter-ko {
   font-family: var(--font-body);
   font-size: clamp(1.15rem, 2.2vw, 1.55rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   line-height: 1.75;
   letter-spacing: -0.01em;
   color: var(--text);
@@ -4477,7 +4484,7 @@ body.home-radical {
 .fb-ko {
   font-family: var(--font-body);
   font-size: clamp(1rem, 1.8vw, 1.3rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   line-height: 1.8;
   letter-spacing: -0.01em;
   color: var(--text);
@@ -4579,7 +4586,7 @@ body.home-radical {
 .fb-essay-title {
   font-family: var(--font-body);
   font-size: clamp(1.1rem, 2vw, 1.5rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   letter-spacing: var(--ls-heading);
   line-height: 1.3;
   transition: opacity var(--duration) var(--ease);
@@ -5037,7 +5044,7 @@ body.home-radical::after {
 .home-intro__text {
   font-family: var(--font-body);
   font-size: clamp(0.9rem, 1.4vw, 1.05rem);
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) — 200은 너무 얇음 */
   line-height: 1.9;
   color: var(--text-sub);
   letter-spacing: -0.01em;
@@ -5392,7 +5399,7 @@ body.home-radical::after {
 }
 
 .arc-featured-link:hover .arc-featured-title {
-  color: var(--navy);
+  color: var(--stone-dark);  /* Changed from var(--navy) */
 }
 
 .arc-featured-preview {
@@ -5415,7 +5422,7 @@ body.home-radical::after {
 }
 
 .arc-featured-link:hover .arc-featured-cta {
-  color: var(--navy);
+  color: var(--stone-dark);  /* Changed from var(--navy) */
 }
 
 /* 목록 계층 강화 */
@@ -5429,7 +5436,7 @@ body.home-radical::after {
 }
 
 .arc-row:hover .arc-row-title {
-  color: var(--navy);
+  color: var(--stone-dark);  /* Changed from var(--navy) */
 }
 
 /* ─── Archive Mobile ─── */
@@ -5729,7 +5736,7 @@ body.home-radical::after {
 .art-progress-side-fill {
   width: 100%;
   height: 0%;
-  background: var(--navy);
+  background: var(--stone-dark);  /* Changed from var(--navy) */
   transition: height 0.1s linear;
 }
 
@@ -5771,7 +5778,7 @@ body.home-radical::after {
 
 .art-float-prev:hover,
 .art-float-next:hover {
-  color: var(--navy);
+  color: var(--stone-dark);  /* Changed from var(--navy) */
 }
 
 .art-float-prev[href="#"],
@@ -5973,7 +5980,7 @@ body.home-radical::after {
   letter-spacing: var(--ls-label);
   text-transform: uppercase;
   color: var(--white);
-  background: var(--navy);
+  background: var(--stone-dark);  /* Changed from var(--navy) */
   border: none;
   padding: 0.6rem 1.4rem;
   cursor: pointer;
@@ -6021,7 +6028,7 @@ body.home-radical::after {
 .card--stat .card-value {
   font-family: var(--font-mono);
   font-size: 2rem;
-  font-weight: var(--fw-thin);
+  font-weight: var(--fw-light);  /* Changed from var(--fw-thin) */
   color: var(--text);
   letter-spacing: var(--ls-heading);
   line-height: 1;
