@@ -1,12 +1,1 @@
-{
-  "locked": false,
-  "agent": null,
-  "task": null,
-  "started_at": null,
-  "expires_at": null,
-  "metadata": {
-    "created": "2026-02-18T20:40:00Z",
-    "version": "1.0",
-    "enforcement": "mandatory"
-  }
-}
+{"locked": false, "agent": null, "task": null, "resources": [], "acquired_at": null, "expires_at": null}
