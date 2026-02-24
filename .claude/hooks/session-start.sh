@@ -7,6 +7,9 @@ PROJECT_ROOT="/Users/97layer/97layerOS"
 QUANTA="$PROJECT_ROOT/knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
 WORK_LOCK="$PROJECT_ROOT/knowledge/system/work_lock.json"
 
+# 세션 시작 시각 기록 (auto_quanta_update.py가 커밋 경계로 사용)
+date -u +"%Y-%m-%dT%H:%M:%SZ" > "$PROJECT_ROOT/knowledge/system/session_start.txt"
+
 echo "━━━ LAYER OS Session Start ━━━"
 
 # ─── QUANTA 전체 출력 ─────────────────────────────────────

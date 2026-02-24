@@ -18,8 +18,18 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 QUANTA_PATH = PROJECT_ROOT / "knowledge" / "agent_hub" / "INTELLIGENCE_QUANTA.md"
+SESSION_START_PATH = PROJECT_ROOT / "knowledge" / "system" / "session_start.txt"
 
 SECTION_MARKER = "## 📍 현재 상태 (CURRENT STATE)"
+
+
+def get_session_since() -> str:
+    """세션 시작 시각 반환. 파일 없으면 120분 전 fallback."""
+    if SESSION_START_PATH.exists():
+        ts = SESSION_START_PATH.read_text().strip()
+        if ts:
+            return ts
+    return "120 minutes ago"
 
 
 def _run(cmd: list[str], cwd: Path = PROJECT_ROOT) -> str:
@@ -32,9 +42,9 @@ def _run(cmd: list[str], cwd: Path = PROJECT_ROOT) -> str:
         return ""
 
 
-def get_session_commits(since_minutes: int = 480) -> list[str]:
-    """최근 N분 내 커밋 메시지 목록 반환."""
-    since = f"{since_minutes} minutes ago"
+def get_session_commits() -> list[str]:
+    """이번 세션 시작 이후 커밋 메시지 목록 반환."""
+    since = get_session_since()
     out = _run([
         "git", "log",
         f"--since={since}",
@@ -47,9 +57,9 @@ def get_session_commits(since_minutes: int = 480) -> list[str]:
     return [line.strip() for line in out.splitlines() if line.strip()]
 
 
-def get_changed_files(since_minutes: int = 480) -> list[str]:
-    """최근 N분 내 변경된 고유 파일 목록."""
-    since = f"{since_minutes} minutes ago"
+def get_changed_files() -> list[str]:
+    """이번 세션 시작 이후 변경된 고유 파일 목록."""
+    since = get_session_since()
     out = _run([
         "git", "log",
         f"--since={since}",
@@ -149,7 +159,8 @@ def main() -> None:
     parser.add_argument("--agent-id", default="auto-session", help="에이전트 식별자")
     args = parser.parse_args()
 
-    print(f"QUANTA 자동 갱신 중 ({args.agent_id})...")
+    since = get_session_since()
+    print(f"QUANTA 자동 갱신 중 ({args.agent_id}) — since: {since}")
 
     commits = get_session_commits()
     uncommitted = get_uncommitted_files()
