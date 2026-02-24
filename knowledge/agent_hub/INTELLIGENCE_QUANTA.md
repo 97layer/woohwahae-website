@@ -97,12 +97,40 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 22:15] Auto-Update — auto-session
+### [2026-02-24 23:25] Auto-Update — auto-session
+
+**이번 세션 커밋**:
+- ✅ feat: Three.js 헤어 렌더러 번들 + 포털 UI 정비
 
 **미커밋 변경**:
+- ⚠️  core/admin/app.py
+- ⚠️  core/admin/templates/cockpit.html
+- ⚠️  core/admin/templates/dashboard.html
+- ⚠️  core/admin/templates/ritual.html
 - ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
-- ⚠️  website/backend/app.py
+- ⚠️  website/404.html
+- ⚠️  website/_templates/article.html
+- ⚠️  website/about.html
+- ⚠️  website/archive/index.html
+- ⚠️  website/archive/issue-00/index.html
+- ⚠️  website/archive/issue-001-beginning/index.html
+- ⚠️  website/archive/issue-002-slow-life/index.html
+- ⚠️  website/archive/issue-003-hair-and-daily/index.html
+- ⚠️  website/archive/issue-004-art-of-waiting/index.html
+- ⚠️  website/archive/issue-005-72h-rule/index.html
+- ⚠️  website/archive/issue-006-8pyeong/index.html
+- ⚠️  website/archive/issue-007-noise-removal/index.html
+- ⚠️  website/archive/issue-008-raw-materiality/index.html
+- ⚠️  website/archive/issue-009-inner-world/index.html
+- ⚠️  website/archive/issue-010-work-and-essence/index.html
+- ⚠️  website/backend/templates/consult.html
+- ⚠️  website/backend/templates/consult_done.html
 - ⚠️  website/backend/templates/portal.html
-- ⚠️  website/backend/silhouette_renderer.py
+- ⚠️  website/contact.html
+- ⚠️  website/offering.html
+- ⚠️  website/offering/atelier.html
+- ⚠️  website/offering/consulting.html
+- ⚠️  website/offering/project.html
+- ⚠️  website/offering/shop.html
 
-**업데이트 시간**: 2026-02-24T22:15:38.318871
+**업데이트 시간**: 2026-02-24T23:25:29.933532

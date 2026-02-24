@@ -10,10 +10,7 @@
    본문 보조: IBM Plex Mono 300 (밀도감 있는 보조 본문)
    메인 본문: Pretendard (한국어 가독성)
    포인트 세리프: Crimson Text (최소 사용) */
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap');
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&display=swap');
+/* fonts: HTML <head>로 이전 — @import 직렬 블로킹 제거 */
 
 /* ─── CSS Variables ─── */
 :root {

@@ -201,24 +201,31 @@
 </div>
 
 <script>
+const PORTAL_LINK_BASE = '{{ url_for("ritual_portal_link", client_id="__CID__") }}'.replace('/__CID__', '/');
+
 function copyPortalLink(clientId, btn) {
-  fetch('/ritual/portal-link/' + clientId)
+  var orig = btn.textContent;
+  btn.disabled = true;
+  fetch(PORTAL_LINK_BASE + clientId)
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.portal_url) {
         if (navigator.clipboard) {
           navigator.clipboard.writeText(data.portal_url).then(function() {
-            var orig = btn.textContent;
             btn.textContent = '복사됨';
-            setTimeout(function() { btn.textContent = orig; }, 1500);
+            setTimeout(function() { btn.textContent = orig; btn.disabled = false; }, 1500);
           });
         } else {
-          // fallback: alert
           prompt('포털 URL', data.portal_url);
+          btn.textContent = orig;
+          btn.disabled = false;
         }
       }
     })
-    .catch(function() { btn.textContent = '오류'; });
+    .catch(function() {
+      btn.textContent = '오류';
+      setTimeout(function() { btn.textContent = orig; btn.disabled = false; }, 2000);
+    });
 }
 </script>
 

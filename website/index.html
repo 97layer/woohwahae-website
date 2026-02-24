@@ -17,10 +17,20 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
   <link rel="icon" href="assets/img/symbol.png" type="image/svg+xml">
+    <!-- fonts: preconnect + parallel loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
   <link rel="preload" href="assets/css/style.css?v=renewal_v4" as="style">
   <link rel="stylesheet" href="assets/css/style.css?v=renewal_v4">
   <script src="assets/js/analytics.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+  <script>
+    /* time-aware atmosphere — FOUC 방지: defer 전에 실행 */
+    (function(){var h=new Date().getHours();document.documentElement.classList.add(h<6?'time-dawn':h<11?'time-morning':h<18?'time-afternoon':h<22?'time-evening':'time-night');})();
+  </script>
 </head>
 
 <body class="home-radical">
@@ -122,7 +132,7 @@
   </footer>
 
   <script src="assets/js/bg-field.js?v=2" defer></script>
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/main.js" defer></script>
   <script>
     /* ─── Featured Article 로드 ─── */
     fetch('archive/index.json')

@@ -11,6 +11,7 @@ import logging
 import secrets
 import subprocess
 import functools
+import threading
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -730,16 +731,41 @@ def ritual_portal_link(client_id):
 
 # ─── SSE 실시간 스트림 ───
 
+# 메모리 캐시 (TTL 기반, 스레드 안전)
+_cache_lock = threading.Lock()
+_sse_cache: dict = {}
+_SSE_CACHE_TTL = 60  # seconds
+
+
+def _cache_get(key: str):
+    with _cache_lock:
+        entry = _sse_cache.get(key)
+        if entry and time.time() - entry['ts'] < _SSE_CACHE_TTL:
+            return entry['val'], True
+    return None, False
+
+
+def _cache_set(key: str, val):
+    with _cache_lock:
+        _sse_cache[key] = {'val': val, 'ts': time.time()}
+
+
 def _check_service_status(name: str) -> str:
-    """systemctl is-active 결과 반환. 비-VM 환경에서는 'unknown'."""
+    """systemctl is-active 결과 반환. 60초 캐시."""
+    cache_key = 'svc_%s' % name
+    cached, hit = _cache_get(cache_key)
+    if hit:
+        return cached
     try:
         result = subprocess.run(
             ['systemctl', 'is-active', name],
             capture_output=True, text=True, timeout=3
         )
-        return result.stdout.strip()
+        status = result.stdout.strip()
     except (subprocess.TimeoutExpired, FileNotFoundError):
-        return 'unknown'
+        status = 'unknown'
+    _cache_set(cache_key, status)
+    return status
 
 
 def _current_period() -> str:
@@ -758,31 +784,36 @@ def event_stream():
     def generate():
         while True:
             try:
-                # L4: 재방문 알림
+                # L4: 재방문 알림 (캐시)
                 if _MODULES_AVAILABLE:
                     try:
-                        due = get_ritual_module().get_due_clients()
+                        due, hit = _cache_get('due_clients')
+                        if not hit:
+                            due = get_ritual_module().get_due_clients()
+                            _cache_set('due_clients', due)
                         yield _sse_event({'type': 'clients_due', 'count': len(due), 'clients': due[:5]})
                     except Exception as e:
                         logger.error("sse due_clients: %s", e)
 
-                # L3: 파이프라인
-                pipeline_count = _count_pipeline_items()
-                yield _sse_event({'type': 'pipeline', 'count': pipeline_count})
+                # L3: 파이프라인 (캐시 적용됨)
+                yield _sse_event({'type': 'pipeline', 'count': _count_pipeline_items()})
 
-                # L5: 성장
+                # L5: 성장 (캐시)
                 if _MODULES_AVAILABLE:
                     try:
-                        month_data = get_growth_module().get_month(_current_period())
+                        period = _current_period()
+                        month_data, hit = _cache_get('growth_%s' % period)
+                        if not hit:
+                            month_data = get_growth_module().get_month(period)
+                            _cache_set('growth_%s' % period, month_data)
                         total = month_data.get('atelier', 0) + month_data.get('consulting', 0) + month_data.get('products', 0)
-                        yield _sse_event({'type': 'growth', 'total': total, 'period': _current_period()})
+                        yield _sse_event({'type': 'growth', 'total': total, 'period': period})
                     except Exception as e:
                         logger.error("sse growth: %s", e)
 
-                # System: 서비스 상태
+                # System: 서비스 상태 (캐시 적용됨)
                 for svc in SYSTEMD_SERVICES:
-                    status = _check_service_status(svc)
-                    yield _sse_event({'type': 'service', 'name': svc, 'status': status})
+                    yield _sse_event({'type': 'service', 'name': svc, 'status': _check_service_status(svc)})
 
                 yield _sse_event({'type': 'heartbeat', 'ts': int(time.time())})
 
@@ -1081,6 +1112,9 @@ def _load_index():
 
 
 def _count_pipeline_items():
+    cached, hit = _cache_get('pipeline_count')
+    if hit:
+        return cached
     if not PUBLISHED_DIR.exists():
         return 0
     count = 0
@@ -1089,6 +1123,7 @@ def _count_pipeline_items():
             for item_dir in date_dir.iterdir():
                 if item_dir.is_dir() and (item_dir / 'archive_essay.txt').exists():
                     count += 1
+    _cache_set('pipeline_count', count)
     return count
 
 

@@ -164,13 +164,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-// ─── Time-Aware Atmosphere ───
-(function () {
-  var h = new Date().getHours();
-  var cls = h < 6  ? 'time-dawn'
-          : h < 11 ? 'time-morning'
-          : h < 18 ? 'time-afternoon'
-          : h < 22 ? 'time-evening'
-          : 'time-night';
-  document.documentElement.classList.add(cls);
-})();
+/* time-aware class: index.html inline script으로 이전 */

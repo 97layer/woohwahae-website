@@ -393,9 +393,11 @@
                 evs.close();
                 setTimeout(connectSSE, 10000);
             };
+            return evs;
         };
 
-        connectSSE();
+        let activeSSE = connectSSE();
+        window.addEventListener('pagehide', () => activeSSE && activeSSE.close());
     });
 </script>
 {% endblock %}
