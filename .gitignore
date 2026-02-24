@@ -63,9 +63,14 @@ knowledge/signals/
 knowledge/content/
 knowledge/archive/
 knowledge/reports/
+knowledge/corpus/entries/
+knowledge/corpus/index.json
+knowledge/long_term_memory.json
 knowledge/system/signal_router_processed.json
 knowledge/system/execution_context.json
 knowledge/system/asset_registry.json
+knowledge/system/token_usage_log.jsonl
+knowledge/system/session_start.txt
 
 # Old folders (archived, not needed in sync)
 # NOTE: /system/ (root level only, not core/system/)

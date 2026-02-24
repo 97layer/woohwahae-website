@@ -102,9 +102,10 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 17:30] Auto-Update — auto-session
+### [2026-02-24 17:35] Auto-Update — auto-session
 
 **이번 세션 커밋**:
+- ✅ chore: .github/workflows/ 삭제 — VM systemd로 대체됨
 - ✅ fix: nginx — 고객 접근 경로 auth_basic off (포털/상담 공개 접근)
 - ✅ test: tests/ 현대화 — 레거시 8개 삭제, handoff/queue 단위 테스트 14개 신규
 - ✅ feat: /status 커맨드 — 파이프라인 현황 한 번에 (신호/Corpus/고객/Growth/VM)
@@ -114,8 +115,28 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 **미커밋 변경**:
 - ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
-- ⚠️  knowledge/system/asset_registry.json
-- ⚠️  knowledge/system/filesystem_cache.json
+- ⚠️  knowledge/corpus/entries/.gitkeep
+- ⚠️  knowledge/corpus/index.json
+- ⚠️  knowledge/long_term_memory.json
 - ⚠️  knowledge/system/token_usage_log.jsonl
+- ⚠️  knowledge/corpus/entries/entry_text_20260216_160102.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260216_204131.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260216_212820.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260216_223411.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260216_224718.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260216_232216.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260217_002322.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260218_234522.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260219_000042.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260219_003717.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260219_021109.json
+- ⚠️  knowledge/corpus/entries/entry_text_20260220_182136.json
+- ⚠️  knowledge/corpus/entries/entry_web_admin_20260224_152600.json
+- ⚠️  knowledge/corpus/entries/entry_youtube_7HBhL7lltpU_20260217_000130.json
+- ⚠️  knowledge/corpus/entries/entry_youtube_7HBhL7lltpU_20260217_002358.json
+- ⚠️  knowledge/corpus/entries/entry_youtube_DpD0wnGk03s_20260216_155119.json
+- ⚠️  knowledge/corpus/entries/entry_youtube_DpD0wnGk03s_20260216_155510.json
+- ⚠️  knowledge/corpus/entries/entry_youtube_DpD0wnGk03s_20260216_155525.json
+- ⚠️  knowledge/corpus/entries/entry_youtube_DpD0wnGk03s_20260216_155545.json
 
-**업데이트 시간**: 2026-02-24T17:30:09.430621
+**업데이트 시간**: 2026-02-24T17:35:10.483232
