@@ -102,16 +102,20 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 17:21] Auto-Update — auto-session
+### [2026-02-24 17:30] Auto-Update — auto-session
 
 **이번 세션 커밋**:
+- ✅ fix: nginx — 고객 접근 경로 auth_basic off (포털/상담 공개 접근)
+- ✅ test: tests/ 현대화 — 레거시 8개 삭제, handoff/queue 단위 테스트 14개 신규
+- ✅ feat: /status 커맨드 — 파이프라인 현황 한 번에 (신호/Corpus/고객/Growth/VM)
+- ✅ chore: 폐기 파일 3개 삭제 (ralph_agent, nightguard_daemon, website/products)
 - ✅ fix: nginx.conf — auth_basic 복원 + 프록시/라우팅 정비
 - ✅ fix: nginx auth_basic 제거 + 프록시 연결 + 사이트 정상화
 
 **미커밋 변경**:
 - ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+- ⚠️  knowledge/system/asset_registry.json
 - ⚠️  knowledge/system/filesystem_cache.json
 - ⚠️  knowledge/system/token_usage_log.jsonl
-- ⚠️  knowledge/system/session_start.txt
 
-**업데이트 시간**: 2026-02-24T17:21:40.421715
+**업데이트 시간**: 2026-02-24T17:30:09.430621

@@ -1,5 +1,5 @@
 {
-  "last_scan": "2026-02-24T17:12:46.716696",
+  "last_scan": "2026-02-24T17:27:09.299349",
   "folders": [
     "directives/brand",
     "directives/agents",
@@ -170,7 +170,6 @@
     "knowledge/system/snapshot_status.json",
     "knowledge/system/session_start.txt",
     "knowledge/system/token_usage_log.jsonl",
-    "knowledge/system/work_lock.json",
     "knowledge/system/asset_registry.json",
     "knowledge/system/execution_context.json",
     "knowledge/system/filesystem_cache.json",

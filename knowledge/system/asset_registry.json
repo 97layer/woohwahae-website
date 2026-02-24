@@ -900,10 +900,46 @@
           "by": "manual"
         }
       ]
+    },
+    {
+      "id": "AST-2026-02-086",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-02-24T17:26:32.064469",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-24T17:26:32.064471",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-02-087",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-02-24T17:27:09.303970",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-24T17:27:09.303972",
+          "by": "unit_test"
+        }
+      ]
     }
   ],
   "stats": {
-    "total": 85,
+    "total": 87,
     "by_type": {
       "signal": 39,
       "content": 24,
@@ -912,10 +948,11 @@
       "documentation": 1,
       "report": 2,
       "document": 3,
-      "page": 2
+      "page": 2,
+      "test": 2
     },
     "by_status": {
-      "captured": 31,
+      "captured": 33,
       "completed": 1,
       "analyzed": 14,
       "stored": 1,
