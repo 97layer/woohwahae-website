@@ -42,11 +42,13 @@
   });
 
   /* ── 쌍극자 필드라인 파라미터 — 모바일/데스크탑 분기 ── */
+  var isPortrait = window.innerHeight > window.innerWidth;
   var LINE_COUNT = isMobile ? 12 : 24;   /* 모바일: φ 슬라이스 절반 */
   var SEEDS      = isMobile ? 5  : 10;   /* 모바일: 씨앗 수 절반 */
   var POINTS_PER = isMobile ? 110 : 220; /* 모바일: 포인트 수 절반 */
   var MAX_R      = 15.0;
-  var SCALE      = 2.8;   /* 지질학적 안착감 (3.2 → 2.8) */
+  /* Portrait 모바일: 필드가 화면 밖으로 삐져나가지 않도록 축소 */
+  var SCALE      = (isMobile && isPortrait) ? 1.8 : 2.8;
 
   function buildFieldLine(r0, phi) {
     var pts   = new Float32Array(POINTS_PER * 3);
@@ -159,7 +161,9 @@
   /* ── 애니메이션 루프 ── */
   var clock   = new THREE.Clock();
   var camX    = 0;
-  var camY    = 2;
+  var camY    = isPortrait && isMobile ? 0 : 2;
+  /* Portrait 모바일: 카메라를 뒤로 빼서 필드 전체가 화면 안에 들어오게 */
+  var baseZ   = (isMobile && isPortrait) ? 28 : 20;
 
   function animate() {
     requestAnimationFrame(animate);
@@ -176,7 +180,7 @@
     fieldGroup.rotation.x += (-mouse.y * 0.08 - fieldGroup.rotation.x) * 0.015;
 
     /* 카메라 z + FOV — 돌 무게감, 완만한 수렴 + 무거운 관성 */
-    var targetZ = 20 - sr * 10;
+    var targetZ = baseZ - sr * 8;
     camera.position.z += (targetZ - camera.position.z) * 0.015;
     camera.fov += (45 - sr * 9 - camera.fov) * 0.015;
     camera.updateProjectionMatrix();

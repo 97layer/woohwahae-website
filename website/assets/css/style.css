@@ -5123,6 +5123,21 @@ body.home-radical::after {
 @media (max-width: 768px) {
   .home-hero {
     padding: var(--space-lg) 1.5rem;
+    padding-bottom: 2.4rem;
+  }
+
+  .home-hero__brand {
+    font-size: 0.72rem;
+    letter-spacing: var(--ls-label);
+  }
+
+  .home-hero__statement {
+    font-size: 1.05rem;
+    letter-spacing: 0;
+  }
+
+  .home-hero__scroll {
+    display: none;
   }
 
   .home-row {
