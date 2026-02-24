@@ -84,3 +84,5 @@ knowledge/system/code_agent_cost.json
 # NOTE: /system/ (root level only, not core/system/)
 /execution/
 /system/
+website/assets/js/three_src/
+website/assets/js/utils/

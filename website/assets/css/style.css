@@ -4883,7 +4883,7 @@ body.home-radical::after {
 @media (max-width: 640px) {
   /* 모바일: 캔버스 opacity 낮춰 텍스트 가독성 확보 */
   .field-bg-canvas {
-    opacity: 0.68;
+    opacity: 0.85;
   }
 
   .fb {
@@ -5132,7 +5132,7 @@ body.home-radical::after {
   }
 
   .home-hero__statement {
-    font-size: 1.05rem;
+    font-size: 0.88rem;
     letter-spacing: 0;
   }
 
@@ -5151,7 +5151,16 @@ body.home-radical::after {
   }
 
   .home-latest__title {
-    font-size: 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  .home-intro__text {
+    font-size: 0.85rem;
+  }
+
+  .home-site-nav a {
+    font-size: 0.85rem;
+    padding: 0.7rem 0;
   }
 }
 

@@ -145,13 +145,14 @@
 
 <script>
 const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content || '';
+const URL_COMMAND = '{{ url_for("command_api") }}';
 
 async function restartService(name, btn) {
   const orig = btn.textContent;
   btn.disabled = true;
   btn.textContent = '재시작 중...';
   try {
-    const res = await fetch('/api/command', {
+    const res = await fetch(URL_COMMAND, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
       body: JSON.stringify({ action: 'restart_service', params: { name } })

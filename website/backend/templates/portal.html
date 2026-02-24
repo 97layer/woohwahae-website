@@ -6,14 +6,6 @@
   <title>{{ client.name }}님 — WOOHWAHAE</title>
   <link rel="preload" href="/assets/css/style.css?v=renewal_v3" as="style">
   <link rel="stylesheet" href="/assets/css/style.css?v=renewal_v3">
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
-    }
-  }
-  </script>
   <style>
     /* ── 포털 레이아웃 ── */
     .wrap { max-width: 560px; margin: 0 auto; padding: 0 24px; }
@@ -321,78 +313,6 @@
 
 </div>
 
-<script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-const canvas = document.getElementById('hair-canvas');
-if (!canvas) throw new Error('hair-canvas not found');
-
-const style = canvas.dataset.style || 'medium_natural';
-const W = 90, H = 140;
-
-// Renderer
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(W, H);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-// Scene
-const scene = new THREE.Scene();
-
-// Camera — orthographic for clean silhouette feel
-const aspect = W / H;
-const frustum = 2.2;
-const camera = new THREE.OrthographicCamera(
-  -frustum * aspect, frustum * aspect,
-   frustum, -frustum,
-  0.1, 20
-);
-camera.position.set(0, 0, 6);
-camera.lookAt(0, 0.3, 0);
-
-// Lighting — minimal, elegant
-const ambient = new THREE.AmbientLight(0xfaf9f6, 1.2);
-scene.add(ambient);
-const key = new THREE.DirectionalLight(0xffffff, 1.0);
-key.position.set(1.5, 3, 4);
-scene.add(key);
-const rim = new THREE.DirectionalLight(0xddd8cc, 0.3);
-rim.position.set(-2, -1, 2);
-scene.add(rim);
-
-// Load
-const loader = new GLTFLoader();
-loader.load(
-  `/assets/3d/hair_${style}.glb`,
-  (gltf) => {
-    const model = gltf.scene;
-
-    // Center model
-    const box = new THREE.Box3().setFromObject(model);
-    const center = box.getCenter(new THREE.Vector3());
-    model.position.sub(center);
-    model.position.y += 0.1;
-
-    scene.add(model);
-
-    // Subtle auto-rotate
-    let t = 0;
-    function tick() {
-      requestAnimationFrame(tick);
-      t += 0.004;
-      model.rotation.y = Math.sin(t) * 0.12;
-      renderer.render(scene, camera);
-    }
-    tick();
-  },
-  undefined,
-  (err) => {
-    // fallback: hide canvas on error
-    console.warn('Hair model load failed:', err);
-    canvas.style.display = 'none';
-  }
-);
-</script>
+<script src="/assets/js/hair-renderer.bundle.js?v=1"></script>
 </body>
 </html>

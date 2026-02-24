@@ -22,7 +22,7 @@
     alpha: true,
     antialias: true  /* 모바일 포함 antialias 활성화 — 선 품질 우선 */
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setClearColor(0x000000, 0);
 
   /* ── Scene & Camera ── */
@@ -43,9 +43,9 @@
 
   /* ── 쌍극자 필드라인 파라미터 — 모바일/데스크탑 분기 ── */
   var isPortrait = window.innerHeight > window.innerWidth;
-  var LINE_COUNT = isMobile ? 12 : 24;   /* 모바일: φ 슬라이스 절반 */
-  var SEEDS      = isMobile ? 5  : 10;   /* 모바일: 씨앗 수 절반 */
-  var POINTS_PER = isMobile ? 110 : 220; /* 모바일: 포인트 수 절반 */
+  var LINE_COUNT = isMobile ? 18 : 24;   /* 모바일: φ 슬라이스 3/4 */
+  var SEEDS      = isMobile ? 8  : 10;   /* 모바일: 씨앗 수 80% */
+  var POINTS_PER = isMobile ? 160 : 220; /* 모바일: 포인트 수 72% */
   var MAX_R      = 15.0;
   /* Portrait 모바일: 필드 클리핑 방지, 단 너무 위축되지 않도록 2.2 유지 */
   var SCALE      = (isMobile && isPortrait) ? 2.2 : 2.8;

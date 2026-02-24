@@ -7,9 +7,14 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{% block title %}Admin{% endblock %} — WOOHWAHAE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Crimson+Text:ital,wght@0,400;1,400&display=swap"
-    rel="stylesheet">
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link
+    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Crimson+Text:ital,wght@0,400;1,400&display=swap"
+    rel="stylesheet"></noscript>
   <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
 </head>
 
