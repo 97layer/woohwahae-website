@@ -8,6 +8,23 @@
 
 ## 디렉토리 목적 정의
 
+### 경계 규칙: directives/ vs knowledge/docs/
+
+> **판단 기준 한 줄**: "앞으로도 유효한 규범인가?" → `directives/` | "과거 기록이나 참고 자료인가?" → `knowledge/docs/`
+
+| 넣을 것 | directives/ | knowledge/docs/ |
+|--------|------------|----------------|
+| 브랜드 철학, 에이전트 판단 기준 | ✅ | ❌ |
+| 운영 규칙, 배치 규칙 (이 문서) | ✅ | ❌ |
+| 기술 구현 가이드, 코딩 규칙 | ❌ | ✅ (`docs/system/`) |
+| 배포 절차, 인프라 문서 | ❌ | ✅ (`docs/deployment/`) |
+| 세션 기록, 리포트 | ❌ | ✅ (`docs/sessions/`, `reports/`) |
+| 과거 문서 보관 | ❌ | ✅ (`docs/archive/`) |
+
+**`knowledge/docs/system/` 파일명 규칙**: `UPPER_SNAKE_CASE.md` (예: `CODING_RULES.md`, `ENFORCEMENT_SYSTEM.md`)
+
+---
+
 ### directives/ — 지침 (변경 빈도 낮음)
 
 | 경로 | 용도 | 권한 |

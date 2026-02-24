@@ -1,8 +1,213 @@
 {
   "version": "1.0",
   "created_at": "2026-02-18T00:00:00",
-  "last_updated": null,
-  "clusters": {},
+  "last_updated": "2026-02-24T15:26:20.563309",
+  "clusters": {
+    "슬로우라이프": {
+      "theme": "슬로우라이프",
+      "entry_ids": [
+        "entry_text_20260216_224718",
+        "entry_text_20260216_204131"
+      ],
+      "first_seen": "2026-02-18T23:31:46.751503",
+      "last_seen": "2026-02-18T23:41:40.228868",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "본질": {
+      "theme": "본질",
+      "entry_ids": [
+        "entry_text_20260216_224718",
+        "entry_text_20260216_223411",
+        "entry_text_20260216_204131"
+      ],
+      "first_seen": "2026-02-18T23:31:46.751503",
+      "last_seen": "2026-02-18T23:41:40.228868",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "균형": {
+      "theme": "균형",
+      "entry_ids": [
+        "entry_text_20260216_224718"
+      ],
+      "first_seen": "2026-02-18T23:31:46.751503",
+      "last_seen": "2026-02-18T23:31:46.751503",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "성찰": {
+      "theme": "성찰",
+      "entry_ids": [
+        "entry_text_20260216_224718"
+      ],
+      "first_seen": "2026-02-18T23:31:46.751503",
+      "last_seen": "2026-02-18T23:31:46.751503",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "정체성": {
+      "theme": "정체성",
+      "entry_ids": [
+        "entry_text_20260216_224718"
+      ],
+      "first_seen": "2026-02-18T23:31:46.751503",
+      "last_seen": "2026-02-18T23:31:46.751503",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "여백": {
+      "theme": "여백",
+      "entry_ids": [
+        "entry_text_20260216_223411",
+        "entry_text_20260216_204131"
+      ],
+      "first_seen": "2026-02-18T23:39:59.242420",
+      "last_seen": "2026-02-18T23:41:40.228868",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "미니멀리즘": {
+      "theme": "미니멀리즘",
+      "entry_ids": [
+        "entry_text_20260216_223411"
+      ],
+      "first_seen": "2026-02-18T23:39:59.242420",
+      "last_seen": "2026-02-18T23:39:59.242420",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "기대와 현실": {
+      "theme": "기대와 현실",
+      "entry_ids": [
+        "entry_text_20260216_223411"
+      ],
+      "first_seen": "2026-02-18T23:39:59.242420",
+      "last_seen": "2026-02-18T23:39:59.242420",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "본질 탐구": {
+      "theme": "본질 탐구",
+      "entry_ids": [
+        "entry_text_20260216_232216"
+      ],
+      "first_seen": "2026-02-18T23:40:35.229855",
+      "last_seen": "2026-02-18T23:40:35.229855",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "사유의 가치": {
+      "theme": "사유의 가치",
+      "entry_ids": [
+        "entry_text_20260216_232216"
+      ],
+      "first_seen": "2026-02-18T23:40:35.229855",
+      "last_seen": "2026-02-18T23:40:35.229855",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "느린 삶의 지향": {
+      "theme": "느린 삶의 지향",
+      "entry_ids": [
+        "entry_text_20260216_232216"
+      ],
+      "first_seen": "2026-02-18T23:40:35.229855",
+      "last_seen": "2026-02-18T23:40:35.229855",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "알고리즘 비판": {
+      "theme": "알고리즘 비판",
+      "entry_ids": [
+        "entry_text_20260216_232216"
+      ],
+      "first_seen": "2026-02-18T23:40:35.229855",
+      "last_seen": "2026-02-18T23:40:35.229855",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "사회적 피로": {
+      "theme": "사회적 피로",
+      "entry_ids": [
+        "entry_text_20260216_232216"
+      ],
+      "first_seen": "2026-02-18T23:40:35.229855",
+      "last_seen": "2026-02-18T23:40:35.229855",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "정보 부족": {
+      "theme": "정보 부족",
+      "entry_ids": [
+        "entry_youtube_7HBhL7lltpU_20260217_000130"
+      ],
+      "first_seen": "2026-02-18T23:41:23.477830",
+      "last_seen": "2026-02-18T23:41:23.477830",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "지속가능성": {
+      "theme": "지속가능성",
+      "entry_ids": [
+        "entry_text_20260216_204131"
+      ],
+      "first_seen": "2026-02-18T23:41:40.228868",
+      "last_seen": "2026-02-18T23:41:40.228868",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "Visual Aesthetic": {
+      "theme": "Visual Aesthetic",
+      "entry_ids": [
+        "entry_text_20260216_212820"
+      ],
+      "first_seen": "2026-02-18T23:41:59.982535",
+      "last_seen": "2026-02-18T23:41:59.982535",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "Editorial Curation": {
+      "theme": "Editorial Curation",
+      "entry_ids": [
+        "entry_text_20260216_212820"
+      ],
+      "first_seen": "2026-02-18T23:41:59.982535",
+      "last_seen": "2026-02-18T23:41:59.982535",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "Sensibility": {
+      "theme": "Sensibility",
+      "entry_ids": [
+        "entry_text_20260216_212820"
+      ],
+      "first_seen": "2026-02-18T23:41:59.982535",
+      "last_seen": "2026-02-18T23:41:59.982535",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "Composition": {
+      "theme": "Composition",
+      "entry_ids": [
+        "entry_text_20260216_212820"
+      ],
+      "first_seen": "2026-02-18T23:41:59.982535",
+      "last_seen": "2026-02-18T23:41:59.982535",
+      "maturity": "accumulating",
+      "essay_issued": null
+    },
+    "Slowlife": {
+      "theme": "Slowlife",
+      "entry_ids": [
+        "entry_text_20260216_212820"
+      ],
+      "first_seen": "2026-02-18T23:41:59.982535",
+      "last_seen": "2026-02-18T23:41:59.982535",
+      "maturity": "accumulating",
+      "essay_issued": null
+    }
+  },
   "publish_queue": [],
   "published": []
 }

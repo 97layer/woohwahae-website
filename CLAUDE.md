@@ -132,8 +132,8 @@ Essence > Speed | Record > Memory | Process > Result | Self-Affirmation
 
 **Imperfect completion is acceptable. Hallucinated success is NOT.**
 
-> 코드 설계 규칙 → `knowledge/docs/system/coding-rules.md`
-> 강제 집행 레이어 → `knowledge/docs/system/enforcement.md`
+> 코드 설계 규칙 → `knowledge/docs/system/CODING_RULES.md`
+> 강제 집행 레이어 → `knowledge/docs/system/ENFORCEMENT_SYSTEM.md`
 
 ---
 
