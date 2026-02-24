@@ -316,9 +316,11 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
                         'ad_result': {},
                     }
                     pub_result = publisher.publish(pub_payload)
-                    result['published'] = pub_result.get('status') == 'success'
+                    result['published'] = pub_result.get('status') in ('success', 'published')
                     result['website_published'] = pub_result.get('website_published', False)
-                    print(f"CE: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')}")
+                    result['telegram_sent'] = pub_result.get('telegram_sent', False)
+                    tg = '✓' if result['telegram_sent'] else '✗'
+                    print(f"CE: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')} | telegram={tg}")
                 except Exception as e:
                     print(f"CE: 홈페이지 발행 실패 — {e}")
                     result['published'] = False
