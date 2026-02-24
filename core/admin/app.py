@@ -70,6 +70,20 @@ app.secret_key = _secret_key
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 app.config['DEBUG'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = False
+app.config['APPLICATION_ROOT'] = '/admin'
+app.config['PREFERRED_URL_SCHEME'] = 'https'
+
+# WSGI 미들웨어: nginx X-Forwarded-Prefix → SCRIPT_NAME (url_for prefix 적용)
+# before_request보다 앞서 실행되어 URL adapter 생성 전에 SCRIPT_NAME 설정
+_original_wsgi = app.wsgi_app
+
+def _prefix_middleware(environ, start_response):
+    prefix = environ.get('HTTP_X_FORWARDED_PREFIX', '')
+    if prefix:
+        environ['SCRIPT_NAME'] = prefix
+    return _original_wsgi(environ, start_response)
+
+app.wsgi_app = _prefix_middleware
 
 # B2: 쿠키 보안
 app.config.update(

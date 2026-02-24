@@ -50,7 +50,7 @@
         <!-- LAYER 2 -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">LAYER 2 — DESIGN</div>
-          <a href="/lab"
+          <a href="{{ url_for('lab_panel') }}"
             class="sidebar-link {% if request.path == '/lab' %}active{% endif %}">
             랩
           </a>
@@ -80,7 +80,7 @@
             class="sidebar-link {% if request.path.startswith('/growth') %}active{% endif %}">
             성장
           </a>
-          <a href="/offering"
+          <a href="{{ url_for('offering_admin') }}"
             class="sidebar-link {% if request.path.startswith('/offering') %}active{% endif %}">
             오퍼링
           </a>
@@ -89,7 +89,7 @@
         <!-- SYSTEM -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">SYSTEM</div>
-          <a href="/tools"
+          <a href="{{ url_for('tools_panel') }}"
             class="sidebar-link {% if request.path == '/tools' %}active{% endif %}">
             도구
           </a>
