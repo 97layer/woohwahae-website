@@ -299,6 +299,7 @@ JSON 형식으로만 응답:
 {{
   "strategic_score": <0-100, 97layer 방향 정렬도 + 전략 가치>,
   "category": "<trend|insight|opportunity|question|noise>",
+  "content_category": "<Seeing|Living|Working|Making|Listening>",
   "themes": ["테마1", "테마2", "테마3"],
   "key_insights": [
     "인사이트 1 (한 문장, 직접적으로)",
@@ -312,6 +313,13 @@ JSON 형식으로만 응답:
   "recommended_agents": ["AD", "CE", "CD"],
   "summary": "한 문장 요약 — 핵심만"
 }}
+
+**content_category 분류 기준:**
+- Seeing: 철학, 관점, 감각적 관찰, 시선, 인식
+- Living: 라이프스타일, 공간, 일상, 습관, 루틴
+- Working: 직업, 미용, 아틀리에, 장인정신, 기술
+- Making: 시스템, 브랜딩, 빌드, 프로세스, 코딩
+- Listening: 관계, 공명, 대화, 타인, 연결
 
 **판단 기준:**
 - 80+: 97layer 방향과 정렬. 행동할 가치 있음.
@@ -342,7 +350,7 @@ JSON만 출력. 설명 없이.
             analysis = json.loads(json_text)
 
             # Validate required fields
-            required_fields = ['strategic_score', 'category', 'themes', 'key_insights', 'summary']
+            required_fields = ['strategic_score', 'category', 'content_category', 'themes', 'key_insights', 'summary']
             for field in required_fields:
                 if field not in analysis:
                     analysis[field] = None

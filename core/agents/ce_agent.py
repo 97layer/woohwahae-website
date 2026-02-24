@@ -320,7 +320,8 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
                     result['website_published'] = pub_result.get('website_published', False)
                     result['telegram_sent'] = pub_result.get('telegram_sent', False)
                     tg = '✓' if result['telegram_sent'] else '✗'
-                    print(f"CE: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')} | telegram={tg}")
+                    ctype = result.get('content_type', 'essay')
+                    print(f"CE: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')} [{ctype}] | telegram={tg}")
                 except Exception as e:
                     print(f"CE: 홈페이지 발행 실패 — {e}")
                     result['published'] = False
@@ -348,16 +349,31 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
         entry_count = payload.get("entry_count", 0)
         instruction = payload.get("instruction", "")
         content_type = payload.get("content_type", "archive")
+        content_category = payload.get("content_category", "")
 
         # AgentLogger: 에세이 작성 시작
         self.logger.think(f"에세이 작성 중: {theme}")
 
-        if content_type == "archive":
-            tone_guide = "문체: 한다체. 성격: 사색적, 깊은 호흡. 마무리: 열린 질문 또는 여백. 금지: 강한 호소, 행동 유도."
-        elif content_type == "magazine":
-            tone_guide = "문체: 합니다체. 성격: 독자 지향, 명확한 구조. 마무리: 온화한 실행 제안. 금지: 자기중심 관찰, 모호한 결론."
+        # essay: archive or essay type → 한다체, 독백, 300-800자
+        # journal: magazine or journal type → 합니다체, ~~~하는 법, 1200-3000자
+        is_journal = content_type in ("magazine", "journal")
+
+        if is_journal:
+            tone_guide = (
+                "문체: 합니다체. 형식: ~~~하는 법 / 안내형. "
+                "구조: 리드(도입 요약) → 본문(단계별 설명) → 실천(온화한 제안). "
+                "길이: 1200-3000자. "
+                "마무리: 독자가 실천 가능한 제안. 금지: 자기중심 관찰, 모호한 결론."
+            )
+            essay_length_spec = "1200~3000자. 리드+본문+실천 구조."
         else:
-            tone_guide = "절제, 사색, 여백. 감탄사 없음."
+            tone_guide = (
+                "문체: 한다체. 형식: 독백, 관찰자 시점. "
+                "구조: Hook(역설/선언) → Story(개인→보편) → Core(통찰) → Echo(Hook 변주). "
+                "길이: 300-800자. "
+                "마무리: 결론 없이 여운. 열린 질문 또는 여백. 금지: 강한 호소, 행동 유도."
+            )
+            essay_length_spec = "300~800자. Hook-Story-Core-Echo 구조."
 
         # RAG 컨텍스트 직렬화
         context_text = ""
@@ -368,9 +384,12 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
             if insights:
                 context_text += f"인사이트: {' / '.join(str(x) for x in insights[:3])}\n"
 
+        category_hint = f"\n카테고리: {content_category}" if content_category else ""
+
         prompt = f"""너는 WOOHWAHAE의 편집장이다.
 
-주제: {theme}
+주제: {theme}{category_hint}
+타입: {"Journal (합니다체, 안내형)" if is_journal else "Essay (한다체, 독백형)"}
 신호 수: {entry_count}개
 
 아래는 이 주제와 관련해 시간을 두고 쌓인 신호들의 요약이다:
@@ -389,7 +408,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
 {{
   "essay_title": "제목 (10자 이내, 명사형)",
   "pull_quote": "이 글 전체를 관통하는 핵심 문장 1개 (30자 이내). 웹사이트 히어로에 써도 될 만큼 밀도 있게.",
-  "archive_essay": "롱폼 에세이. 800~1200자. 도입(관찰) → 전개(맥락) → 마무리(열린 질문 또는 여백). 단락 사이 빈 줄.",
+  "archive_essay": "에세이 본문. {essay_length_spec} 단락 사이 빈 줄.",
   "instagram_caption": "인스타그램 캡션. 150자 이내. 에세이의 핵심을 압축. 마지막 줄은 여백을 주는 한 문장.",
   "carousel_slides": [
     "슬라이드 1: 도입 문장 (30자 이내)",
@@ -399,6 +418,8 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 브랜드 목소리로 콘텐츠�
   ],
   "telegram_summary": "봇 푸시 알림용 3줄 요약. 각 줄 40자 이내. 첫 줄: 제목. 둘째 줄: 핵심. 셋째 줄: 링크 유도.",
   "theme": "{theme}",
+  "content_category": "{content_category}",
+  "content_type": "{"journal" if is_journal else "essay"}",
   "entry_count": {entry_count}
 }}
 
@@ -527,6 +548,8 @@ JSON만 출력."""
         pull_quote = result.get('pull_quote', '')
         archive_essay = result.get('archive_essay', '')
         today = _dt.now().strftime('%Y.%m.%d')
+        content_type_label = result.get('content_type', 'essay').capitalize()
+        content_category_label = result.get('content_category', '')
 
         # ── 에세이 본문 → HTML 단락 변환 ──
         paragraphs = [p.strip() for p in archive_essay.split('\n\n') if p.strip()]
@@ -576,7 +599,7 @@ JSON만 출력."""
     <div class="article-container">
 
         <header class="article-header">
-            <p class="article-meta fade-in">Issue {issue_num_str} &nbsp;·&nbsp; Essay &nbsp;·&nbsp; {today}</p>
+            <p class="article-meta fade-in">Issue {issue_num_str} &nbsp;·&nbsp; {content_category_label + ' · ' if content_category_label else ''}{content_type_label} &nbsp;·&nbsp; {today}</p>
             <h1 class="article-title fade-in">{essay_title}</h1>
             <p class="article-subtitle fade-in">{pull_quote}</p>
         </header>

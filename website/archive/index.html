@@ -52,8 +52,11 @@
     <!-- Filter -->
     <div class="arc-filter-bar fade-in" id="archive-filters">
       <button class="arc-filter active" data-filter="all">All</button>
-      <button class="arc-filter" data-filter="essay">Essay</button>
-      <button class="arc-filter" data-filter="journal">Journal</button>
+      <button class="arc-filter" data-filter="seeing">Seeing</button>
+      <button class="arc-filter" data-filter="living">Living</button>
+      <button class="arc-filter" data-filter="working">Working</button>
+      <button class="arc-filter" data-filter="making">Making</button>
+      <button class="arc-filter" data-filter="listening">Listening</button>
     </div>
 
     <!-- Featured Block -->
@@ -170,7 +173,8 @@
             '<span class="arc-row-num">' + issueNum.padStart(3, '0') + '</span>' +
             '<span class="arc-row-title">' + post.title + '</span>' +
             '<span class="arc-row-date">' + post.date + '</span>' +
-            '<span class="arc-row-cat">' + post.category.toUpperCase() + '</span>';
+            '<span class="arc-row-cat">' + (post.category || '') + '</span>' +
+            '<span class="arc-row-type">' + (post.type || '') + '</span>';
 
           list.appendChild(row);
         });
