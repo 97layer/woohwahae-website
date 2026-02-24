@@ -221,6 +221,22 @@ def _build_parting(crown_y: float) -> str:
     )
 
 
+def get_hair_style(client: dict) -> str:
+    """
+    고객 데이터 → 헤어 스타일 파일명 (glb 키).
+    가능한 값: short_minimal / medium_natural / medium_texture / long_classic / long_bold
+    """
+    p = _extract_params(client)
+    primary = p["moods"][0]
+    length = p["length"]
+
+    if length < 0.25:
+        return "short_minimal"
+    if length < 0.65:
+        return "medium_texture" if primary == "텍스처" else "medium_natural"
+    return "long_bold" if primary == "볼드" else "long_classic"
+
+
 def generate_silhouette(client: dict) -> str:
     """
     고객 데이터 → SVG 문자열.

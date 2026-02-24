@@ -290,14 +290,14 @@ def client_portal(token):
 
     total_paid = sum(v.get('amount', 0) for v in client.get('visits', []))
 
-    from silhouette_renderer import generate_silhouette
-    silhouette = generate_silhouette(client)
+    from silhouette_renderer import get_hair_style
+    hair_style = get_hair_style(client)
 
     return render_template('portal.html',
         client=client,
         visits=visits,
         total_paid=total_paid,
-        silhouette=silhouette,
+        hair_style=hair_style,
         token=token,
     )
 
