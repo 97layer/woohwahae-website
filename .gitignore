@@ -57,6 +57,9 @@ google-cloud-sdk/**/CONTRIBUTING
 google-cloud-sdk/**/LICENSE
 google-cloud-sdk/**/SECURITY
 
+# 고객 CRM 데이터 — VM이 source of truth, 로컬 덮어쓰기 금지
+knowledge/clients/
+
 # Runtime-generated data (not for version control)
 .container_data/
 knowledge/signals/
