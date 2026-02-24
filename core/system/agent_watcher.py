@@ -20,6 +20,7 @@ Author: 97layerOS Technical Director
 Created: 2026-02-16
 """
 
+import json
 import os
 import time
 import signal
@@ -27,7 +28,7 @@ import sys
 import logging
 from pathlib import Path
 from typing import Callable, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +73,47 @@ class AgentWatcher:
         print(f"\n🛑 {self.agent_id}: Received shutdown signal, stopping...")
         self.running = False
 
+    def _recover_stale_tasks(self, stale_minutes: int = 30):
+        """
+        Startup recovery: fail processing tasks older than stale_minutes.
+        Handles orphans left by service restarts or crashes.
+        """
+        processing_dir = self.queue.queue_root / 'tasks' / 'processing'
+        if not processing_dir.exists():
+            return
+
+        now = datetime.now(timezone.utc)
+        recovered = 0
+
+        for task_file in processing_dir.glob('*.json'):
+            try:
+                task_data = json.loads(task_file.read_text())
+                if task_data.get('agent_type') != self.agent_type:
+                    continue
+                claimed_at_str = task_data.get('claimed_at')
+                if not claimed_at_str:
+                    continue
+                claimed_at = datetime.fromisoformat(claimed_at_str)
+                if claimed_at.tzinfo is None:
+                    claimed_at = claimed_at.replace(tzinfo=timezone.utc)
+                age_minutes = (now - claimed_at).total_seconds() / 60
+                if age_minutes >= stale_minutes:
+                    task_id = task_data['task_id']
+                    self.queue.fail_task(
+                        task_id,
+                        "Abandoned: stale in processing for %.0fm (startup recovery)" % age_minutes
+                    )
+                    logger.warning(
+                        "%s: Recovered stale task %s (age: %.0fm)",
+                        self.agent_id, task_id, age_minutes
+                    )
+                    recovered += 1
+            except Exception as e:
+                logger.warning("%s: Error recovering task %s: %s", self.agent_id, task_file.name, e)
+
+        if recovered:
+            logger.info("%s: Recovered %d stale task(s) on startup", self.agent_id, recovered)
+
     def watch(self, callback: Callable[[Task], dict], interval: int = 5, max_iterations: Optional[int] = None):
         """
         Start watching for tasks (blocking loop)
@@ -89,6 +131,9 @@ class AgentWatcher:
         """
         self.running = True
         iterations = 0
+
+        # Recover any tasks stuck in processing from previous run
+        self._recover_stale_tasks()
 
         # Emit agent ready event
         self.queue.emit_event(
