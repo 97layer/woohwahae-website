@@ -14,7 +14,7 @@ VM_PATH="/home/${VM_USER}/97layerOS"
 SSH="ssh -i ${VM_KEY} -o ConnectTimeout=15 -o StrictHostKeyChecking=no"
 SCP="scp -i ${VM_KEY} -o StrictHostKeyChecking=no"
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 echo "🚀 97layerOS 배포 시작 → ${VM_IP}"
 echo ""
@@ -37,7 +37,10 @@ tar \
     directives/ \
     knowledge/docs/ \
     knowledge/agent_hub/ \
+    knowledge/system/schemas/ \
+    knowledge/system/filesystem_cache.json \
     knowledge/long_term_memory.json \
+    scripts/signal_inject.py \
     requirements.txt \
     website/
 SIZE=$(du -h /tmp/97layer-deploy.tar.gz | cut -f1)
@@ -64,19 +67,24 @@ ENDSSH
 # [5] 서비스 재시작
 echo "[5/5] 서비스 재시작..."
 ${SSH} ${VM_HOST} bash << 'ENDSSH'
-sudo systemctl restart 97layer-telegram
-sleep 4
-STATUS=$(systemctl is-active 97layer-telegram)
-if [ "$STATUS" = "active" ]; then
-    echo "✅ 97layer-telegram: active"
-    sudo systemctl status 97layer-telegram --no-pager | grep -E 'Active|Memory|PID'
-else
-    echo "❌ 서비스 상태: $STATUS"
-    sudo journalctl -u 97layer-telegram -n 20 --no-pager
-    exit 1
-fi
+SERVICES="97layer-telegram 97layer-ecosystem 97layer-gardener"
+for SVC in $SERVICES; do
+    if systemctl list-unit-files | grep -q "$SVC"; then
+        sudo systemctl restart "$SVC"
+        sleep 3
+        STATUS=$(systemctl is-active "$SVC")
+        if [ "$STATUS" = "active" ]; then
+            echo "✅ ${SVC}: active"
+        else
+            echo "⚠️  ${SVC}: ${STATUS}"
+            sudo journalctl -u "$SVC" -n 10 --no-pager
+        fi
+    else
+        echo "⏭️  ${SVC}: 서비스 미등록 (skip)"
+    fi
+done
 ENDSSH
 
 echo ""
 echo "🎉 배포 완료 | GCP VM ${VM_IP}"
-echo "   로그: ssh -i ~/.ssh/google_compute_engine ${VM_HOST} 'tail -f ~/97layerOS/.infra/logs/telegram.log'"
+echo "   로그: ssh -i ~/.ssh/google_compute_engine ${VM_HOST} 'sudo journalctl -u 97layer-telegram -n 50 --no-pager'"

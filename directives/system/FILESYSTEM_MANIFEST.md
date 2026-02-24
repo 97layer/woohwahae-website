@@ -24,6 +24,7 @@
 | 경로 | 용도 |
 |------|------|
 | `core/agents/` | 에이전트 코드. 1 에이전트 = 1 파일 |
+| `core/modules/` | 레이어별 모듈 (L4 Ritual, L5 Growth) |
 | `core/system/` | 파이프라인, 큐, 유틸리티 |
 | `core/daemons/` | 상주 프로세스 (텔레그램, 감시자) |
 | `core/bridges/` | 외부 API 연동 (NotebookLM 등) |
@@ -45,6 +46,7 @@
 | `knowledge/system/` | 런타임 상태 (work_lock, cache, registry) |
 | `knowledge/system/schemas/` | JSON 스키마 정의 |
 | `knowledge/clients/` | CRM 클라이언트 데이터 (Ritual Module) |
+| `knowledge/reports/growth/` | 월별 성장 지표 JSON (Growth Module) |
 | `knowledge/long_term_memory.json` | 장기 기억 |
 
 ### website/ — 웹사이트 (정적 HTML/CSS/JS)

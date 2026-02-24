@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). Gardener가 매일 자동 갱신.
-> **마지막 갱신**: 2026-02-24 (통합 신호 수집 코드 완료: 5개 소스 통일 + CLI 입력 + SA 큐 자동 연결)
+> **마지막 갱신**: 2026-02-24 (Claude Code 인프라 강화: 보안 hooks 2개 + 세션 라이프사이클 2개 + 품질 게이트 3개 + 규칙 2개)
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 🏗️ 시스템 아키텍처
 
-**버전**: Ver 7.1 — 통합 신호 수집 코드 완료 (5개 소스 × 통합 스키마 + CLI 입력 + SA 큐 자동 연결)
+**버전**: Ver 7.2 — Claude Code 인프라 강화 + deploy.sh 수정 (보안/세션/품질 자동화 완비)
 
 ```
 신호 유입 (텔레그램/CLI/유튜브/URL/이미지/PDF/크롤러 — 전부 통합 스키마)
@@ -88,13 +88,19 @@ woohwahae.kr/archive/ 발행
 - ✅ **LAYER OS Rebuild Phase -1~1** (2026-02-24): Claude Code 인프라(Memory 4개, 커맨드 4개, Hooks, Rules), 레거시 10파일 삭제, 배포스크립트 이동, 에이전트 기능화(persona→role: JOON→SA, MIA→AD, RAY→CE, CD_SUNHO→CD), OS 리브랜딩(97layerOS→LAYER OS), FILESYSTEM_MANIFEST.md 서재 맵 구축.
 - ✅ **LAYER OS Rebuild Phase 2A~4** (2026-02-24): 2차 파편제거(빈폴더 20개/worktree 7개/이벤트 479개 삭제, 파편 4건 통합), Brand OS 11개 문서(directives/brand/), IDENTITY v7(brand/ 참조 체계), SYSTEM v6(5-Layer 매핑), agent_router v2(AGENT_REGISTRY 수정+brand/ 로딩), CE/AD/SA brand/ 문서 로딩, 파이프라인 재설계(SA→CE→Ralph→AD→CD), 통합 신호 스키마(signal/ritual/growth 3종).
 - ✅ **통합 신호 수집 코드** (2026-02-24): 7개 파일 수정. telegram_secretary(source_channel+이미지 통합스키마+PDF 핸들러), youtube_analyzer(signal_id+from_user+source_channel+SA큐연결), image_analyzer(signals/images/→signals/+signals/files/), signal_router(5개 통합타입+레거시 호환), scout_crawler(.md→.json 통합스키마), pipeline_orchestrator(새 타입 호환), scripts/signal_inject.py(CLI 수동 입력 도구).
+- ✅ **Claude Code 인프라 강화** (2026-02-24): 보안 hooks(output-secret-filter+command-guard), 세션 라이프사이클(session-start+session-stop), 규칙(security.md+git-workflow.md), 품질 게이트(code-quality-check+/verify+validate-path 보강). deploy.sh PROJECT_ROOT 버그 수정+3서비스 재시작+누락 경로 추가.
+- ✅ **VM 배포** (2026-02-24): deploy.sh → 3서비스 모두 active (telegram/ecosystem/gardener). Brand OS + 통합 신호 수집 + 스키마 전체 반영.
+- ✅ **Ritual Module** (2026-02-24): core/modules/ritual.py — 고객 CRUD, 방문 기록, 리듬 자동 계산(빠른/보통/느린), 재방문 알림, CLI. 스키마 기반.
+- ✅ **Growth Module** (2026-02-24): core/modules/growth.py — 수익 수동입력, 콘텐츠/서비스 자동 집계, 월간 리포트 마크다운 생성, 추세 분석. 스키마 기반.
+- ✅ **레거시 신호 마이그레이션** (2026-02-24): .md 11개 → JSON 4개 변환 + 7개 archive. wellness/ 폴더 삭제. signals/ 100% JSON.
 
 ## 🎯 다음 작업
 
 1. [BLOCKER] 아임웹 DNS A레코드 `136.109.201.201` 설정 (사용자 직접)
-2. VM 배포: Brand OS + 통합 신호 수집 코드 전체 배포 + 서비스 재시작
-3. Ritual/Growth 코드 구현 (스키마 기반)
-4. 레거시 신호 마이그레이션 (signals/wellness/*.md → JSON 또는 archive)
+2. VM 재배포: Ritual/Growth 모듈 + 레거시 마이그레이션 반영
+3. Telegram 연동: /client, /visit, /growth 커맨드 추가 (L4/L5 모듈 활용)
+4. Gardener 연동: 월간 자동 집계 → Growth Module 호출
+5. THE CYCLE E2E 자동화 테스트
 
 ## 📐 콘텐츠 전략 (2026-02-19 확정)
 
@@ -133,21 +139,19 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24] Session Update - claude-opus-rebuild (Phase 2)
+### [2026-02-24] Session Update - claude-opus-rebuild (Sprint 3 완료)
 
-**완료한 작업**:
-- ✅ Phase 2A: 2차 물리 정리 — 빈폴더 20개, worktree 7개, 이벤트 479개 삭제. 파편 4건 통합.
-- ✅ Phase 2B: Brand OS 11개 문서 생성 (directives/brand/). IDENTITY v7.0, SYSTEM v6.0 업그레이드.
-- ✅ Phase 2B: agent_router.py CRITICAL FIX — AGENT_REGISTRY 파일명 수정, brand/ 로딩 추가.
-- ✅ Phase 2B: 에이전트 directive 기능화 완료 — persona 이름/성격 서술 0건.
-- ✅ Phase 3: CE _load_brand_directives(), AD _load_design_tokens(), SA audience.md 로딩.
-- ✅ Phase 3: 파이프라인 재설계 — SA→CE→Ralph(인라인)→AD→CD.
-- ✅ Phase 4: 통합 신호 스키마 + Ritual + Growth (JSON Schema 3종).
+**이번 세션 완료**:
+- ✅ 통합 신호 수집 코드 (7개 파일, 5개 소스 통일)
+- ✅ Claude Code 인프라 강화 (hooks 5개 + rules 2개 + /verify 커맨드)
+- ✅ deploy.sh 수정 + VM 배포 성공 (3서비스 active)
+- ✅ Ritual Module (L4): 고객 CRUD + 방문 + 리듬 + 재방문 알림
+- ✅ Growth Module (L5): 수익 기록 + 자동 집계 + 월간 리포트
+- ✅ 레거시 마이그레이션: .md 11개 → JSON 4개 + archive 7개
 
-**다음 단계**:
-- ⏳ VM 배포 (기능화된 코드 + Brand OS 문서)
-- ⏳ 통합 신호 수집 코드 구현 (이미지/PDF/URL 핸들러)
-- ⏳ CLI signal_inject.py
-- ⏳ Ritual/Growth 코드 구현
+**다음**:
+- ⏳ VM 재배포 (Ritual/Growth 모듈)
+- ⏳ Telegram 커맨드 연동 (/client, /visit, /growth)
+- ⏳ Gardener 월간 자동 집계 연동
 
-**업데이트 시간**: 2026-02-24T08:00:00
+**업데이트 시간**: 2026-02-24T09:45:00
