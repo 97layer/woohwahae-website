@@ -115,11 +115,11 @@ class YouTubeAnalyzer:
             try:
                 transcript_data = api.fetch(video_id, languages=['ko'])
                 logger.info("✅ Found Korean transcript")
-            except:
+            except Exception:
                 try:
                     transcript_data = api.fetch(video_id, languages=['en'])
                     logger.info("✅ Found English transcript")
-                except:
+                except Exception:
                     # Try any available transcript
                     transcript_data = api.fetch(video_id)
                     logger.info("✅ Found automatic transcript")

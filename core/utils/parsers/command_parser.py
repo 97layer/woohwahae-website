@@ -96,7 +96,7 @@ class CommandParser:
         Returns:
             실행 결과
         """
-        logger.info(f"[Parser] Parsing command: {command}")
+        logger.info("[Parser] Parsing command: %s", command)
 
         # 명령어 타입 식별
         cmd_type, params = self._identify_command(command)
@@ -108,7 +108,7 @@ class CommandParser:
                 "suggestion": "Try: '이미지 10개 분석', '매일 아침 요약', '월간 리포트'"
             }
 
-        logger.info(f"[Parser] Detected type: {cmd_type}, params: {params}")
+        logger.info("[Parser] Detected type: %s, params: %s", cmd_type, params)
 
         # 명령어 실행
         result = await self._execute_command(cmd_type, params, command, user_id)
@@ -173,7 +173,7 @@ class CommandParser:
         "이미지 10개 분석" → 외장하드 스캔 → 10개 분석 → 결과 보고
         """
         count = params["count"]
-        logger.info(f"[BatchImage] Starting batch analysis for {count} images")
+        logger.info("[BatchImage] Starting batch analysis for %d images", count)
 
         # Workflow 생성
         workflow_steps = [
@@ -220,11 +220,11 @@ class CommandParser:
         """배치 이미지 워크플로우 백그라운드 실행"""
         try:
             # (Future: 실제 외장하드 스캔 및 이미지 분석 구현)
-            logger.info(f"[BatchImage] Workflow {workflow_id} running...")
+            logger.info("[BatchImage] Workflow %s running...", workflow_id)
             await asyncio.sleep(count * 2)  # 시뮬레이션
-            logger.info(f"[BatchImage] Workflow {workflow_id} completed")
+            logger.info("[BatchImage] Workflow %s completed", workflow_id)
         except Exception as e:
-            logger.error(f"[BatchImage] Workflow {workflow_id} error: {e}")
+            logger.error("[BatchImage] Workflow %s error: %s", workflow_id, e)
 
     async def _execute_batch_content(self, params: Dict[str, Any], user_id: str) -> Dict[str, Any]:
         """
@@ -232,7 +232,7 @@ class CommandParser:
         "5개 콘텐츠 만들어줘" → Junction Protocol 5회 실행
         """
         count = params["count"]
-        logger.info(f"[BatchContent] Starting batch content generation for {count} items")
+        logger.info("[BatchContent] Starting batch content generation for %d items", count)
 
         # raw_signals/ 에서 최근 신호 가져오기
         raw_signals_dir = self.junction_executor.raw_signals_dir
@@ -275,11 +275,11 @@ class CommandParser:
     async def _run_batch_content_workflow(self, workflow_id: str, signal_files: List[Path]):
         """배치 콘텐츠 워크플로우 백그라운드 실행"""
         try:
-            logger.info(f"[BatchContent] Workflow {workflow_id} running...")
+            logger.info("[BatchContent] Workflow %s running...", workflow_id)
 
             results = []
             for i, signal_file in enumerate(signal_files):
-                logger.info(f"[BatchContent] Processing {i+1}/{len(signal_files)}: {signal_file.name}")
+                logger.info("[BatchContent] Processing %d/%d: %s", i + 1, len(signal_files), signal_file.name)
 
                 # Signal 파일 읽기
                 with open(signal_file, 'r', encoding='utf-8') as f:
@@ -298,10 +298,10 @@ class CommandParser:
                 self.workflow_manager.workflows[workflow_id].checkpoint_data["results"] = results
                 self.workflow_manager.workflows[workflow_id].current_step = i + 1
 
-            logger.info(f"[BatchContent] Workflow {workflow_id} completed. Results: {len(results)}")
+            logger.info("[BatchContent] Workflow %s completed. Results: %d", workflow_id, len(results))
 
         except Exception as e:
-            logger.error(f"[BatchContent] Workflow {workflow_id} error: {e}")
+            logger.error("[BatchContent] Workflow %s error: %s", workflow_id, e)
 
     async def _execute_daily_schedule(self, params: Dict[str, Any], user_id: str) -> Dict[str, Any]:
         """
@@ -311,7 +311,7 @@ class CommandParser:
         time_of_day = params.get("time_of_day", "아침")
         hour = params.get("hour", "08")
 
-        logger.info(f"[DailySchedule] Registering: {time_of_day} {hour}시")
+        logger.info("[DailySchedule] Registering: %s %s시", time_of_day, hour)
 
         # (Future: 실제 스케줄러 통합)
         return {
@@ -353,7 +353,7 @@ class CommandParser:
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
-        logger.info(f"[MonthlyReport] Saved to {report_file}")
+        logger.info("[MonthlyReport] Saved to %s", report_file)
 
         return {
             "status": "completed",

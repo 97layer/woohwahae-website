@@ -143,13 +143,13 @@ class NotebookLMBridge:
             for nb in nbs:
                 if nb.title == title:
                     self._nb_cache[title] = nb.id
-                    logger.info(f"📖 기존 노트북 사용: {title} ({nb.id[:20]}...)")
+                    logger.info("📖 기존 노트북 사용: %s (%s...)", title, nb.id[:20])
                     return nb.id
 
             # 없으면 생성
             nb = await client.notebooks.create(title)
             self._nb_cache[title] = nb.id
-            logger.info(f"✅ 노트북 생성: {title} ({nb.id[:20]}...)")
+            logger.info("✅ 노트북 생성: %s (%s...)", title, nb.id[:20])
             return nb.id
 
     # ── 소스 추가 ────────────────────────────────
@@ -166,7 +166,7 @@ class NotebookLMBridge:
                 kwargs["title"] = title
             source = await client.sources.add_url(notebook_id, url, **kwargs)
             source_id = getattr(source, "id", str(source))
-            logger.info(f"✅ URL 소스 추가: {url[:60]} → {source_id[:20]}...")
+            logger.info("✅ URL 소스 추가: %s → %s...", url[:60], source_id[:20])
             return source_id
 
     def add_source_text(self, notebook_id: str, text: str, title: str) -> str:
@@ -178,7 +178,7 @@ class NotebookLMBridge:
         async with client:
             source = await client.sources.add_text(notebook_id, title, text, wait=True)
             source_id = getattr(source, "id", str(source))
-            logger.info(f"✅ 텍스트 소스 추가: {title} → {source_id[:20]}...")
+            logger.info("✅ 텍스트 소스 추가: %s → %s...", title, source_id[:20])
             return source_id
 
     # ── 쿼리 (RAG) ──────────────────────────────
@@ -192,7 +192,7 @@ class NotebookLMBridge:
         async with client:
             result = await client.chat.ask(notebook_id, query)
             answer = getattr(result, "answer", str(result))
-            logger.info(f"✅ 쿼리 완료 ({len(answer)}자)")
+            logger.info("✅ 쿼리 완료 (%s자)", len(answer))
             return answer
 
     # ── 고수준 워크플로우 ────────────────────────
@@ -238,7 +238,7 @@ SA 점수: {score}
             source_obj = await client.sources.add_text(nb_id, title, text, wait=True)
             source_id = getattr(source_obj, "id", str(source_obj))
 
-        logger.info(f"📚 Signal Archive 추가: {title}")
+        logger.info("📚 Signal Archive 추가: %s", title)
         return {
             "notebook_id": nb_id,
             "source_id": source_id,
@@ -314,7 +314,7 @@ SA 점수: {score}
             source_obj = await client.sources.add_text(nb_id, source_title, text, wait=True)
             source_id = getattr(source_obj, "id", str(source_obj))
 
-        logger.info(f"📚 Essay Archive 추가: {source_title}")
+        logger.info("📚 Essay Archive 추가: %s", source_title)
         return {
             "notebook_id": nb_id,
             "source_id": source_id,

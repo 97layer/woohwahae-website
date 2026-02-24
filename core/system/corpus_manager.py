@@ -85,7 +85,7 @@ class CorpusManager:
 
         # 이미 존재하면 스킵
         if entry_path.exists():
-            logger.info(f"[Corpus] 이미 존재: {entry_id}")
+            logger.info("[Corpus] 이미 존재: %s", entry_id)
             return entry_id
 
         # 테마 추출 (SA 분석에서)
@@ -113,7 +113,7 @@ class CorpusManager:
         }
 
         entry_path.write_text(json.dumps(entry, ensure_ascii=False, indent=2))
-        logger.info(f"[Corpus] Entry 추가: {entry_id} | 카테고리: {category} | 테마: {themes[:2]}")
+        logger.info("[Corpus] Entry 추가: %s | 카테고리: %s | 테마: %s", entry_id, category, themes[:2])
 
         # 인덱스 갱신
         self._update_index(entry)
@@ -185,7 +185,7 @@ class CorpusManager:
 
             if len(source_types) < self.CLUSTER_MIN_SOURCES:
                 # 소스 다양성 조건은 경고만, 차단하지 않음 (유연성)
-                logger.debug(f"[Corpus] {theme}: 소스 단일 타입이나 진행")
+                logger.debug("[Corpus] %s: 소스 단일 타입이나 진행", theme)
 
             avg_score = sum(e.get("strategic_score", 0) for e in entries) / len(entries)
 
@@ -251,7 +251,7 @@ class CorpusManager:
             })
 
         self._save_index(index)
-        logger.info(f"[Corpus] 군집 발행 완료: {theme} → {issue_id}")
+        logger.info("[Corpus] 군집 발행 완료: %s → %s", theme, issue_id)
 
     def get_summary(self) -> Dict:
         """현재 corpus 상태 요약 (QUANTA 갱신용)"""

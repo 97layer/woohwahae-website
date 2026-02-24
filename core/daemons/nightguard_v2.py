@@ -98,7 +98,7 @@ class NightguardV2:
             try:
                 self.bot = Bot(token=self.bot_token)
             except Exception as e:
-                logger.error(f"Failed to initialize Telegram bot: {e}")
+                logger.error("Failed to initialize Telegram bot: %s", e)
 
         # Load state
         self.state = self._load_state()
@@ -118,7 +118,7 @@ class NightguardV2:
             with open(self.state_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(f"Failed to load state: {e}")
+            logger.error("Failed to load state: %s", e)
             return {
                 'last_check': None,
                 'alerts_sent': [],
@@ -131,7 +131,7 @@ class NightguardV2:
             with open(self.state_file, 'w', encoding='utf-8') as f:
                 json.dump(self.state, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            logger.error(f"Failed to save state: {e}")
+            logger.error("Failed to save state: %s", e)
 
     async def send_alert(self, message: str, critical: bool = False):
         """
@@ -154,9 +154,9 @@ class NightguardV2:
                     text=full_message,
                     parse_mode='Markdown'
                 )
-                logger.info(f"Alert sent to admin: {self.admin_id}")
+                logger.info("Alert sent to admin: %s", self.admin_id)
             except Exception as e:
-                logger.error(f"Failed to send Telegram alert: {e}")
+                logger.error("Failed to send Telegram alert: %s", e)
         else:
             logger.warning("Telegram bot not configured - alert not sent")
 
@@ -178,7 +178,7 @@ class NightguardV2:
         }
         self.state['incidents'].append(incident)
         self._save_state()
-        logger.info(f"Incident logged: {component} - {issue} - {action}")
+        logger.info("Incident logged: %s - %s - %s", component, issue, action)
 
     # ========================
     # Authentication Monitoring
@@ -462,13 +462,13 @@ class NightguardV2:
                 await self.send_alert("✅ 텔레그램 봇이 중단되어 자동으로 재시작했습니다", critical=False)
                 return True
             else:
-                logger.error(f"Failed to restart Telegram bot: {result.stderr}")
+                logger.error("Failed to restart Telegram bot: %s", result.stderr)
                 self._log_incident('telegram_bot', 'service_down', 'restart_failed')
                 await self.send_alert(f"❌ 텔레그램 봇 중단 — 자동 재시작 실패\n\n오류: {result.stderr}", critical=True)
                 return False
 
         except Exception as e:
-            logger.error(f"Exception during Telegram bot restart: {e}")
+            logger.error("Exception during Telegram bot restart: %s", e)
             await self.send_alert(f"❌ 텔레그램 봇 중단 — 재시작 중 오류 발생: {str(e)}", critical=True)
             return False
 
@@ -580,7 +580,7 @@ class NightguardV2:
             'actions_taken': actions_taken
         }
 
-        logger.info(f"✅ Diagnostics complete - Status: {overall_status.upper()}")
+        logger.info("✅ Diagnostics complete - Status: %s", overall_status.upper())
 
         return result
 
@@ -591,9 +591,9 @@ class NightguardV2:
         Args:
             interval_minutes: Check interval in minutes (default: 30)
         """
-        logger.info(f"🛡️  Nightguard V2 daemon starting...")
-        logger.info(f"   Check interval: {interval_minutes} minutes")
-        logger.info(f"   Admin Telegram ID: {self.admin_id or 'NOT CONFIGURED'}")
+        logger.info("🛡️  Nightguard V2 daemon starting...")
+        logger.info("   Check interval: %d minutes", interval_minutes)
+        logger.info("   Admin Telegram ID: %s", self.admin_id or "NOT CONFIGURED")
 
         if not self.admin_id:
             logger.warning("⚠️  Admin Telegram ID not configured - alerts will only be logged")
@@ -608,7 +608,7 @@ class NightguardV2:
         except KeyboardInterrupt:
             logger.info("\n🛑 Nightguard daemon stopped by user")
         except Exception as e:
-            logger.error(f"❌ Nightguard daemon crashed: {e}")
+            logger.error("❌ Nightguard daemon crashed: %s", e)
             raise
 
 

@@ -17,8 +17,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-# Import Engines
-from core.system.gemini_engine import get_gemini_engine
+try:
+    from google import genai as _genai
+    _GEMINI_AVAILABLE = True
+except ImportError:
+    _GEMINI_AVAILABLE = False
+
 from core.system.conversation_engine import ConversationEngine
 from core.system.queue_manager import QueueManager
 
@@ -27,12 +31,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 class CortexEdge:
     """
-    97layerOS의 중앙 사고 엔진.
+    LAYER OS 중앙 사고 엔진.
     시스템 전체의 인텔리전스를 조정하고 통합된 맥락을 제공함.
     """
     def __init__(self):
-        self.gemini = get_gemini_engine()
-        self.conv_engine = ConversationEngine()  # Existing logic for memory/RAG
+        self.conv_engine = ConversationEngine()
         self.queue = QueueManager()
         
         self.knowledge_dir = PROJECT_ROOT / 'knowledge'
@@ -61,7 +64,7 @@ class CortexEdge:
         try:
             self._update_long_term_memory(text, response_text)
         except Exception as e:
-            logger.error(f"Memory update error: {e}")
+            logger.error("Memory update error: %s", e)
         
         # 2. 성능 메트릭 및 메타데이터 추가
         latency = (datetime.now() - start_time).total_seconds()
@@ -136,7 +139,13 @@ class CortexEdge:
         })
         
         # Gemini로 개념 및 관계 추출 (Graph Extraction)
-        extract_prompt = f"""다음 대화에서 97layer 개인의 핵심 개념(Nodes)과 개념 간의 관계(Edges)를 추출하라.
+        if not _GEMINI_AVAILABLE:
+            return
+        api_key = os.getenv('GOOGLE_API_KEY')
+        if not api_key:
+            return
+
+        extract_prompt = f"""다음 대화에서 WOOHWAHAE 브랜드의 핵심 개념(Nodes)과 개념 간의 관계(Edges)를 추출하라.
 
 사용자: {user_message[:300]}
 비서: {assistant_answer[:300]}
@@ -152,14 +161,19 @@ JSON으로만 응답:
 }}"""
 
         try:
-            resp = self.gemini.generate_text(extract_prompt) # Use GeminiEngine
+            _client = _genai.Client(api_key=api_key)
+            _resp = _client.models.generate_content(
+                model='gemini-2.0-flash',
+                contents=extract_prompt
+            )
+            resp = _resp.text
             import re
-            json_match = re.search(r'\{.*\}', resp, re.DOTALL)
+            json_match = re.search(r'\{.*\}', resp, re.DOTALL)  # type: ignore[possibly-undefined]
             if not json_match:
                 return
             extracted = json.loads(json_match.group())
         except Exception as e:
-            logger.error(f"Failed to extract knowledge: {e}")
+            logger.error("Failed to extract knowledge: %s", e)
             return
 
         # Prepare Ontology section
@@ -220,7 +234,7 @@ JSON으로만 응답:
         if memory_path.exists():
             try:
                 memory = json.loads(memory_path.read_text(encoding='utf-8'))
-            except:
+            except (OSError, ValueError):
                 pass
         
         recent_signals = sorted(

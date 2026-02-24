@@ -68,7 +68,7 @@ class AutoReporter:
         with open(report_file, 'w', encoding='utf-8') as f:
             f.write(report)
 
-        logger.info(f"✅ Morning briefing saved: {report_file}")
+        logger.info("✅ Morning briefing saved: %s", report_file)
 
         # TODO: Telegram으로 전송
         return report
@@ -89,7 +89,7 @@ class AutoReporter:
         with open(report_file, 'w', encoding='utf-8') as f:
             f.write(report)
 
-        logger.info(f"✅ Evening summary saved: {report_file}")
+        logger.info("✅ Evening summary saved: %s", report_file)
 
         # TODO: Telegram으로 전송
         return report
@@ -111,7 +111,7 @@ class AutoReporter:
                         data = json.load(f)
                         signals['youtube'].append(data)
                 except Exception as e:
-                    logger.error(f"Error reading {file}: {e}")
+                    logger.error("Error reading %s: %s", file, e)
 
             # 이미지 신호
             images_dir = self.signals_dir / 'images'
@@ -123,7 +123,7 @@ class AutoReporter:
                             data = json.load(f)
                             signals['images'].append(data)
                     except Exception as e:
-                        logger.error(f"Error reading {file}: {e}")
+                        logger.error("Error reading %s: %s", file, e)
 
             # 텍스트 신호
             text_files = list(self.signals_dir.glob(f'text_{date_str}_*.json'))
@@ -133,7 +133,7 @@ class AutoReporter:
                         data = json.load(f)
                         signals['texts'].append(data)
                 except Exception as e:
-                    logger.error(f"Error reading {file}: {e}")
+                    logger.error("Error reading %s: %s", file, e)
 
         return signals
 

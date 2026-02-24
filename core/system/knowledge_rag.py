@@ -35,12 +35,12 @@ class KnowledgeRAG:
                 try:
                     content = doc_file.read_text(encoding='utf-8')
                     documents.append(f"## {doc_file.name}\n\n{content}\n\n")
-                    logger.info(f"Loaded: {doc_file.name}")
+                    logger.info("Loaded: %s", doc_file.name)
                 except Exception as e:
-                    logger.warning(f"Failed: {doc_file.name}: {e}")
+                    logger.warning("Failed: %s: %s", doc_file.name, e)
         
         combined = "\n---\n\n".join(documents)
-        logger.info(f"Knowledge base: {len(documents)} docs, {len(combined)} chars")
+        logger.info("Knowledge base: %s docs, %s chars", len(documents), len(combined))
         return combined
     
     def query(self, question: str, max_tokens: int = 2048) -> str:
@@ -50,7 +50,7 @@ class KnowledgeRAG:
         if not self.knowledge_base:
             return "❌ Knowledge base 비어있음"
         
-        logger.info(f"RAG query: {question[:50]}...")
+        logger.info("RAG query: %s...", question[:50])
         
         prompt = f"""당신은 97layerOS 지식 기반 AI입니다.
 
@@ -66,7 +66,7 @@ Knowledge Base:
             response = self.model.generate_content(prompt)
             return response.text
         except Exception as e:
-            logger.error(f"RAG failed: {e}")
+            logger.error("RAG failed: %s", e)
             return f"❌ RAG 실패: {str(e)}"
 
 def get_knowledge_rag():

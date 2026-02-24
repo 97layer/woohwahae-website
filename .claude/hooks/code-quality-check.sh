@@ -2,15 +2,10 @@
 # code-quality-check.sh — PostToolUse(Edit|Write) Python 품질 체크
 # core/**/*.py 대상으로 공통 위반 패턴 감지
 #
-# exit 0 = 항상 통과 (경고만 출력)
+# exit 2 = 위반 시 차단 (Claude가 즉시 수정해야 함)
+# exit 0 = 통과
 
-# Write 도구: file_path 추출
 FILE_PATH=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('file_path',''))" 2>/dev/null)
-
-# Edit 도구: file_path 추출
-if [ -z "$FILE_PATH" ]; then
-  FILE_PATH=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('file_path',''))" 2>/dev/null)
-fi
 
 if [ -z "$FILE_PATH" ]; then
   exit 0
@@ -25,35 +20,38 @@ case "$FILE_PATH" in
     ;;
 esac
 
-# 파일 존재 확인
 if [ ! -f "$FILE_PATH" ]; then
   exit 0
 fi
 
-WARNINGS=""
+VIOLATIONS=""
 
-# 1. f-string 로깅 감지
-if grep -nE 'logger\.(info|debug|warning|error|critical)\(f["\x27]' "$FILE_PATH" 2>/dev/null; then
-  WARNINGS="${WARNINGS}\n⚠️  f-string 로깅 감지 — lazy formatting (%) 사용 필수"
+# 1. f-string 로깅 — 차단
+FSTRING_HITS=$(grep -nE 'logger\.(info|debug|warning|error|critical)\(f["\x27]' "$FILE_PATH" 2>/dev/null)
+if [ -n "$FSTRING_HITS" ]; then
+  VIOLATIONS="${VIOLATIONS}\n🚫 f-string 로깅 위반 — lazy formatting (%) 사용 필수:\n${FSTRING_HITS}"
 fi
 
-# 2. 빈 except 감지
-if grep -nE '^\s*except:\s*$' "$FILE_PATH" 2>/dev/null; then
-  WARNINGS="${WARNINGS}\n⚠️  빈 except 감지 — 구체적 예외 타입 지정 필수"
+# 2. 빈 except — 차단
+BARE_EXCEPT=$(grep -nE '^\s*except:\s*$' "$FILE_PATH" 2>/dev/null)
+if [ -n "$BARE_EXCEPT" ]; then
+  VIOLATIONS="${VIOLATIONS}\n🚫 bare except 위반 — 구체적 예외 타입 지정 필수:\n${BARE_EXCEPT}"
 fi
 
-# 3. 하드코딩 비밀 감지
-if grep -nE '(api_key|secret|token|password)\s*=\s*["\x27][a-zA-Z0-9_-]{16,}["\x27]' "$FILE_PATH" 2>/dev/null; then
-  WARNINGS="${WARNINGS}\n⚠️  하드코딩 비밀 감지 — os.getenv() 사용 필수"
+# 3. 하드코딩 비밀 — 차단
+SECRET_HITS=$(grep -nE '(api_key|secret|token|password)\s*=\s*["\x27][a-zA-Z0-9_-]{16,}["\x27]' "$FILE_PATH" 2>/dev/null)
+if [ -n "$SECRET_HITS" ]; then
+  VIOLATIONS="${VIOLATIONS}\n🚫 하드코딩 비밀 위반 — os.getenv() 사용 필수:\n${SECRET_HITS}"
 fi
 
-# 4. import * 감지
-if grep -nE '^\s*from\s+\S+\s+import\s+\*' "$FILE_PATH" 2>/dev/null; then
-  WARNINGS="${WARNINGS}\n⚠️  wildcard import 감지 — 명시적 import 사용 권장"
+# 4. import * — 경고만 (차단 아님)
+if grep -qE '^\s*from\s+\S+\s+import\s+\*' "$FILE_PATH" 2>/dev/null; then
+  echo "[CodeQuality] ⚠️  wildcard import 감지: $(basename "$FILE_PATH") — 명시적 import 권장"
 fi
 
-if [ -n "$WARNINGS" ]; then
-  echo -e "[CodeQuality] $(basename "$FILE_PATH")$WARNINGS"
+if [ -n "$VIOLATIONS" ]; then
+  echo -e "[CodeQuality] 🚫 BLOCKED: $(basename "$FILE_PATH")${VIOLATIONS}"
+  exit 2
 fi
 
 exit 0

@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 """
-97layerOS Creative Director (CD) Agent
-Phase 6.2: Independent agent with Claude Sonnet 4.5
+WOOHWAHAE Creative Director (CD) Agent — LAYER OS
 
 Role:
-- Final strategic decisions and brand stewardship
-- Quality gate: approve/reject/revise content
-- Big picture thinking and long-term vision
-- Budget gatekeeper ($10/month limit)
+- Final brand stewardship: approve/reject/revise content
+- WOOHWAHAE 브랜드 정렬도 판단 (philosophy.md + voice_tone.md 기준)
+- Quality gate before publish
 
-LLM: Claude Sonnet 4.5 (Paid, $10/month budget)
+LLM: Claude Sonnet 4.5
 Queue: Autonomous task claiming via AgentWatcher
-Output: Final approve/reject decisions
-
-Author: 97layerOS Technical Director
-Created: 2026-02-16
+Output: approve/revise/reject + brand_score + concerns[]
 """
 
 import os
@@ -68,18 +63,19 @@ class CreativeDirector:
         print(f"CD: 준비됨. 브랜드 기준 로드 완료.")
 
     def _load_criteria(self) -> str:
-        """CD.md + IDENTITY.md 브랜드 판단 기준 로드"""
+        """WOOHWAHAE 브랜드 판단 기준 로드 — IDENTITY + philosophy + voice_tone"""
         parts = []
         for path in [
-            PROJECT_ROOT / 'directives' / 'agents' / 'CD.md',
             PROJECT_ROOT / 'directives' / 'IDENTITY.md',
+            PROJECT_ROOT / 'directives' / 'brand' / 'philosophy.md',
+            PROJECT_ROOT / 'directives' / 'brand' / 'voice_tone.md',
         ]:
             try:
                 if path.exists():
-                    parts.append(path.read_text(encoding='utf-8')[:2000])
+                    parts.append(path.read_text(encoding='utf-8')[:1500])
             except Exception:
                 pass
-        return '\n\n---\n\n'.join(parts) if parts else "Remove the Noise, Reveal the Essence."
+        return '\n\n---\n\n'.join(parts) if parts else "본질 우선. 동작이 진실. 단순함이 답."
 
     def review_content(self, content_draft: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -100,14 +96,14 @@ class CreativeDirector:
         hashtags = content_draft.get('hashtags', '')
         ralph_score = content_draft.get('ralph_score', 0)
 
-        prompt = f"""다음은 97layer 브랜드 판단 기준과 IDENTITY 문서다.
+        prompt = f"""다음은 WOOHWAHAE 브랜드 판단 기준이다.
 
 {self._criteria[:2500]}
 
 ---
 
 이 콘텐츠 초안을 검토하고 최종 결정을 내려라.
-판단은 단 하나의 질문으로 귀결된다: "내가 이걸 보고 싶은가? 이게 진짜 97layer인가?"
+판단은 단 하나의 질문으로 귀결된다: "이게 진짜 WOOHWAHAE인가?"
 
 **콘텐츠 초안:**
 - 헤드라인: {content_draft.get('headline', '')}
@@ -121,7 +117,7 @@ JSON 형식으로 결정:
 {{
   "decision": "approve|revise|reject",
   "approved": true|false,
-  "brand_score": <0-100, 97layer 정렬도>,
+  "brand_score": <0-100, WOOHWAHAE 브랜드 정렬도>,
   "strengths": ["강점 1", "강점 2"],
   "concerns": ["우려사항 1"] 또는 [],
   "feedback": "구체적 수정 방향 (revise/reject일 때 반드시 작성, CE가 바로 적용할 수 있도록 구체적으로)" 또는 null,

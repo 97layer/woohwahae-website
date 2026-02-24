@@ -114,7 +114,7 @@ class PipelineOrchestrator:
         self.pending_path.mkdir(parents=True, exist_ok=True)
         task_file = self.pending_path / f"{task_id}.json"
         task_file.write_text(json.dumps(task, indent=2, ensure_ascii=False))
-        logger.info(f"[Orchestrator] 태스크 생성: {task_id}")
+        logger.info("[Orchestrator] 태스크 생성: %s", task_id)
         return task_id
 
     def _load_completed_tasks(self):
@@ -127,7 +127,7 @@ class PipelineOrchestrator:
                 data = json.loads(f.read_text())
                 tasks.append(data)
             except Exception as e:
-                logger.warning(f"태스크 파일 읽기 실패: {f.name} - {e}")
+                logger.warning("태스크 파일 읽기 실패: %s - %s", f.name, e)
         return tasks
 
     def _get_ce_retry_count(self, signal_id: str) -> int:
@@ -270,11 +270,11 @@ class PipelineOrchestrator:
             }
             self._save_orchestrated()
 
-            logger.info(f"[Orchestrator] 신규 신호 → SA 태스크: {signal_id} ({signal_type})")
+            logger.info("[Orchestrator] 신규 신호 → SA 태스크: %s (%s)", signal_id, signal_type)
             created_count += 1
 
         if created_count > 0:
-            logger.info(f"[Orchestrator] {created_count}개 신호 파이프라인 투입 완료")
+            logger.info("[Orchestrator] %d개 신호 파이프라인 투입 완료", created_count)
 
         return created_count
 
@@ -318,9 +318,9 @@ class PipelineOrchestrator:
 
                 try:
                     corpus.add_entry(signal_id, sa_result, signal_data)
-                    logger.info(f"[Orchestrator] SA→Corpus: {signal_id}")
+                    logger.info("[Orchestrator] SA→Corpus: %s", signal_id)
                 except Exception as e:
-                    logger.warning(f"[Orchestrator] Corpus 누적 실패: {e}")
+                    logger.warning("[Orchestrator] Corpus 누적 실패: %s", e)
 
                 self._mark_orchestrated(task_id, "corpus_accumulated")
                 processed_count += 1
@@ -377,7 +377,7 @@ class PipelineOrchestrator:
                 processed_count += 1
 
         if processed_count > 0:
-            logger.info(f"[Orchestrator] {processed_count}개 태스크 처리 완료")
+            logger.info("[Orchestrator] %d개 태스크 처리 완료", processed_count)
 
         return processed_count
 
@@ -388,7 +388,7 @@ class PipelineOrchestrator:
 
         # 전략 점수 50 미만이면 파이프라인 스킵
         if strategic_score < 50:
-            logger.info(f"[Orchestrator] SA 점수 {strategic_score} < 50, 파이프라인 스킵: {task['task_id']}")
+            logger.info("[Orchestrator] SA 점수 %s < 50, 파이프라인 스킵: %s", strategic_score, task['task_id'])
             return None
 
         signal_id = task.get("payload", {}).get("signal_id", "unknown")
@@ -402,7 +402,7 @@ class PipelineOrchestrator:
             "source_task_id": task["task_id"]
         }
 
-        logger.info(f"[Orchestrator] SA→AD: signal={signal_id}, score={strategic_score}")
+        logger.info("[Orchestrator] SA→AD: signal=%s, score=%s", signal_id, strategic_score)
         return self._create_task("AD", "create_visual_concept", ad_payload)
 
     def _handle_ad_completed(self, task: Dict, result: Dict) -> str:
@@ -420,7 +420,7 @@ class PipelineOrchestrator:
             "source_task_id": task["task_id"]
         }
 
-        logger.info(f"[Orchestrator] AD→CE: signal={signal_id}")
+        logger.info("[Orchestrator] AD→CE: signal=%s", signal_id)
         return self._create_task("CE", "write_content", ce_payload)
 
     def _handle_ce_completed(self, task: Dict, result: Dict) -> str:
@@ -431,12 +431,12 @@ class PipelineOrchestrator:
         ad_result = task.get("payload", {}).get("ad_result", {})
         ce_result = result.get("result", {})
 
-        logger.info(f"[Orchestrator] CE 완료, Ralph 점수: {ralph_score}/100 (signal={signal_id})")
+        logger.info("[Orchestrator] CE 완료, Ralph 점수: %s/100 (signal=%s)", ralph_score, signal_id)
 
         # 점수 낮으면 재작업 (최대 2회)
         retry_count = self._get_ce_retry_count(signal_id)
         if ralph_score < 50 and retry_count < self.MAX_CE_RETRIES:
-            logger.info(f"[Orchestrator] Ralph {ralph_score}<50 → CE 재작업 ({retry_count+1}/{self.MAX_CE_RETRIES})")
+            logger.info("[Orchestrator] Ralph %s<50 → CE 재작업 (%d/%d)", ralph_score, retry_count + 1, self.MAX_CE_RETRIES)
             retry_payload = {
                 **task.get("payload", {}),
                 "retry_count": retry_count + 1,
@@ -468,7 +468,7 @@ class PipelineOrchestrator:
             "source_task_id": task["task_id"]
         }
 
-        logger.info(f"[Orchestrator] CE→CD: signal={signal_id}, ralph={ralph_score}")
+        logger.info("[Orchestrator] CE→CD: signal=%s, ralph=%s", signal_id, ralph_score)
         return self._create_task("CD", "review_content", cd_payload)
 
     def _handle_cd_completed(self, task: Dict, result: Dict) -> str:
@@ -480,7 +480,7 @@ class PipelineOrchestrator:
         ce_result = task.get("payload", {}).get("ce_result", {})
 
         if approved:
-            logger.info(f"[Orchestrator] CD 승인! ContentPublisher 호출: signal={signal_id}")
+            logger.info("[Orchestrator] CD 승인! ContentPublisher 호출: signal=%s", signal_id)
             publisher_payload = {
                 "signal_id": signal_id,
                 "sa_result": task.get("payload", {}).get("sa_result", {}),
@@ -499,10 +499,10 @@ class PipelineOrchestrator:
             # CE 재작업 (피드백 포함)
             retry_count = self._get_ce_retry_count(signal_id)
             if retry_count >= self.MAX_CE_RETRIES:
-                logger.warning(f"[Orchestrator] CE 재작업 최대 횟수 초과, 파이프라인 종료: signal={signal_id}")
+                logger.warning("[Orchestrator] CE 재작업 최대 횟수 초과, 파이프라인 종료: signal=%s", signal_id)
                 return f"max_retry_{signal_id}"
 
-            logger.info(f"[Orchestrator] CD 거절 → CE 재작업: {feedback[:100]}")
+            logger.info("[Orchestrator] CD 거절 → CE 재작업: %s", feedback[:100])
             retry_payload = {
                 **task.get("payload", {}),
                 "retry_count": retry_count + 1,
@@ -529,16 +529,16 @@ class PipelineOrchestrator:
             import threading
             t = threading.Thread(target=publisher.publish, args=(payload,), daemon=True)
             t.start()
-            logger.info(f"[Orchestrator] ContentPublisher 스레드 시작: {payload.get('signal_id')}")
+            logger.info("[Orchestrator] ContentPublisher 스레드 시작: %s", payload.get('signal_id'))
         except ImportError:
             logger.warning("[Orchestrator] ContentPublisher 미구현 - 스킵")
         except Exception as e:
-            logger.error(f"[Orchestrator] ContentPublisher 오류: {e}")
+            logger.error("[Orchestrator] ContentPublisher 오류: %s", e)
 
     async def run_forever(self, interval_seconds: int = 30):
         """무한 폴링 루프 (AgentWatcher 패턴)"""
         self._running = True
-        logger.info(f"[Orchestrator] 시작. 폴링 간격: {interval_seconds}초")
+        logger.info("[Orchestrator] 시작. 폴링 간격: %d초", interval_seconds)
 
         while self._running:
             try:
@@ -549,9 +549,9 @@ class PipelineOrchestrator:
                 # 발행 트리거는 Gardener가 Corpus 군집 성숙도를 판단해서 수행.
                 completed = self._process_sa_completed_only()
                 if new_signals + completed > 0:
-                    logger.info(f"[Orchestrator] 사이클: 신규신호={new_signals}, SA완료처리={completed}")
+                    logger.info("[Orchestrator] 사이클: 신규신호=%d, SA완료처리=%d", new_signals, completed)
             except Exception as e:
-                logger.error(f"[Orchestrator] 오류: {e}", exc_info=True)
+                logger.error("[Orchestrator] 오류: %s", e, exc_info=True)
 
             await asyncio.sleep(interval_seconds)
 

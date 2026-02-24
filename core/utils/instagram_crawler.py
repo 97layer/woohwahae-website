@@ -84,7 +84,7 @@ class InstagramCrawler:
         self.history_file = self.cache_dir / "crawl_history.json"
         self.history = self._load_history()
 
-        logger.info(f"Instagram Crawler initialized for @{username}")
+        logger.info("Instagram Crawler initialized for @%s", username)
 
     def _load_history(self) -> Dict[str, Any]:
         """크롤링 기록 로드"""
@@ -92,7 +92,7 @@ class InstagramCrawler:
             try:
                 with open(self.history_file, 'r', encoding='utf-8') as f:
                     return json.load(f)
-            except:
+            except (OSError, ValueError):
                 pass
         return {
             'last_crawl': None,
@@ -134,7 +134,7 @@ class InstagramCrawler:
                 # 중복 체크
                 post_id = str(post.shortcode)
                 if post_id in self.history['posts_collected']:
-                    logger.debug(f"Skip duplicate: {post_id}")
+                    logger.debug("Skip duplicate: %s", post_id)
                     continue
 
                 # 포스트 데이터 추출
@@ -179,7 +179,7 @@ class InstagramCrawler:
             return posts_collected
 
         except Exception as e:
-            logger.error(f"Crawling failed: {e}")
+            logger.error("Crawling failed: %s", e)
             return []
 
     def _extract_post_data(self, post) -> Dict[str, Any]:
@@ -222,7 +222,7 @@ class InstagramCrawler:
             return image_path
 
         except Exception as e:
-            logger.error(f"Image download failed: {e}")
+            logger.error("Image download failed: %s", e)
             return None
 
     def _classify_post(self, post_data: Dict[str, Any]) -> Dict[str, float]:
@@ -308,7 +308,7 @@ class InstagramCrawler:
                 try:
                     with open(json_file, 'r', encoding='utf-8') as f:
                         posts.append(json.load(f))
-                except:
+                except (OSError, ValueError):
                     continue
         return posts
 

@@ -56,7 +56,7 @@ class SignalHandler(FileSystemEventHandler):
 
         # JSON 파일만 처리
         if event.src_path.endswith('.json'):
-            logger.info(f"🔔 New signal detected: {event.src_path}")
+            logger.info("🔔 New signal detected: %s", event.src_path)
             # 파일이 완전히 쓰여질 때까지 잠시 대기
             time.sleep(0.5)
             self.processor.process_signal(event.src_path)
@@ -109,10 +109,10 @@ class SignalProcessor:
 
             # 이미 처리된 신호는 스킵
             if status != 'captured':
-                logger.info(f"⏭️  Signal already processed: {signal_path}")
+                logger.info("⏭️  Signal already processed: %s", signal_path)
                 return
 
-            logger.info(f"📊 Processing signal: {signal_type}")
+            logger.info("📊 Processing signal: %s", signal_type)
 
             # 신호 타입별 처리
             if signal_type == 'youtube_video':
@@ -122,10 +122,10 @@ class SignalProcessor:
             elif signal_type == 'text_insight':
                 self._process_text_signal(signal_path, signal_data)
             else:
-                logger.warning(f"⚠️  Unknown signal type: {signal_type}")
+                logger.warning("⚠️  Unknown signal type: %s", signal_type)
 
         except Exception as e:
-            logger.error(f"❌ Error processing signal {signal_path}: {e}")
+            logger.error("❌ Error processing signal %s: %s", signal_path, e)
 
     def _process_youtube_signal(self, signal_path: str, signal_data: Dict):
         """YouTube 신호 처리"""
@@ -160,7 +160,7 @@ class SignalProcessor:
         with open(signal_path, 'w', encoding='utf-8') as f:
             json.dump(signal_data, f, ensure_ascii=False, indent=2)
 
-        logger.info(f"✅ YouTube signal processed: {video_id}")
+        logger.info("✅ YouTube signal processed: %s", video_id)
 
     def _process_image_signal(self, signal_path: str, signal_data: Dict):
         """이미지 신호 처리"""
@@ -208,7 +208,7 @@ class SignalProcessor:
 
     def start_monitoring(self):
         """신호 디렉토리 모니터링 시작"""
-        logger.info(f"👁️  Monitoring directory: {self.signals_dir}")
+        logger.info("👁️  Monitoring directory: %s", self.signals_dir)
 
         # 기존 미처리 신호 처리
         self._process_existing_signals()
@@ -242,11 +242,11 @@ class SignalProcessor:
                     signal_data = json.load(f)
 
                 if signal_data.get('status') == 'captured':
-                    logger.info(f"📌 Found unprocessed signal: {json_file.name}")
+                    logger.info("📌 Found unprocessed signal: %s", json_file.name)
                     self.process_signal(str(json_file))
 
             except Exception as e:
-                logger.error(f"Error checking {json_file}: {e}")
+                logger.error("Error checking %s: %s", json_file, e)
 
 
 def main():

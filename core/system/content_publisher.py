@@ -74,7 +74,7 @@ class ContentPublisher:
         publish_dir = self.published_root / today / f"{signal_id}_{timestamp}"
         publish_dir.mkdir(parents=True, exist_ok=True)
 
-        logger.info(f"[Publisher] 발행 시작: {signal_id}")
+        logger.info("[Publisher] 발행 시작: %s", signal_id)
 
         # 콘텐츠 추출 — corpus 멀티유즈 포맷 포함
         instagram_caption = payload.get("instagram_caption", "")
@@ -146,7 +146,7 @@ class ContentPublisher:
             json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8"
         )
 
-        logger.info(f"[Publisher] 패키지 저장: {publish_dir} (corpus={is_corpus})")
+        logger.info("[Publisher] 패키지 저장: %s (corpus=%s)", publish_dir, is_corpus)
 
         # 4. Telegram push
         # corpus 모드: telegram_summary 우선, 없으면 instagram_caption fallback
@@ -183,7 +183,7 @@ class ContentPublisher:
             "meta": meta
         }
 
-        logger.info(f"[Publisher] 완료: {signal_id}, telegram={telegram_sent}, website={website_published}")
+        logger.info("[Publisher] 완료: %s, telegram=%s, website=%s", signal_id, telegram_sent, website_published)
         return result
 
     def _get_image(self, payload: Dict, publish_dir: Path, sa_result: Dict, ad_result: Dict) -> Optional[Dict]:
@@ -196,7 +196,7 @@ class ContentPublisher:
         # 1. 순호 제공 이미지 확인
         signal_image = payload.get("image_path", "") or payload.get("image_url", "")
         if signal_image and Path(signal_image).exists():
-            logger.info(f"[Publisher] 이미지: 순호 제공 사용 ({signal_image})")
+            logger.info("[Publisher] 이미지: 순호 제공 사용 (%s)", signal_image)
             return {"source": "user_provided", "path": signal_image}
 
         # 2. Gemini Imagen 시도
@@ -248,7 +248,7 @@ class ContentPublisher:
                 return {"source": "gemini_imagen", "path": str(image_path)}
 
         except Exception as e:
-            logger.warning(f"[Publisher] Imagen 실패: {e}")
+            logger.warning("[Publisher] Imagen 실패: %s", e)
 
         return None
 
@@ -277,11 +277,11 @@ class ContentPublisher:
                         # 사진 출처 저장 (크레딧)
                         credit = f"Photo by {data.get('user', {}).get('name', 'Unknown')} on Unsplash"
                         (publish_dir / "image_credit.txt").write_text(credit, encoding="utf-8")
-                        logger.info(f"[Publisher] Unsplash 이미지 다운로드 성공: {keyword}")
+                        logger.info("[Publisher] Unsplash 이미지 다운로드 성공: %s", keyword)
                         return {"source": "unsplash", "path": str(image_path), "credit": credit}
 
         except Exception as e:
-            logger.warning(f"[Publisher] Unsplash 실패: {e}")
+            logger.warning("[Publisher] Unsplash 실패: %s", e)
 
         return None
 
@@ -350,7 +350,7 @@ class ContentPublisher:
             return self._send_text(api_url, message)
 
         except Exception as e:
-            logger.error(f"[Publisher] Telegram 전송 실패: {e}")
+            logger.error("[Publisher] Telegram 전송 실패: %s", e)
             return False
 
     def _send_text(self, api_url: str, text: str) -> bool:
@@ -365,12 +365,12 @@ class ContentPublisher:
                     "parse_mode": "Markdown"
                 }, timeout=15)
                 if resp.status_code != 200:
-                    logger.warning(f"[Publisher] Telegram 메시지 전송 실패: {resp.text[:200]}")
+                    logger.warning("[Publisher] Telegram 메시지 전송 실패: %s", resp.text[:200])
                     return False
             logger.info("[Publisher] Telegram 텍스트 전송 성공")
             return True
         except Exception as e:
-            logger.error(f"[Publisher] Telegram 전송 오류: {e}")
+            logger.error("[Publisher] Telegram 전송 오류: %s", e)
             return False
 
     def _publish_to_website(self, signal_id: str, title: str, archive_essay: str,
@@ -493,7 +493,7 @@ class ContentPublisher:
                     json.dumps(posts, indent=2, ensure_ascii=False), encoding="utf-8"
                 )
 
-            logger.info(f"[Publisher] 웹사이트 HTML 생성: {slug}")
+            logger.info("[Publisher] 웹사이트 HTML 생성: %s", slug)
 
             # git push (GITHUB_TOKEN 있을 때만)
             if github_token and github_repo:
@@ -503,7 +503,7 @@ class ContentPublisher:
                 return True  # 로컬 생성은 성공
 
         except Exception as e:
-            logger.error(f"[Publisher] 웹사이트 발행 실패: {e}", exc_info=True)
+            logger.error("[Publisher] 웹사이트 발행 실패: %s", e, exc_info=True)
             return False
 
     def _git_push_website(self, website_root: Path, slug: str, date: str) -> bool:
@@ -523,13 +523,13 @@ class ContentPublisher:
                     # "nothing to commit"은 무시
                     if "nothing to commit" in result.stdout or "nothing to commit" in result.stderr:
                         continue
-                    logger.warning(f"[Publisher] git 명령 실패: {' '.join(cmd)}\n{result.stderr[:200]}")
+                    logger.warning("[Publisher] git 명령 실패: %s\n%s", ' '.join(cmd), result.stderr[:200])
 
-            logger.info(f"[Publisher] git push 완료 → GitHub Pages 반영 예정")
+            logger.info("[Publisher] git push 완료 → GitHub Pages 반영 예정")
             return True
 
         except Exception as e:
-            logger.error(f"[Publisher] git push 실패: {e}")
+            logger.error("[Publisher] git push 실패: %s", e)
             return False
 
     def _update_memory(self, meta: Dict, instagram_caption: str, archive_essay: str):
@@ -565,7 +565,7 @@ class ContentPublisher:
             logger.info("[Publisher] memory 업데이트 완료")
 
         except Exception as e:
-            logger.warning(f"[Publisher] memory 업데이트 실패: {e}")
+            logger.warning("[Publisher] memory 업데이트 실패: %s", e)
 
 
 if __name__ == "__main__":

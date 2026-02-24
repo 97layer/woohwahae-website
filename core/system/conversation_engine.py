@@ -147,7 +147,7 @@ class ConversationEngine:
             return answer
 
         except Exception as e:
-            logger.error(f"Conversation error: {e}")
+            logger.error("Conversation error: %s", e)
             return f"죄송합니다. 응답 생성 중 오류가 발생했습니다: {str(e)}"
 
     def _load_identity(self) -> str:
@@ -289,7 +289,7 @@ JSON으로만 응답:
 
         # 저장
         lm_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
-        logger.debug(f"Memory updated: +{len(extracted.get('concepts', []))} concepts")
+        logger.debug("Memory updated: +%s concepts", len(extracted.get('concepts', [])))
 
     def _build_prompt(self, message: str, context: Dict, knowledge: str) -> str:
         """프롬프트 구성"""
@@ -473,7 +473,7 @@ JSON으로만 응답:
             return "\n\n".join(results) if results else ""
 
         except Exception as e:
-            logger.error(f"Knowledge search error: {e}")
+            logger.error("Knowledge search error: %s", e)
             return ""
 
     def _get_recent_signals(self, limit: int = 5) -> List[Dict]:
@@ -494,10 +494,10 @@ JSON으로만 응답:
                         data = json.load(f)
                         signals.append(data)
                 except Exception as e:
-                    logger.error(f"Error reading {file}: {e}")
+                    logger.error("Error reading %s: %s", file, e)
 
         except Exception as e:
-            logger.error(f"Error getting signals: {e}")
+            logger.error("Error getting signals: %s", e)
 
         return signals
 
@@ -505,7 +505,7 @@ JSON으로만 응답:
         """사용자 컨텍스트 초기화"""
         if user_id in self.user_contexts:
             del self.user_contexts[user_id]
-            logger.info(f"Cleared context for user {user_id}")
+            logger.info("Cleared context for user %s", user_id)
 
 
 # Singleton instance

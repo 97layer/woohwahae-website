@@ -769,7 +769,7 @@ JSON 포맷으로 출력:
                         num = int(p['issue'].replace('Issue ', ''))
                         if num > last_issue_num:
                             last_issue_num = num
-                    except:
+                    except (ValueError, TypeError):
                         pass
                 
                 new_issue_num = f"Issue {last_issue_num + 1:03d}"

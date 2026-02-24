@@ -93,6 +93,17 @@ class TelegramSecretaryV6:
             self.gardener = None
             logger.warning("Gardener 비활성: %s", e)
 
+        # Code Agent + ProposeGate (선택적 — 없어도 봇 동작)
+        try:
+            from core.agents.code_agent import CodeAgent
+            from core.system.propose_gate import ProposeGate
+            self.code_agent = CodeAgent()
+            self.propose_gate = ProposeGate()
+        except Exception as e:
+            self.code_agent = None
+            self.propose_gate = None
+            logger.warning("Code Agent 비활성: %s", e)
+
         # UI Settings
         self.loading_emojis = ["🔘", "⚪", "⚫"]
 
@@ -342,7 +353,11 @@ class TelegramSecretaryV6:
             await self.process_document(update, context)
             return
 
-        # 4. 텍스트 의도 분석 및 처리
+        # 4. Code Agent 패턴 감지 (콘텐츠 파이프라인 앞에서 처리)
+        if self.code_agent and await self._try_code_routing(update, context):
+            return
+
+        # 5. 텍스트 의도 분석 및 처리
         await self.process_text(update, context)
 
     async def process_youtube(self, update: Update, context: ContextTypes.DEFAULT_TYPE, url: str):
@@ -448,26 +463,9 @@ class TelegramSecretaryV6:
                 },
             }
 
-            signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
-            signals_dir.mkdir(parents=True, exist_ok=True)
-            with open(signals_dir / ("%s.json" % signal_id), 'w', encoding='utf-8') as f:
-                json.dump(signal_data, f, ensure_ascii=False, indent=2)
-
-            # SA 큐 전달
-            try:
-                from core.system.queue_manager import QueueManager
-                qm = QueueManager()
-                qm.create_task(
-                    agent_type='SA',
-                    task_type='analyze_signal',
-                    payload={
-                        'signal_id': signal_id,
-                        'signal_path': str(signals_dir / ("%s.json" % signal_id)),
-                    }
-                )
-                logger.info("SA 큐 전달 (이미지): %s", signal_id)
-            except Exception as q_e:
-                logger.warning("SA 큐 전달 실패: %s", q_e)
+            _, queue_ok = self._save_signal(signal_data)
+            if not queue_ok:
+                logger.warning("SA 큐 전달 실패 (이미지): %s", signal_id)
 
             # 응답
             if description and '분석 실패' not in description:
@@ -563,26 +561,7 @@ class TelegramSecretaryV6:
                 },
             }
 
-            signals_dir = PROJECT_ROOT / "knowledge" / "signals"
-            signals_dir.mkdir(parents=True, exist_ok=True)
-            with open(signals_dir / ("%s.json" % signal_id), "w", encoding="utf-8") as f:
-                json.dump(signal_data, f, ensure_ascii=False, indent=2)
-
-            # SA 큐 전달
-            try:
-                from core.system.queue_manager import QueueManager
-                qm = QueueManager()
-                qm.create_task(
-                    agent_type="SA",
-                    task_type="analyze_signal",
-                    payload={
-                        "signal_id": signal_id,
-                        "signal_path": str(signals_dir / ("%s.json" % signal_id)),
-                    },
-                )
-                logger.info("SA 큐 전달 (PDF): %s", signal_id)
-            except Exception as q_e:
-                logger.warning("SA 큐 전달 실패: %s", q_e)
+            self._save_signal(signal_data)
 
             extract_info = ""
             if pages_extracted:
@@ -604,6 +583,83 @@ class TelegramSecretaryV6:
             except Exception:
                 pass
 
+    # ── Code Agent 라우팅 ────────────────────────────────────────────────────
+
+    CODE_PATTERNS = ("/code", "fix:", "feat:", "bug:", "수정:", "고쳐", "refactor:")
+
+    async def _try_code_routing(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> bool:
+        """
+        코드 관련 패턴이면 Code Agent로 라우팅.
+        PROPOSE 응답(reply)이면 ProposeGate.confirm으로 처리.
+        Returns True이면 다음 핸들러 스킵.
+        """
+        message = update.message
+        text = message.text or ""
+        chat_id = message.chat_id
+
+        # 1. PROPOSE 응답 처리 — reply 없이 단독 ok/no도 처리
+        if self.propose_gate:
+            from core.system.propose_gate import CONFIRM_WORDS, REJECT_WORDS
+            normalized = text.strip().lower()
+            is_confirm_word = normalized in CONFIRM_WORDS or normalized in REJECT_WORDS
+
+            pending = None
+            if message.reply_to_message:
+                reply_msg_id = message.reply_to_message.message_id
+                pending = self.propose_gate.find_pending_by_reply(reply_msg_id)
+            if not pending and is_confirm_word:
+                # 단독 ok/no — 최근 pending으로 fallback
+                pending = self.propose_gate.find_latest_pending(chat_id)
+
+            if pending and is_confirm_word:
+                result = self.propose_gate.confirm(text, pending["task_id"])
+                if result == "approved":
+                    task_type = pending.get("callback_data", {}).get("type", "code")
+                    if task_type == "restart":
+                        await self.code_agent.confirm_restart(
+                            pending["task_id"],
+                            lambda t: message.reply_text(t, parse_mode="HTML"),
+                        )
+                    else:
+                        await self.code_agent.apply_confirmed(
+                            pending["task_id"],
+                            lambda t: message.reply_text(t, parse_mode="HTML"),
+                        )
+                    return True
+                if result == "rejected":
+                    await message.reply_text("❌ 폐기됨")
+                    return True
+                # unknown — 일반 대화로 넘김
+                return False
+
+        # 2. 코드 패턴 감지
+        lower = text.lower().strip()
+        if not any(lower.startswith(p.lower()) for p in self.CODE_PATTERNS):
+            return False
+
+        # admin만 Code Agent 사용 가능
+        admin_id = os.getenv("ADMIN_TELEGRAM_ID")
+        if admin_id and str(update.effective_user.id) != str(admin_id):
+            await message.reply_text("권한 없음")
+            return True
+
+        # Code Agent 처리
+        async def send_fn(text_: str):
+            return await message.reply_text(text_, parse_mode="HTML")
+
+        instruction = text
+        for prefix in self.CODE_PATTERNS:
+            if instruction.lower().startswith(prefix.lower()):
+                instruction = instruction[len(prefix):].strip()
+                break
+
+        await self.code_agent.handle_task(instruction, chat_id, send_fn)
+        return True
+
+    # ── 텍스트 처리 ──────────────────────────────────────────────────────────
+
     async def process_text(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = update.message.text
         try:
@@ -612,16 +668,17 @@ class TelegramSecretaryV6:
             intent = intent_data['intent']
 
             if intent == 'insight':
-                # 먼저 저장 실행
-                self._save_insight(text, update.effective_user)
-
-                # 저장 완료 후 응답 (실제로 한 것만 표시)
+                queue_ok = self._save_insight(text, update.effective_user)
                 timestamp = datetime.now().strftime('%H:%M:%S')
                 preview = _escape_html(text[:150])
+                sa_status = (
+                    "SA가 분석 중입니다." if queue_ok
+                    else "⚠️ SA 분석 대기열 전달 실패 (수동 확인 필요)"
+                )
                 await update.message.reply_text(
                     f"💾 <b>Captured</b> (<code>{timestamp}</code>)\n\n"
                     f"\"{preview}\"\n\n"
-                    f"signals/ 저장 완료. SA가 분석 중입니다.",
+                    f"signals/ 저장 완료. {sa_status}",
                     parse_mode=constants.ParseMode.HTML
                 )
             else:
@@ -629,9 +686,9 @@ class TelegramSecretaryV6:
                 placeholder = await update.message.reply_text("💭 사유 중...")
                 try:
                     response = self.engine.chat(str(update.effective_user.id), text)
-                    # Gemini 응답은 parse_mode 없이 순수 텍스트로 전송
-                    # (마크다운 파싱 오류 방지)
-                    await placeholder.edit_text(response)
+                    await placeholder.edit_text(
+                        _escape_html(response), parse_mode=constants.ParseMode.HTML
+                    )
                 except Exception as chat_e:
                     logger.error("Chat engine error: %s", chat_e)
                     await placeholder.edit_text("죄송합니다. 응답 생성 중 오류가 발생했습니다.")
@@ -643,16 +700,43 @@ class TelegramSecretaryV6:
             except Exception:
                 pass
 
-    def _save_insight(self, text: str, user):
+    def _save_signal(self, signal_data: dict) -> tuple:
+        """
+        signals/ JSON 저장 + SA 큐 전달.
+        Returns: (signal_id: str, queue_ok: bool)
+        """
+        signal_id = signal_data["signal_id"]
+        signals_dir = PROJECT_ROOT / "knowledge" / "signals"
+        signals_dir.mkdir(parents=True, exist_ok=True)
+        with open(signals_dir / ("%s.json" % signal_id), "w", encoding="utf-8") as f:
+            json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        queue_ok = False
+        try:
+            from core.system.queue_manager import QueueManager
+            qm = QueueManager()
+            qm.create_task(
+                agent_type="SA",
+                task_type="analyze_signal",
+                payload={
+                    "signal_id": signal_id,
+                    "signal_path": str(signals_dir / ("%s.json" % signal_id)),
+                },
+            )
+            queue_ok = True
+            logger.info("SA 큐 전달: %s", signal_id)
+        except Exception as q_e:
+            logger.warning("SA 큐 전달 실패: %s", q_e)
+
+        return signal_id, queue_ok
+
+    def _save_insight(self, text: str, user) -> bool:
         """
         인사이트 저장 + SA 에이전트 분석 큐에 전달.
-        signals/ 파일 저장은 항상 성공. 큐 전달은 실패해도 조용히 스킵.
+        Returns: queue_ok — False면 경고 표시 필요
         """
-        signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
-        signals_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        signal_id = f"text_{timestamp}"
-
+        signal_id = "text_%s" % timestamp
         signal_data = {
             'signal_id': signal_id,
             'type': 'text_insight',
@@ -663,27 +747,8 @@ class TelegramSecretaryV6:
             'source_channel': 'telegram',
             'metadata': {},
         }
-
-        # 1. signals/ 저장 (항상)
-        with open(signals_dir / f"{signal_id}.json", 'w', encoding='utf-8') as f:
-            json.dump(signal_data, f, ensure_ascii=False, indent=2)
-
-        # 2. SA 에이전트 큐에 분석 요청 (THE CYCLE 트리거)
-        try:
-            from core.system.queue_manager import QueueManager
-            qm = QueueManager()
-            qm.create_task(
-                agent_type='SA',
-                task_type='analyze',
-                payload={
-                    'signal_id': signal_id,
-                    'content': text,
-                    'source': 'telegram_insight',
-                }
-            )
-            logger.info("SA 큐 전달: %s", signal_id)
-        except Exception as q_e:
-            logger.warning("SA 큐 전달 실패 (signals/ 저장은 완료): %s", q_e)
+        _, queue_ok = self._save_signal(signal_data)
+        return queue_ok
 
     @admin_only
     async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1194,6 +1259,34 @@ class TelegramSecretaryV6:
                 lambda ctx: asyncio.create_task(self.send_daily_briefing(application)),
                 time=_time(hour=8, minute=0, second=0),
                 name="daily_briefing"
+            )
+
+            async def _propose_expiry_job(context):
+                if not self.propose_gate:
+                    return
+                admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+                if not admin_id:
+                    return
+                expired_list = self.propose_gate.expire_old()
+                for item in expired_list:
+                    try:
+                        msg = (
+                            f"⏰ <b>PROPOSE 만료</b>\n"
+                            f"<code>{_escape_html(item['task_id'])}</code>\n\n"
+                            f"요약: {_escape_html(item['summary'][:200])}\n\n"
+                            f"24시간 응답 없어 자동 폐기됨."
+                        )
+                        await context.bot.send_message(
+                            chat_id=int(admin_id), text=msg,
+                            parse_mode=constants.ParseMode.HTML,
+                        )
+                    except Exception as notify_e:
+                        logger.warning("PROPOSE 만료 알림 실패: %s", notify_e)
+
+            job_queue.run_repeating(
+                _propose_expiry_job,
+                interval=1800,
+                name="propose_expiry_check"
             )
 
         logger.info("🚀 V6 Secretary Service Started")

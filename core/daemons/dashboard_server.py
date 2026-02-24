@@ -59,7 +59,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                         last_ts = datetime.fromisoformat(last_update_str)
                         delta = (datetime.now() - last_ts).total_seconds()
                         status_data["is_alive"] = delta < 300
-                    except:
+                    except (ValueError, KeyError, TypeError):
                         status_data["is_alive"] = False
 
                 self.wfile.write(json.dumps(status_data).encode('utf-8'))

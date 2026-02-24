@@ -141,7 +141,7 @@ JSON만 출력하세요.
                 return self._classify_with_rules(text)
 
         except Exception as e:
-            logger.error(f"AI classification error: {e}")
+            logger.error("AI classification error: %s", e)
             return self._classify_with_rules(text)
 
     def _classify_with_rules(self, text: str) -> Dict:
