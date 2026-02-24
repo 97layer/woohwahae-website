@@ -64,6 +64,18 @@ def _escape_html(text: str) -> str:
             .replace('>', '&gt;'))
 
 
+def admin_only(func):
+    """ADMIN_TELEGRAM_ID만 커맨드 실행 가능"""
+    async def wrapper(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        if admin_id and str(update.effective_user.id) != str(admin_id):
+            await update.message.reply_text("권한 없음")
+            return
+        return await func(self, update, context)
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+
 class TelegramSecretaryV6:
     def __init__(self, bot_token: str):
         self.bot_token = bot_token
@@ -96,8 +108,10 @@ class TelegramSecretaryV6:
             f"/publish — 콘텐츠 즉시 발행\n"
             f"/publish [테마] — 테마 지정 발행\n"
             f"/report — 오늘 처리 요약\n"
-            f"/growth — 시스템 성장 지표\n"
+            f"/growth [YYYY-MM] — 성장 지표\n"
             f"/signal [텍스트] — 신호 직접 투입\n"
+            f"/client list|add|info|due — 고객 관리\n"
+            f"/visit <이름> <서비스> [만족도] — 방문 기록\n"
             f"/pending — 가드너 제안 목록\n\n"
             f"<b>자동 처리</b>\n"
             f"텍스트 → 신호 수집\n"
@@ -106,58 +120,178 @@ class TelegramSecretaryV6:
         )
         await update.message.reply_text(welcome_msg, parse_mode=constants.ParseMode.HTML)
 
+    @admin_only
     async def growth_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """자가발전 성장 지표 리포트"""
-        knowledge_dir = PROJECT_ROOT / 'knowledge'
-        lm_path = knowledge_dir / 'long_term_memory.json'
-        signals_dir = knowledge_dir / 'signals'
+        """월별 성장 지표 리포트 (Growth Module + 시스템 현황)"""
+        from core.modules.growth import get_growth_module
+
+        # 기간 인자 파싱
+        period = context.args[0] if context.args else datetime.now().strftime('%Y-%m')
 
         try:
-            # long_term_memory 통계
-            if lm_path.exists():
-                data = json.loads(lm_path.read_text(encoding='utf-8'))
-                total_exp = len(data.get('experiences', []))
-                total_concepts = len(data.get('concepts', {}))
-                top_concepts = sorted(
-                    data.get('concepts', {}).items(),
-                    key=lambda x: x[1], reverse=True
-                )[:5]
-                last_updated = data.get('metadata', {}).get('last_updated', 'N/A')
+            gm = get_growth_module()
+            gm.auto_count_content(period)
+            gm.auto_count_service(period)
+            data = gm.get_month(period)
 
-                # SA 분석 경험만 필터
-                sa_experiences = [e for e in data.get('experiences', []) if e.get('source') == 'sa_agent']
-                sa_scores = [e.get('score', 0) for e in sa_experiences if e.get('score')]
-                avg_score = int(sum(sa_scores) / len(sa_scores)) if sa_scores else 0
-            else:
-                total_exp = total_concepts = avg_score = 0
-                top_concepts = []
-                last_updated = 'N/A'
+            revenue = data.get('revenue', {})
+            content = data.get('content', {})
+            service = data.get('service', {})
 
-            # signals 누적수
-            signal_count = len(list(signals_dir.glob('**/*.json'))) if signals_dir.exists() else 0
-
-            # 리포트 구성
-            concepts_text = "\n".join(
-                f"  {k}: {v}회" for k, v in top_concepts
-            ) if top_concepts else "  아직 없음"
+            # 시스템 현황 (누적)
+            signals_dir = PROJECT_ROOT / 'knowledge' / 'signals'
+            total_signals = len(list(signals_dir.glob('**/*.json'))) if signals_dir.exists() else 0
 
             msg = (
-                f"<b>📈 97layerOS 성장 지표</b>\n\n"
-                f"<b>지식 축적</b>\n"
-                f"누적 signals: {signal_count}개\n"
-                f"경험 기록: {total_exp}개\n"
-                f"개념 노드: {total_concepts}개\n\n"
-                f"<b>상위 개념</b>\n{concepts_text}\n\n"
-                f"<b>SA 분석</b>\n"
-                f"분석 완료: {len(sa_experiences)}건\n"
-                f"평균 전략점수: {avg_score}/100\n\n"
-                f"마지막 업데이트: {_escape_html(last_updated)}"
+                f"<b>📈 Growth Report — {_escape_html(period)}</b>\n\n"
+                f"<b>수익</b>\n"
+                f"아틀리에: {revenue.get('atelier', 0):,}원\n"
+                f"컨설팅: {revenue.get('consulting', 0):,}원\n"
+                f"제품: {revenue.get('products', 0):,}원\n"
+                f"합계: <b>{revenue.get('total', 0):,}원</b>\n\n"
+                f"<b>콘텐츠</b>\n"
+                f"신호 수집: {content.get('signals_captured', 0)}건\n"
+                f"발행 에세이: {content.get('essays_published', 0)}개\n"
+                f"성숙 군집: {content.get('clusters_ripe', 0)}개\n\n"
+                f"<b>서비스</b>\n"
+                f"총 방문: {service.get('total_visits', 0)}건\n"
+                f"신규 고객: {service.get('new_clients', 0)}명\n"
+                f"재방문 고객: {service.get('returning_clients', 0)}명\n\n"
+                f"<b>시스템 누적</b>\n"
+                f"전체 신호: {total_signals}개"
             )
             await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
 
         except Exception as e:
             logger.error("growth_command error: %s", e)
             await update.message.reply_text("지표 조회 중 오류가 발생했습니다.")
+
+    @admin_only
+    async def client_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Ritual Module 고객 관리 (/client list|add|info|due)"""
+        from core.modules.ritual import get_ritual_module
+
+        args = context.args
+        subcmd = args[0] if args else 'list'
+
+        try:
+            rm = get_ritual_module()
+
+            if subcmd == 'list':
+                clients = rm.list_clients()
+                if not clients:
+                    await update.message.reply_text("등록된 고객 없음")
+                    return
+                lines = ["<b>고객 목록</b>\n"]
+                for c in clients:
+                    visits = len(c.get('visits', []))
+                    lines.append(
+                        f"{_escape_html(c['client_id'])} | {_escape_html(c['name'])} | "
+                        f"방문 {visits}회 | 리듬: {_escape_html(c.get('rhythm', '보통'))}"
+                    )
+                await update.message.reply_text('\n'.join(lines), parse_mode=constants.ParseMode.HTML)
+
+            elif subcmd == 'add':
+                if len(args) < 2:
+                    await update.message.reply_text("사용법: /client add <이름>")
+                    return
+                name = args[1]
+                client = rm.create_client(name)
+                msg = (
+                    f"✅ 고객 등록\n"
+                    f"ID: {_escape_html(client['client_id'])}\n"
+                    f"이름: {_escape_html(client['name'])}"
+                )
+                await update.message.reply_text(msg)
+
+            elif subcmd == 'info':
+                if len(args) < 2:
+                    await update.message.reply_text("사용법: /client info <이름>")
+                    return
+                name = args[1]
+                client = rm.find_client(name)
+                if not client:
+                    await update.message.reply_text("고객을 찾을 수 없음")
+                    return
+                revisit = rm.check_revisit_due(client['client_id'])
+                visits = client.get('visits', [])
+                last_visit = client.get('last_visit') or '없음'
+                due_text = f"⚠️ 재방문 필요 ({revisit['days_since']}일 경과)" if revisit.get('due') else "정상"
+                msg = (
+                    f"<b>{_escape_html(client['name'])}</b>\n"
+                    f"ID: {_escape_html(client['client_id'])}\n"
+                    f"모발: {_escape_html(client.get('hair_type', '미기입'))}\n"
+                    f"리듬: {_escape_html(client.get('rhythm', '보통'))}\n"
+                    f"방문: {len(visits)}회 | 마지막: {_escape_html(last_visit)}\n"
+                    f"재방문: {_escape_html(due_text)}"
+                )
+                await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
+
+            elif subcmd == 'due':
+                due_list = rm.get_due_clients()
+                if not due_list:
+                    await update.message.reply_text("재방문 대상 없음")
+                    return
+                lines = ["<b>재방문 대상</b>\n"]
+                for d in due_list:
+                    lines.append(
+                        f"{_escape_html(d['client_name'])} | {d['days_since']}일 경과 | "
+                        f"임계값: {d['threshold']}일"
+                    )
+                await update.message.reply_text('\n'.join(lines), parse_mode=constants.ParseMode.HTML)
+
+            else:
+                await update.message.reply_text(
+                    "사용법: /client list | add <이름> | info <이름> | due"
+                )
+
+        except Exception as e:
+            logger.error("client_command error: %s", e)
+            await update.message.reply_text("고객 조회 중 오류가 발생했습니다.")
+
+    @admin_only
+    async def visit_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """방문 기록 (/visit <이름> <서비스> [만족도])"""
+        from core.modules.ritual import get_ritual_module
+
+        args = context.args
+        if len(args) < 2:
+            await update.message.reply_text("사용법: /visit <이름> <서비스> [만족도(1-5)]")
+            return
+
+        name = args[0]
+        service = args[1]
+        satisfaction = None
+        if len(args) >= 3:
+            try:
+                satisfaction = int(args[2])
+            except ValueError:
+                pass
+
+        try:
+            rm = get_ritual_module()
+            client = rm.find_client(name)
+            if not client:
+                await update.message.reply_text(f"고객 없음: {_escape_html(name)}")
+                return
+
+            visit = rm.add_visit(
+                client['client_id'],
+                service=service,
+                satisfaction=satisfaction,
+            )
+            sat_text = f" | 만족도: {satisfaction}/5" if satisfaction else ""
+            msg = (
+                f"✅ 방문 기록\n"
+                f"{_escape_html(client['name'])} | {_escape_html(service)}"
+                f"{_escape_html(sat_text)}\n"
+                f"날짜: {_escape_html(visit['date'])}"
+            )
+            await update.message.reply_text(msg)
+
+        except Exception as e:
+            logger.error("visit_command error: %s", e)
+            await update.message.reply_text("방문 기록 중 오류가 발생했습니다.")
 
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         message = update.message
@@ -523,6 +657,7 @@ class TelegramSecretaryV6:
         except Exception as q_e:
             logger.warning("SA 큐 전달 실패 (signals/ 저장은 완료): %s", q_e)
 
+    @admin_only
     async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """/status — 파이프라인 현황 스냅샷"""
         try:
@@ -579,6 +714,7 @@ class TelegramSecretaryV6:
             logger.error("status_command error: %s", e)
             await update.message.reply_text(f"상태 조회 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
 
+    @admin_only
     async def publish_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """/publish [테마] — Corpus 군집 즉시 발행 트리거"""
         theme_arg = ' '.join(context.args).strip() if context.args else None
@@ -652,6 +788,7 @@ class TelegramSecretaryV6:
             logger.error("publish_command error: %s", e)
             await update.message.reply_text(f"발행 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
 
+    @admin_only
     async def signal_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """/signal [텍스트] — 신호 직접 투입"""
         text = ' '.join(context.args).strip() if context.args else ''
@@ -672,6 +809,7 @@ class TelegramSecretaryV6:
             logger.error("signal_command error: %s", e)
             await update.message.reply_text(f"신호 투입 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
 
+    @admin_only
     async def report_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """/report — 오늘 처리 요약"""
         try:
@@ -734,6 +872,7 @@ class TelegramSecretaryV6:
             logger.error("report_command error: %s", e)
             await update.message.reply_text(f"리포트 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
 
+    @admin_only
     async def approve_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Gardener 제안 승인 — /approve [id]"""
         if not self.gardener:
@@ -752,6 +891,7 @@ class TelegramSecretaryV6:
         success, msg = self.gardener.approve_proposal(proposal_id)
         await update.message.reply_text(msg, parse_mode=constants.ParseMode.HTML)
 
+    @admin_only
     async def reject_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Gardener 제안 거절 — /reject [id]"""
         if not self.gardener:
@@ -771,6 +911,7 @@ class TelegramSecretaryV6:
         self.gardener.reject_proposal(proposal_id)
         await update.message.reply_text(f"❌ 거절됨: {label}")
 
+    @admin_only
     async def pending_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """대기 중인 Gardener 제안 목록 — /pending"""
         if not self.gardener or not self.gardener.pending:
@@ -790,6 +931,7 @@ class TelegramSecretaryV6:
             "\n".join(lines), parse_mode=constants.ParseMode.HTML
         )
 
+    @admin_only
     async def draft_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """/draft [테마] — 에세이 초안 생성 후 승인 대기"""
         theme_arg = ' '.join(context.args).strip() if context.args else None
@@ -859,6 +1001,7 @@ class TelegramSecretaryV6:
             logger.error("draft_command error: %s", e)
             await status_msg.edit_text(f"초안 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
 
+    @admin_only
     async def corpus_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """/corpus — 군집 현황 미리보기"""
         try:
@@ -1010,6 +1153,8 @@ class TelegramSecretaryV6:
         application.add_handler(CommandHandler("approve", self.approve_command))
         application.add_handler(CommandHandler("reject", self.reject_command))
         application.add_handler(CommandHandler("pending", self.pending_command))
+        application.add_handler(CommandHandler("client", self.client_command))
+        application.add_handler(CommandHandler("visit", self.visit_command))
         application.add_handler(CallbackQueryHandler(self.handle_draft_callback, pattern=r'^draft_'))
         application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO | filters.Document.ALL, self.handle_message))
 

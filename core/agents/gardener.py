@@ -614,6 +614,18 @@ JSON만 출력."""
             logger.warning(f"Corpus 점검 실패: {e}")
             return {"corpus_summary": {}, "ripe_clusters": 0, "essay_triggered": []}
 
+    def _record_growth_snapshot(self) -> None:
+        """월별 성장 지표를 Growth Module에 자동 기록"""
+        try:
+            from core.modules.growth import get_growth_module
+            period = datetime.now().strftime('%Y-%m')
+            gm = get_growth_module()
+            gm.auto_count_content(period)
+            gm.auto_count_service(period)
+            logger.info("Growth snapshot 저장: %s", period)
+        except Exception as e:
+            logger.warning("Growth snapshot 실패: %s", e)
+
     def run_cycle(self, days: int = 7) -> Dict:
         """
         Gardener 메인 사이클
@@ -637,7 +649,10 @@ JSON만 출력."""
         # 4. Corpus 군집 성숙도 점검 → 익은 것 에세이 트리거 (핵심 신규)
         corpus_result = self._check_corpus_clusters()
 
-        # 4. PROPOSE 생성 (신호가 10개 이상일 때만)
+        # 5. Growth Module 월간 집계 자동 기록
+        self._record_growth_snapshot()
+
+        # 6. PROPOSE 생성 (신호가 10개 이상일 때만)
         new_proposals = []
         if stats['signal_count'] >= 10:
             new_proposals = self._analyze_and_propose(stats)
