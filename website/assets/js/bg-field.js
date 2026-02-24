@@ -22,7 +22,7 @@
     alpha: true,
     antialias: !isMobile  /* 모바일: antialias 비활성화로 GPU 부하 감소 */
   });
-  renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
   renderer.setClearColor(0x000000, 0);
 
   /* ── Scene & Camera ── */

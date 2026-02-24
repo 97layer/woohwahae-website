@@ -750,6 +750,11 @@ section {
 
 @media (max-width: 768px) {
 
+  /* iOS zoom 방지 — 모든 input font-size 최소 16px */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
   /* ── 모바일 spacing 토큰 전면 축소 ── */
   :root {
     --space-xs: 0.25rem;
@@ -819,7 +824,7 @@ section+section {
 
 /* Full-viewport 섹션 (책 넘기기 느낌) */
 .section--full {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
 }
@@ -962,7 +967,7 @@ section+section {
     inset: 0;
     background: rgba(26, 26, 26, 0.35);
     z-index: 99;
-    pointer-events: none;
+    pointer-events: auto;
   }
 
   .nav-links {
@@ -4366,21 +4371,21 @@ body.home-radical {
   opacity: 0.72;
 }
 
-/* 메인 — 5씬 × 100vh = 500vh */
+/* 메인 — 5씬 × 100dvh = 500dvh */
 .field-main {
   position: relative;
   z-index: 1;
-  min-height: 500vh;
+  min-height: 500dvh;
   pointer-events: none;
 }
 
-/* 모든 FB 블록 기본 — 각 씬은 100vh, sticky로 화면에 붙음 */
+/* 모든 FB 블록 기본 — 각 씬은 100dvh, sticky로 화면에 붙음 */
 .fb {
   position: sticky;
   top: 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   /* nav 높이(60px) + 여백 확보 */
   padding: calc(60px + var(--space-xl)) var(--space-lg) var(--space-xl);
   pointer-events: auto;
@@ -4593,7 +4598,7 @@ body.home-radical {
   /* 수평 중앙 */
   flex-direction: row;
   gap: var(--space-xl);
-  height: 100vh;
+  height: 100dvh;
   z-index: 4;
 }
 
@@ -5502,7 +5507,7 @@ body.home-radical::after {
   right: 1.5rem;
   top: 0;
   width: 2px;
-  height: 100vh;
+  height: 100dvh;
   background: rgba(26, 26, 26, 0.08);
   z-index: 50;
   pointer-events: none;
