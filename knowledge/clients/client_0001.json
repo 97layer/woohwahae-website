@@ -1,0 +1,24 @@
+{
+  "client_id": "client_0001",
+  "name": "테스트 고객",
+  "phone": "010-0000-0000",
+  "rhythm": "보통",
+  "hair_type": "건성 세모",
+  "preference_notes": "",
+  "email": "",
+  "portal_token": "47593d624960320fffc33320b754e53c",
+  "visits": [
+    {
+      "date": "2026-02-24",
+      "service": "커트+컬러",
+      "notes": "3레벨 베이스, 9레벨 하이라이트 믹스",
+      "color_formula": "",
+      "public_note": "전체적으로 자연스러운 방향 유지",
+      "next_visit_weeks": 6,
+      "amount": 130000,
+      "satisfaction": 5
+    }
+  ],
+  "last_visit": "2026-02-24",
+  "created_at": "2026-02-24T13:06:10.781351"
+}
