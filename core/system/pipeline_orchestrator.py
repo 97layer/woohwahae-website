@@ -563,16 +563,11 @@ class PipelineOrchestrator:
 def main():
     """독립 실행 진입점"""
     import sys
-    # 로그 경로: 현재 작업 디렉토리 기준 (GCP VM: /home/.../97layerOS)
-    log_dir = Path(".infra/logs")
-    log_dir.mkdir(parents=True, exist_ok=True)
-
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s [%(name)s] %(levelname)s: %(message)s',
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler(log_dir / "orchestrator.log", mode='a')
         ]
     )
 
