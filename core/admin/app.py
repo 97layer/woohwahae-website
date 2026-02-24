@@ -88,7 +88,7 @@ app.wsgi_app = _prefix_middleware
 # B2: 쿠키 보안
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=os.getenv('HTTPS_ENABLED', 'false').lower() == 'true',
+    SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='Strict',
     PERMANENT_SESSION_LIFETIME=3600,  # 1시간 세션 만료
 )
@@ -139,6 +139,43 @@ def _generate_csrf_token() -> str:
 
 
 app.jinja_env.globals['csrf_token'] = _generate_csrf_token
+
+
+# ─── B4: 보안 응답 헤더 ───
+@app.after_request
+def set_security_headers(response):
+    """CSP, X-Frame-Options, HSTS 등 보안 헤더 일괄 적용"""
+    # XSS 방어: 인라인 스크립트·외부 리소스 제한
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: blob:; "
+        "font-src 'self' data:; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    # 클릭재킹 방어
+    response.headers['X-Frame-Options'] = 'DENY'
+    # MIME 스니핑 방어
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # 레퍼러 최소화
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    # XSS 필터 (레거시 브라우저)
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # 권한 정책 — 불필요한 브라우저 API 차단
+    response.headers['Permissions-Policy'] = (
+        'camera=(), microphone=(), geolocation=(), payment=()'
+    )
+    # HSTS — HTTPS 강제 (1년, 서브도메인 포함)
+    response.headers['Strict-Transport-Security'] = (
+        'max-age=31536000; includeSubDomains'
+    )
+    # 에러 응답에서 Flask 버전 노출 차단
+    response.headers.pop('Server', None)
+    return response
 
 
 @app.before_request

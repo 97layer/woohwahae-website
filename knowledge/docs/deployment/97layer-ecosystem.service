@@ -13,6 +13,7 @@ EnvironmentFile=/home/USERNAME_PLACEHOLDER/97layerOS/.env
 ExecStart=/bin/bash /home/USERNAME_PLACEHOLDER/97layerOS/start_ecosystem.sh
 Restart=on-failure
 RestartSec=15
+TimeoutStopSec=120
 
 # GCP e2-micro 메모리 제약
 # ecosystem = heartbeat + signal_router + scheduler + SA + AD + CE (6개 프로세스)
