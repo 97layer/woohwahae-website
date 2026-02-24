@@ -936,10 +936,26 @@
           "by": "unit_test"
         }
       ]
+    },
+    {
+      "id": "AST-2026-02-088",
+      "type": "directive",
+      "source": "auto",
+      "created_at": "2026-02-24T18:39:57.377014",
+      "path": "directives/brand/philosophy.md",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-24T18:39:57.377019",
+          "by": "auto"
+        }
+      ]
     }
   ],
   "stats": {
-    "total": 87,
+    "total": 88,
     "by_type": {
       "signal": 39,
       "content": 24,
@@ -949,10 +965,11 @@
       "report": 2,
       "document": 3,
       "page": 2,
-      "test": 2
+      "test": 2,
+      "directive": 1
     },
     "by_status": {
-      "captured": 33,
+      "captured": 34,
       "completed": 1,
       "analyzed": 14,
       "stored": 1,

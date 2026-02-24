@@ -19,7 +19,7 @@
 
 | 챕터 | 소스 파일 |
 |------|-----------|
-| Ch1 | `brand/foundation.md`, `brand/story.md`, `brand/audience.md`, `IDENTITY.md` |
+| Ch1 | `brand/philosophy.md`, `brand/foundation.md`, `brand/story.md`, `brand/audience.md`, `IDENTITY.md` |
 | Ch2 | `brand/design_tokens.md`, `website/assets/css/style.css` |
 | Ch3 | `style.css` 컴포넌트 섹션 |
 | Ch4 | `brand/voice_tone.md`, `brand/content_system.md`, `agents/CE.md` |
@@ -75,7 +75,25 @@ LAYER OS (The Origin — 범용 브랜드 운영 체제)
 
 ---
 
-### 1C. 5 Pillars
+### 1C. 3원칙 vs 5 Pillars — 역할 구분
+
+> **두 가지를 혼동하지 않는다:**
+> - **3원칙** = 브랜드가 향하는 방향 나침반 (방향 판단, `philosophy.md` §2)
+> - **5 Pillars** = 산출물을 평가하는 품질 게이트 (결과 검증, 아래)
+
+**3원칙 (Brand Compass)**:
+
+| 원칙 | 핵심 | 적용 |
+|------|------|------|
+| **본질주의** (Essentialism) | 소음 제거, 핵심만 | 여백 60%+, 침묵도 커뮤니케이션 |
+| **공명** (Resonance) | 깊이 닿기 > 넓게 닿기 | 설득 아닌 발견, "나" 목소리 |
+| **자기돌봄** (Self Care) | 관리 아닌 의식(儀式) | Wash & Go, 72시간 규칙 |
+
+→ 상세: `brand/philosophy.md`
+
+---
+
+### 1D. 5 Pillars — 품질 게이트
 
 모든 산출물은 이 5개 기둥으로 평가된다. 각 20점, 총 100점.
 
@@ -89,7 +107,7 @@ LAYER OS (The Origin — 범용 브랜드 운영 체제)
 
 ---
 
-### 1D. Editor & Curator · 브랜드 서사
+### 1E. Editor & Curator · 브랜드 서사
 
 **WOOSUNHO** — Editor & Curator of WOOHWAHAE
 
@@ -112,7 +130,7 @@ LAYER OS (The Origin — 범용 브랜드 운영 체제)
 
 ---
 
-### 1E. 페르소나 · Anti-Audience
+### 1F. 페르소나 · Anti-Audience
 
 태도로 정의한다 — 연령/직업 아님.
 

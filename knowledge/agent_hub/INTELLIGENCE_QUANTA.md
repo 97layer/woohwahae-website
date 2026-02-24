@@ -33,16 +33,7 @@
 - 모르면 바로 물음. 장황한 설명 요구 안 함. 답만 원함.
 - 좋으면 "오케이" 한 마디. 나쁘면 "무슨 말이야" — 이게 피드백 전부.
 - 능동적 제안에 열림. 수동적 실행에 닫힘.
-
-### 에이전트에게 기대하는 것
-- 받아쓰지 말 것. 구조적 문제가 보이면 먼저 말할 것.
-- 할 수 없으면 없다고. 중간 답 없음.
-- 최적화와 정리에 자발적으로 반응할 것 (이번 세션처럼).
-
-### 시스템 철학
-- LAYER OS = 확장된 뇌. 기억과 판단을 외부화하는 구조.
-- 슬로우라이프 = 느린 게 아니라 본질적인 것에 집중. 불필요한 것 제거.
-- 완벽하지 않아도 됨. 동작하면 배포. 단, 거짓은 절대 안 됨.
+- 구조적 문제 보이면 먼저 말할 것. 할 수 없으면 없다고.
 
 ---
 
@@ -102,25 +93,32 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 17:38] Auto-Update — auto-session
+### [2026-02-24 19:10] Brand OS A-Z v2 완료 — claude-sonnet
 
-**이번 세션 커밋**:
-- ✅ chore: 런타임 데이터 gitignore 추가 + QUANTA 갱신
-- ✅ chore: .github/workflows/ 삭제 — VM systemd로 대체됨
-- ✅ fix: nginx — 고객 접근 경로 auth_basic off (포털/상담 공개 접근)
-- ✅ test: tests/ 현대화 — 레거시 8개 삭제, handoff/queue 단위 테스트 14개 신규
-- ✅ feat: /status 커맨드 — 파이프라인 현황 한 번에 (신호/Corpus/고객/Growth/VM)
-- ✅ chore: 폐기 파일 3개 삭제 (ralph_agent, nightguard_daemon, website/products)
-- ✅ fix: nginx.conf — auth_basic 복원 + 프록시/라우팅 정비
-- ✅ fix: nginx auth_basic 제거 + 프록시 연결 + 사이트 정상화
+**완료한 작업**:
+- ✅ `directives/brand/philosophy.md` 신규 생성 — 동아시아 수행 문화, 3원칙(본질주의/공명/자기돌봄), 내부 포지셔닝 선언, "인문학적 사유와 아틀리에" 폐기 선언
+- ✅ `directives/IDENTITY.md` — 내부 포지셔닝 + Archetype + Why(W)/Zero Point(Z) 추가
+- ✅ `directives/brand/foundation.md` — 5 Pillars "품질 게이트" 라벨 명시, 문서 계층 11개로 갱신
+- ✅ `directives/brand/audience.md` — 동아시아 감수성 공명 맵 신규 섹션 추가
+- ✅ `directives/brand/experience_map.md` — about 섹션 동아시아 내러티브 구조 명시
+- ✅ `directives/brand/roadmap.md` — 포지셔닝 궤적 + 2027 동아시아 확장 추가
+- ✅ `directives/brand/voice_tone.md` — §8 이중 모드 웹 카피 (짜임새 C1-C6 / 담백 P1-P6) 신규 추가
+- ✅ `directives/brand/README.md` — philosophy.md #0으로 인덱스 + 사용법 갱신
+- ✅ `directives/brand/BRAND_MANUAL.md` — §1C 3원칙 vs 5 Pillars 구분 신규 추가, Ch1 소스맵 갱신
+- ✅ `website/about.html` — 동아시아 수행 단락 추가(7→8단락), 파동/주파수→리듬/의식 교체, 메타 업데이트
+- ✅ `website/assets/css/style.css` — manifesto nth-child(6)→(7) 업데이트
+- ✅ VM 배포 완료 (directives 9개 + website 2개)
 
-**미커밋 변경**:
-- ⚠️  CLAUDE.md
-- ⚠️  knowledge/corpus/index.json
-- ⚠️  knowledge/docs/system/coding-rules.md
-- ⚠️  knowledge/docs/system/enforcement.md
-- ⚠️  knowledge/long_term_memory.json
-- ⚠️  knowledge/system/token_usage_log.jsonl
-- ⚠️  knowledge/docs/system/CODING_RULES.md
+**핵심 변경 정리**:
+- 3원칙(나침반) ≠ 5 Pillars(품질 게이트) — 역할 명확히 분리됨
+- "인문학적 사유와 아틀리에" → 금지 표현 선언
+- 금지 언어: 파동/주파수 → 리듬/의식/호흡으로 전환
+- 이중 모드 웹 카피 기준 확립 (짜임새/담백)
 
-**업데이트 시간**: 2026-02-24T17:38:25.902671
+**다음 단계**:
+- ⏳ git 커밋 (Brand OS A-Z v2 전체)
+- ⏳ Growth Dashboard 2월 수익 입력 (`/admin/growth`)
+- ⏳ 재방문 알림 자동화 (Gardener `get_due_clients()` → 텔레그램)
+- ⏳ 첫 고객 Ritual Module 실사용 검증
+
+**업데이트 시간**: 2026-02-24T19:10:00

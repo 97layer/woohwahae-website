@@ -18,26 +18,29 @@
 
 | # | 파일 | 영역 | 내용 |
 |---|------|------|------|
-| 1 | `foundation.md` | 기반 | 5-Layer OS 모델, 3-Tier 권한, 5 Pillars 상세, 문서 계층 |
+| 0 | `philosophy.md` | **철학** | **브랜드 세계관 — 동아시아 렌즈, 3원칙(본질주의/공명/자기돌봄), 내부 포지셔닝 선언** |
+| 1 | `foundation.md` | 기반 | 5-Layer OS 모델, 3-Tier 권한, 5 Pillars 품질 게이트, 문서 계층 |
 | 2 | `story.md` | 서사 | 개인 서사 — 반지하 8평, 헤어디자이너에서 슬로우라이프로 |
-| 3 | `audience.md` | 독자 | 타겟 프로필, 페르소나 3종, Anti-Audience 정의 |
-| 4 | `voice_tone.md` | 언어 | 어조 스펙트럼, 허용/금지 키워드, 채널별 규칙 |
+| 3 | `audience.md` | 독자 | 타겟 프로필, 페르소나 3종, Anti-Audience, 동아시아 감수성 공명 맵 |
+| 4 | `voice_tone.md` | 언어 | 어조 스펙트럼, 허용/금지 키워드, 채널별 규칙, 이중 모드 웹 카피 |
 | 5 | `content_system.md` | 콘텐츠 | 에세이 구조(Hook-Story-Core-Echo), 길이 규칙, 품질 게이트 |
 | 6 | `design_tokens.md` | 디자인 | CSS 변수 전체: Colors, Typography, Spacing, Breath, Photography |
 | 7 | `experience_map.md` | 경험 | 7개 섹션 IA, 네비게이션, 기술 스택 |
 | 8 | `service_ritual.md` | 서비스 | 아틀리에 철학, Client Journey 7단계, 커뮤니케이션 |
 | 9 | `teaching.md` | 교육 | 지식 공유 철학, 교육 포맷 3종 |
-| 10 | `roadmap.md` | 전략 | 2026~2028 전략, 분기별 마일스톤 |
+| 10 | `roadmap.md` | 전략 | 2026~2028 전략, 분기별 마일스톤, 동아시아 확장 포지셔닝 |
 
 ---
 
 ## 사용법
 
 - **IDENTITY.md**: 핵심 선언만 유지. 상세 규칙은 이 디렉토리 참조.
+- **방향 판단 시**: `philosophy.md` §2 (3원칙 나침반) — "이게 맞는 방향인가?"
+- **품질 평가 시**: `foundation.md` §4 (5 Pillars) — "이 산출물이 기준에 맞는가?"
 - **에이전트 로딩**: `agent_router.py` → `AGENT_DIRECTIVES`에서 역할별 문서 지정.
 - **콘텐츠 생성 시**: CE → `voice_tone.md` + `content_system.md` 필수 참조.
 - **디자인 검증 시**: AD → `design_tokens.md` 필수 참조.
-- **최종 승인 시**: CD → `foundation.md` + 5 Pillars 기준 대조.
+- **최종 승인 시**: CD → `philosophy.md` (방향) + `foundation.md` 5 Pillars (품질) 대조.
 
 ---
 
