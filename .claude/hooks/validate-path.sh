@@ -43,4 +43,17 @@ case "$BASENAME" in
     ;;
 esac
 
+# 4. QUANTA 갱신 리마인더 (4시간 이상 미갱신)
+QUANTA_FILE="$PROJECT_ROOT/knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
+if [ -f "$QUANTA_FILE" ]; then
+  LAST_MOD=$(stat -f "%m" "$QUANTA_FILE" 2>/dev/null || stat -c "%Y" "$QUANTA_FILE" 2>/dev/null)
+  NOW=$(date +%s)
+  if [ -n "$LAST_MOD" ]; then
+    DIFF=$(( (NOW - LAST_MOD) / 60 ))
+    if [ "$DIFF" -gt 240 ]; then
+      echo "⚠️  QUANTA ${DIFF}분 미갱신 — 업데이트 권장"
+    fi
+  fi
+fi
+
 exit 0
