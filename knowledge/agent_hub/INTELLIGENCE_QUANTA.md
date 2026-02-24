@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). Gardener가 매일 자동 갱신.
-> **마지막 갱신**: 2026-02-24 (Claude Code 인프라 강화: 보안 hooks 2개 + 세션 라이프사이클 2개 + 품질 게이트 3개 + 규칙 2개)
+> **마지막 갱신**: 2026-02-24 (Sprint 4+5: Ritual/Growth Telegram 연동 + 전면 보안 강화 15개 항목)
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 🏗️ 시스템 아키텍처
 
-**버전**: Ver 7.2 — Claude Code 인프라 강화 + deploy.sh 수정 (보안/세션/품질 자동화 완비)
+**버전**: Ver 7.3 — Telegram 실사용 연동 + 전면 보안 강화 완료
 
 ```
 신호 유입 (텔레그램/CLI/유튜브/URL/이미지/PDF/크롤러 — 전부 통합 스키마)
@@ -93,14 +93,20 @@ woohwahae.kr/archive/ 발행
 - ✅ **Ritual Module** (2026-02-24): core/modules/ritual.py — 고객 CRUD, 방문 기록, 리듬 자동 계산(빠른/보통/느린), 재방문 알림, CLI. 스키마 기반.
 - ✅ **Growth Module** (2026-02-24): core/modules/growth.py — 수익 수동입력, 콘텐츠/서비스 자동 집계, 월간 리포트 마크다운 생성, 추세 분석. 스키마 기반.
 - ✅ **레거시 신호 마이그레이션** (2026-02-24): .md 11개 → JSON 4개 변환 + 7개 archive. wellness/ 폴더 삭제. signals/ 100% JSON.
+- ✅ **Ritual/Growth Telegram 연동** (2026-02-24): /client(list|add|info|due), /visit 신규 커맨드. /growth → Growth Module 월별 지표. @admin_only 데코레이터 12개 커맨드 전체.
+- ✅ **Gardener Growth 자동 집계** (2026-02-24): _record_growth_snapshot() + run_cycle() step5 연동. 매일 새벽 3시 Growth 스냅샷 자동 갱신.
+- ✅ **전면 보안 강화** (2026-02-24): B1 Secret강제/B2 Cookie/B3 CSRF/B4 Telegram인증/B5 CORS/B6 SSRF/B7 보안헤더/B8 RateLimit/B9 PathTraversal/B10 AuditLog/B11 ErrorHandler/B12 HTTPS준비. 자가검증 전수 통과. nginx security headers VM 라이브 확인.
 
 ## 🎯 다음 작업
 
 1. [BLOCKER] 아임웹 DNS A레코드 `136.109.201.201` 설정 (사용자 직접)
-2. VM 재배포: Ritual/Growth 모듈 + 레거시 마이그레이션 반영
-3. Telegram 연동: /client, /visit, /growth 커맨드 추가 (L4/L5 모듈 활용)
-4. Gardener 연동: 월간 자동 집계 → Growth Module 호출
-5. THE CYCLE E2E 자동화 테스트
+2. [BLOCKER] .env에 `ADMIN_SECRET_KEY` 추가 필요 (admin panel 시작 전 필수)
+3. 프론트엔드 빌드업 — 옵션 3개 중 선택:
+   - **옵션1**: Growth Dashboard (Flask Admin /admin/growth + Chart.js, 2-3h)
+   - **옵션2**: Ritual Client Portal (정적 HTML + QR코드, 4-5h)
+   - **옵션3**: Archive+Admin 통합 리빌드 (동적 발행 파이프라인, 1-2d)
+4. THE CYCLE E2E 자동화 테스트
+5. DNS 연결 후: certbot + HTTPS/HSTS 활성화 (nginx 준비 블록 해제)
 
 ## 📐 콘텐츠 전략 (2026-02-19 확정)
 
@@ -139,19 +145,23 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24] Session Update - claude-opus-rebuild (Sprint 3 완료)
+### [2026-02-24] Session Update - claude-sonnet-sprint4+5 (Sprint 4+5 완료)
 
 **이번 세션 완료**:
-- ✅ 통합 신호 수집 코드 (7개 파일, 5개 소스 통일)
-- ✅ Claude Code 인프라 강화 (hooks 5개 + rules 2개 + /verify 커맨드)
-- ✅ deploy.sh 수정 + VM 배포 성공 (3서비스 active)
-- ✅ Ritual Module (L4): 고객 CRUD + 방문 + 리듬 + 재방문 알림
-- ✅ Growth Module (L5): 수익 기록 + 자동 집계 + 월간 리포트
-- ✅ 레거시 마이그레이션: .md 11개 → JSON 4개 + archive 7개
+- ✅ Telegram /client, /visit 신규 커맨드 (Ritual Module 연동)
+- ✅ Telegram /growth 업그레이드 (Growth Module 월별 지표)
+- ✅ @admin_only 데코레이터 12개 커맨드 전체 적용
+- ✅ Gardener _record_growth_snapshot() + run_cycle() step5
+- ✅ VM 재배포 (core/modules/ + security 반영, 3서비스 active)
+- ✅ admin/app.py: secret강제/CSRF/Cookie/RateLimit/PathTraversal/AuditLog/ErrorHandler
+- ✅ scout_crawler: SSRF _validate_url() (내부IP+메타데이터 차단)
+- ✅ agent_stream_server: CORS localhost 제한, /agents/status 인증
+- ✅ nginx: 보안헤더 5종 + rate limit zone — VM 라이브 확인
+- ✅ Commit 1: feat(35d664d3) / Commit 2: security(1ec77d64)
 
 **다음**:
-- ⏳ VM 재배포 (Ritual/Growth 모듈)
-- ⏳ Telegram 커맨드 연동 (/client, /visit, /growth)
-- ⏳ Gardener 월간 자동 집계 연동
+- ⏳ .env에 ADMIN_SECRET_KEY 추가 (admin panel 가동 필수)
+- ⏳ 프론트엔드 빌드업 옵션 선택 (Growth Dashboard / Ritual Portal / Archive 통합)
+- ⏳ DNS A레코드 설정 후 certbot + HTTPS 활성화
 
-**업데이트 시간**: 2026-02-24T09:45:00
+**업데이트 시간**: 2026-02-24T11:30:00
