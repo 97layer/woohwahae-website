@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Office — 97layerOS Live Dashboard</title>
+    <style>
+        :root {
+            --bg: #F0EFEB;
+            /* WOOHWAHAE 크림 베이지 */
+            --text: #1a1a1a;
+            --text-sub: #9A8F85;
+            --text-faint: #777;
+            --line: #E0DED8;
+            --pixel-scale: 4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg);
+            font-family: 'IBM Plex Mono', 'DM Mono', monospace;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        h1 {
+            font-size: 14px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text);
+            font-weight: 300;
+        }
+
+        .status {
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--text-sub);
+            letter-spacing: 0.05em;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #5ad;
+            margin-right: 6px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            border: 1px solid var(--line);
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #office-canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            display: block;
+        }
+
+        #event-log {
+            width: 320px;
+            border: 1px solid var(--line);
+            background: #fafaf8;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--line);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-sub);
+        }
+
+        .log-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .log-entry {
+            font-size: 10px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            color: var(--text);
+            opacity: 0;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .log-agent {
+            color: #1B2D4F;
+            font-weight: 600;
+        }
+
+        .log-action {
+            color: #5ad;
+        }
+
+        .log-target {
+            color: var(--text-sub);
+        }
+
+        .log-time {
+            color: var(--text-faint);
+            font-size: 9px;
+        }
+
+        footer {
+            padding: 12px 30px;
+            border-top: 1px solid var(--line);
+            font-size: 10px;
+            color: var(--text-faint);
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Agent Office</h1>
+        <p class="status"><span class="status-dot"></span>Live Stream Connected</p>
+    </header>
+
+    <main>
+        <div id="canvas-container">
+            <canvas id="office-canvas"></canvas>
+        </div>
+
+        <div id="event-log">
+            <div class="log-header">Event Log</div>
+            <div class="log-body" id="log-body"></div>
+        </div>
+    </main>
+
+    <footer>
+        97layerOS Agent Dashboard — Real-time visualization powered by SSE
+    </footer>
+
+    <script>
+        /* ═══════════════════════════════════════════════════════════
+           AGENT OFFICE — Pixel Dashboard
+           Canvas 렌더링 + SSE 실시간 스트림
+        ═══════════════════════════════════════════════════════════ */
+
+        const TILE_SIZE = 16;
+        const SCALE = 4;
+        const COLS = 40;  // 넓게 (40 tiles)
+        const ROWS = 20;  // 높게 (20 tiles)
+
+        const canvas = document.getElementById('office-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = COLS * TILE_SIZE;
+        canvas.height = ROWS * TILE_SIZE;
+        canvas.style.width = (canvas.width * SCALE) + 'px';
+        canvas.style.height = (canvas.height * SCALE) + 'px';
+        ctx.imageSmoothingEnabled = false;
+
+        // ─── 에이전트 상태 ───
+        const agents = {
+            ce: { name: 'CE', color: '#9b59b6', pos: { x: 5, y: 5 }, action: 'idle', target: null },
+            sa: { name: 'SA', color: '#3498db', pos: { x: 15, y: 5 }, action: 'idle', target: null },
+            gardener: { name: 'Gardener', color: '#27ae60', pos: { x: 25, y: 5 }, action: 'idle', target: null },
+            brand_scout: { name: 'Brand Scout', color: '#e67e22', pos: { x: 5, y: 12 }, action: 'idle', target: null },
+            ad: { name: 'AD', color: '#95a5a6', pos: { x: 15, y: 12 }, action: 'idle', target: null },
+            cd: { name: 'CD', color: '#95a5a6', pos: { x: 25, y: 12 }, action: 'idle', target: null },
+            ralph: { name: 'Ralph', color: '#34495e', pos: { x: 35, y: 12 }, action: 'idle', target: null },
+        };
+
+        let frame = 0;
+
+        // ─── 렌더링 ───
+        function drawGrid() {
+            // 바닥 (크림 베이지)
+            ctx.fillStyle = '#F0EFEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 그리드 라인 (미세)
+            ctx.strokeStyle = '#E0DED8';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= COLS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * TILE_SIZE, 0);
+                ctx.lineTo(i * TILE_SIZE, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= ROWS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * TILE_SIZE);
+                ctx.lineTo(canvas.width, i * TILE_SIZE);
+                ctx.stroke();
+            }
+
+            // 상단 벽 (딥 네이비)
+            ctx.fillStyle = '#1B2D4F';
+            for (let x = 0; x < COLS; x++) {
+                ctx.fillRect(x * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE);
+            }
+        }
+
+        function drawAgents() {
+            for (const [id, agent] of Object.entries(agents)) {
+                const x = agent.pos.x * TILE_SIZE;
+                const y = agent.pos.y * TILE_SIZE;
+
+                // 캐릭터 원 (단순 플레이스홀더 — 스프라이트는 나중에)
+                ctx.fillStyle = agent.color;
+                ctx.beginPath();
+                ctx.arc(x + TILE_SIZE / 2, y + TILE_SIZE / 2, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 액션 표시 (텍스트)
+                ctx.fillStyle = '#1a1a1a';
+                ctx.font = '8px IBM Plex Mono';
+                ctx.textAlign = 'center';
+
+                let actionSymbol = '●';  // idle
+                if (agent.action === 'read') actionSymbol = '📖';
+                if (agent.action === 'write') actionSymbol = '✏️';
+                if (agent.action === 'search') actionSymbol = '🔍';
+                if (agent.action === 'think') actionSymbol = '💭';
+                if (agent.action === 'done') actionSymbol = '✅';
+
+                ctx.fillText(actionSymbol, x + TILE_SIZE / 2, y - 4);
+
+                // 이름 라벨
+                ctx.fillStyle = '#777';
+                ctx.font = '6px IBM Plex Mono';
+                ctx.fillText(agent.name, x + TILE_SIZE / 2, y + TILE_SIZE + 10);
+            }
+        }
+
+        function render() {
+            frame++;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            drawAgents();
+            requestAnimationFrame(render);
+        }
+
+        render();
+
+        // ─── SSE 스트림 연결 ───
+        const eventSource = new EventSource('http://localhost:8082/events');
+
+        eventSource.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            handleAgentEvent(data);
+        };
+
+        eventSource.onerror = (e) => {
+            console.error('SSE connection error:', e);
+            document.querySelector('.status-dot').style.background = '#e74c3c';
+        };
+
+        // ─── 이벤트 처리 ───
+        function handleAgentEvent(event) {
+            const { agent, action, target, timestamp } = event;
+
+            // 에이전트 상태 업데이트
+            if (agents[agent]) {
+                agents[agent].action = action;
+                agents[agent].target = target;
+            }
+
+            // 로그 추가
+            addLogEntry(event);
+
+            // 3초 후 idle로 복귀 (연속 이벤트면 리셋)
+            clearTimeout(agents[agent]?.idleTimer);
+            agents[agent].idleTimer = setTimeout(() => {
+                if (agents[agent]) agents[agent].action = 'idle';
+            }, 3000);
+        }
+
+        function addLogEntry(event) {
+            const logBody = document.getElementById('log-body');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+
+            const time = new Date(event.timestamp).toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            entry.innerHTML =
+                `<span class="log-agent">${event.agent}</span> → ` +
+                `<span class="log-action">${event.action}</span> ` +
+                `<span class="log-target">${event.target || ''}</span> ` +
+                `<span class="log-time">${time}</span>`;
+
+            logBody.appendChild(entry);
+
+            // 최대 50개 유지
+            if (logBody.children.length > 50) {
+                logBody.removeChild(logBody.firstChild);
+            }
+
+            // 자동 스크롤
+            logBody.scrollTop = logBody.scrollHeight;
+        }
+
+        // ─── 초기 상태 로드 ───
+        fetch('http://localhost:8082/agents/status')
+            .then(r => r.json())
+            .then(status => {
+                for (const [id, data] of Object.entries(status)) {
+                    if (agents[id]) {
+                        agents[id].action = data.last_action;
+                        agents[id].target = data.last_target;
+                    }
+                }
+            })
+            .catch(e => console.error('Failed to load initial status:', e));
+
+    </script>
+</body>
+
+</html>
