@@ -771,7 +771,7 @@ def _cmd_trigger_gardener(params: dict) -> dict:
         if not gardener_path.exists():
             return {'ok': False, 'error': 'gardener.py 없음'}
         result = subprocess.Popen(
-            [sys.executable, str(gardener_path), '--once'],
+            [sys.executable, str(gardener_path), '--run-now'],
             cwd=str(BASE_DIR), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         return {'ok': True, 'pid': result.pid}
@@ -1072,4 +1072,4 @@ def _allowed_file(filename):
 
 # ─── Run ───
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5001, debug=False)
+    app.run(host='127.0.0.1', port=5001, debug=False, threaded=True)
