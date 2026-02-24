@@ -1,77 +1,29 @@
 #!/bin/bash
-# Start 97layerOS Organic Ecosystem — THE CYCLE 완전 자동화
-# Runs heartbeat + signal_router + scheduler + SA + AD + CE in parallel
+# 97layerOS Ecosystem — SA + AD + CE + CD + Orchestrator
+# systemd 서비스(97layer-ecosystem)에서 호출. SIGTERM 수신 시 자식 프로세스 정리.
 
-cd "$(dirname "$0")"
-export PYTHONPATH="$(pwd)"
+VENV="/home/skyto5339_gmail_com/97layerOS/.venv/bin/python3"
+LOGS=".infra/logs"
 
-# Load .env if exists
-if [ -f .env ]; then
-    set -a
-    source .env
-    set +a
+# 로컬 실행 시 venv 경로 fallback
+if [ ! -f "$VENV" ]; then
+    VENV="python3"
 fi
 
-echo "=========================================="
-echo "97layerOS Organic Ecosystem (THE CYCLE)"
-echo "heartbeat + signal_router + scheduler"
-echo "+ SA + AD + CE agents"
-echo "=========================================="
-echo ""
+mkdir -p "$LOGS"
 
-# 1. Heartbeat (MacBook ↔ GCP 상태 감지)
-echo "💓 Starting Heartbeat daemon..."
-python3 core/system/heartbeat.py &
-HEARTBEAT_PID=$!
-echo "   PID: $HEARTBEAT_PID"
+# SIGTERM / SIGINT → 자식 프로세스 전체 종료 후 exit
+cleanup() {
+    kill "$SA_PID" "$AD_PID" "$CE_PID" "$CD_PID" "$ORCH_PID" 2>/dev/null
+    wait "$SA_PID" "$AD_PID" "$CE_PID" "$CD_PID" "$ORCH_PID" 2>/dev/null
+    exit 0
+}
+trap cleanup SIGTERM SIGINT
 
-# 2. Signal Router (signals/ → Queue 자동 라우팅)
-echo "🔀 Starting Signal Router (watch mode)..."
-python3 core/system/signal_router.py --watch &
-ROUTER_PID=$!
-echo "   PID: $ROUTER_PID"
-
-# 3. Daily Routine Scheduler (09:00 / 21:00)
-echo "⏰ Starting Daily Routine Scheduler..."
-python3 core/system/daily_routine.py --scheduler &
-SCHEDULER_PID=$!
-echo "   PID: $SCHEDULER_PID"
-
-# 4. SA Agent (Strategy Analyst — 신호 분석)
-echo "🔍 Starting SA Agent (Strategy Analyst)..."
-python3 core/agents/sa_agent.py &
-SA_PID=$!
-echo "   PID: $SA_PID"
-
-# 5. AD Agent (Art Director — 비주얼 컨셉)
-echo "🎨 Starting AD Agent (Art Director)..."
-python3 core/agents/ad_agent.py &
-AD_PID=$!
-echo "   PID: $AD_PID"
-
-# 6. CE Agent (Chief Editor — 콘텐츠 작성)
-echo "✍️  Starting CE Agent (Chief Editor)..."
-python3 core/agents/ce_agent.py &
-CE_PID=$!
-echo "   PID: $CE_PID"
-
-echo ""
-echo "✅ THE CYCLE 에코시스템 시작 완료"
-echo "   Heartbeat:      PID $HEARTBEAT_PID (30s interval)"
-echo "   Signal Router:  PID $ROUTER_PID   (10s polling)"
-echo "   Scheduler:      PID $SCHEDULER_PID (09:00 / 21:00)"
-echo "   SA Agent:       PID $SA_PID        (5s polling)"
-echo "   AD Agent:       PID $AD_PID        (5s polling)"
-echo "   CE Agent:       PID $CE_PID        (5s polling)"
-echo ""
-echo "   THE CYCLE: 텔레그램 입력 → 신호 저장 → 라우팅 → 큐"
-echo "              → 에이전트 처리 → 텔레그램 알림 → 반복"
-echo ""
-echo "   To stop all: kill $HEARTBEAT_PID $ROUTER_PID $SCHEDULER_PID $SA_PID $AD_PID $CE_PID"
-echo "   Press Ctrl+C to stop all"
-echo ""
-
-# Trap Ctrl+C → kill all children
-trap "echo ''; echo 'Stopping ecosystem...'; kill $HEARTBEAT_PID $ROUTER_PID $SCHEDULER_PID $SA_PID $AD_PID $CE_PID 2>/dev/null; exit 0" INT TERM
+"$VENV" -u core/agents/sa_agent.py           >> "$LOGS/sa_agent.log"     2>&1 & SA_PID=$!
+"$VENV" -u core/agents/ad_agent.py           >> "$LOGS/ad_agent.log"     2>&1 & AD_PID=$!
+"$VENV" -u core/agents/ce_agent.py           >> "$LOGS/ce_agent.log"     2>&1 & CE_PID=$!
+"$VENV" -u core/agents/cd_agent.py           >> "$LOGS/cd_agent.log"     2>&1 & CD_PID=$!
+"$VENV" -u core/system/pipeline_orchestrator.py >> "$LOGS/orchestrator.log" 2>&1 & ORCH_PID=$!
 
 wait
