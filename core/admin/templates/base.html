@@ -23,6 +23,8 @@
         %}>Archive</a>
       <a href="{{ url_for('pipeline') }}" {% if request.path.startswith('/pipeline') %}class="active" {% endif
         %}>Pipeline</a>
+      <a href="{{ url_for('ritual_dashboard') }}" {% if request.path.startswith('/ritual') %}class="active" {% endif
+        %}>Ritual</a>
       <a href="{{ url_for('growth_dashboard') }}" {% if request.path.startswith('/growth') %}class="active" {% endif
         %}>Growth</a>
       <form action="{{ url_for('publish') }}" method="post" class="admin-publish-form">

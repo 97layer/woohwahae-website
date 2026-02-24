@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Ritual{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+
+  <!-- ─── 통계 ─── -->
+  <div class="growth-section">
+    <p class="label">Ritual</p>
+    <div class="stat-grid">
+
+      <div class="card--stat">
+        <p class="card-label">총 고객</p>
+        <p class="card-value">{{ stats.total_clients or 0 }}</p>
+        <p class="card-sub">명</p>
+      </div>
+
+      <div class="card--stat">
+        <p class="card-label">재방문 대상</p>
+        <p class="card-value" {% if stats.due_for_revisit %}style="color: var(--text);"{% endif %}>
+          {{ stats.due_for_revisit or 0 }}
+        </p>
+        <p class="card-sub">명</p>
+      </div>
+
+      <div class="card--stat">
+        <p class="card-label">총 방문</p>
+        <p class="card-value">{{ stats.total_visits or 0 }}</p>
+        <p class="card-sub">회</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── 재방문 대상 ─── -->
+  {% if due_clients %}
+  <div class="growth-section">
+    <p class="growth-section-title">재방문 대상</p>
+    {% for d in due_clients %}
+    <div style="display:flex; align-items:center; gap:1rem; padding:0.75rem 0; border-bottom:1px solid var(--line-subtle, rgba(0,0,0,0.08));">
+      <span style="font-family:var(--font-kr); font-size:0.9rem; color:var(--text);">{{ d.client_name }}</span>
+      <span class="badge--warn">{{ d.days_since }}일 경과</span>
+      <span style="font-size:0.8rem; opacity:0.5;">리듬 {{ d.rhythm }} · 권장 {{ d.threshold }}일</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ─── 고객 목록 ─── -->
+  <div class="growth-section">
+    <p class="growth-section-title">고객 목록</p>
+
+    {% if clients %}
+    <table class="growth-trend-table">
+      <thead>
+        <tr>
+          <th>이름</th>
+          <th>마지막 방문</th>
+          <th>리듬</th>
+          <th>방문</th>
+          <th>머릿결</th>
+          <th>포털 링크</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in clients|sort(attribute='last_visit', reverse=True) %}
+        <tr>
+          <td style="font-family:var(--font-kr);">{{ c.name }}</td>
+          <td>{{ c.last_visit or '—' }}</td>
+          <td>
+            {% set r = c.rhythm or '보통' %}
+            {% if r == '빠른' %}
+              <span class="badge--active">{{ r }}</span>
+            {% elif r == '느린' %}
+              <span class="badge--muted">{{ r }}</span>
+            {% else %}
+              <span style="font-size:0.85rem; opacity:0.6;">{{ r }}</span>
+            {% endif %}
+          </td>
+          <td>{{ c.visits|length }}회</td>
+          <td style="font-size:0.85rem; opacity:0.6;">{{ c.hair_type or '—' }}</td>
+          <td>
+            <button class="btn--text"
+              onclick="copyPortalLink('{{ c.client_id }}', this)">링크 복사</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% else %}
+    <div class="empty-state">
+      등록된 고객이 없습니다.<br>
+      아래 폼으로 첫 고객을 추가하세요.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ─── 신규 고객 등록 ─── -->
+  <div class="growth-section">
+    <p class="growth-section-title">신규 고객 등록</p>
+    <form method="post" action="{{ url_for('ritual_add') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <div class="growth-revenue-form">
+
+        <div class="growth-revenue-field">
+          <label>이름 *</label>
+          <input type="text" name="name" placeholder="고객 이름" required>
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>연락처</label>
+          <input type="text" name="phone" placeholder="010-0000-0000">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>머릿결</label>
+          <input type="text" name="hair_type" placeholder="예: 건성 세모">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>방문 리듬</label>
+          <select name="rhythm" style="height:2.5rem; border:1px solid var(--line, #ccc); background:transparent; font-family:var(--font-kr); padding:0 0.75rem; font-size:0.9rem;">
+            <option value="보통">보통 (4–8주)</option>
+            <option value="빠른">빠른 (4주 이하)</option>
+            <option value="느린">느린 (8주 이상)</option>
+          </select>
+        </div>
+
+        <div class="growth-revenue-field" style="display:flex; align-items:flex-end;">
+          <button type="submit" class="btn--solid" style="width:100%;">등록</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- ─── 방문 기록 추가 ─── -->
+  {% if clients %}
+  <div class="growth-section">
+    <p class="growth-section-title">방문 기록 추가</p>
+    <form method="post" action="{{ url_for('ritual_visit') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <div class="growth-revenue-form">
+
+        <div class="growth-revenue-field">
+          <label>고객 *</label>
+          <select name="client_id" required style="height:2.5rem; border:1px solid var(--line, #ccc); background:transparent; font-family:var(--font-kr); padding:0 0.75rem; font-size:0.9rem;">
+            <option value="">선택</option>
+            {% for c in clients %}
+            <option value="{{ c.client_id }}">{{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>서비스 *</label>
+          <input type="text" name="service" placeholder="예: 커트+컬러" required>
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>금액 (원)</label>
+          <input type="number" name="amount" min="0" step="1000" placeholder="0">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>방문일</label>
+          <input type="date" name="visit_date" value="{{ today }}">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>공개 노트</label>
+          <input type="text" name="public_note" placeholder="고객에게 보이는 메모">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>내부 노트</label>
+          <input type="text" name="notes" placeholder="내부용 — 고객 비공개">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>다음 방문 (주)</label>
+          <input type="number" name="next_visit_weeks" min="0" max="52" placeholder="0">
+        </div>
+
+        <div class="growth-revenue-field">
+          <label>만족도 (1–5)</label>
+          <input type="number" name="satisfaction" min="1" max="5" placeholder="">
+        </div>
+
+        <div class="growth-revenue-field" style="display:flex; align-items:flex-end;">
+          <button type="submit" class="btn--solid" style="width:100%;">기록</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+function copyPortalLink(clientId, btn) {
+  fetch('/ritual/portal-link/' + clientId)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.portal_url) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(data.portal_url).then(function() {
+            var orig = btn.textContent;
+            btn.textContent = '복사됨';
+            setTimeout(function() { btn.textContent = orig; }, 1500);
+          });
+        } else {
+          // fallback: alert
+          prompt('포털 URL', data.portal_url);
+        }
+      }
+    })
+    .catch(function() { btn.textContent = '오류'; });
+}
+</script>
+
+{% endblock %}

@@ -39,6 +39,7 @@ try:
     _MODULES_AVAILABLE = True
 except ImportError:
     _MODULES_AVAILABLE = False
+SITE_BASE_URL = os.getenv('SITE_BASE_URL', 'https://woohwahae.kr')
 WEBSITE_DIR = BASE_DIR / 'website'
 ARCHIVE_DIR = WEBSITE_DIR / 'archive'
 PUBLISHED_DIR = BASE_DIR / 'knowledge' / 'assets' / 'published'
@@ -486,6 +487,162 @@ def growth_revenue():
 
     _audit('revenue_recorded', 'period=%s' % period)
     return redirect(url_for('growth_dashboard', period=period))
+
+
+# ─── Ritual (고객 관리) ───
+
+@app.route('/ritual')
+@login_required
+def ritual_dashboard():
+    if not _MODULES_AVAILABLE:
+        flash('모듈 로드 실패. core/modules 경로 확인.')
+        return redirect(url_for('dashboard'))
+
+    rm = get_ritual_module()
+    try:
+        clients = rm.list_clients()
+        due_clients = rm.get_due_clients()
+        stats = rm.get_stats()
+    except Exception as e:
+        logger.error("ritual data fetch error: %s", e)
+        clients, due_clients, stats = [], [], {}
+
+    today = datetime.now().strftime('%Y-%m-%d')
+    _audit('ritual_view')
+    return render_template('ritual.html',
+        clients=clients,
+        due_clients=due_clients,
+        stats=stats,
+        today=today,
+    )
+
+
+@app.route('/ritual/add', methods=['POST'])
+@login_required
+def ritual_add():
+    if not _MODULES_AVAILABLE:
+        flash('모듈 없음')
+        return redirect(url_for('ritual_dashboard'))
+
+    name = request.form.get('name', '').strip()
+    if not name:
+        flash('이름은 필수입니다.')
+        return redirect(url_for('ritual_dashboard'))
+
+    rm = get_ritual_module()
+    try:
+        client = rm.create_client(
+            name=name,
+            hair_type=request.form.get('hair_type', '').strip(),
+            rhythm=request.form.get('rhythm', '보통'),
+            phone=request.form.get('phone', '').strip(),
+        )
+        _audit('ritual_add', 'client=%s' % client['client_id'])
+        flash('"%s" 고객이 등록되었습니다.' % name)
+    except Exception as e:
+        logger.error("ritual create_client error: %s", e)
+        flash('고객 등록 실패')
+
+    return redirect(url_for('ritual_dashboard'))
+
+
+@app.route('/ritual/visit', methods=['POST'])
+@login_required
+def ritual_visit():
+    if not _MODULES_AVAILABLE:
+        flash('모듈 없음')
+        return redirect(url_for('ritual_dashboard'))
+
+    client_id = request.form.get('client_id', '').strip()
+    service = request.form.get('service', '').strip()
+
+    if not client_id or not service:
+        flash('고객과 서비스는 필수입니다.')
+        return redirect(url_for('ritual_dashboard'))
+
+    rm = get_ritual_module()
+    try:
+        amount_raw = request.form.get('amount', '0') or '0'
+        weeks_raw = request.form.get('next_visit_weeks', '0') or '0'
+        sat_raw = request.form.get('satisfaction', '').strip()
+        visit_date = request.form.get('visit_date', '').strip() or None
+
+        rm.add_visit(
+            client_id=client_id,
+            service=service,
+            public_note=request.form.get('public_note', '').strip(),
+            notes=request.form.get('notes', '').strip(),
+            amount=int(amount_raw) if amount_raw.isdigit() else 0,
+            next_visit_weeks=int(weeks_raw) if weeks_raw.isdigit() else 0,
+            satisfaction=int(sat_raw) if sat_raw.isdigit() else None,
+            visit_date=visit_date,
+        )
+        _audit('ritual_visit', 'client=%s service=%s' % (client_id, service))
+        flash('방문 기록이 저장되었습니다.')
+    except Exception as e:
+        logger.error("ritual add_visit error: %s", e)
+        flash('방문 기록 저장 실패')
+
+    return redirect(url_for('ritual_dashboard'))
+
+
+@app.route('/ritual/update', methods=['POST'])
+@login_required
+def ritual_update():
+    if not _MODULES_AVAILABLE:
+        flash('모듈 없음')
+        return redirect(url_for('ritual_dashboard'))
+
+    client_id = request.form.get('client_id', '').strip()
+    if not client_id:
+        flash('고객 ID 필요')
+        return redirect(url_for('ritual_dashboard'))
+
+    rm = get_ritual_module()
+    try:
+        updates = {
+            'hair_type': request.form.get('hair_type', '').strip(),
+            'phone': request.form.get('phone', '').strip(),
+            'preference_notes': request.form.get('preference_notes', '').strip(),
+        }
+        if request.form.get('name', '').strip():
+            updates['name'] = request.form.get('name').strip()
+        if request.form.get('rhythm', '').strip():
+            updates['rhythm'] = request.form.get('rhythm').strip()
+
+        rm.update_client(client_id, **updates)
+        _audit('ritual_update', 'client=%s' % client_id)
+        flash('고객 정보가 수정되었습니다.')
+    except Exception as e:
+        logger.error("ritual update_client error: %s", e)
+        flash('고객 정보 수정 실패')
+
+    return redirect(url_for('ritual_dashboard'))
+
+
+@app.route('/ritual/portal-link/<client_id>')
+@login_required
+def ritual_portal_link(client_id):
+    if not _MODULES_AVAILABLE:
+        return jsonify({'error': '모듈 없음'}), 503
+
+    # B9: client_id 형식 검증
+    import re
+    if not re.match(r'^client_\d{4}$', client_id):
+        return jsonify({'error': '잘못된 client_id'}), 400
+
+    rm = get_ritual_module()
+    client = rm.get_client(client_id)
+    if not client:
+        return jsonify({'error': '고객 없음'}), 404
+
+    token = client.get('portal_token', '')
+    _audit('ritual_portal_link', 'client=%s' % client_id)
+    return jsonify({
+        'portal_url': '%s/me/%s' % (SITE_BASE_URL, token),
+        'consult_url': '%s/consult/%s' % (SITE_BASE_URL, token),
+        'token': token,
+    })
 
 
 # ─── B11: 에러 핸들러 ───
