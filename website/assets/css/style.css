@@ -4950,6 +4950,197 @@ body.home-radical::after {
 }
 
 /* ═══════════════════════════════════════════
+   HOME v2 — Hero + Content 재설계
+   field-bg는 hero 뒤에만. 콘텐츠 섹션은 solid bg.
+   ═══════════════════════════════════════════ */
+
+/* ── Hero: full-viewport, transparent (field-bg 노출) ── */
+.home-hero {
+  position: relative;
+  z-index: 1;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-xl) var(--space-lg);
+  pointer-events: none;
+}
+
+.home-hero__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.home-hero__brand {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: var(--ls-wide);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: home-fade-up 1.2s var(--ease) 0.3s forwards;
+}
+
+.home-hero__statement {
+  font-family: var(--font-mono);
+  font-size: clamp(0.76rem, 1.15vw, 0.92rem);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: home-fade-up 1.2s var(--ease) 0.5s forwards,
+    home-breathe var(--breath) var(--ease-in-out) 1.8s infinite;
+}
+
+.home-hero__scroll {
+  margin-top: var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  color: var(--text-faint);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: home-fade-up 1.0s var(--ease) 1.4s forwards;
+}
+
+/* ── Content: solid bg — field-bg를 덮음 ── */
+.home-content {
+  position: relative;
+  z-index: 2;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+
+/* ── 콘텐츠 내부 공통 row ── */
+.home-row {
+  max-width: var(--max-wide);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-lg);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--space-md);
+  align-items: start;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.8s var(--ease-wave), transform 0.8s var(--ease-wave);
+}
+
+.home-row.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── 우화 intro ── */
+.home-intro__text {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  font-weight: var(--fw-thin);
+  line-height: 1.9;
+  color: var(--text-sub);
+  letter-spacing: -0.01em;
+}
+
+/* ── Latest article ── */
+.home-latest__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text);
+  pointer-events: auto;
+}
+
+.home-latest__meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: var(--ls-wide);
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.home-latest__title {
+  font-family: var(--font-body);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-heading);
+  line-height: 1.3;
+  color: var(--text);
+  transition: opacity 0.3s;
+}
+
+.home-latest__link:hover .home-latest__title {
+  opacity: 0.55;
+}
+
+.home-latest__arrow {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  letter-spacing: var(--ls-label);
+  margin-top: 0.4rem;
+}
+
+/* ── Site nav row ── */
+.home-site-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  pointer-events: auto;
+}
+
+.home-site-nav a {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  color: var(--text-sub);
+  text-decoration: none;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.home-site-nav a:last-child { border-bottom: none; }
+
+.home-site-nav a:hover { color: var(--text); }
+
+.home-site-nav a::after {
+  content: '→';
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+}
+
+/* ── 모바일 ── */
+@media (max-width: 768px) {
+  .home-hero {
+    padding: var(--space-lg) 1.5rem;
+  }
+
+  .home-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+    padding: var(--space-md) 1.5rem;
+  }
+
+  .home-row .section-label {
+    margin-bottom: 0;
+  }
+
+  .home-latest__title {
+    font-size: 1.2rem;
+  }
+}
+
+/* ═══════════════════════════════════════════
    ARCHIVE — 목차 (Table of Contents)
    ═══════════════════════════════════════════ */
 
