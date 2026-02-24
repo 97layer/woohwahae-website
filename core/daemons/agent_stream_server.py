@@ -11,7 +11,7 @@ import json
 import time
 import os
 from pathlib import Path
-from flask import Flask, Response, render_template_string, send_from_directory
+from flask import Flask, Response, render_template_string, send_from_directory, request
 from flask_cors import CORS
 import threading
 from watchdog.observers import Observer
@@ -23,7 +23,11 @@ LOG_DIR = PROJECT_ROOT / ".infra" / "logs"
 
 # Flask app
 app = Flask(__name__)
-CORS(app)  # CORS 허용 (localhost:8081 ← 8082)
+# B5: CORS — 로컬 admin 대시보드만 허용
+CORS(app, origins=["http://localhost:8081", "http://127.0.0.1:8081"])
+
+# B5: Stream 인증 시크릿 (옵션)
+STREAM_SECRET = os.getenv('STREAM_SECRET', '')
 
 # SSE 구독자 관리
 subscribers = []
@@ -115,11 +119,14 @@ def events():
 @app.route("/agents/status")
 def agents_status():
     """
-    전체 에이전트 최근 상태 조회 (REST API)
+    전체 에이전트 최근 상태 조회 (REST API) — B5: 시크릿 인증 (선택적)
 
     Returns:
         JSON: {agent_id: {last_action, last_target, timestamp}}
     """
+    if STREAM_SECRET and request.headers.get('X-Stream-Secret') != STREAM_SECRET:
+        return json.dumps({'error': 'Unauthorized'}), 401, {'Content-Type': 'application/json'}
+
     status = {}
 
     # .infra/logs/*_events.jsonl 순회
@@ -208,7 +215,7 @@ def main():
         print("[Stream Server] Starting on http://localhost:8082", flush=True)
         print("[Stream Server] SSE endpoint: http://localhost:8082/events", flush=True)
         print("[Stream Server] Status API: http://localhost:8082/agents/status", flush=True)
-        app.run(host="0.0.0.0", port=8082, debug=False, threaded=True)
+        app.run(host="127.0.0.1", port=8082, debug=False, threaded=True)
     except KeyboardInterrupt:
         observer.stop()
         print("\n[Stream Server] Stopped", flush=True)

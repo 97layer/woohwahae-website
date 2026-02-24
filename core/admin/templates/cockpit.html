@@ -293,7 +293,7 @@
             try {
                 const res = await fetch('/api/insight', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '' },
                     body: JSON.stringify({ text })
                 });
                 const data = await res.json();
@@ -341,7 +341,7 @@
             try {
                 const res = await fetch('/api/chat', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '' },
                     body: JSON.stringify({ text })
                 });
                 const data = await res.json();

@@ -5,16 +5,27 @@ Flask-based CMS for managing archive posts and reviewing 97layerOS pipeline outp
 
 import os
 import json
+import logging
+import secrets
 import functools
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 from flask import (
     Flask, render_template, request, redirect, url_for,
-    session, flash, jsonify
+    session, flash, jsonify, abort
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
+
+# Load .env
+try:
+    from dotenv import load_dotenv
+    _BASE_DIR_FOR_ENV = Path(__file__).resolve().parent.parent.parent
+    load_dotenv(_BASE_DIR_FOR_ENV / '.env')
+except ImportError:
+    pass
 
 # ─── Paths ───
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # 97layerOS root
@@ -24,6 +35,7 @@ PUBLISHED_DIR = BASE_DIR / 'knowledge' / 'assets' / 'published'
 UPLOAD_DIR = WEBSITE_DIR / 'assets' / 'img' / 'uploads'
 SIGNALS_DIR = BASE_DIR / 'knowledge' / 'signals'
 MEMORY_FILE = BASE_DIR / 'knowledge' / 'long_term_memory.json'
+AUDIT_LOG_FILE = BASE_DIR / 'knowledge' / 'reports' / 'audit.log'
 
 # ─── App ───
 app = Flask(
@@ -32,15 +44,89 @@ app = Flask(
     static_folder=str(Path(__file__).parent / 'static'),
     static_url_path='/admin-static'
 )
-app.secret_key = os.getenv('ADMIN_SECRET_KEY', 'woohwahae-dev-secret-change-me')
+
+# B1: Secret key — env var 필수, fallback 없음
+_secret_key = os.getenv('ADMIN_SECRET_KEY')
+if not _secret_key:
+    raise RuntimeError("ADMIN_SECRET_KEY 환경변수 필수. .env에 설정하세요.")
+app.secret_key = _secret_key
+
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+app.config['DEBUG'] = False
+app.config['PROPAGATE_EXCEPTIONS'] = False
+
+# B2: 쿠키 보안
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=os.getenv('HTTPS_ENABLED', 'false').lower() == 'true',
+    SESSION_COOKIE_SAMESITE='Strict',
+    PERMANENT_SESSION_LIFETIME=3600,  # 1시간 세션 만료
+)
 
 ADMIN_PASSWORD_HASH = os.getenv(
     'ADMIN_PASSWORD_HASH',
-    generate_password_hash('woohwahae2024', method='pbkdf2:sha256')  # 개발용 기본 비밀번호
+    generate_password_hash('woohwahae2024', method='pbkdf2:sha256')
 )
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
+ALLOWED_MIME = {'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'}
+
+# ─── Logging ───
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# B10: Audit logger
+audit_logger = logging.getLogger('audit')
+try:
+    AUDIT_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _audit_handler = logging.FileHandler(str(AUDIT_LOG_FILE))
+    _audit_handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+    audit_logger.addHandler(_audit_handler)
+    audit_logger.setLevel(logging.INFO)
+except Exception:
+    pass  # 로그 파일 생성 실패해도 서버 동작에 영향 없음
+
+
+def _audit(action: str, detail: str = '') -> None:
+    """B10: 관리자 액션 감사 로그"""
+    ip = request.remote_addr if request else 'system'
+    audit_logger.info("ip=%s action=%s detail=%s", ip, action, detail)
+
+
+# B8: 로그인 실패 카운터 (인메모리, 재시작 시 초기화)
+_login_attempts: dict = defaultdict(int)
+LOGIN_MAX_ATTEMPTS = 10
+
+
+# ─── B3: CSRF ───
+_CSRF_EXEMPT_PATHS = {'/login'}
+
+
+def _generate_csrf_token() -> str:
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = secrets.token_hex(32)
+    return session['_csrf_token']
+
+
+app.jinja_env.globals['csrf_token'] = _generate_csrf_token
+
+
+@app.before_request
+def csrf_protect() -> None:
+    """B3: POST 요청 CSRF 검증 (로그인 제외)"""
+    if request.method != 'POST':
+        return
+    if request.path in _CSRF_EXEMPT_PATHS:
+        return
+    # JSON API: X-CSRF-Token 헤더 허용 (SameSite=Strict 보완)
+    if request.is_json:
+        token = request.headers.get('X-CSRF-Token')
+    else:
+        token = request.form.get('_csrf_token')
+    expected = session.get('_csrf_token')
+    if not expected or token != expected:
+        _audit('csrf_violation', request.path)
+        abort(403)
 
 
 # ─── Auth ───
@@ -55,17 +141,30 @@ def login_required(f):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    ip = request.remote_addr
     if request.method == 'POST':
+        # B8: rate limiting
+        if _login_attempts[ip] >= LOGIN_MAX_ATTEMPTS:
+            _audit('login_blocked', 'too_many_attempts')
+            return jsonify({'error': '로그인 시도 횟수 초과. 잠시 후 다시 시도하세요.'}), 429
+
         password = request.form.get('password', '')
         if check_password_hash(ADMIN_PASSWORD_HASH, password):
+            _login_attempts[ip] = 0
             session['logged_in'] = True
+            session.permanent = True
+            _audit('login_success')
             return redirect(url_for('dashboard'))
+
+        _login_attempts[ip] += 1
+        _audit('login_failed', 'attempt_%d' % _login_attempts[ip])
         flash('비밀번호가 올바르지 않습니다.')
     return render_template('login.html')
 
 
 @app.route('/logout')
 def logout():
+    _audit('logout')
     session.clear()
     return redirect(url_for('login'))
 
@@ -112,6 +211,7 @@ def archive_new():
         date_str = datetime.now().strftime('%Y.%m.%d')
         generate_post(slug, title, date_str, body, preview)
 
+        _audit('archive_create', slug)
         flash(f'"{title}" 포스트가 생성되었습니다.')
         return redirect(url_for('archive_list'))
 
@@ -145,6 +245,7 @@ def archive_edit(slug):
         from core.admin.utils.post_generator import generate_post
         generate_post(slug, title, post['date'], body, preview)
 
+        _audit('archive_edit', slug)
         flash(f'"{title}" 포스트가 수정되었습니다.')
         return redirect(url_for('archive_list'))
 
@@ -157,6 +258,7 @@ def archive_edit(slug):
 def archive_delete(slug):
     from core.admin.utils.post_generator import delete_post
     delete_post(slug)
+    _audit('archive_delete', slug)
     flash('포스트가 삭제되었습니다.')
     return redirect(url_for('archive_list'))
 
@@ -167,6 +269,7 @@ def archive_delete(slug):
 def publish():
     from core.admin.utils.git_publisher import publish_to_website
     success, message = publish_to_website()
+    _audit('publish', 'success=%s' % success)
     flash(message)
     return redirect(url_for('dashboard'))
 
@@ -183,7 +286,12 @@ def pipeline():
 @login_required
 def pipeline_adopt(item_id):
     """파이프라인 콘텐츠를 아카이브 포스트로 채택"""
-    item_path = PUBLISHED_DIR / item_id
+    # B9: Path traversal 방어
+    item_path = (PUBLISHED_DIR / item_id).resolve()
+    if not str(item_path).startswith(str(PUBLISHED_DIR.resolve())):
+        _audit('path_traversal_blocked', item_id)
+        abort(400)
+
     meta_path = item_path / 'meta.json'
     essay_path = item_path / 'archive_essay.txt'
 
@@ -194,8 +302,11 @@ def pipeline_adopt(item_id):
     body = essay_path.read_text(encoding='utf-8')
     title = ''
     if meta_path.exists():
-        meta = json.loads(meta_path.read_text(encoding='utf-8'))
-        title = meta.get('title', meta.get('signal_id', item_id))
+        try:
+            meta = json.loads(meta_path.read_text(encoding='utf-8'))
+            title = meta.get('title', meta.get('signal_id', item_id))
+        except (json.JSONDecodeError, IOError):
+            pass
 
     if not title:
         title = item_id.replace('/', ' — ')
@@ -207,6 +318,7 @@ def pipeline_adopt(item_id):
     from core.admin.utils.post_generator import generate_post
     generate_post(slug, title, date_str, body, preview)
 
+    _audit('pipeline_adopt', slug)
     flash(f'"{title}" 파이프라인 콘텐츠가 채택되었습니다.')
     return redirect(url_for('archive_list'))
 
@@ -220,13 +332,13 @@ def cockpit():
     if MEMORY_FILE.exists():
         try:
             memory = json.loads(MEMORY_FILE.read_text(encoding='utf-8'))
-        except:
+        except (json.JSONDecodeError, IOError):
             pass
-    
+
     # 랭킹 데이터 추출
     concepts = sorted(memory.get('concepts', {}).items(), key=lambda x: x[1], reverse=True)[:10]
     experiences = memory.get('experiences', [])[-5:]
-    
+
     return render_template('cockpit.html', concepts=concepts, experiences=experiences)
 
 
@@ -234,15 +346,15 @@ def cockpit():
 @login_required
 def api_insight():
     """인사이트 주입 API"""
-    data = request.json
+    data = request.json or {}
     text = data.get('text', '').strip()
     if not text:
         return jsonify({'error': '내용이 없습니다.'}), 400
-    
+
     from core.system.cortex_edge import get_cortex
     cortex = get_cortex()
     result = cortex.inject_signal(text, source="web_admin")
-    
+
     return jsonify(result)
 
 
@@ -250,18 +362,19 @@ def api_insight():
 @login_required
 def api_chat():
     """AIEngine 대화 API (Deep RAG)"""
-    data = request.json
+    data = request.json or {}
     text = data.get('text', '').strip()
     if not text:
         return jsonify({'error': '내용이 없습니다.'}), 400
-    
+
     try:
         from core.system.cortex_edge import get_cortex
         cortex = get_cortex()
         result = cortex.query("admin", text)
         return jsonify({'response': result['response']})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error("api_chat error: %s", e)
+        return jsonify({'error': '내부 오류'}), 500
 
 
 # ─── Image Upload ───
@@ -278,16 +391,60 @@ def upload_image():
     if not _allowed_file(file.filename):
         return jsonify({'error': '허용되지 않는 파일 형식입니다.'}), 400
 
+    # B9: MIME type 검증 (python-magic 없을 때 graceful fallback)
+    try:
+        import magic
+        file_bytes = file.read(2048)
+        file.seek(0)
+        mime = magic.from_buffer(file_bytes, mime=True)
+        if mime not in ALLOWED_MIME:
+            return jsonify({'error': '허용되지 않는 파일 형식입니다.'}), 400
+    except ImportError:
+        pass  # python-magic 미설치 시 확장자 검증만 사용
+
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     filename = secure_filename(file.filename)
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"{timestamp}_{filename}"
     file.save(str(UPLOAD_DIR / filename))
 
+    _audit('upload', filename)
     return jsonify({
         'url': f'/assets/img/uploads/{filename}',
         'filename': filename
     })
+
+
+# ─── B11: 에러 핸들러 ───
+@app.errorhandler(400)
+def bad_request(e):
+    return jsonify({'error': '잘못된 요청'}), 400
+
+
+@app.errorhandler(403)
+def forbidden(e):
+    return jsonify({'error': '접근 거부'}), 403
+
+
+@app.errorhandler(404)
+def not_found(e):
+    if request.path.startswith('/api/'):
+        return jsonify({'error': '없는 경로'}), 404
+    return render_template('dashboard.html', post_count=0, pipeline_count=0), 404
+
+
+@app.errorhandler(429)
+def rate_limited(e):
+    return jsonify({'error': '요청 과다. 잠시 후 다시 시도하세요.'}), 429
+
+
+@app.errorhandler(Exception)
+def handle_error(e):
+    logger.error("unhandled error: %s", e, exc_info=True)
+    if request.path.startswith('/api/'):
+        return jsonify({'error': '내부 오류'}), 500
+    flash('내부 오류가 발생했습니다.')
+    return redirect(url_for('dashboard'))
 
 
 # ─── Helpers ───
@@ -345,7 +502,7 @@ def _load_pipeline_items():
             if meta_path.exists():
                 try:
                     item['meta'] = json.loads(meta_path.read_text(encoding='utf-8'))
-                except json.JSONDecodeError:
+                except (json.JSONDecodeError, IOError):
                     pass
 
             items.append(item)
@@ -369,4 +526,4 @@ def _allowed_file(filename):
 
 # ─── Run ───
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='127.0.0.1', port=5001, debug=False)

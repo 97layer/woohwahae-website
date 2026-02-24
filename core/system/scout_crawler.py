@@ -1,11 +1,56 @@
+import ipaddress
+import logging
 import os
 import json
 import time
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from urllib.parse import urlparse
 import hashlib
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
+# B6: SSRF 방어 설정
+_BLOCKED_HOSTS = frozenset({
+    '169.254.169.254',        # AWS/GCP/Azure metadata
+    'metadata.google.internal',
+    'metadata.internal',
+    'localhost',
+})
+_BLOCKED_NETWORKS = [
+    ipaddress.ip_network('127.0.0.0/8'),    # loopback
+    ipaddress.ip_network('10.0.0.0/8'),      # private
+    ipaddress.ip_network('172.16.0.0/12'),   # private
+    ipaddress.ip_network('192.168.0.0/16'),  # private
+    ipaddress.ip_network('169.254.0.0/16'),  # link-local (metadata)
+    ipaddress.ip_network('::1/128'),         # IPv6 loopback
+    ipaddress.ip_network('fc00::/7'),        # IPv6 private
+]
+
+
+def _validate_url(url: str) -> bool:
+    """SSRF 방어: 내부 IP/메타데이터 엔드포인트 차단"""
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            return False
+        host = parsed.hostname
+        if not host:
+            return False
+        if host.lower() in _BLOCKED_HOSTS:
+            return False
+        try:
+            ip = ipaddress.ip_address(host)
+            for net in _BLOCKED_NETWORKS:
+                if ip in net:
+                    return False
+        except ValueError:
+            pass  # 도메인명은 통과 (DNS rebinding 방어는 별도 레이어)
+        return True
+    except Exception:
+        return False
 
 # 설정
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -31,6 +76,9 @@ def get_headers():
     }
 
 def fetch_content(url):
+    if not _validate_url(url):
+        logger.warning("SSRF 차단: %s", url)
+        return None
     try:
         response = requests.get(url, headers=get_headers(), timeout=10)
         response.raise_for_status()

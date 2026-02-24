@@ -23,6 +23,7 @@
       <a href="{{ url_for('archive_edit', slug=post.slug) }}" class="admin-btn">수정</a>
       <form action="{{ url_for('archive_delete', slug=post.slug) }}" method="post"
             onsubmit="return confirm('정말 삭제하시겠습니까?');">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="admin-btn admin-btn--danger">삭제</button>
       </form>
     </div>

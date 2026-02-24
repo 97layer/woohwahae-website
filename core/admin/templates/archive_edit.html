@@ -8,6 +8,7 @@
 </div>
 
 <form method="post" class="admin-form">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
   <div class="admin-form-group">
     <label for="title">제목</label>
     <input type="text" id="title" name="title" value="{{ post.get('title', '') }}"
