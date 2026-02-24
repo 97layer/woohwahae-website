@@ -15,7 +15,7 @@
     <script src="assets/js/analytics.js"></script>
 </head>
 
-<body>
+<body class="home-radical">
 
     <nav>
         <a href="/" class="nav-logo">
@@ -23,22 +23,24 @@
         </a>
         <ul class="nav-links">
             <li><a href="archive/">Archive</a></li>
-            <li><a href="service.html" class="active">Service</a></li>
+            <li><a href="offering.html">Offering</a></li>
             <li><a href="about.html">About</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li><a href="lab/">Lab</a></li>
         </ul>
+        <button class="nav-lang-toggle" id="lang-toggle" aria-label="Toggle Language">EN</button>
         <button class="nav-toggle" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </nav>
 
     <!-- 서비스 정의 -->
-    <div class="container">
+    <main class="container--wide">
         <div class="page-header">
             <p class="section-label fade-in">Service</p>
             <h1 class="fade-in">Hair &amp; Photography</h1>
         </div>
-    </div>
+    </main>
 
     <!-- 공간 소개 -->
     <section class="section--dark">
@@ -131,36 +133,30 @@
 
     <!-- Footer -->
     <footer class="section--light">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <img src="assets/img/symbol.png" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
+        <div class="footer-inner">
+            <div class="footer-brand-row">
                 <p class="footer-brand-name">WOOHWAHAE</p>
-                <p class="footer-brand-desc">Archive for Slow Life</p>
             </div>
-            <div>
-                <p class="footer-nav-title">Navigate</p>
-                <ul class="footer-nav-list">
-                    <li><a href="archive/">Archive</a></li>
-                    <li><a href="service.html">Service</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
+            <div class="footer-nav-row">
+                <a href="archive/">Archive</a>
+                <a href="offering.html">Offering</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="lab/">Lab</a>
+                <a href="detail/editor.html">Editor</a>
             </div>
-            <div>
-                <p class="footer-connect-title">Connect</p>
-                <ul class="footer-connect-list">
-                    <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
-                    <li><a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
-                            target="_blank" rel="noopener">Booking</a></li>
-                    <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
-                </ul>
+            <div class="footer-connect-row">
+                <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+                <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
+                <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
+                <a href="mailto:hello@woohwahae.kr">Email</a>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p class="footer-bottom-copy">&copy; 2026 WOOHWAHAE &middot; Archive for Slow Life</p>
-            <div class="footer-legal">
-                <a href="privacy.html">Privacy</a>
-                <a href="terms.html">Terms</a>
+            <div class="footer-bottom">
+                <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="privacy.html">Privacy</a>
+                    <a href="terms.html">Terms</a>
+                </div>
             </div>
         </div>
     </footer>

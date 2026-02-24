@@ -614,6 +614,35 @@ JSON만 출력."""
             logger.warning(f"Corpus 점검 실패: {e}")
             return {"corpus_summary": {}, "ripe_clusters": 0, "essay_triggered": []}
 
+    def _check_revisit_due(self) -> None:
+        """재방문 시기가 된 고객 → Telegram 알림"""
+        try:
+            from core.modules.ritual import get_ritual_module
+            due_clients = get_ritual_module().get_due_clients()
+            if not due_clients:
+                return
+
+            admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+            bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+            if not (admin_id and bot_token):
+                logger.warning("Telegram 환경변수 미설정 — 재방문 알림 생략")
+                return
+
+            lines = [f"⏰ <b>재방문 예정 고객 {len(due_clients)}명</b>"]
+            for c in due_clients:
+                lines.append(f"• {c['name']} ({c.get('rhythm', '보통')} 리듬)")
+            msg = "\n".join(lines)
+
+            import httpx
+            httpx.post(
+                f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                json={"chat_id": admin_id, "text": msg, "parse_mode": "HTML"},
+                timeout=10,
+            )
+            logger.info("⏰ 재방문 알림 전송: %d명", len(due_clients))
+        except Exception as e:
+            logger.warning("재방문 알림 실패: %s", e)
+
     def _record_growth_snapshot(self) -> None:
         """월별 성장 지표를 Growth Module에 자동 기록"""
         try:
@@ -652,7 +681,10 @@ JSON만 출력."""
         # 5. Growth Module 월간 집계 자동 기록
         self._record_growth_snapshot()
 
-        # 6. PROPOSE 생성 (신호가 10개 이상일 때만)
+        # 6. 재방문 시기 고객 알림
+        self._check_revisit_due()
+
+        # 7. PROPOSE 생성 (신호가 10개 이상일 때만)
         new_proposals = []
         if stats['signal_count'] >= 10:
             new_proposals = self._analyze_and_propose(stats)

@@ -30,6 +30,13 @@ rsync -avz \
     ${LOCAL_PATH}/long_term_memory.json \
     2>/dev/null
 
+# corpus 동기화 (Gardener 로컬 실행을 위해 필수)
+rsync -avz --delete \
+    -e "ssh -i ${VM_KEY} -o StrictHostKeyChecking=no" \
+    ${VM_HOST}:${VM_PATH}/corpus/ \
+    ${LOCAL_PATH}/corpus/ \
+    2>/dev/null
+
 echo ""
 echo "✅ 동기화 완료"
 echo ""
