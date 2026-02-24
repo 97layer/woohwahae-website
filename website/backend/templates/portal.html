@@ -2,36 +2,16 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>{{ client.name }}님 — WOOHWAHAE</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="preload" href="/assets/css/style.css?v=renewal_v3" as="style">
+  <link rel="stylesheet" href="/assets/css/style.css?v=renewal_v3">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #FAF9F6;
-      --text: #1A1A1A;
-      --sub: #6B6B6B;
-      --faint: #AEAEA8;
-      --line: #E4E3DC;
-      --accent: #1B2D4F;
-      --font: 'Noto Serif KR', serif;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      font-weight: 300;
-      min-height: 100vh;
-    }
-
+    /* ── 포털 레이아웃 ── */
     .wrap { max-width: 560px; margin: 0 auto; padding: 0 24px; }
 
-    /* ── 헤더 ── */
-    .header {
-      padding: 48px 0 36px;
+    .portal-header {
+      padding: 56px 0 36px;
       border-bottom: 1px solid var(--line);
       display: grid;
       grid-template-columns: 1fr auto;
@@ -40,63 +20,79 @@
     }
 
     .brand {
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      color: var(--faint);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: var(--ls-wide);
+      color: var(--text-faint);
       text-transform: uppercase;
       margin-bottom: 20px;
     }
 
-    .name {
-      font-size: 30px;
-      font-weight: 300;
-      letter-spacing: -0.02em;
+    .client-name {
+      font-family: var(--font-body);
+      font-size: 2rem;
+      font-weight: var(--fw-light);
+      letter-spacing: var(--ls-heading);
       line-height: 1.2;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
-    .name-sub {
-      font-size: 13px;
-      color: var(--sub);
-      letter-spacing: 0.03em;
+    .client-meta {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-sub);
+      letter-spacing: var(--ls-label);
     }
 
     .silhouette-wrap {
-      width: 90px;
+      width: 80px;
       flex-shrink: 0;
-      opacity: 0.9;
+      opacity: 0.85;
+    }
+
+    .silhouette-stage {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-faint);
+      letter-spacing: var(--ls-label);
+      text-align: center;
+      margin-top: 6px;
+      text-transform: uppercase;
     }
 
     /* ── 스탯 ── */
     .stats {
       display: flex;
-      gap: 32px;
-      padding: 24px 0;
+      gap: 36px;
+      padding: 28px 0;
       border-bottom: 1px solid var(--line);
     }
 
     .stat strong {
       display: block;
-      font-size: 22px;
-      font-weight: 400;
-      letter-spacing: -0.02em;
+      font-family: var(--font-body);
+      font-size: 1.6rem;
+      font-weight: var(--fw-light);
+      letter-spacing: var(--ls-heading);
       color: var(--text);
     }
 
     .stat span {
-      font-size: 11px;
-      color: var(--faint);
-      letter-spacing: 0.1em;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-faint);
+      letter-spacing: var(--ls-label);
       text-transform: uppercase;
     }
 
-    /* ── 섹션 레이블 ── */
-    .section-label {
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--faint);
+    /* ── 섹션 레이블 (포털 전용 padding override) ── */
+    .portal-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: var(--ls-wide);
+      color: var(--text-faint);
       text-transform: uppercase;
-      padding: 28px 0 16px;
+      padding: 32px 0 18px;
     }
 
     /* ── 방문 기록 ── */
@@ -104,82 +100,127 @@
 
     .visit-item {
       display: grid;
-      grid-template-columns: 90px 1fr auto;
+      grid-template-columns: 88px 1fr auto;
       gap: 12px;
       align-items: baseline;
-      padding: 14px 0;
+      padding: 16px 0;
       border-bottom: 1px solid var(--line);
-      font-size: 14px;
     }
 
-    .visit-date { color: var(--faint); font-size: 12px; }
-    .visit-service { color: var(--text); }
-    .visit-amount { color: var(--sub); font-size: 12px; text-align: right; }
+    .visit-date {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-faint);
+    }
+
+    .visit-service {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .visit-amount {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-sub);
+      text-align: right;
+      white-space: nowrap;
+    }
 
     .visit-note {
       grid-column: 2 / 4;
-      font-size: 12px;
-      color: var(--faint);
-      line-height: 1.6;
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      line-height: 1.7;
       padding-top: 4px;
     }
 
     .empty-state {
-      padding: 32px 0;
-      font-size: 13px;
-      color: var(--faint);
-      line-height: 1.8;
+      padding: 36px 0;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-faint);
+      line-height: 1.9;
     }
 
     /* ── 상담 CTA ── */
     .consult-block {
-      margin: 32px 0;
-      padding: 24px;
+      margin: 36px 0;
+      padding: 28px 24px;
       border: 1px solid var(--line);
     }
 
     .consult-block p {
-      font-size: 13px;
-      color: var(--sub);
-      line-height: 1.8;
-      margin-bottom: 20px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      line-height: 1.9;
+      margin-bottom: 24px;
     }
 
-    .btn {
+    .portal-btn {
       display: block;
       text-align: center;
-      padding: 15px;
-      font-family: var(--font);
-      font-size: 12px;
-      letter-spacing: 0.1em;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: var(--ls-label);
       text-decoration: none;
       border: 1px solid var(--line);
-      color: var(--sub);
-      transition: all 0.15s;
+      color: var(--text-sub);
+      transition: all var(--duration) var(--ease);
       text-transform: uppercase;
     }
 
-    .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .btn + .btn { margin-top: 10px; }
+    .portal-btn:hover {
+      background: var(--navy);
+      color: var(--white);
+      border-color: var(--navy);
+    }
+
+    .portal-btn--primary {
+      background: var(--navy);
+      color: var(--white);
+      border-color: var(--navy);
+    }
+
+    .portal-btn + .portal-btn { margin-top: 10px; }
 
     /* ── 푸터 ── */
-    .footer {
-      padding: 40px 0 60px;
-      font-size: 11px;
-      color: var(--faint);
-      letter-spacing: 0.1em;
+    .portal-footer {
+      padding: 48px 0 72px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-faint);
+      letter-spacing: var(--ls-label);
       text-transform: uppercase;
     }
 
-    /* ── 실루엣 스테이지 레이블 ── */
-    .silhouette-stage {
-      font-size: 9px;
-      color: var(--faint);
-      letter-spacing: 0.15em;
-      text-align: center;
-      margin-top: 6px;
-      text-transform: uppercase;
+    /* ── 모바일 ── */
+    @media (max-width: 480px) {
+      .portal-header {
+        padding: 40px 0 28px;
+        gap: 16px;
+      }
+
+      .client-name { font-size: 1.6rem; }
+
+      .silhouette-wrap { width: 64px; }
+
+      .stats { gap: 24px; }
+
+      .stat strong { font-size: 1.3rem; }
+
+      .visit-item {
+        grid-template-columns: 72px 1fr auto;
+        gap: 8px;
+        padding: 14px 0;
+      }
+
+      .consult-block { padding: 20px 16px; }
+
+      .portal-btn { padding: 18px; }
     }
   </style>
 </head>
@@ -187,12 +228,11 @@
 
 <div class="wrap">
 
-  <!-- 헤더: 이름 + 실루엣 -->
-  <header class="header">
+  <header class="portal-header">
     <div>
       <p class="brand">WOOHWAHAE</p>
-      <h1 class="name">{{ client.name }}님</h1>
-      <p class="name-sub">
+      <h1 class="client-name">{{ client.name }}님</h1>
+      <p class="client-meta">
         {% if client.last_visit %}마지막 방문 {{ client.last_visit }}
         {% else %}아직 방문 기록이 없습니다{% endif %}
       </p>
@@ -230,7 +270,7 @@
   </div>
 
   <!-- 시술 기록 -->
-  <p class="section-label">시술 기록</p>
+  <p class="portal-label">시술 기록</p>
 
   {% if visits %}
   <ul class="visit-list">
@@ -255,15 +295,15 @@
   {% endif %}
 
   <!-- 사전 상담 -->
-  <p class="section-label">사전 상담</p>
+  <p class="portal-label">사전 상담</p>
 
   <div class="consult-block">
     <p>방문 전 미리 알려주시면<br>더 준비된 시간을 만들 수 있습니다.</p>
-    <a href="/consult/{{ token }}" class="btn btn-primary">상담 내용 입력하기 →</a>
-    <a href="https://booking.naver.com/booking/13/bizes/1171799" class="btn" target="_blank" rel="noopener">예약 확인</a>
+    <a href="/consult/{{ token }}" class="portal-btn portal-btn--primary">상담 내용 입력하기 →</a>
+    <a href="https://booking.naver.com/booking/13/bizes/1171799" class="portal-btn" target="_blank" rel="noopener">예약 확인</a>
   </div>
 
-  <footer class="footer">WOOHWAHAE · Hair Atelier</footer>
+  <footer class="portal-footer">WOOHWAHAE · Hair Atelier</footer>
 
 </div>
 </body>
