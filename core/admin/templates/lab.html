@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}랩{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">LAYER 2 — DESIGN</p>
+  <h1 class="admin-title">랩</h1>
+  <p class="admin-desc">website/lab/ 실험 파일 목록 — 미리보기 링크</p>
+</div>
+
+{% set group_labels = {
+  'agent': 'Agent / Office',
+  'demo': 'Demo',
+  'prototype': 'Prototype',
+  'renewal': 'Renewal',
+  'other': '기타'
+} %}
+
+{% for key, items in groups.items() %}
+{% if items %}
+<div class="admin-section">
+  <p class="admin-label">{{ group_labels[key] }}</p>
+  <div class="lab-table-wrap">
+    <table class="lab-table">
+      <thead>
+        <tr>
+          <th>파일</th>
+          <th>수정일</th>
+          <th>크기</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td class="lab-filename">{{ item.name }}</td>
+          <td class="lab-date">{{ item.mtime }}</td>
+          <td class="lab-size">{{ item.size_kb }} KB</td>
+          <td class="lab-action">
+            <a href="{{ item.url }}" target="_blank" rel="noopener" class="btn--text">미리보기 →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<style>
+.lab-table-wrap { overflow-x: auto; }
+.lab-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.lab-table th {
+  text-align: left;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-mid);
+  border-bottom: 1px solid var(--color-border);
+}
+.lab-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.lab-filename { font-family: 'IBM Plex Mono', monospace; color: var(--color-text); }
+.lab-date, .lab-size { color: var(--color-mid); white-space: nowrap; }
+.lab-action { text-align: right; }
+.lab-table tr:last-child td { border-bottom: none; }
+</style>
+{% endblock %}

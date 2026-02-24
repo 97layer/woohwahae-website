@@ -47,6 +47,15 @@
           </a>
         </div>
 
+        <!-- LAYER 2 -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">LAYER 2 — DESIGN</div>
+          <a href="/lab"
+            class="sidebar-link {% if request.path == '/lab' %}active{% endif %}">
+            랩
+          </a>
+        </div>
+
         <!-- LAYER 3 -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">LAYER 3 — CONTENT</div>
@@ -80,10 +89,6 @@
         <!-- SYSTEM -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">SYSTEM</div>
-          <a href="/tools"
-            class="sidebar-link {% if request.path == '/tools' %}active{% endif %}">
-            도구
-          </a>
           <a href="/services"
             class="sidebar-link {% if request.path == '/services' %}active{% endif %}">
             서비스

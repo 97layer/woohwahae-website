@@ -53,7 +53,7 @@
     <section class="cockpit-knowledge">
         <h2 class="admin-label">Top Knowledge Concepts</h2>
         <div class="concepts-cloud">
-            for concept, count in concepts %}
+            {% for concept, count in concepts %}
             <div class="concept-tag" data-count="{{ count }}">
                 <span class="concept-name">{{ concept }}</span>
                 <span class="concept-count">{{ count }}</span>

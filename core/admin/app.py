@@ -885,19 +885,29 @@ def offering_toggle(item_id):
     return redirect(url_for('offering_admin'))
 
 
-# ─── 도구 ───
+# ─── Lab ───
 
-@app.route('/tools')
+@app.route('/lab')
 @login_required
-def tools_panel():
-    clients = []
-    if _MODULES_AVAILABLE:
-        try:
-            clients = get_ritual_module().list_clients()
-        except Exception as e:
-            logger.error("tools list_clients: %s", e)
-    _audit('tools_view')
-    return render_template('tools.html', clients=clients, site_base_url=SITE_BASE_URL)
+def lab_panel():
+    lab_dir = WEBSITE_DIR / 'lab'
+    groups = {'agent': [], 'demo': [], 'prototype': [], 'renewal': [], 'other': []}
+    if lab_dir.exists():
+        for entry in sorted(lab_dir.iterdir(), key=lambda e: e.stat().st_mtime, reverse=True):
+            if entry.suffix != '.html':
+                continue
+            name = entry.name
+            mtime = datetime.fromtimestamp(entry.stat().st_mtime).strftime('%Y-%m-%d')
+            size_kb = round(entry.stat().st_size / 1024, 1)
+            item = {'name': name, 'mtime': mtime, 'size_kb': size_kb,
+                    'url': '%s/lab/%s' % (SITE_BASE_URL, name)}
+            prefix = name.split('-')[0]
+            if prefix in groups:
+                groups[prefix].append(item)
+            else:
+                groups['other'].append(item)
+    _audit('lab_view')
+    return render_template('lab.html', groups=groups)
 
 
 # ─── 서비스 헬스 ───
