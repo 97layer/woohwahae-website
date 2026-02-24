@@ -60,6 +60,9 @@ google-cloud-sdk/**/SECURITY
 # 고객 CRM 데이터 — VM이 source of truth, 로컬 덮어쓰기 금지
 knowledge/clients/
 
+# Quarantine (filesystem guard 런타임 산출물)
+knowledge/docs/archive/quarantine/
+
 # Runtime-generated data (not for version control)
 .container_data/
 knowledge/signals/
@@ -74,6 +77,8 @@ knowledge/system/execution_context.json
 knowledge/system/asset_registry.json
 knowledge/system/token_usage_log.jsonl
 knowledge/system/session_start.txt
+knowledge/system/propose_queue.json
+knowledge/system/code_agent_cost.json
 
 # Old folders (archived, not needed in sync)
 # NOTE: /system/ (root level only, not core/system/)
