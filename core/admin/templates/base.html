@@ -93,11 +93,11 @@
             class="sidebar-link {% if request.path == '/tools' %}active{% endif %}">
             도구
           </a>
-          <a href="/services"
+          <a href="{{ url_for('services_panel') }}"
             class="sidebar-link {% if request.path == '/services' %}active{% endif %}">
             서비스
           </a>
-          <a href="/settings"
+          <a href="{{ url_for('settings_panel') }}"
             class="sidebar-link {% if request.path == '/settings' %}active{% endif %}">
             설정
           </a>
