@@ -33,7 +33,9 @@ work_lock.json = 잠금 상태면 STOP. 다른 에이전트 작업 중.
 5. **❌ 과거 맥락 hallucination** — 기록된 것만 신뢰
 6. **❌ 루트(/)에 .md 파일 생성** — 허용 위치 외 금지
 
-금지 파일명: `SESSION_SUMMARY_*.md` / `WAKEUP_REPORT.md` / `DEEP_WORK_PROGRESS.md` / `DEPLOY_*.md` / `NEXT_STEPS.md`
+금지 파일명: `SESSION_SUMMARY_*.md` / `WAKEUP_REPORT.md` / `DEEP_WORK_PROGRESS.md` / `DEPLOY_*.md` / `NEXT_STEPS.md` / `audit_report_*.json` / `*_report_*.json`
+
+**루트(/)에 .md/.json/.txt 등 어떤 파일도 생성 금지** (CLAUDE.md, README.md 제외)
 
 허용 위치: 세션기록 → `knowledge/docs/sessions/` | 배포문서 → `knowledge/docs/deployment/` | 보고서 → `knowledge/reports/morning_YYYYMMDD.md`
 

@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "description": "LAYER OS Filesystem Guard — 단일 규칙 소스",
+    "version": "1.0",
+    "updated_at": "2026-02-24",
+    "updated_by": "claude-sonnet",
+    "note": "Gardener가 자동 진화. 수동 수정 시 JSON 유효성 확인 필수."
+  },
+  "allowed_top_dirs": [
+    "directives", "core", "knowledge", "website", "scripts",
+    "skills", "tests", ".claude", ".github", ".git", ".infra",
+    "archive", "google-cloud-sdk"
+  ],
+  "allowed_root_files": [
+    "CLAUDE.md", "README.md", "requirements.txt",
+    "Dockerfile", "docker-compose.yml", "nginx.conf",
+    ".gitignore", ".dockerignore", ".driveignore",
+    ".ai_rules", ".env", ".env.example"
+  ],
+  "forbidden_name_prefixes": [
+    "SESSION_SUMMARY_",
+    "WAKEUP_REPORT",
+    "DEEP_WORK_PROGRESS",
+    "DEPLOY_",
+    "NEXT_STEPS",
+    "audit_report_",
+    "TECHNICAL_AUDIT_",
+    "temp_",
+    "untitled_",
+    "AI_BRIEFING_",
+    "CONTEXT_DUMP"
+  ],
+  "allowed_reports_prefixes": [
+    "morning_",
+    "evening_",
+    "audit_"
+  ],
+  "violation_patterns": {}
+}

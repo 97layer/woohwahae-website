@@ -118,7 +118,7 @@
 | 신호 (분석) | `knowledge/corpus/entries/` | `entry_{signal_id}.json` |
 | 에세이 HTML | `website/archive/issue-{NNN}-{slug}/` | `index.html` |
 | 브랜드 도시에 | `knowledge/brands/{slug}/` | `profile.json` |
-| 리포트 | `knowledge/reports/` | `{type}_{YYYYMMDD}.md` |
+| 리포트 | `knowledge/reports/` | **허용 type**: `morning` / `evening` / `audit` 만. 그 외 금지. |
 | 수익 데이터 | `knowledge/reports/growth/` | `growth_{YYYYMM}.json` |
 | 세션 기록 | `knowledge/docs/sessions/` | `{YYYYMMDD}_{agent_id}.md` |
 | 자산 등록 | `knowledge/system/asset_registry.json` | append |
@@ -135,6 +135,7 @@
 - **❌ filesystem_cache.json 미확인 상태로 파일 생성**
 - **❌ 임시 파일명** (`temp_`, `untitled_`, `무제` 등)
 - **❌ 금지 파일명 패턴**: `SESSION_SUMMARY_*`, `WAKEUP_REPORT*`, `DEEP_WORK_PROGRESS*`, `DEPLOY_*`, `NEXT_STEPS*`
+- **❌ `knowledge/reports/`에 strategy/action/scan/update/plan/validation/assessment 류 파일 생성** → archive로
 
 ---
 

@@ -75,6 +75,10 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 - NEXT_STEPS.md
 - DEPLOYMENT_CHECKLIST.md
 - *_GUIDE.md (지식 문서 외)
+- audit_report_*.json (루트 또는 임의 경로)
+- *_report_*.json (루트에 생성 금지 — knowledge/reports/growth/ 외)
+
+**루트(/)에 어떤 파일도 생성 금지** (.md, .json, .txt 모두). CLAUDE.md, README.md, .ai_rules, FILESYSTEM_MANIFEST.md 제외.
 
 허용 위치:
 - 세션 기록 → `knowledge/docs/sessions/`에만 저장

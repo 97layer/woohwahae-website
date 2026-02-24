@@ -14,12 +14,13 @@ mkdir -p "$LOGS"
 
 # SIGTERM / SIGINT → 자식 프로세스 전체 종료 후 exit
 cleanup() {
-    kill "$SA_PID" "$AD_PID" "$CE_PID" "$CD_PID" "$ORCH_PID" 2>/dev/null
-    wait "$SA_PID" "$AD_PID" "$CE_PID" "$CD_PID" "$ORCH_PID" 2>/dev/null
+    kill "$GUARD_PID" "$SA_PID" "$AD_PID" "$CE_PID" "$CD_PID" "$ORCH_PID" 2>/dev/null
+    wait "$GUARD_PID" "$SA_PID" "$AD_PID" "$CE_PID" "$CD_PID" "$ORCH_PID" 2>/dev/null
     exit 0
 }
 trap cleanup SIGTERM SIGINT
 
+"$VENV" -u core/system/filesystem_guard.py   >> "$LOGS/filesystem_guard.log" 2>&1 & GUARD_PID=$!
 "$VENV" -u core/agents/sa_agent.py           >> "$LOGS/sa_agent.log"     2>&1 & SA_PID=$!
 "$VENV" -u core/agents/ad_agent.py           >> "$LOGS/ad_agent.log"     2>&1 & AD_PID=$!
 "$VENV" -u core/agents/ce_agent.py           >> "$LOGS/ce_agent.log"     2>&1 & CE_PID=$!

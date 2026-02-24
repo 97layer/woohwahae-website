@@ -573,10 +573,10 @@ JSON만 출력."""
                 task_type="write_corpus_essay",
                 payload=payload,
             )
-            logger.info(f"🖊️  에세이 트리거: {cluster['theme']} ({cluster['entry_count']}개 entry) → CE task {task_id}")
+            logger.info("🖊️  에세이 트리거: %s (%s개 entry) → CE task %s", cluster['theme'], cluster['entry_count'], task_id)
             return task_id
         except Exception as e:
-            logger.error(f"에세이 트리거 실패: {e}")
+            logger.error("에세이 트리거 실패: %s", e)
             return None
 
     def _check_corpus_clusters(self) -> Dict:
@@ -611,7 +611,7 @@ JSON만 출력."""
                 "essay_triggered": triggered,
             }
         except Exception as e:
-            logger.warning(f"Corpus 점검 실패: {e}")
+            logger.warning("Corpus 점검 실패: %s", e)
             return {"corpus_summary": {}, "ripe_clusters": 0, "essay_triggered": []}
 
     def _check_revisit_due(self) -> None:
@@ -655,6 +655,48 @@ JSON만 출력."""
         except Exception as e:
             logger.warning("Growth snapshot 실패: %s", e)
 
+    def _evolve_guard_rules(self) -> None:
+        """quarantine 패턴 분석 → 빈도 5회 이상이면 guard_rules.json에 자동 추가."""
+        import tempfile
+        rules_path = self.project_root / "knowledge/system/guard_rules.json"
+        try:
+            data = json.loads(rules_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.warning("guard_rules.json 로드 실패: %s", exc)
+            return
+
+        patterns = data.get("violation_patterns", {})
+        existing = set(data.get("forbidden_name_prefixes", []))
+        evolved = []
+
+        for pattern, info in patterns.items():
+            count = info.get("count", 0)
+            if count >= 5 and pattern not in existing:
+                data["forbidden_name_prefixes"].append(pattern)
+                existing.add(pattern)
+                evolved.append((pattern, count))
+
+        if not evolved:
+            return
+
+        # atomic write
+        data["_meta"]["updated_at"] = datetime.now().strftime("%Y-%m-%d")
+        data["_meta"]["updated_by"] = "gardener-auto"
+        tmp = rules_path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp.replace(rules_path)
+
+        # council_room 기록
+        council = self.project_root / "knowledge/agent_hub/council_room.md"
+        lines = ["\n\n---\n", "## [Gardener] Guard 룰 자동 진화\n"]
+        lines.append("**일시**: %s\n\n" % datetime.now().strftime("%Y-%m-%d %H:%M"))
+        for pat, cnt in evolved:
+            lines.append("- `%s` → forbidden 등록 (위반 %d회)\n" % (pat, cnt))
+        with open(council, "a", encoding="utf-8") as f:
+            f.writelines(lines)
+
+        logger.info("Guard 룰 진화: %d개 패턴 추가 %s", len(evolved), [p for p, _ in evolved])
+
     def run_cycle(self, days: int = 7) -> Dict:
         """
         Gardener 메인 사이클
@@ -684,7 +726,10 @@ JSON만 출력."""
         # 6. 재방문 시기 고객 알림
         self._check_revisit_due()
 
-        # 7. PROPOSE 생성 (신호가 10개 이상일 때만)
+        # 7. Guard 룰 자동 진화 (quarantine 패턴 5회+ → forbidden 등록)
+        self._evolve_guard_rules()
+
+        # 8. PROPOSE 생성 (신호가 10개 이상일 때만)
         new_proposals = []
         if stats['signal_count'] >= 10:
             new_proposals = self._analyze_and_propose(stats)
