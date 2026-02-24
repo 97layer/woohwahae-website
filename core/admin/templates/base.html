@@ -89,6 +89,10 @@
         <!-- SYSTEM -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">SYSTEM</div>
+          <a href="/tools"
+            class="sidebar-link {% if request.path == '/tools' %}active{% endif %}">
+            도구
+          </a>
           <a href="/services"
             class="sidebar-link {% if request.path == '/services' %}active{% endif %}">
             서비스

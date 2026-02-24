@@ -885,6 +885,21 @@ def offering_toggle(item_id):
     return redirect(url_for('offering_admin'))
 
 
+# ─── 도구 ───
+
+@app.route('/tools')
+@login_required
+def tools_panel():
+    clients = []
+    if _MODULES_AVAILABLE:
+        try:
+            clients = get_ritual_module().list_clients()
+        except Exception as e:
+            logger.error("tools list_clients: %s", e)
+    _audit('tools_view')
+    return render_template('tools.html', clients=clients, site_base_url=SITE_BASE_URL)
+
+
 # ─── Lab ───
 
 @app.route('/lab')

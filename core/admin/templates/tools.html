@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}도구{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+  <p class="admin-label">SYSTEM</p>
+  <h1 class="admin-title">도구</h1>
+  <p class="admin-desc">포털·상담 링크 생성</p>
+</div>
+
+<div class="tools-grid">
+
+  <!-- 고객 포털 링크 -->
+  <div class="tool-card">
+    <p class="tool-label">고객 포털 링크</p>
+    <p class="tool-desc">/me/{token} — 고객 시술 히스토리 열람</p>
+    <div class="tool-select-row">
+      <select id="portal-client-select" class="tool-select">
+        <option value="">고객 선택</option>
+        {% for c in clients %}
+        <option value="{{ c.portal_token or '' }}"
+                data-name="{{ c.name }}">{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="tool-url-row" id="portal-url-row" style="display:none;">
+      <input type="text" id="portal-url" class="tool-url-input" readonly>
+      <button class="tool-copy-btn" onclick="copyUrl('portal-url')">복사</button>
+    </div>
+    <p class="tool-copied" id="portal-copied"></p>
+  </div>
+
+  <!-- 사전상담 링크 -->
+  <div class="tool-card">
+    <p class="tool-label">사전상담 링크</p>
+    <p class="tool-desc">/consult/{token} — 고객 사전 상담 폼</p>
+    <div class="tool-select-row">
+      <select id="consult-client-select" class="tool-select">
+        <option value="">고객 선택</option>
+        {% for c in clients %}
+        <option value="{{ c.portal_token or '' }}"
+                data-name="{{ c.name }}">{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="tool-url-row" id="consult-url-row" style="display:none;">
+      <input type="text" id="consult-url" class="tool-url-input" readonly>
+      <button class="tool-copy-btn" onclick="copyUrl('consult-url')">복사</button>
+    </div>
+    <p class="tool-copied" id="consult-copied"></p>
+  </div>
+
+</div>
+
+{% if not clients %}
+<p class="admin-desc" style="margin-top:1rem;">
+  등록된 고객 없음. <a href="{{ url_for('ritual_dashboard') }}">고객 추가 →</a>
+</p>
+{% endif %}
+
+<style>
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.tool-card {
+  border: 1px solid var(--line);
+  padding: 2rem;
+}
+
+.tool-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.4rem;
+}
+
+.tool-desc {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  margin-bottom: 1.5rem;
+  font-family: var(--font-en);
+  font-style: italic;
+}
+
+.tool-select-row { margin-bottom: 1rem; }
+
+.tool-select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.88rem;
+  font-family: var(--font-kr);
+  outline: none;
+}
+
+.tool-select:focus { border-color: var(--text); }
+
+.tool-url-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tool-url-input {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: var(--bg-dark);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.78rem;
+  font-family: var(--font-mono, monospace);
+  outline: none;
+  color: var(--text-sub);
+  min-width: 0;
+}
+
+.tool-copy-btn {
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.72rem;
+  font-family: var(--font-kr);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tool-copied {
+  font-size: 0.7rem;
+  color: var(--success);
+  min-height: 1em;
+}
+
+@media (max-width: 768px) {
+  .tools-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+const BASE_URL = '{{ site_base_url }}';
+
+document.getElementById('portal-client-select').addEventListener('change', function() {
+  const token = this.value;
+  const row = document.getElementById('portal-url-row');
+  const input = document.getElementById('portal-url');
+  if (token) {
+    input.value = BASE_URL + '/me/' + token;
+    row.style.display = 'flex';
+  } else {
+    row.style.display = 'none';
+  }
+  document.getElementById('portal-copied').textContent = '';
+});
+
+document.getElementById('consult-client-select').addEventListener('change', function() {
+  const token = this.value;
+  const row = document.getElementById('consult-url-row');
+  const input = document.getElementById('consult-url');
+  if (token) {
+    input.value = BASE_URL + '/consult/' + token;
+    row.style.display = 'flex';
+  } else {
+    row.style.display = 'none';
+  }
+  document.getElementById('consult-copied').textContent = '';
+});
+
+function copyUrl(inputId) {
+  const input = document.getElementById(inputId);
+  const copiedId = inputId === 'portal-url' ? 'portal-copied' : 'consult-copied';
+  navigator.clipboard.writeText(input.value).then(() => {
+    document.getElementById(copiedId).textContent = '복사됨';
+    setTimeout(() => { document.getElementById(copiedId).textContent = ''; }, 2000);
+  });
+}
+</script>
+{% endblock %}
