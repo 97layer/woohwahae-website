@@ -1,0 +1,11 @@
+{"ts": "2026-02-24T16:34:08.644234", "date": "2026-02-24", "session_id": "test-abc", "input_tokens": 12500, "output_tokens": 3200, "cache_read": 45000, "cache_write": 1200, "total_tokens": 15700}
+{"ts": "2026-02-24T16:34:20.471961", "date": "2026-02-24", "session_id": "5bf2ccfd-960b-4034-9e10-72419db68c6b", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:34:39.504844", "date": "2026-02-24", "session_id": "5bf2ccfd-960b-4034-9e10-72419db68c6b", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:35:07.733527", "date": "2026-02-24", "session_id": "f327abdf-ab93-4b2c-87ae-a89c335149a4", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:35:39.738939", "date": "2026-02-24", "session_id": "f327abdf-ab93-4b2c-87ae-a89c335149a4", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:36:04.519860", "date": "2026-02-24", "session_id": "f327abdf-ab93-4b2c-87ae-a89c335149a4", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:36:20.965197", "date": "2026-02-24", "session_id": "d7fcaf88-0209-4dd2-871b-e49727d8baea", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:37:11.639385", "date": "2026-02-24", "session_id": "f327abdf-ab93-4b2c-87ae-a89c335149a4", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:38:23.331885", "date": "2026-02-24", "session_id": "d7fcaf88-0209-4dd2-871b-e49727d8baea", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:38:42.984480", "date": "2026-02-24", "session_id": "5bf2ccfd-960b-4034-9e10-72419db68c6b", "note": "usage_unavailable"}
+{"ts": "2026-02-24T16:39:51.033833", "date": "2026-02-24", "session_id": "d7fcaf88-0209-4dd2-871b-e49727d8baea", "note": "usage_unavailable"}

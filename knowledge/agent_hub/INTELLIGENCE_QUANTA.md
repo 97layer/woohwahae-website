@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). Gardener가 매일 자동 갱신.
-> **마지막 갱신**: 2026-02-24 (Admin Ritual 패널 신설 + 내부 시스템/고객 경험 플로우 검증 완료)
+> **마지막 갱신**: 2026-02-24 (auto-update by auto-session)
 
 ---
 
@@ -144,31 +144,36 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24] Session Update - claude-sonnet-sprint6 (Sprint 6 완료)
+### [2026-02-24 16:39] Auto-Update — auto-session
 
-**이번 세션 완료**:
-- ✅ Component Standard Layer v1.0 — style.css + admin.css에 `.btn--text/.btn--filter/.btn--solid/.card/.card--stat/.stat-grid/.label/.badge` 구현
-- ✅ nginx 프록시 3개 — /api/+/me/+/consult/ → Flask 5000 (시스템 /etc/nginx/nginx.conf 직접 수정)
-- ✅ Ritual Module 확장 — portal_token/email, find_client_by_token(), add_visit(color_formula/public_note/next_visit_weeks/amount)
-- ✅ website/backend/app.py → core/modules 연결 + /me/<token> + /consult/<token> 라우트
-- ✅ style_matcher.py — 무드 키워드 + 길이 → 레퍼런스 이미지 최대 3개 (점수 매칭)
-- ✅ portal.html / consult.html / consult_done.html 신규 (WOOHWAHAE 미감 통일)
-- ✅ Growth Dashboard — core/admin/app.py 라우트 2개 + growth.html (지표 카드/추세 테이블/수익 입력)
-- ✅ base.html Growth 네비 링크 추가
-- ✅ VM woohwahae-backend.service 신규 생성 + 포트 5000 라이브
-- ✅ ADMIN_SECRET_KEY VM .env 추가 → cortex-admin 정상 기동
-- ✅ smoke test: /api/archive(200/JSON), /me/token(404 정상), /consult/token(404 정상)
-- ✅ 커밋: feat(4020b7be) Sprint 6 13개 파일 2389 insertions
+**이번 세션 커밋**:
+- ✅ fix: CE published 상태 체크 수정 + telegram_sent 추적
+- ✅ feat: 세션 연속성 고도화 — QUANTA 자동갱신 + 선택 로드 + 토큰 추적
+- ✅ fix: ecosystem 좀비 프로세스 제거 — trap 핸들러 + 서비스 스크립트 전환
+- ✅ fix: orchestrator 이중 로그 제거 — FileHandler 삭제 (StreamHandler 단일화)
+- ✅ chore: 전수 조사 기반 파일시스템 구조 정리
+- ✅ refactor: start_*.sh + sync*.sh 루트 → scripts/ 이동 (루트 체계화)
+- ✅ fix: Gemini가 삭제한 tools.html + /tools 라우트 + 사이드바 링크 복원
+- ✅ chore: Gemini 잔재 plan_dispatcher.py 삭제 (미사용, 문법 오류)
+- ✅ fix: copyright year 2026 → 2024 복원
+- ✅ style: 웹사이트 일관성 패치 — 모바일 nav slide-out, footer 통일, CSS 버전 bump
+- ✅ fix: gardener 트리거 플래그 --once → --run-now 수정
+- ✅ feat: Admin 지휘소 통합 — 사이드바 + SSE 실시간 + 4개 신규 패널
+- ✅ feat: Admin Ritual 패널 신설 — 고객 관리 웹 UI
+- ✅ feat: /client add 링크 자동 출력 + phone 필드 + /client link 커맨드
+- ✅ feat: Sprint 6 — woohwahae.kr 슈퍼앱 통합 구조 구축
+- ✅ chore: QUANTA v7.3 갱신 — Sprint 4+5 완료 상태 반영
+- ✅ security: CSRF+SSRF+AuthZ+Cookie+Headers+AuditLog+RateLimit 전면 적용
+- ✅ feat: Ritual/Growth Telegram 연동 + Gardener 자동 집계
+- ✅ feat: 미추적 신규 파일 5개 추적 시작
+- ✅ feat: Ritual Module (L4) + Growth Module (L5) + VM 배포 + 레거시 마이그레이션
+- ✅ feat: Claude Code 인프라 강화 — 보안 hooks + 세션 라이프사이클 + 품질 게이트
 
-**다음**:
-- ⏳ 첫 고객 Ritual Module 등록 → /me/{token} URL 실사용 검증
-- ⏳ /consult/{token} 카톡 전송 → 실제 폼 제출 → consult_done 확인
-- ⏳ Growth Dashboard 첫 수익 입력 (2026-02 데이터)
-- ⏳ DNS A레코드 설정 (아임웹, 사용자 직접)
+**미커밋 변경**:
+- ⚠️  .claude/hooks/session-start.sh
+- ⚠️  .claude/hooks/validate-path.sh
+- ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+- ⚠️  .claude/hooks/compact-reminder.sh
+- ⚠️  knowledge/system/token_usage_log.jsonl
 
-**인프라 현황**:
-- port 5001: cortex-admin (Growth Dashboard `/admin/growth`)
-- port 5000: woohwahae-backend (고객포털 `/me/`, 상담폼 `/consult/`, API `/api/`)
-- nginx: 3개 프록시 + 보안헤더 + rate limit 라이브
-
-**업데이트 시간**: 2026-02-24T12:50:00
+**업데이트 시간**: 2026-02-24T16:39:51.227061

@@ -70,15 +70,18 @@ echo ""
 # ─── work_lock 상태 ───────────────────────────────────────
 
 if [ -f "$WORK_LOCK" ]; then
-  LOCKED=$(python3 -c "import json; d=json.load(open('$WORK_LOCK')); print(d.get('locked', False))" 2>/dev/null)
-  if [ "$LOCKED" = "True" ]; then
-    AGENT=$(python3 -c "import json; d=json.load(open('$WORK_LOCK')); print(d.get('agent_id', 'unknown'))" 2>/dev/null)
-    TASK=$(python3 -c "import json; d=json.load(open('$WORK_LOCK')); print(d.get('task', 'unknown'))" 2>/dev/null)
-    echo "⚠️  WORK LOCK ACTIVE — Agent: $AGENT, Task: $TASK"
-    echo "다른 에이전트가 작업 중입니다. 충돌 주의."
-  else
-    echo "work_lock: unlocked"
-  fi
+  python3 - "$WORK_LOCK" <<'PYEOF'
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+    if d.get('locked'):
+        print(f"⚠️  WORK LOCK ACTIVE — Agent: {d.get('agent_id','unknown')}, Task: {d.get('task','unknown')}")
+        print("다른 에이전트가 작업 중입니다. 충돌 주의.")
+    else:
+        print("work_lock: unlocked")
+except Exception as e:
+    print(f"work_lock: 파싱 오류 ({e})")
+PYEOF
 else
   echo "work_lock: 파일 없음 (정상)"
 fi
