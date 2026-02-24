@@ -33,7 +33,7 @@ class CorpusManager:
     # 군집 성숙 임계점
     CLUSTER_MIN_ENTRIES = 3       # 동일 테마 최소 entry 수 (5→3: 초기 corpus 대응)
     CLUSTER_MIN_HOURS = 72        # first_seen 이후 경과 시간 (72h = 3일 숙성)
-    CLUSTER_MIN_SOURCES = 2       # 최소 소스 다양성 (텍스트만 or 유튜브만 금지)
+    CLUSTER_MIN_SOURCES = 1       # 최소 소스 다양성 (단일 소스 허용 — 멀티소스 corpus 구축 전)
 
     def __init__(self, project_root: Path = PROJECT_ROOT):
         self.corpus_dir = project_root / "knowledge" / "corpus"
