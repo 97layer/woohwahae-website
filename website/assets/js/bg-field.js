@@ -20,9 +20,9 @@
   var renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     alpha: true,
-    antialias: !isMobile  /* 모바일: antialias 비활성화로 GPU 부하 감소 */
+    antialias: true  /* 모바일 포함 antialias 활성화 — 선 품질 우선 */
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
 
   /* ── Scene & Camera ── */
@@ -47,8 +47,8 @@
   var SEEDS      = isMobile ? 5  : 10;   /* 모바일: 씨앗 수 절반 */
   var POINTS_PER = isMobile ? 110 : 220; /* 모바일: 포인트 수 절반 */
   var MAX_R      = 15.0;
-  /* Portrait 모바일: 필드가 화면 밖으로 삐져나가지 않도록 축소 */
-  var SCALE      = (isMobile && isPortrait) ? 1.8 : 2.8;
+  /* Portrait 모바일: 필드 클리핑 방지, 단 너무 위축되지 않도록 2.2 유지 */
+  var SCALE      = (isMobile && isPortrait) ? 2.2 : 2.8;
 
   function buildFieldLine(r0, phi) {
     var pts   = new Float32Array(POINTS_PER * 3);

@@ -4883,7 +4883,7 @@ body.home-radical::after {
 @media (max-width: 640px) {
   /* 모바일: 캔버스 opacity 낮춰 텍스트 가독성 확보 */
   .field-bg-canvas {
-    opacity: 0.48;
+    opacity: 0.68;
   }
 
   .fb {
