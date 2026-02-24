@@ -52,6 +52,31 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 
 ---
 
+## 🎯 GEMINI LANE (Gemini CLI 전용 역할 헌장)
+
+**역할**: 신호 분석(SA) + 콘텐츠 초안(CE) + Brand Scout
+**원칙**: 코드 수정 · 아키텍처 판단 = Claude Code만. Gemini는 knowledge/ 레인 전담.
+
+### 허용 Write 경로
+- `knowledge/signals/`          (신호 저장)
+- `knowledge/corpus/entries/`   (SA 분석 결과)
+- `knowledge/brands/`           (Brand Scout 결과)
+- `knowledge/agent_hub/council_room.md`  (APPEND ONLY — 제안 기록)
+- `knowledge/agent_hub/feedback_loop.md` (APPEND ONLY)
+
+### 금지 Write 경로
+- `core/`              ❌ 코드 수정 절대 금지
+- `scripts/`           ❌ 배포 스크립트 수정 금지
+- `directives/`        ❌ 헌법/정책 수정 금지
+- `knowledge/system/`  ❌ 런타임 상태 직접 수정 금지
+- 루트(`/`)            ❌ 어떤 파일도 생성 금지
+
+### 코드 관련 제안이 있다면
+`council_room.md`에 append → Claude Code가 다음 세션에 검토
+직접 구현 금지. 제안만.
+
+---
+
 ## 🚫 FORBIDDEN ACTIONS
 
 1. **❌ Creating duplicate folders** - Check cache first

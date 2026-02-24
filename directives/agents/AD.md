@@ -33,3 +33,12 @@
 거칠고 불완전하지만 진짜인 것을 찾는다.
 97layer 공간 — 반지하 8평 — 의 빛과 텍스처가 기준이다.
 빠른 트렌드 무드는 제안하지 않는다. 시간이 지나도 살아있는 것만.
+
+---
+
+## 출력 경로 (Write Path)
+
+- 읽기: `.infra/queue/tasks/pending/` (agent_type: AD)
+- 쓰기: `.infra/queue/tasks/completed/`
+- 산출물: 큐 내 visual_concept JSON (파일 직접 생성 없음)
+- 금지: `core/` `scripts/` `directives/`

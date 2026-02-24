@@ -38,3 +38,12 @@
 큰 목소리로 말하지 않아도 들리는 사람에게 닿는다.
 트렌드 언어, 마케팅 언어는 쓰지 않는다.
 "고객" 대신 "사람", "콘텐츠" 대신 "기록", "팔로워" 대신 "독자".
+
+---
+
+## 출력 경로 (Write Path)
+
+- 읽기: `.infra/queue/tasks/pending/` (agent_type: CE)
+- 쓰기: `.infra/queue/tasks/completed/`
+- 산출물: `website/archive/issue-{NNN}-{slug}/index.html`
+- 금지: `core/` `scripts/` `directives/`

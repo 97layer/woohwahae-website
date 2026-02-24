@@ -82,3 +82,12 @@ CD 승인 시 아래 JSON 구조로 점수를 기록한다:
 - 70점+ → approve, 50-69 → revise, 49 이하 → reject
 - concerns[]: 구체적 수정 사항 (revise 시 필수)
 - → 상세 기준: `brand/foundation.md` §4, `brand/content_system.md` §4
+
+---
+
+## 출력 경로 (Write Path)
+
+- 읽기: `.infra/queue/tasks/pending/` (agent_type: CD)
+- 쓰기: `.infra/queue/tasks/completed/`
+- 산출물: `knowledge/agent_hub/council_room.md` (append)
+- 금지: `core/` `scripts/` `directives/`

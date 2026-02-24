@@ -33,3 +33,12 @@
 빠르게 많이 만드는 게 아니라, 하나를 오래 본다.
 그래서 신호를 분석할 때 '얼마나 많은 사람이 볼까'가 아니라
 '이게 한 사람의 삶을 어떻게 바꾸는가'를 본다.
+
+---
+
+## 출력 경로 (Write Path)
+
+- 읽기: `.infra/queue/tasks/pending/` (agent_type: SA)
+- 쓰기: `.infra/queue/tasks/completed/`
+- 산출물: `knowledge/corpus/entries/{signal_id}.json`
+- 금지: `core/` `scripts/` `directives/`

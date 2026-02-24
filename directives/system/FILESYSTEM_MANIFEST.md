@@ -128,6 +128,22 @@
 
 ---
 
+## 에이전트 Write Path 테이블
+
+| 에이전트 | 허용 Write | 금지 Write |
+|---------|-----------|-----------|
+| **Claude Code** | 전체 (아키텍처 책임자) | — |
+| **Gemini CLI** | `knowledge/signals/` `knowledge/corpus/` `council_room.md`(append) | `core/` `scripts/` `directives/` `knowledge/system/` |
+| **Gardener** | `knowledge/agent_hub/` `knowledge/system/guard_rules.json` | `core/` `scripts/` |
+| **SA (자동)** | `knowledge/corpus/entries/` `.infra/queue/` | `core/` `website/` |
+| **CE (자동)** | `website/archive/` `.infra/queue/` | `core/` `directives/` |
+| **AD (자동)** | `.infra/queue/` (내부 JSON만) | `core/` `website/` |
+| **CD (자동)** | `council_room.md`(append) `.infra/queue/` | `core/` `directives/` |
+
+> 위반 시: filesystem_guard가 15초 내 quarantine 이동. Gardener가 패턴 자동 룰 등록.
+
+---
+
 ## 금지 사항
 
 - **❌ 루트(/)에 .md 파일 생성** (CLAUDE.md, README.md 제외)
