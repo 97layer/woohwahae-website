@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ client.name }}님의 시술 기록 — WOOHWAHAE</title>
+  <title>{{ client.name }}님 — WOOHWAHAE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,8 +12,8 @@
     :root {
       --bg: #FAF9F6;
       --text: #1A1A1A;
-      --text-sub: #6B6B6B;
-      --text-faint: #AEAEA8;
+      --sub: #6B6B6B;
+      --faint: #AEAEA8;
       --line: #E4E3DC;
       --accent: #1B2D4F;
       --font: 'Noto Serif KR', serif;
@@ -28,242 +27,244 @@
       min-height: 100vh;
     }
 
-    /* Header */
-    .portal-header {
-      padding: 48px 24px 32px;
+    .wrap { max-width: 560px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── 헤더 ── */
+    .header {
+      padding: 48px 0 36px;
       border-bottom: 1px solid var(--line);
-      max-width: 560px;
-      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
     }
 
-    .portal-brand {
+    .brand {
       font-size: 11px;
       letter-spacing: 0.2em;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    .portal-name {
-      font-size: 28px;
-      font-weight: 300;
-      letter-spacing: -0.01em;
-      line-height: 1.3;
-      margin-bottom: 8px;
-    }
-
-    .portal-name span {
-      color: var(--text-sub);
-      font-size: 16px;
-    }
-
-    .portal-meta {
-      display: flex;
-      gap: 24px;
-      margin-top: 20px;
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-
-    .portal-meta-item strong {
-      display: block;
-      font-size: 20px;
-      font-weight: 400;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    /* Hair info */
-    .portal-hair {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 24px 24px 0;
-    }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .tag {
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      color: var(--text-sub);
-      background: var(--line);
-      padding: 4px 10px;
-      border-radius: 2px;
-    }
-
-    /* Timeline */
-    .timeline {
-      max-width: 560px;
-      margin: 32px auto 0;
-      padding: 0 24px;
-    }
-
-    .timeline-label {
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      color: var(--text-faint);
+      color: var(--faint);
       text-transform: uppercase;
       margin-bottom: 20px;
     }
 
-    .visit-item {
-      padding: 20px 0;
-      border-top: 1px solid var(--line);
+    .name {
+      font-size: 30px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 4px;
     }
 
-    .visit-item:last-child {
+    .name-sub {
+      font-size: 13px;
+      color: var(--sub);
+      letter-spacing: 0.03em;
+    }
+
+    .silhouette-wrap {
+      width: 90px;
+      flex-shrink: 0;
+      opacity: 0.9;
+    }
+
+    /* ── 스탯 ── */
+    .stats {
+      display: flex;
+      gap: 32px;
+      padding: 24px 0;
       border-bottom: 1px solid var(--line);
     }
 
-    .visit-date {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      color: var(--text-faint);
-      margin-bottom: 6px;
-    }
-
-    .visit-service {
-      font-size: 16px;
+    .stat strong {
+      display: block;
+      font-size: 22px;
       font-weight: 400;
-      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+      color: var(--text);
     }
 
-    .visit-note {
-      font-size: 13px;
-      color: var(--text-sub);
-      line-height: 1.7;
-    }
-
-    .visit-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 12px;
-    }
-
-    .visit-next {
+    .stat span {
       font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 0.05em;
+      color: var(--faint);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
-    .visit-amount {
-      font-size: 12px;
-      color: var(--text-faint);
+    /* ── 섹션 레이블 ── */
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--faint);
+      text-transform: uppercase;
+      padding: 28px 0 16px;
     }
 
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 48px 24px;
-      color: var(--text-faint);
+    /* ── 방문 기록 ── */
+    .visit-list { list-style: none; }
+
+    .visit-item {
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      gap: 12px;
+      align-items: baseline;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
       font-size: 14px;
     }
 
-    /* Footer */
-    .portal-footer {
-      max-width: 560px;
-      margin: 48px auto 0;
-      padding: 24px 24px 64px;
-      border-top: 1px solid var(--line);
-      text-align: center;
+    .visit-date { color: var(--faint); font-size: 12px; }
+    .visit-service { color: var(--text); }
+    .visit-amount { color: var(--sub); font-size: 12px; text-align: right; }
+
+    .visit-note {
+      grid-column: 2 / 4;
+      font-size: 12px;
+      color: var(--faint);
+      line-height: 1.6;
+      padding-top: 4px;
     }
 
-    .portal-footer p {
-      font-size: 12px;
-      color: var(--text-faint);
+    .empty-state {
+      padding: 32px 0;
+      font-size: 13px;
+      color: var(--faint);
       line-height: 1.8;
     }
 
-    .portal-footer a {
-      color: var(--accent);
-      text-decoration: none;
+    /* ── 상담 CTA ── */
+    .consult-block {
+      margin: 32px 0;
+      padding: 24px;
+      border: 1px solid var(--line);
+    }
+
+    .consult-block p {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: block;
+      text-align: center;
+      padding: 15px;
+      font-family: var(--font);
       font-size: 12px;
-      letter-spacing: 0.08em;
-      display: inline-block;
-      margin-top: 16px;
-      border-bottom: 1px solid var(--accent);
-      padding-bottom: 2px;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      color: var(--sub);
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+
+    .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn + .btn { margin-top: 10px; }
+
+    /* ── 푸터 ── */
+    .footer {
+      padding: 40px 0 60px;
+      font-size: 11px;
+      color: var(--faint);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── 실루엣 스테이지 레이블 ── */
+    .silhouette-stage {
+      font-size: 9px;
+      color: var(--faint);
+      letter-spacing: 0.15em;
+      text-align: center;
+      margin-top: 6px;
+      text-transform: uppercase;
     }
   </style>
 </head>
 <body>
 
-  <header class="portal-header">
-    <p class="portal-brand">WOOHWAHAE · 시술 기록</p>
-    <h1 class="portal-name">
-      {{ client.name }}<span>님</span>
-    </h1>
-    <div class="portal-meta">
-      <div class="portal-meta-item">
-        <strong>{{ visits | length }}</strong>
-        방문
-      </div>
-      <div class="portal-meta-item">
-        <strong>{{ "{:,}".format(total_paid) }}</strong>
-        누적 (원)
-      </div>
-      {% if client.last_visit %}
-      <div class="portal-meta-item">
-        <strong>{{ client.last_visit }}</strong>
-        마지막 방문
-      </div>
-      {% endif %}
+<div class="wrap">
+
+  <!-- 헤더: 이름 + 실루엣 -->
+  <header class="header">
+    <div>
+      <p class="brand">WOOHWAHAE</p>
+      <h1 class="name">{{ client.name }}님</h1>
+      <p class="name-sub">
+        {% if client.last_visit %}마지막 방문 {{ client.last_visit }}
+        {% else %}아직 방문 기록이 없습니다{% endif %}
+      </p>
+    </div>
+    <div class="silhouette-wrap">
+      {{ silhouette|safe }}
+      <p class="silhouette-stage">
+        {% set vc = visits|length %}
+        {% if vc == 0 %}proposal
+        {% elif vc <= 2 %}forming
+        {% elif vc <= 5 %}defining
+        {% else %}identity{% endif %}
+      </p>
     </div>
   </header>
 
-  {% if client.hair_type or client.rhythm %}
-  <section class="portal-hair">
-    <div class="tag-row">
-      {% if client.hair_type %}
-        <span class="tag">{{ client.hair_type }}</span>
-      {% endif %}
-      {% if client.rhythm %}
-        <span class="tag">{{ client.rhythm }} 리듬</span>
-      {% endif %}
+  <!-- 스탯 -->
+  <div class="stats">
+    <div class="stat">
+      <strong>{{ visits|length }}</strong>
+      <span>방문</span>
     </div>
-  </section>
+    {% if total_paid %}
+    <div class="stat">
+      <strong>{{ "{:,}".format(total_paid) }}</strong>
+      <span>누적 (원)</span>
+    </div>
+    {% endif %}
+    {% if client.rhythm %}
+    <div class="stat">
+      <strong>{{ client.rhythm }}</strong>
+      <span>주기</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- 시술 기록 -->
+  <p class="section-label">시술 기록</p>
+
+  {% if visits %}
+  <ul class="visit-list">
+    {% for v in visits %}
+    <li class="visit-item">
+      <span class="visit-date">{{ v.date }}</span>
+      <span class="visit-service">{{ v.service }}</span>
+      <span class="visit-amount">
+        {% if v.amount %}{{ "{:,}".format(v.amount) }}원{% endif %}
+      </span>
+      {% if v.public_note %}
+      <span class="visit-note">{{ v.public_note }}</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty-state">
+    첫 방문을 기다립니다.<br>
+    방문 후 기록이 여기에 쌓입니다.
+  </p>
   {% endif %}
 
-  <section class="timeline">
-    <p class="timeline-label">방문 이력</p>
+  <!-- 사전 상담 -->
+  <p class="section-label">사전 상담</p>
 
-    {% if visits %}
-      {% for visit in visits %}
-      <div class="visit-item">
-        <p class="visit-date">{{ visit.date }}</p>
-        <p class="visit-service">{{ visit.service }}</p>
-        {% if visit.public_note %}
-          <p class="visit-note">{{ visit.public_note }}</p>
-        {% endif %}
-        <div class="visit-footer">
-          {% if visit.next_visit_weeks and visit.next_visit_weeks > 0 %}
-            <span class="visit-next">다음 방문 권장 {{ visit.next_visit_weeks }}주 후</span>
-          {% else %}
-            <span></span>
-          {% endif %}
-          {% if visit.amount and visit.amount > 0 %}
-            <span class="visit-amount">{{ "{:,}".format(visit.amount) }}원</span>
-          {% endif %}
-        </div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <div class="empty-state">아직 기록된 방문이 없습니다.</div>
-    {% endif %}
-  </section>
+  <div class="consult-block">
+    <p>방문 전 미리 알려주시면<br>더 준비된 시간을 만들 수 있습니다.</p>
+    <a href="/consult/{{ token }}" class="btn btn-primary">상담 내용 입력하기 →</a>
+    <a href="https://booking.naver.com/booking/13/bizes/1171799" class="btn" target="_blank" rel="noopener">예약 확인</a>
+  </div>
 
-  <footer class="portal-footer">
-    <p>WOOHWAHAE<br>울산 삼산동 · 예약제 운영</p>
-    <a href="https://booking.naver.com/booking/13/bizes/1171799" target="_blank" rel="noopener">
-      예약하기 →
-    </a>
-  </footer>
+  <footer class="footer">WOOHWAHAE · Hair Atelier</footer>
 
+</div>
 </body>
 </html>

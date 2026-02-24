@@ -53,7 +53,7 @@
 
 ## 🏗️ 인프라 핵심
 
-- **Ver**: 7.4 — woohwahae.kr 슈퍼앱 통합 완료 (고객 포털 + 사전상담 + Growth Dashboard)
+- **Ver**: 7.5 — 텔레그램 시스템 A-Z 정비 완료 (Code Agent 보안/git/알림 전면 수정)
 - **GCP VM**: `97layer-vm` = `136.109.201.201` | 앱 경로: `/home/skyto5339_gmail_com/97layerOS/`
 - **서비스**: 97layer-telegram / 97layer-ecosystem / 97layer-gardener / woohwahae-backend (5000) / cortex-admin (5001)
 - **파이프라인**: 신호 유입 → signal.schema.json → SA 분석 → Gardener 군집화 → CE 에세이 → 발행
@@ -62,12 +62,16 @@
 
 ## 🎯 다음 작업
 
-1. [BLOCKER] 아임웹 DNS A레코드 `136.109.201.201` 설정 (사용자 직접)
-2. [BLOCKER] 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
+1. nginx auth_basic 재활성화 — 검증 끝나면 `Code Agent`로 복구
+2. [NEXT] 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
 3. `/consult/{token}` 카톡 전송 → 실제 폼 제출 → consult_done 확인
 4. Growth Dashboard 첫 수익 입력 (`/admin/growth`, 2026-02 데이터)
-5. DNS 연결 후: certbot + HTTPS/HSTS 활성화
-6. 재방문 알림 자동화 — Gardener `get_due_clients()` → 카카오 Alimtalk or 텔레그램
+5. 재방문 알림 자동화 — Gardener `get_due_clients()` → 카카오 Alimtalk or 텔레그램
+
+**완료됨**:
+- ✅ DNS A레코드 연결 (Cloudflare 경유, 104.21.51.203)
+- ✅ HTTPS/SSL (certbot, Let's Encrypt)
+- ✅ VM git 초기화 (`/home/skyto5339_gmail_com/97layerOS/.git`)
 
 ---
 
@@ -93,43 +97,12 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 21:18] Auto-Update — auto-session
-
-**이번 세션 커밋**:
-- ✅ feat: 파일시스템 자가진화 하네스 구축
+### [2026-02-24 22:15] Auto-Update — auto-session
 
 **미커밋 변경**:
-- ⚠️  .claude/hooks/code-quality-check.sh
-- ⚠️  .claude/hooks/validate-path.sh
-- ⚠️  .gitignore
-- ⚠️  core/agents/brand_scout.py
-- ⚠️  core/agents/cd_agent.py
-- ⚠️  core/bridges/notebooklm_bridge.py
-- ⚠️  core/daemons/dashboard_server.py
-- ⚠️  core/daemons/nightguard_v2.py
-- ⚠️  core/daemons/telegram_secretary.py
-- ⚠️  core/system/auto_reporter.py
-- ⚠️  core/system/content_publisher.py
-- ⚠️  core/system/conversation_engine.py
-- ⚠️  core/system/corpus_manager.py
-- ⚠️  core/system/cortex_edge.py
-- ⚠️  core/system/gemini_engine.py
-- ⚠️  core/system/intent_classifier.py
-- ⚠️  core/system/knowledge_rag.py
-- ⚠️  core/system/pipeline_orchestrator.py
-- ⚠️  core/system/signal_processor.py
-- ⚠️  core/system/youtube_analyzer.py
-- ⚠️  core/utils/instagram_crawler.py
-- ⚠️  core/utils/parsers/command_parser.py
 - ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
-- ⚠️  knowledge/system/guard_rules.json
-- ⚠️  knowledge/system/session_start.txt
-- ⚠️  knowledge/system/token_usage_log.jsonl
-- ⚠️  website/about.html
-- ⚠️  core/agents/code_agent.py
-- ⚠️  core/system/propose_gate.py
-- ⚠️  knowledge/docs/archive/2026/02_february/reports_cleanup/
-- ⚠️  knowledge/docs/archive/quarantine/
-- ⚠️  knowledge/docs/deployment/97layer-code-agent.service
+- ⚠️  website/backend/app.py
+- ⚠️  website/backend/templates/portal.html
+- ⚠️  website/backend/silhouette_renderer.py
 
-**업데이트 시간**: 2026-02-24T21:18:39.151843
+**업데이트 시간**: 2026-02-24T22:15:38.318871

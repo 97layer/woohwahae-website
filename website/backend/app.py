@@ -290,10 +290,15 @@ def client_portal(token):
 
     total_paid = sum(v.get('amount', 0) for v in client.get('visits', []))
 
+    from silhouette_renderer import generate_silhouette
+    silhouette = generate_silhouette(client)
+
     return render_template('portal.html',
         client=client,
         visits=visits,
         total_paid=total_paid,
+        silhouette=silhouette,
+        token=token,
     )
 
 
@@ -336,15 +341,7 @@ def consultation(token):
                     ts = datetime.now().strftime('%Y%m%d_%H%M%S')
                     photo.save(save_dir / f"{client['client_id']}_{ts}.{ext}")
 
-        # 스타일 시안 생성
-        from style_matcher import match_style
-        matched = match_style(mood_keywords, length_pref)
-
-        return render_template('consult_done.html',
-            client=client,
-            matched_styles=matched,
-            portal_token=token,
-        )
+        return redirect(f'/me/{token}')
 
     return render_template('consult.html', client=client)
 
