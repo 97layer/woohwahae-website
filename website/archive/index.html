@@ -169,12 +169,13 @@
           row.className = 'arc-row';
           row.setAttribute('data-index', idx);
 
+          var typeLabel = post.type ? post.type.toUpperCase() : '';
+          var catLabel = post.category || '';
           row.innerHTML =
             '<span class="arc-row-num">' + issueNum.padStart(3, '0') + '</span>' +
             '<span class="arc-row-title">' + post.title + '</span>' +
             '<span class="arc-row-date">' + post.date + '</span>' +
-            '<span class="arc-row-cat">' + (post.category || '') + '</span>' +
-            '<span class="arc-row-type">' + (post.type || '') + '</span>';
+            '<span class="arc-row-cat">' + catLabel + (typeLabel ? ' · ' + typeLabel : '') + '</span>';
 
           list.appendChild(row);
         });
