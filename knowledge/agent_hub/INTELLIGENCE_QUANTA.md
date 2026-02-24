@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). session-stop 훅이 자동 갱신.
-> **마지막 갱신**: 2026-02-24 (auto-update by auto-session)
+> **마지막 갱신**: 2026-02-25 (auto-update by auto-session)
 > **완료 이력**: `knowledge/agent_hub/COMPLETED_WORK.md` 참조
 
 ---
@@ -97,16 +97,11 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-24 23:25] Auto-Update — auto-session
-
-**이번 세션 커밋**:
-- ✅ feat: Three.js 헤어 렌더러 번들 + 포털 UI 정비
+### [2026-02-25 00:07] Auto-Update — auto-session
 
 **미커밋 변경**:
-- ⚠️  core/admin/app.py
-- ⚠️  core/admin/templates/cockpit.html
-- ⚠️  core/admin/templates/dashboard.html
-- ⚠️  core/admin/templates/ritual.html
+- ⚠️  directives/brand/BRAND_MANUAL.md
+- ⚠️  directives/brand/design_tokens.md
 - ⚠️  knowledge/agent_hub/INTELLIGENCE_QUANTA.md
 - ⚠️  website/404.html
 - ⚠️  website/_templates/article.html
@@ -123,14 +118,16 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 - ⚠️  website/archive/issue-008-raw-materiality/index.html
 - ⚠️  website/archive/issue-009-inner-world/index.html
 - ⚠️  website/archive/issue-010-work-and-essence/index.html
+- ⚠️  website/assets/css/style.css
 - ⚠️  website/backend/templates/consult.html
 - ⚠️  website/backend/templates/consult_done.html
 - ⚠️  website/backend/templates/portal.html
 - ⚠️  website/contact.html
+- ⚠️  website/index.html
 - ⚠️  website/offering.html
 - ⚠️  website/offering/atelier.html
 - ⚠️  website/offering/consulting.html
 - ⚠️  website/offering/project.html
 - ⚠️  website/offering/shop.html
 
-**업데이트 시간**: 2026-02-24T23:25:29.933532
+**업데이트 시간**: 2026-02-25T00:07:37.930068

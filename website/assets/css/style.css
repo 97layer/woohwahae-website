@@ -5010,6 +5010,7 @@ body.home-radical::after {
   z-index: 2;
   background: var(--bg);
   border-top: 1px solid var(--line);
+  padding-bottom: 1px;  /* footer 분리 — 마지막 home-row 하단 border 보장 */
 }
 
 /* ── 콘텐츠 내부 공통 row ── */
@@ -5117,7 +5118,7 @@ body.home-radical::after {
 }
 
 /* ── 모바일 ── */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .home-hero {
     padding: var(--space-lg) 1.5rem;
     padding-bottom: 2.4rem;

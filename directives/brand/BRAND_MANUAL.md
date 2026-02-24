@@ -158,6 +158,11 @@ LAYER OS (The Origin — 범용 브랜드 운영 체제)
 
 **컨셉**: "낡은 종이 위의 잉크"
 
+> **소스**: `brand/design_tokens.md` §1 — 이 섹션은 요약본. 상세는 design_tokens.md 참조.
+
+#### 우선순위 체계
+
+**PRIMARY (Monochrome 90%+)**:
 | Token | Hex | 용도 |
 |-------|-----|------|
 | `--bg` | `#E4E2DC` | 기본 배경 (낡은 종이) |
@@ -165,14 +170,31 @@ LAYER OS (The Origin — 범용 브랜드 운영 체제)
 | `--text` | `#1a1a1a` | 주 텍스트 (잉크) |
 | `--text-sub` | `#4a4a4a` | 보조 텍스트 (nav 링크) |
 | `--text-faint` | `#8E8E88` | 희미한 텍스트 (캡션, 날짜, 메타) |
-| `--navy` | `#1B2D4F` | 포인트 컬러 (selection, blockquote, progress) |
 | `--white` | `#FFFFFF` | selection 텍스트, 반전 |
 | `--line` | `#D5D4CF` | 구분선, a 태그 하단 border |
-| `--stone-dark` | `#7A6E5A` | 그림자 계열 |
+
+**SECONDARY (Warm Gray 포인트 10%)**:
+| Token | Hex | 용도 |
+|-------|-----|------|
+| `--stone-dark` | `#7A6E5A` | 그림자 계열, 강조 |
 | `--stone-mid` | `#8B7355` | 갈색 텍스트 (manifesto declaration) |
 | `--stone-light` | `#A89880` | 배경 톤 |
 
-**원칙**: Monochrome 기본. 컬러는 이유가 있을 때만. Aesop 시각 언어 70%+ 수준.
+**OPTIONAL (Deep Navy 절제 — 조건부 최소)**:
+| Token | Hex | 용도 |
+|-------|-----|------|
+| `--navy` | `#1B2D4F` | ::selection, blockquote border만 |
+
+**원칙**:
+- **Monochrome 기본** (90%+): 블랙/그레이 계열
+- **Warm Gray 포인트**: Stone 팔레트로 강조
+- **Deep Navy 절제**: ::selection, blockquote border만 (10% 미만)
+- **절대 금지**: 비비드 계열
+
+**네이비 허용 용도** (예외 2가지만):
+1. `::selection` — 텍스트 선택 시 배경
+2. `.art-body blockquote` — 인용문 좌측 border (2px solid)
+3. **금지**: placeholder, 범용 border, button background
 
 **Time-Aware Atmosphere** — 방문자 로컬 시간대에 따라 배경·텍스트·호흡이 변조:
 
