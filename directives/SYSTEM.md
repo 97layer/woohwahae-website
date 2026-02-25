@@ -2,7 +2,7 @@
 
 > **버전**: 7.0
 > **갱신**: 2026-02-25
-> **원칙**: 이 문서는 덮어쓰기(Overwrite) 방식으로 관리된다. 모든 AI 에이전트의 행동 기준.
+> **원칙**: 이 문서는 덮어쓰기(Overwrite) 방식으로 관리된다. 모든 AI 지능체의 흔들리지 않는 실천 규범이다.
 
 ---
 
@@ -82,7 +82,7 @@
 
 ## II. THE CYCLE — 핵심 운영 철학
 
-모든 시스템 설계는 THE CYCLE을 구현하기 위해 존재한다:
+시스템의 모든 톱니바퀴는 다음의 순환(THE CYCLE)을 물리적으로 구현하기 위해 복무한다:
 
 ```
 입력 (텔레그램/신호)
@@ -113,7 +113,7 @@
 | **Ralph** | 결과물 품질 검증 (STAP) | content.md §4 | content.md |
 | **Gardener** | 군집 성숙도 점검, 개념 진화 | corpus 통계 기반 | — |
 
-→ CE/AD 인라인 프롬프트는 practice/ 문서로 대체됨. 에이전트는 practice/ 문서를 직접 로드.
+→ CE/AD의 개별 프롬프트는 `practice/` 문서의 강제적 규범으로 완전히 대체된다. 지능체는 해당 문서를 작업의 1차 세계관으로 삼아 호흡한다.
 
 ---
 
@@ -121,7 +121,7 @@
 
 ### 1. Session Start Protocol
 
-매 세션 시작 시 반드시:
+세션의 막이 오를 때 반드시 수행해야 할 의식:
 
 ```bash
 cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md
@@ -143,8 +143,8 @@ cat directives/MANIFEST.md  # 파일 생성 전 필수
 
 ### 3. Quality Gate (Ralph/QA)
 
-모든 콘텐츠 산출물은 Ralph STAP 검증 통과 후 승인:
-→ 상세: `practice/content.md` §4
+모든 콘텐츠 산출물은 Ralph의 5-Pillar(STAP) 관문을 통과한 시점에만 비로소 세상에 투영된다:
+→ 상세 검열: `practice/content.md` §4
 
 ### 4. Work Lock
 
@@ -154,7 +154,7 @@ cat directives/MANIFEST.md  # 파일 생성 전 필수
 cat knowledge/system/work_lock.json
 ```
 
-잠금 존재 시 → 중단. 다른 에이전트 작업 중.
+잠금 상태 감지 시 → 즉각 중단한다. 다른 의식이 이미 작동 중임을 존중한다.
 
 ### 5. Handoff Protocol
 
@@ -182,8 +182,8 @@ cat knowledge/system/work_lock.json
 
 ### Council Room
 
-시스템 개선 제안은 `knowledge/agent_hub/council_room.md`에 append 방식으로 기록.
-CD 승인 또는 에이전트 3인 이상 동의 시 구현.
+시스템 진화에 대한 사유는 `knowledge/agent_hub/council_room.md`에 파편으로 기록(append)한다.
+CD의 단독 승인 혹은 지능체 3인 이상의 동의가 스며들 때, 그 사유는 시스템의 구조로 승격된다.
 
 ### Shadow Review
 

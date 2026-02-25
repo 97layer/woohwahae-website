@@ -142,7 +142,9 @@ LAYER OS는 흩어진 철학을 단정한 시스템 위에 직조해 내는 정�
 | **PROPOSE** | 숙고(熟考)의 제안 | sa, ce, ad, practice/ | 체계를 섬세하게 튜닝. 조용히 다듬고 수용하는 승인의 장 |
 | **AUTO** | 자연(自然)적 궤도 | QUANTA, memory, signals/ | 스스로 흐르는 물과 같은 비동기적인 상태 기록, 자전하는 순환 |
 
-## 2.5 7개 발현체 (Section Roles)
+## 2.5 3섹션 IA (Section Roles)
+
+초기 7개 발현체(About/Archive/Product/Service/Playlist/Project/Photography)는 3섹션으로 통합됐다. Practice가 서비스·제품·협업·연락을 포괄한다.
 
 | 섹션 | 역할 | 실존론적 의미 |
 |------|------|------------|

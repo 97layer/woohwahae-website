@@ -64,10 +64,10 @@
 
 ## 🎯 다음 작업
 
-1. [CRITICAL] VM 재배포 — core/ 구조 변경 + nginx redirect + systemd 경로 수정
-2. [CRITICAL] website HTML 리빌딩 — Archive|Practice|About 네비 + 깨진 링크 전면 수정 + assets/media/ 통합 (img/editor/uploads/참고→media/{brand,editor,archive,instagram,uploads})
-3. content_publisher.py — essay-NNN 타입 접두사 패턴 적용 + media/ 경로 반영
-4. start_ecosystem.sh 등 VM 스크립트 경로 검증
+1. ✅ VM 재배포 완료 — core/ 구조 + nginx redirect + systemd 경로 수정
+2. [CRITICAL] website HTML 리빌딩 — Archive|Practice|About 네비 + 깨진 링크 전면 수정 + media/ 경로 반영
+3. content_publisher.py — essay-NNN 타입 접두사 패턴 적용
+4. [NEW] Ralph 피드백 루프 구현 — STAP 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
 5. 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
 6. Growth Dashboard 첫 수익 입력 (`/admin/growth`, 2026-02 데이터)
 
