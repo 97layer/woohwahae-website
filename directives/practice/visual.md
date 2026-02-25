@@ -189,4 +189,111 @@
 
 ---
 
-**Last Updated**: 2026-02-24
+## 8. Family Look — 패밀리룩 디자인 프레임
+
+> 모든 페이지가 같은 주파수에서 출발한다. 이 프레임이 WOOHWAHAE의 시각적 DNA.
+
+### 8.1 키워드 (시각 언어의 근간)
+
+| 키워드 | 시각적 번역 | 적용 |
+|--------|-----------|------|
+| **Essentialism** | 60%+ 여백. 요소를 뺄수록 완성. | 모든 페이지 공통 |
+| **Resonance (공명)** | 동심원 파동. 중심에서 퍼져나가는 에너지. | SVG 배경, 호버 효과 |
+| **Self-care** | 호흡 리듬 (3.8s). 급하지 않은 트랜지션. | 모션, 타이밍 |
+
+### 8.2 배경 레이어 시스템
+
+모든 페이지는 3겹 레이어로 구성:
+
+```
+z-index: 0  — 배경 (파동)
+z-index: 1  — 콘텐츠
+z-index: 200 — 네비게이션
+```
+
+| 페이지 유형 | z-0 배경 | 구현 |
+|------------|---------|------|
+| Home | Three.js 쌍극자 자기장 캔버스 | `bg-field.js` + `<canvas class="field-bg">` |
+| 내부 페이지 | SVG 동심원 파동 | `<div class="wave-bg">` + SMIL animate |
+| 에세이 읽기 | 없음 (텍스트에 집중) | 배경 비움 |
+
+### 8.3 SVG 파동 (wave-bg) 규격
+
+```html
+<div class="wave-bg" aria-hidden="true"
+  style="position:fixed;top:50%;left:50%;
+         transform:translate(-50%,-50%);
+         width:120vmax;height:120vmax;
+         z-index:0;pointer-events:none;opacity:0.6">
+  <svg viewBox="0 0 800 800" width="100%" height="100%">
+    <g fill="none" stroke="#D5D4CF" stroke-width="0.5" opacity="0.4">
+      <!-- 4개 동심원: 60 → 140 → 240 → 360 반지름 -->
+      <!-- dur: 3.8s (호흡 주기) -->
+      <!-- 바깥 원일수록 opacity 낮게 (0.4 → 0.12) -->
+      <!-- begin: 0s / 0.4s / 0.8s / 1.2s (시차) -->
+    </g>
+  </svg>
+</div>
+```
+
+**파라미터**:
+- 색상: `#D5D4CF` (--line 토큰)
+- stroke-width: 0.5 (극세선)
+- 호흡 주기: 3.8s (--breath 토큰과 동기화)
+- 반지름 변화: ±20px (미세한 맥동)
+- 전체 opacity: 0.6 (배경에 녹아듦)
+
+### 8.4 모션 패밀리
+
+| 이름 | 용도 | CSS |
+|------|------|-----|
+| `wave-fade-in` | 페이지 진입 시 콘텐츠 등장 | `opacity 0→1, translateY 12→0, 2.4s ease-wave` |
+| `line-breathe` | 구분선/CTA 호흡 | `opacity 1↔0.5, --breath 주기` |
+| `home-breathe` | 홈 로고 호흡 | `opacity 1↔0.94, 시간대별 주기` |
+| `hb-fade` | 초기 등장 | `opacity 0→1, 1.2s ease-out` |
+| `[data-reveal]` | 스크롤 진입 | `opacity 0→1, translateY 16→0, IO threshold 0.12` |
+
+**규칙**:
+- 모든 트랜지션은 `--ease-wave` (정현파 S곡선) 사용
+- 급격한 움직임 금지. 최소 0.6s duration.
+- 카드류 stagger: 60ms 간격 (호흡의 1/63)
+
+### 8.5 레이아웃 프레임
+
+```
+┌─────────────────────────────────────────────┐
+│ nav-brand          Archive  Practice  About  │ ← 고정 상단
+├─────────────────────────────────────────────┤
+│                                             │
+│         [wave-bg: 동심원 파동]               │ ← z-0, fixed
+│                                             │
+│    ┌──────── max 680px ────────┐            │
+│    │  section-label            │            │ ← z-1
+│    │  headline / manifesto     │            │
+│    │                           │            │
+│    │  body text                │            │
+│    └───────────────────────────┘            │
+│                                             │
+│    ┌──────── max 960px ────────┐            │
+│    │  card grid (2col)         │            │
+│    └───────────────────────────┘            │
+│                                             │
+├─────────────────────────────────────────────┤
+│ footer: brand · nav · legal · ©             │
+└─────────────────────────────────────────────┘
+```
+
+### 8.6 새 페이지 체크리스트
+
+- [ ] wave-bg SVG 삽입 (에세이 제외)
+- [ ] page-main에 `position:relative; z-index:1`
+- [ ] 텍스트 영역 `container--content` (680px)
+- [ ] 그리드 영역 `container--wide` (960px)
+- [ ] 진입 애니메이션: headline에 `wave-fade-in`
+- [ ] 카드류에 `[data-reveal]` + stagger
+- [ ] nav-overlay 모바일 메뉴 포함
+- [ ] CSS cache buster 갱신
+
+---
+
+**Last Updated**: 2026-02-26
