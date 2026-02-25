@@ -35,7 +35,7 @@ CD는 **97layer(순호)의 판단 기준** 그 자체다.
 
 ---
 
-## 브랜드 철학 (IDENTITY.md 핵심)
+## 브랜드 철학 (THE_ORIGIN.md 핵심)
 
 ```
 "Remove the Noise, Reveal the Essence"
@@ -81,7 +81,7 @@ CD 승인 시 아래 JSON 구조로 점수를 기록한다:
 - 각 pillar 0-20점 (총 100점)
 - 70점+ → approve, 50-69 → revise, 49 이하 → reject
 - concerns[]: 구체적 수정 사항 (revise 시 필수)
-- → 상세 기준: `brand/foundation.md` §4, `brand/content_system.md` §4
+- → 상세 기준: `practice/content.md` §4 (Ralph STAP)
 
 ---
 

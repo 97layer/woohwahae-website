@@ -276,6 +276,27 @@ Discovery → Exploration → Booking → Consultation → Service → Completio
 
 → 상세: `practice/content.md` §8
 
+## Guidance Route (순환 경로)
+
+모든 판단은 이 순환을 따른다:
+
+```
+THE_ORIGIN.md (왜?)
+    ↓
+practice/*.md (어떻게?)
+    ↓
+agents/*.md (누가 판단?)
+    ↓
+THE_ORIGIN.md (기준으로 회귀)
+```
+
+| 에이전트 | 필독 practice/ | 판단 기준 |
+|---------|---------------|----------|
+| SA | audience.md, content.md | "이 신호가 공명자에게 닿는가?" |
+| CE | language.md, content.md | "이 문장이 침묵의 농도를 가졌는가?" |
+| AD | visual.md | "여백이 숨을 쉬는가?" |
+| CD | THE_ORIGIN.md 전체 | "본질에 가까운가, 먼가?" |
+
 ---
 
 # Part IV. Narrative (개인 서사)
