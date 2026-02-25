@@ -64,17 +64,19 @@
 
 ## 🎯 다음 작업
 
-1. nginx auth_basic 재활성화 — 검증 끝나면 `Code Agent`로 복구
-2. [NEXT] 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
-3. `/consult/{token}` 카톡 전송 → 실제 폼 제출 → consult_done 확인
-4. Growth Dashboard 첫 수익 입력 (`/admin/growth`, 2026-02 데이터)
-5. 재방문 알림 자동화 — Gardener `get_due_clients()` → 카카오 Alimtalk or 텔레그램
+1. [CRITICAL] VM 재배포 — core/ 구조 변경 + nginx redirect + systemd 경로 수정
+2. [CRITICAL] website HTML 리빌딩 — Archive|Practice|About 네비 + 깨진 링크 전면 수정 + assets/media/ 통합 (img/editor/uploads/참고→media/{brand,editor,archive,instagram,uploads})
+3. content_publisher.py — essay-NNN 타입 접두사 패턴 적용 + media/ 경로 반영
+4. start_ecosystem.sh 등 VM 스크립트 경로 검증
+5. 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
+6. Growth Dashboard 첫 수익 입력 (`/admin/growth`, 2026-02 데이터)
 
 **완료됨**:
 
 - ✅ DNS A레코드 연결 (Cloudflare 경유, 104.21.51.203)
 - ✅ HTTPS/SSL (certbot, Let's Encrypt)
-- ✅ VM git 초기화 (`/home/skyto5339_gmail_com/97layerOS/.git`)
+- ✅ VM git 초기화
+- ✅ 4축 구조 정렬 Ver 11.0 (d6a448b0)
 
 ---
 
