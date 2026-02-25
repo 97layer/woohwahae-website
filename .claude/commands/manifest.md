@@ -20,9 +20,7 @@ cat directives/MANIFEST.md
 | 신호 (원시) | knowledge/signals/ | {type}_{YYYYMMDD}_{HHMMSS}.json |
 | 신호 (분석) | knowledge/corpus/entries/ | entry_{signal_id}.json |
 | 에세이 HTML | website/archive/issue-{NNN}-{slug}/ | index.html |
-| 브랜드 도시에 | knowledge/brands/{slug}/ | profile.json |
 | 리포트 | knowledge/reports/ | {type}_{YYYYMMDD}.md |
-| 세션 기록 | knowledge/docs/sessions/ | {YYYYMMDD}_{agent_id}.md |
 | 자산 등록 | knowledge/system/asset_registry.json | append |
 | 에이전트 제안 | knowledge/agent_hub/council_room.md | append |
 

@@ -37,7 +37,7 @@ work_lock.json = 잠금 상태면 STOP. 다른 에이전트 작업 중.
 
 **루트(/)에 .md/.json/.txt 등 어떤 파일도 생성 금지** (CLAUDE.md, README.md 제외)
 
-허용 위치: 세션기록 → `knowledge/docs/sessions/` | 배포문서 → `knowledge/docs/deployment/` | 보고서 → `knowledge/reports/morning_YYYYMMDD.md`
+허용 위치: 세션기록 → `knowledge/agent_hub/` | 보고서 → `knowledge/reports/morning_YYYYMMDD.md`
 
 ---
 

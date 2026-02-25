@@ -33,7 +33,7 @@ logging.basicConfig(
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 RULES_PATH = PROJECT_ROOT / "knowledge/system/guard_rules.json"
-QUARANTINE_DIR = PROJECT_ROOT / "knowledge/docs/archive/quarantine"
+QUARANTINE_DIR = PROJECT_ROOT / "knowledge/system/quarantine"
 LOG_PATH = PROJECT_ROOT / ".infra/logs/filesystem_guard.log"
 
 SCAN_INTERVAL = 15       # 초 — 파일시스템 스캔 주기

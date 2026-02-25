@@ -36,7 +36,7 @@ Edit → 변경 최소 범위만 수정
 
 ## 아카이빙 경로
 
-- 완료 신호: knowledge/docs/archive/YYYY/MM_month/signals/
+- 완료 신호: knowledge/system/archive/signals/
 - 구버전 knowledge/inbox/ 파일: 이전 후 삭제
 
 ## 핵심 규칙

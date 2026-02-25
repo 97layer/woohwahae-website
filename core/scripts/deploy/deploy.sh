@@ -35,7 +35,6 @@ tar \
     -czf /tmp/97layer-deploy.tar.gz \
     core/ \
     directives/ \
-    knowledge/docs/ \
     knowledge/agent_hub/ \
     knowledge/system/schemas/ \
     knowledge/system/filesystem_cache.json \

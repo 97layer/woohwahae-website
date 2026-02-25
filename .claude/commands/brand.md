@@ -1,5 +1,5 @@
 ---
-description: Brand OS 핵심 규칙 빠른 참조 (directives/brand/ 인덱스)
+description: Brand OS 핵심 규칙 빠른 참조 (directives/practice/ 인덱스)
 ---
 
 # /brand — Brand OS 참조

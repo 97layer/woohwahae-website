@@ -22,11 +22,6 @@ python core/system/handoff.py --handoff
 
 3. **INTELLIGENCE_QUANTA.md 업데이트** — 새로 생성된 자산, 변경된 상태 반영
 
-4. **세션 기록 저장** (선택)
-```
-knowledge/docs/sessions/YYYYMMDD_session.md
-```
-
 ## 핸드오프 요약 형식
 
 ```
