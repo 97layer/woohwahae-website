@@ -1,5 +1,5 @@
 ---
-globs: directives/brand/**,knowledge/**
+globs: directives/practice/**,knowledge/**
 ---
 
 # Brand & Knowledge 콘텐츠 규칙

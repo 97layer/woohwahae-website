@@ -33,12 +33,12 @@ except ImportError:
 
 # ─── Paths ───
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # 97layerOS root
-sys.path.insert(0, str(BASE_DIR))  # core.modules 접근용
+sys.path.insert(0, str(BASE_DIR))  # core.system 접근용
 
 # Ritual / Growth 모듈
 try:
-    from core.modules.ritual import get_ritual_module
-    from core.modules.growth import get_growth_module
+    from core.system.ritual import get_ritual_module
+    from core.system.growth import get_growth_module
     _MODULES_AVAILABLE = True
 except ImportError:
     _MODULES_AVAILABLE = False

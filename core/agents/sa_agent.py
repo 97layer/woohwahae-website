@@ -265,7 +265,7 @@ class StrategyAnalyst:
             return
 
         try:
-            from core.bridges.notebooklm_bridge import get_bridge, is_available
+            from core.system.notebooklm_bridge import get_bridge, is_available
             if not is_available():
                 return
 

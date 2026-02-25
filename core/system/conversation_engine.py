@@ -33,7 +33,7 @@ try:
 except ImportError:
     GEMINI_AVAILABLE = False
 
-from core.bridges.notebooklm_bridge import get_bridge
+from core.system.notebooklm_bridge import get_bridge
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ class ConversationEngine:
         # User conversation contexts
         self.user_contexts = {}
 
-        # 브랜드 철학: IDENTITY.md에서 동적 로드
+        # 브랜드 철학: THE_ORIGIN.md에서 동적 로드
         self.brand_philosophy = self._load_identity()
 
     def chat(self, user_id: str, message: str, use_knowledge: bool = True) -> str:
@@ -151,11 +151,11 @@ class ConversationEngine:
             return f"죄송합니다. 응답 생성 중 오류가 발생했습니다: {str(e)}"
 
     def _load_identity(self) -> str:
-        """IDENTITY.md + SYSTEM.md에서 브랜드 철학 로드"""
+        """THE_ORIGIN.md + SYSTEM.md에서 브랜드 철학 로드"""
         sections = []
         for path in [
-            self.directives_dir / 'IDENTITY.md',
-            self.directives_dir / 'system' / 'SYSTEM.md',
+            self.directives_dir / 'THE_ORIGIN.md',
+            self.directives_dir / 'SYSTEM.md',
         ]:
             try:
                 if path.exists():

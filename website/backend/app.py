@@ -20,8 +20,8 @@ import config
 
 # Ritual / Growth 모듈
 try:
-    from core.modules.ritual import get_ritual_module
-    from core.modules.growth import get_growth_module
+    from core.system.ritual import get_ritual_module
+    from core.system.growth import get_growth_module
     _MODULES_AVAILABLE = True
 except ImportError:
     _MODULES_AVAILABLE = False
@@ -229,13 +229,13 @@ def generate_post_html(data):
       <img src="../../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
-      <li><a href="../../about.html">About</a></li>
+      <li><a href="../..//about/">About</a></li>
       <li><a href="../">Archive</a></li>
-      <li><a href="../../shop.html">Shop</a></li>
-      <li><a href="../../atelier.html">Atelier</a></li>
+      <li><a href="../..//shop/">Shop</a></li>
+      <li><a href="../..//service/">Atelier</a></li>
       <li><a href="../../playlist.html">Playlist</a></li>
       <li><a href="../../project.html">Project</a></li>
-      <li><a href="../../photography.html">Photography</a></li>
+      <li><a href="../..//photography/">Photography</a></li>
     </ul>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>

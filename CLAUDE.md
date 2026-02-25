@@ -18,7 +18,7 @@ INTELLIGENCE_QUANTA.md = 시스템 현재 상태. 읽지 않고 시작하면 CRI
 work_lock.json = 잠금 상태면 STOP. 다른 에이전트 작업 중.
 
 파일 생성 전:
-1. `cat directives/system/FILESYSTEM_MANIFEST.md` — 배치 규칙 확인 필수
+1. `cat directives/MANIFEST.md` — 배치 규칙 확인 필수
 2. `cat knowledge/system/filesystem_cache.json` — 이미 있으면 생성 금지
 생성 후: `python core/system/handoff.py --register-asset <path> <type> <source>`
 
@@ -43,7 +43,7 @@ work_lock.json = 잠금 상태면 STOP. 다른 에이전트 작업 중.
 
 ## 📁 FILE CREATION POLICY
 
-- 덮어쓰기: `INTELLIGENCE_QUANTA.md`, `IDENTITY.md`, `SYSTEM.md`
+- 덮어쓰기: `INTELLIGENCE_QUANTA.md`, `THE_ORIGIN.md`, `SYSTEM.md`
 - Append: `council_room.md`, `feedback_loop.md`
 - 날짜별: `reports/morning_YYYYMMDD.md`, `reports/evening_YYYYMMDD.md`
 - 생성 금지: 위 외 임의 경로 .md
@@ -134,8 +134,6 @@ Essence > Speed | Record > Memory | Process > Result | Self-Affirmation
 
 **Imperfect completion is acceptable. Hallucinated success is NOT.**
 
-> 코드 설계 규칙 → `knowledge/docs/system/CODING_RULES.md`
-> 강제 집행 레이어 → `knowledge/docs/system/ENFORCEMENT_SYSTEM.md`
 
 ---
 

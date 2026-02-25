@@ -42,7 +42,7 @@ from telegram.ext import (
 )
 
 # Core Components
-from core.bridges.notebooklm_bridge import get_bridge
+from core.system.notebooklm_bridge import get_bridge
 from core.system.conversation_engine import get_conversation_engine
 from core.system.intent_classifier import get_intent_classifier
 from core.system.youtube_analyzer import YouTubeAnalyzer
@@ -134,7 +134,7 @@ class TelegramSecretaryV6:
     @admin_only
     async def growth_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """월별 성장 지표 리포트 (Growth Module + 시스템 현황)"""
-        from core.modules.growth import get_growth_module
+        from core.system.growth import get_growth_module
 
         # 기간 인자 파싱
         period = context.args[0] if context.args else datetime.now().strftime('%Y-%m')
@@ -180,7 +180,7 @@ class TelegramSecretaryV6:
     @admin_only
     async def client_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Ritual Module 고객 관리 (/client list|add|info|due)"""
-        from core.modules.ritual import get_ritual_module
+        from core.system.ritual import get_ritual_module
 
         args = context.args
         subcmd = args[0] if args else 'list'
@@ -291,7 +291,7 @@ class TelegramSecretaryV6:
     @admin_only
     async def visit_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """방문 기록 (/visit <이름> <서비스> [만족도])"""
-        from core.modules.ritual import get_ritual_module
+        from core.system.ritual import get_ritual_module
 
         args = context.args
         if len(args) < 2:

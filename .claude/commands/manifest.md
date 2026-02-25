@@ -10,7 +10,7 @@ description: FILESYSTEM_MANIFEST 기반 배치 규칙 조회
 
 1. **매니페스트 읽기**
 ```bash
-cat directives/system/FILESYSTEM_MANIFEST.md
+cat directives/MANIFEST.md
 ```
 
 2. **산출물 배치 규칙 요약 출력**

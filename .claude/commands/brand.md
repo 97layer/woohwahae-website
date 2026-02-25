@@ -10,7 +10,7 @@ Brand OS 문서를 빠르게 조회한다.
 
 1. **Brand 디렉토리 인덱스**
 ```bash
-ls -la directives/brand/
+ls -la directives/practice/
 ```
 
 2. **핵심 문서 요약 출력**
@@ -31,10 +31,10 @@ ls -la directives/brand/
 
 3. **IDENTITY.md 핵심 선언**
 ```bash
-head -30 directives/IDENTITY.md
+head -30 directives/THE_ORIGIN.md
 ```
 
 ## 사용법
 - 에세이 작성 시 → `content_system.md` + `voice_tone.md` 참조
 - 디자인 검증 시 → `design_tokens.md` 참조
-- 브랜드 스코어 시 → `IDENTITY.md` + `CD.md` 참조
+- 브랜드 스코어 시 → `THE_ORIGIN.md` + `CD.md` 참조

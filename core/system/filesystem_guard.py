@@ -128,7 +128,7 @@ def _extract_pattern(name: str) -> str:
 
 
 def is_violation(path: Path) -> tuple[bool, str]:
-    """FILESYSTEM_MANIFEST 규칙 위반 여부 검사.
+    """MANIFEST 규칙 위반 여부 검사.
 
     Returns:
         (violated: bool, reason: str)

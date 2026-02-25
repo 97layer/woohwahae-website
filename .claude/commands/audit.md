@@ -36,7 +36,7 @@ find . -path "*/.agent/*" 2>/dev/null
 
 6. **FILESYSTEM_MANIFEST 기준 검증**
 ```bash
-cat directives/system/FILESYSTEM_MANIFEST.md | head -5
+cat directives/MANIFEST.md | head -5
 ```
 
 ## 판정

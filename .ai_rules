@@ -29,7 +29,7 @@ If lock exists and not expired → STOP. Wait or choose different task.
 Before creating files/folders, check placement rules:
 
 ```bash
-cat directives/system/FILESYSTEM_MANIFEST.md
+cat directives/MANIFEST.md
 ```
 
 ### 4. Filesystem Cache (중복 방지)
@@ -60,7 +60,6 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 ### 허용 Write 경로
 - `knowledge/signals/`          (신호 저장)
 - `knowledge/corpus/entries/`   (SA 분석 결과)
-- `knowledge/brands/`           (Brand Scout 결과)
 - `knowledge/agent_hub/council_room.md`  (APPEND ONLY — 제안 기록)
 - `knowledge/agent_hub/feedback_loop.md` (APPEND ONLY)
 
@@ -116,8 +115,8 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 
 ### 덮어쓰기 대상 (Overwrite — 최신 상태만 유지)
 - `knowledge/agent_hub/INTELLIGENCE_QUANTA.md`
-- `directives/IDENTITY.md`
-- `directives/system/SYSTEM.md`
+- `directives/THE_ORIGIN.md`
+- `directives/SYSTEM.md`
 
 ### 추가 대상 (Append — 이력 축적)
 - `knowledge/agent_hub/council_room.md`
@@ -289,7 +288,7 @@ This saves the current state for the next AI agent.
 검증 항목: 필수 파일 존재 / JSON 유효성 / QUANTA freshness(72h) / 금지 파일 부재
 **handoff 미실행 시 커밋 차단.**
 
-상세 문서: `knowledge/docs/ENFORCEMENT_SYSTEM.md`
+상세 문서: `knowledge/docs/system/ENFORCEMENT_SYSTEM.md`
 
 ---
 

@@ -62,12 +62,12 @@ WOOHWAHAE는 **Archive for Slow Life**를 컨셉으로 하는 브랜드 웹사�
 ```
 website/
 ├── index.html              # 메인 페이지
-├── about.html              # About 페이지
-├── atelier.html            # 아틀리에 소개
-├── shop.html               # Shop (Coming Soon)
+├── /about/              # About 페이지
+├── /service/            # 아틀리에 소개
+├── /shop/               # Shop (Coming Soon)
 ├── playlist.html           # Playlist
 ├── project.html            # Project (Coming Soon)
-├── photography.html        # Photography
+├── /photography/        # Photography
 ├── 404.html                # 404 에러 페이지
 ├── privacy.html            # 개인정보처리방침
 ├── terms.html              # 이용약관

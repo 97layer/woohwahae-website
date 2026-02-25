@@ -98,7 +98,7 @@ class ArtDirector:
         # NotebookLM 브릿지 (선택적 — 없어도 동작)
         self.nlm = None
         try:
-            from core.bridges.notebooklm_bridge import get_bridge, is_available
+            from core.system.notebooklm_bridge import get_bridge, is_available
             if is_available():
                 self.nlm = get_bridge()
                 print(f"✅ {self.agent_id}: NotebookLM 시각 레퍼런스 연결됨")

@@ -617,7 +617,7 @@ JSON만 출력."""
     def _check_revisit_due(self) -> None:
         """재방문 시기가 된 고객 → Telegram 알림"""
         try:
-            from core.modules.ritual import get_ritual_module
+            from core.system.ritual import get_ritual_module
             due_clients = get_ritual_module().get_due_clients()
             if not due_clients:
                 return
@@ -646,7 +646,7 @@ JSON만 출력."""
     def _record_growth_snapshot(self) -> None:
         """월별 성장 지표를 Growth Module에 자동 기록"""
         try:
-            from core.modules.growth import get_growth_module
+            from core.system.growth import get_growth_module
             period = datetime.now().strftime('%Y-%m')
             gm = get_growth_module()
             gm.auto_count_content(period)

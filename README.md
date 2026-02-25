@@ -15,8 +15,8 @@
 │   └── utils/              # parsers, helpers
 │
 ├── directives/              # 📜 철학 및 규칙
-│   ├── IDENTITY.md         # Slow Life 브랜드 철학
-│   └── system/SYSTEM.md    # 운영 프로토콜
+│   ├── THE_ORIGIN.md       # Slow Life 브랜드 철학
+│   └── SYSTEM.md           # 운영 프로토콜
 │
 ├── knowledge/               # 📚 데이터 레이어
 │   ├── signals/            # 입력 신호
@@ -118,10 +118,9 @@ ANTHROPIC_API_KEY=your_key_here
 
 ## 📚 Documentation
 
-- [IDENTITY.md](directives/IDENTITY.md) - 브랜드 철학
-- [SYSTEM.md](directives/system/SYSTEM.md) - 운영 프로토콜
+- [THE_ORIGIN.md](directives/THE_ORIGIN.md) - 브랜드 철학
+- [SYSTEM.md](directives/SYSTEM.md) - 운영 프로토콜
 - [INTELLIGENCE_QUANTA.md](knowledge/agent_hub/INTELLIGENCE_QUANTA.md) - 세션 연속성
-- [TECHNICAL_SPEC.md](knowledge/docs/TECHNICAL_SPEC.md) - 기술 명세
 
 ---
 
