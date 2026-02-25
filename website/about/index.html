@@ -4,334 +4,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="About — WOOHWAHAE. 동아시아적 수행 문화를 현대 일상에 번역하는 브랜드. 고요한 농도로 삶을 기록하는 아카이브.">
-  <meta property="og:title" content="About — WOOHWAHAE">
-  <meta property="og:description" content="동아시아적 수행 문화를 현대 일상에 번역하는 브랜드. 고요한 농도로 삶을 기록하는 아카이브.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://woohwahae.kr/about.html">
-  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
+  <meta name="description" content="About — WOOHWAHAE">
   <title>About — WOOHWAHAE</title>
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#F0EFEB">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-  <link rel="icon" href="assets/img/symbol.png" type="image/svg+xml">
-    <!-- fonts: preconnect + parallel loading -->
+  <meta name="theme-color" content="#E4E2DC">
+  <link rel="icon" href="../assets/img/symbol.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="preload" href="assets/css/style.css?v=renewal_v6" as="style">
-  <link rel="stylesheet" href="assets/css/style.css?v=renewal_v6">
-  <script src="assets/js/analytics.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script>
+    (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+  </script>
 </head>
 
-<body class="home-radical">
+<body class="page-about">
 
-  <canvas id="field-bg" class="field-bg-canvas"></canvas>
-
-  <nav>
-    <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="service.html">Service</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="lab/">Lab</a></li>
+  <nav class="site-nav" id="site-nav">
+    <a href="/" class="nav-brand">WOOHWAHAE</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="../archive/">Archive</a></li>
+      <li><a href="../practice/">Practice</a></li>
+      <li><a href="../about/" class="active">About</a></li>
     </ul>
-    <button class="nav-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+      <span></span><span></span>
     </button>
   </nav>
 
-  <main class="container--wide">
-
-    <!-- About Hero — 우화 Dictionary Entry -->
-    <section class="about-hero">
-      <div class="woohwa-entry">
-
-        <!-- SVG: Chrysalis Unfurling Symbol -->
-        <svg class="about-hero-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
-             aria-hidden="true" focusable="false">
-          <style>
-            .ah-wing-l {
-              opacity: 0;
-              stroke-dasharray: 320;
-              stroke-dashoffset: 320;
-              animation:
-                ah-draw 2.4s cubic-bezier(0.25, 0, 0.4, 1) 0.3s forwards,
-                ah-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 2.7s infinite;
-            }
-            .ah-wing-r {
-              opacity: 0;
-              stroke-dasharray: 320;
-              stroke-dashoffset: 320;
-              animation:
-                ah-draw 2.4s cubic-bezier(0.25, 0, 0.4, 1) 0.7s forwards,
-                ah-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 3.1s infinite;
-            }
-            .ah-thread {
-              opacity: 0;
-              stroke-dasharray: 180;
-              stroke-dashoffset: 180;
-              animation:
-                ah-draw 2s cubic-bezier(0.25, 0, 0.4, 1) 1.2s forwards,
-                ah-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 3.2s infinite;
-            }
-            .ah-seed {
-              opacity: 0;
-              animation:
-                ah-seed-appear 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards,
-                ah-seed-pulse 3.8s cubic-bezier(0.37, 0, 0.63, 1) 0.7s infinite;
-            }
-            @keyframes ah-draw {
-              0%   { stroke-dashoffset: inherit; opacity: 0; }
-              8%   { opacity: 0.6; }
-              100% { stroke-dashoffset: 0; opacity: 0.5; }
-            }
-            @keyframes ah-breathe {
-              0%, 100% { opacity: 0.35; }
-              50%      { opacity: 0.55; }
-            }
-            @keyframes ah-seed-appear {
-              to { opacity: 0.7; }
-            }
-            @keyframes ah-seed-pulse {
-              0%, 100% { opacity: 0.5; }
-              50%      { opacity: 0.8; }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              .ah-wing-l, .ah-wing-r, .ah-thread {
-                animation: none;
-                opacity: 0.4;
-                stroke-dashoffset: 0;
-              }
-              .ah-seed {
-                animation: none;
-                opacity: 0.6;
-              }
-            }
-          </style>
-
-          <!-- Seed — origin of transformation (stone monument mark) -->
-          <!-- Concentric circles + rough exterior -->
-          <circle class="ah-seed" cx="100" cy="100" r="2.5" fill="none" stroke="currentColor" stroke-width="0.8"/>
-          <circle class="ah-seed" cx="100" cy="100" r="4" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.6"/>
-
-          <!-- Left wing-curve — carved, rough stone edge -->
-          <path class="ah-wing-l"
-                d="M100,100 L96,88 L92,76 L85,65 L75,52 L68,48 L58,44 L48,42 L38,48 L32,58 L35,68 L42,76 L55,84 L70,88 L85,92"
-                fill="none" stroke="currentColor" stroke-width="1.2"
-                stroke-linecap="round"/>
-
-          <!-- Right wing-curve — carved, rough stone edge (asymmetric) -->
-          <path class="ah-wing-r"
-                d="M100,100 L108,112 L116,126 L126,140 L136,150 L148,158 L160,162 L168,158 L172,148 L168,138 L160,130 L148,122 L135,116 L120,112 L115,108"
-                fill="none" stroke="currentColor" stroke-width="1.2"
-                stroke-linecap="round"/>
-
-          <!-- Spiral thread — rough, carved spiral (transformation pathway) -->
-          <path class="ah-thread"
-                d="M100,100 L103,96 L108,94 L112,96 L112,102 L108,106 L102,104 L98,98 L99,90 L107,88 L114,92 L118,100 L116,110 L108,112 L100,108 L96,100 L98,90 L108,86 L118,90"
-                fill="none" stroke="currentColor" stroke-width="0.8"
-                stroke-linecap="round" stroke-dasharray="3,2"/>
-        </svg>
-
-        <h1 class="woohwa-word page-title"
-            data-lang-ko="우화"
-            data-lang-en="Wooha">우화</h1>
-        <p class="woohwa-hanja"
-           data-lang-ko="羽化 · <span class='en'>Metamorphosis</span>"
-           data-lang-en="羽化 · <span class='en'>Metamorphosis</span>">
-          羽化 · <span class="en">Metamorphosis</span>
-        </p>
-      </div>
-    </section>
-
-    <!-- Manifesto — About 선언문 -->
-    <div class="manifesto">
-
-      <p class="mani-p fade-in"
-        data-lang-ko="시대의 표준화된 속도는 고유한 감각을 무디게 합니다.<br>맹목적 관성은 멈춤을 허용하지 않고,<br>타인의 시선은 내면의 리듬을 서서히 바래게 합니다.<br>늦은 것과 다른 것은 다릅니다.<br>그러나 이 세계는 그 차이를 쉽게 허용하지 않습니다."
-        data-lang-en="The standardized pace of this age dulls one's unique perception.<br>Blind inertia permits no pause,<br>and others' gaze slowly fades the rhythm within.<br>Being late is different from being different.<br>But this world does not easily allow that distinction.">
-        시대의 표준화된 속도는 고유한 감각을 무디게 합니다.<br>
-        맹목적 관성은 멈춤을 허용하지 않고,<br>
-        타인의 시선은 내면의 리듬을 서서히 바래게 합니다.<br>
-        늦은 것과 다른 것은 다릅니다.<br>
-        그러나 이 세계는 그 차이를 쉽게 허용하지 않습니다.
-      </p>
-
-      <p class="mani-p fade-in"
-        data-lang-ko="우화(羽化).<br>번데기가 성충이 되는 변태를 뜻하는 생물학 용어이자,<br>동양에서는 허물을 벗고 새로운 경지에 이르는 것을 의미합니다.<br>내면의 변화는 외부의 속도와 무관하게 고요히 퇴적됩니다.<br>그것은 완성을 향한 이동이 아닙니다.<br>흐트러진 의식이 구심점으로 돌아오는, 반복되는 과정 그 자체입니다."
-        data-lang-en="Wooha (羽化).<br>A biological term for metamorphosis — a pupa becoming an imago —<br>and in Eastern philosophy, shedding one's shell to reach a new plane of being.<br>Inner change accumulates quietly, independent of external pace.<br>It is not a movement toward completion.<br>It is the recurring process itself — scattered consciousness returning to its center.">
-        우화(羽化).<br>
-        번데기가 성충이 되는 변태를 뜻하는 생물학 용어이자,<br>
-        동양에서는 허물을 벗고 새로운 경지에 이르는 것을 의미합니다.<br>
-        내면의 변화는 외부의 속도와 무관하게 고요히 퇴적됩니다.<br>
-        그것은 완성을 향한 이동이 아닙니다.<br>
-        흐트러진 의식이 구심점으로 돌아오는, 반복되는 과정 그 자체입니다.
-      </p>
-
-      <p class="mani-p fade-in"
-        data-lang-ko="동아시아의 수행 문화는 이것을 오랫동안 알고 있었습니다.<br>다도(茶道)의 정성, 서예(書藝)의 반복, 선(禪)의 침묵.<br>행위의 목적이 결과가 아니라 과정 자체에 있을 때,<br>시간은 비로소 밀도를 갖게 됩니다."
-        data-lang-en="The practice cultures of East Asia have long known this.<br>The devotion of tea ceremony, the repetition of calligraphy, the silence of Zen.<br>When the purpose of an act lies not in the outcome but in the process itself,<br>time at last begins to carry density.">
-        동아시아의 수행 문화는 이것을 오랫동안 알고 있었습니다.<br>
-        다도(茶道)의 정성, 서예(書藝)의 반복, 선(禪)의 침묵.<br>
-        행위의 목적이 결과가 아니라 과정 자체에 있을 때,<br>
-        시간은 비로소 밀도를 갖게 됩니다.
-      </p>
-
-      <p class="mani-p fade-in"
-        data-lang-ko="이 감각을 일상에 번역하는 태도를 — Slow라 부릅니다.<br>느림이나 도태가 아닙니다.<br>관성에 제동을 걸고,<br>자신의 호흡과 리듬을 기준으로 삶의 결을 다시 다듬는 것.<br>고유한 시차(時差)를 온전히 수용하는 수행적 태도입니다."
-        data-lang-en="The stance of translating this sensibility into everyday life — we call it Slow.<br>Not slowness, not falling behind.<br>It is braking against inertia,<br>reshaping life's texture by one's own breath and rhythm.<br>A contemplative posture of fully accepting one's unique time-difference.">
-        이 감각을 일상에 번역하는 태도를 — Slow라 부릅니다.<br>
-        느림이나 도태가 아닙니다.<br>
-        관성에 제동을 걸고,<br>
-        자신의 호흡과 리듬을 기준으로 삶의 결을 다시 다듬는 것.<br>
-        고유한 시차(時差)를 온전히 수용하는 수행적 태도입니다.
-      </p>
-
-      <p class="mani-p fade-in"
-        data-lang-ko="이 재조율은 언어로 전달되지 않습니다.<br>언어는 때로 진실을 왜곡하기 때문입니다.<br>여담을 거두고, 고요한 침묵 속에서 본질과 마주합니다.<br>침묵이 닿는 사람에게 닿는 것이, 가장 깊은 소통입니다."
-        data-lang-en="This recalibration cannot be conveyed through language.<br>Because language sometimes distorts truth.<br>We set aside small talk and meet the essential within quiet silence.<br>The deepest communication reaches only those whom silence can touch.">
-        이 재조율은 언어로 전달되지 않습니다.<br>
-        언어는 때로 진실을 왜곡하기 때문입니다.<br>
-        여담을 거두고, 고요한 침묵 속에서 본질과 마주합니다.<br>
-        침묵이 닿는 사람에게 닿는 것이, 가장 깊은 소통입니다.
-      </p>
-
-      <p class="mani-p fade-in"
-        data-lang-ko="그리고 그 감각이 온전해질 때,<br>인간의 불완전함과 생애주기의 자연스러운 굴곡을 긍정할 수 있습니다.<br>타인의 인정으로부터 독립된 내면의 질서가 세워집니다.<br>삶의 주권은 시스템이 아닌,<br>사유와 감각이 머무는 그 자리에서 시작됩니다."
-        data-lang-en="And when that sensation becomes whole,<br>one can affirm human imperfection and the natural turns of life's cycle.<br>An inner order, independent from others' approval, takes form.<br>The sovereignty of one's life begins not in the system,<br>but in the very place where thought and sensation dwell.">
-        그리고 그 감각이 온전해질 때,<br>
-        인간의 불완전함과 생애주기의 자연스러운 굴곡을 긍정할 수 있습니다.<br>
-        타인의 인정으로부터 독립된 내면의 질서가 세워집니다.<br>
-        삶의 주권은 시스템이 아닌,<br>
-        사유와 감각이 머무는 그 자리에서 시작됩니다.
-      </p>
-
-      <p class="mani-p fade-in"
-        data-lang-ko="그 자리에서 — 머리카락의 결을 다듬을 때도, 글을 발행할 때도.<br>같은 의식이 모든 손끝을 통해 흐릅니다."
-        data-lang-en="From that very place — when shaping the grain of hair, when publishing a piece of writing.<br>The same ritual flows through every fingertip.">
-        그 자리에서 — 머리카락의 결을 다듬을 때도, 글을 발행할 때도.<br>
-        같은 의식이 모든 손끝을 통해 흐릅니다.
-      </p>
-
-      <p class="mani-p mani-p--declaration fade-in"
-        data-lang-ko="기록은 자기 자신을 위한 것이 아닙니다.<br>그러나 자기 자신에게서 시작됩니다.<br><br>한 사람의 감각이 정제될 때,<br>또 다른 삶의 기준이 됩니다.<br><br>기록은 삶의 기반입니다."
-        data-lang-en="Recording is not for oneself.<br>Yet it begins from oneself.<br><br>When one person's sensibility is refined,<br>it becomes a standard for another life.<br><br>Recording is the foundation of life.">
-        기록은 자기 자신을 위한 것이 아닙니다.<br>
-        그러나 자기 자신에게서 시작됩니다.<br>
-        <br>
-        한 사람의 감각이 정제될 때,<br>
-        또 다른 삶의 기준이 됩니다.<br>
-        <br>
-        기록은 삶의 기반입니다.
-      </p>
-
+  <main class="page-main">
+    <div class="about-hero">
+      <!-- 여백 -->
     </div>
 
-    <!-- CTA -->
-    <!-- Breath line — organic wave SVG -->
-    <svg class="about-breath-line" viewBox="0 0 40 6" xmlns="http://www.w3.org/2000/svg"
-         aria-hidden="true" focusable="false">
-      <style>
-        .abl-wave {
-          stroke-dasharray: 52;
-          stroke-dashoffset: 52;
-          animation:
-            abl-draw 1.6s cubic-bezier(0.25, 0, 0.4, 1) forwards,
-            abl-breathe 3.8s cubic-bezier(0.37, 0, 0.63, 1) 1.6s infinite;
-        }
-        @keyframes abl-draw {
-          0%   { stroke-dashoffset: 52; opacity: 0; }
-          10%  { opacity: 0.12; }
-          100% { stroke-dashoffset: 0; opacity: 0.20; }
-        }
-        @keyframes abl-breathe {
-          0%, 100% { opacity: 0.12; }
-          50%      { opacity: 0.30; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .abl-wave {
-            animation: none;
-            opacity: 0.20;
-            stroke-dashoffset: 0;
-          }
-        }
-      </style>
-      <!-- Rough, carved ripple pattern -->
-      <path class="abl-wave"
-            d="M0,3 L2,1.2 L4,1.8 L6,2.8 L8,1.5 L10,3.5 L12,2.2 L14,2.5 L16,3.8 L18,1 L20,3 L22,1.8 L24,3.2 L26,2 L28,3.5 L30,1.5 L32,3.5 L34,2 L36,3 L38,1.8 L40,3"
-            fill="none" stroke="currentColor" stroke-width="1.2"
-            stroke-linecap="round"/>
-    </svg>
-    <div class="page-cta">
-      <p class="page-cta-note fade-in"
-        data-lang-ko="우화(羽化) — 고요한 농도로 삶을 기록하는 아카이브."
-        data-lang-en="Wooha — an archive that records life with quiet density.">
-        우화(羽化) — 고요한 농도로 삶을 기록하는 아카이브.
-      </p>
-      <div style="display:flex;gap:1.5rem;align-items:center;justify-content:center;flex-wrap:wrap;">
-        <a href="archive/" class="cta-inline fade-in">Archive →</a>
-        <a href="service.html" class="cta fade-in">Service →</a>
-      </div>
+    <div class="about-links container">
+      <a href="philosophy.html" class="about-link" data-reveal>
+        <span class="about-link__label">Philosophy</span>
+        <span class="about-link__arrow">→</span>
+      </a>
+      <a href="story.html" class="about-link" data-reveal>
+        <span class="about-link__label">Story</span>
+        <span class="about-link__arrow">→</span>
+      </a>
+      <a href="editor.html" class="about-link" data-reveal>
+        <span class="about-link__label">Editor</span>
+        <span class="about-link__arrow">→</span>
+      </a>
     </div>
-
   </main>
 
-  <footer class="section--light">
+  <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-brand-row">
-        <p class="footer-brand-name">WOOHWAHAE</p>
+      <p class="footer-brand">WOOHWAHAE</p>
+      <nav class="footer-nav">
+        <a href="../archive/">Archive</a>
+        <a href="../practice/">Practice</a>
+        <a href="../about/">About</a>
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+      <div class="footer-legal">
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
       </div>
-      <div class="footer-nav-row">
-        <a href="archive/">Archive</a>
-        <a href="service.html">Service</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-        <a href="lab/">Lab</a>
-      </div>
-      <div class="footer-connect-row">
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
-        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
-        <a href="mailto:hello@woohwahae.kr">Email</a>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
-        <div class="footer-legal">
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Terms</a>
-        </div>
-      </div>
+      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </footer>
 
-  <script src="assets/js/bg-field.js" defer></script>
-  <script src="assets/js/main.js"></script>
-  <script>
-    /* ── About: manifesto 전용 reveal observer (main.js 글로벌 observer 오버라이드) ── */
-    (function () {
-      if (!document.querySelector('.manifesto')) return;
-      var maniObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            maniObserver.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
-      document.querySelectorAll('.manifesto .mani-p').forEach(function (el) {
-        el.classList.remove('visible');
-        maniObserver.observe(el);
-      });
-    })();
-  </script>
+  <script src="../assets/js/site.js" defer></script>
 </body>
 
 </html>

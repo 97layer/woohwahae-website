@@ -4,173 +4,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WOOHWAHAE — Archive for Slow Life. 가속화된 세상에서 주체적으로 살아가기 위한 생각과 실천의 아카이브.">
+  <meta name="description" content="WOOHWAHAE">
   <meta property="og:title" content="WOOHWAHAE">
-  <meta property="og:description" content="Archive for Slow Life">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://woohwahae.kr/">
-  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
   <title>WOOHWAHAE</title>
-  <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#E4E2DC">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-  <link rel="icon" href="assets/img/symbol.png" type="image/svg+xml">
-    <!-- fonts: preconnect + parallel loading -->
+  <link rel="icon" href="assets/img/symbol.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="preload" href="assets/css/style.css?v=renewal_v6" as="style">
-  <link rel="stylesheet" href="assets/css/style.css?v=renewal_v6">
-  <script src="assets/js/analytics.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
   <script>
-    /* time-aware atmosphere — FOUC 방지: defer 전에 실행 */
-    (function(){var h=new Date().getHours();document.documentElement.classList.add(h<6?'time-dawn':h<11?'time-morning':h<18?'time-afternoon':h<22?'time-evening':'time-night');})();
+    /* time-aware breath — FOUC 방지 */
+    (function () {
+      var h = new Date().getHours();
+      document.documentElement.className =
+        h < 6 ? 'time-dawn' :
+          h < 18 ? 'time-day' :
+            h < 22 ? 'time-evening' : 'time-night';
+    })();
   </script>
 </head>
 
-<body class="home-radical">
+<body class="page-home">
 
-  <!-- 전체 페이지 배경 필드 캔버스 — fixed, z=0 -->
-  <canvas id="field-bg" class="field-bg-canvas"></canvas>
+  <canvas id="field-bg" class="field-bg"></canvas>
 
-  <nav>
-    <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links">
+  <nav class="site-nav" id="site-nav">
+    <a href="/" class="nav-brand">WOOHWAHAE</a>
+    <ul class="nav-links" id="nav-links">
       <li><a href="archive/">Archive</a></li>
-      <li><a href="service.html">Service</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="lab/">Lab</a></li>
+      <li><a href="practice/">Practice</a></li>
+      <li><a href="about/">About</a></li>
     </ul>
-    <button class="nav-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+      <span></span><span></span>
     </button>
   </nav>
 
-  <!-- ── HERO: 100dvh, 투명 (field-bg 노출) ── -->
+  <!-- 홈 히어로: 100dvh, 로고만 -->
   <section class="home-hero">
-    <div class="home-hero__inner">
-      <p class="home-hero__brand">WOOHWAHAE</p>
-      <p class="home-hero__statement">Archive for Slow Life.</p>
-    </div>
-    <p class="home-hero__scroll">Scroll ↓</p>
+    <p class="home-brand" data-breath>WOOHWAHAE</p>
   </section>
 
-  <!-- ── CONTENT: solid bg — field-bg를 덮음 ── -->
-  <div class="home-content">
-
-    <!-- 우화(羽化) — 브랜드 철학 -->
-    <div class="home-row" data-reveal>
-      <p class="section-label">우화(羽化)</p>
-      <p class="home-intro__text">
-        번데기가 나비가 되는 과정.<br>
-        각자의 속도로, 내면의 美를 성찰하며.
-      </p>
-    </div>
-
-    <!-- Latest — 최신 에세이 -->
-    <div class="home-row" data-reveal>
-      <p class="section-label">Latest</p>
-      <a href="#" class="home-latest__link" id="featured-article" style="opacity:0; transition: opacity 0.6s;">
-        <span class="home-latest__meta">
-          <span id="featured-issue">—</span>
-          <span style="margin: 0 0.3rem; color: var(--text-faint);">·</span>
-          <span id="featured-date">—</span>
-        </span>
-        <strong class="home-latest__title" id="featured-title"></strong>
-        <span class="home-latest__arrow">읽기 →</span>
-      </a>
-    </div>
-
-    <!-- Navigate -->
-    <div class="home-row" data-reveal>
-      <p class="section-label">Navigate</p>
-      <nav class="home-site-nav" aria-label="Section navigation">
-        <a href="archive/">Archive</a>
-        <a href="service.html">Service</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-      </nav>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <footer class="section--light">
+  <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-brand-row">
-        <p class="footer-brand-name">WOOHWAHAE</p>
-      </div>
-      <div class="footer-nav-row">
+      <p class="footer-brand">WOOHWAHAE</p>
+      <nav class="footer-nav">
         <a href="archive/">Archive</a>
-        <a href="service.html">Service</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-        <a href="lab/">Lab</a>
+        <a href="practice/">Practice</a>
+        <a href="about/">About</a>
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+      <div class="footer-legal">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
       </div>
-      <div class="footer-connect-row">
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
-        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
-        <a href="mailto:hello@woohwahae.kr">Email</a>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
-        <div class="footer-legal">
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Terms</a>
-        </div>
-      </div>
+      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </footer>
 
-  <script src="assets/js/bg-field.js?v=2" defer></script>
-  <script src="assets/js/main.js" defer></script>
-  <script>
-    /* ─── Featured Article 로드 ─── */
-    fetch('archive/index.json')
-      .then(function(r) { return r.json(); })
-      .then(function(posts) {
-        if (!posts || !posts.length) return;
-        var post = posts[0];
-        var link = document.getElementById('featured-article');
-        var issueNum = post.issue ? post.issue.replace('Issue ', '') : '00';
-        link.href = 'archive/' + post.slug + '/';
-        document.getElementById('featured-issue').textContent = 'ISSUE ' + issueNum;
-        document.getElementById('featured-date').textContent   = post.date;
-        document.getElementById('featured-title').textContent  = post.title;
-        link.style.opacity = '1';
-      })
-      .catch(function() {
-        var row = document.getElementById('featured-article');
-        if (row) row.closest('.home-row').style.display = 'none';
-      });
-
-    /* ─── IntersectionObserver: home-row 페이드인 ─── */
-    (function() {
-      var rows = document.querySelectorAll('[data-reveal]');
-      if (!rows.length) return;
-
-      var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
-      rows.forEach(function(row) { observer.observe(row); });
-    })();
-  </script>
-
+  <script src="assets/js/bg-field.js" defer></script>
+  <script src="assets/js/site.js" defer></script>
 </body>
 
 </html>

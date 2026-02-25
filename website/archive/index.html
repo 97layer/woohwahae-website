@@ -4,221 +4,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Archive — WOOHWAHAE. 인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.">
-  <meta property="og:title" content="Archive — WOOHWAHAE">
-  <meta property="og:description" content="인문학적 사유와 감각에서 파생된 기록을 축적하는 곳.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://woohwahae.kr/archive/">
-  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
+  <meta name="description" content="Archive — WOOHWAHAE">
   <title>Archive — WOOHWAHAE</title>
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#F0EFEB">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-  <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
-  <!-- fonts: preconnect + parallel loading -->
+  <meta name="theme-color" content="#E4E2DC">
+  <link rel="icon" href="../assets/img/symbol.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap">
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="preload" href="../assets/css/style.css?v=renewal_v9" as="style">
-  <link rel="stylesheet" href="../assets/css/style.css?v=renewal_v9">
-  <script src="../assets/js/analytics.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script>
+    (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+  </script>
 </head>
 
-<body class="home-radical">
+<body class="page-archive">
 
-  <canvas id="field-bg" class="field-bg-canvas"></canvas>
-
-  <nav class="nav-main">
-    <a href="/" class="nav-logo">
-      <img src="../assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="service.html">Service</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="lab/">Lab</a></li>
+  <nav class="site-nav" id="site-nav">
+    <a href="/" class="nav-brand">WOOHWAHAE</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="../archive/" class="active">Archive</a></li>
+      <li><a href="../practice/">Practice</a></li>
+      <li><a href="../about/">About</a></li>
     </ul>
-    <button class="nav-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+      <span></span><span></span>
     </button>
   </nav>
 
-  <main class="container--wide">
+  <main class="page-main">
 
-    <!-- Archive Header -->
-    <div class="arc-header fade-in">
-      <p class="section-label">Archive</p>
+    <div class="archive-hero container--wide">
+      <span class="section-label">ARCHIVE</span>
     </div>
 
-    <!-- Filter -->
-    <div class="arc-filter-bar fade-in" id="archive-filters">
-      <button class="arc-filter active" data-filter="all">All</button>
-      <button class="arc-filter" data-filter="seeing">Seeing</button>
-      <button class="arc-filter" data-filter="living">Living</button>
-      <button class="arc-filter" data-filter="working">Working</button>
-      <button class="arc-filter" data-filter="making">Making</button>
-      <button class="arc-filter" data-filter="listening">Listening</button>
+    <!-- 필터 -->
+    <div class="archive-filter container--wide" role="tablist">
+      <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">ALL</button>
+      <button class="filter-btn" data-filter="essay" role="tab" aria-selected="false">ESSAY</button>
+      <button class="filter-btn" data-filter="magazine" role="tab" aria-selected="false">MAGAZINE</button>
+      <button class="filter-btn" data-filter="lookbook" role="tab" aria-selected="false">LOOKBOOK</button>
     </div>
 
-    <!-- Featured Block -->
-    <div class="arc-featured" id="arc-featured" style="display:none">
-      <div class="arc-featured-meta">
-        <span class="arc-featured-issue" id="feat-issue"></span>
-        <span class="arc-featured-cat" id="feat-cat"></span>
-        <span class="arc-featured-date" id="feat-date"></span>
-        <span class="arc-featured-read" id="feat-read"></span>
-      </div>
-      <a class="arc-featured-link" id="feat-link" href="#">
-        <h2 class="arc-featured-title" id="feat-title"></h2>
-        <p class="arc-featured-preview" id="feat-preview"></p>
-        <span class="arc-featured-cta">읽기 →</span>
-      </a>
+    <!-- 카드 그리드 -->
+    <div class="archive-grid container--wide" id="archive-grid">
+      <!-- JS로 index.json 기반 렌더링 -->
     </div>
-
-    <!-- 목차 리스트 -->
-    <div class="arc-divider"></div>
-    <div class="arc-list" id="archive-list"></div>
-    <div class="arc-divider"></div>
-
-    <p id="archive-empty" class="arc-empty" style="display:none;">해당하는 기록이 없습니다.</p>
 
   </main>
 
-  <footer class="section--light">
+  <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-brand-row">
-        <p class="footer-brand-name">WOOHWAHAE</p>
-      </div>
-      <div class="footer-nav-row">
+      <p class="footer-brand">WOOHWAHAE</p>
+      <nav class="footer-nav">
         <a href="../archive/">Archive</a>
-        <a href="../service.html">Service</a>
-        <a href="../about.html">About</a>
-        <a href="../contact.html">Contact</a>
-        <a href="../lab/">Lab</a>
+        <a href="../practice/">Practice</a>
+        <a href="../about/">About</a>
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+      <div class="footer-legal">
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
       </div>
-      <div class="footer-connect-row">
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
-        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist"
-          target="_blank" rel="noopener">Booking</a>
-        <a href="mailto:hello@woohwahae.kr">Email</a>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
-        <div class="footer-legal">
-          <a href="../privacy.html">Privacy</a>
-          <a href="../terms.html">Terms</a>
-        </div>
-      </div>
+      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </footer>
 
-  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/site.js" defer></script>
   <script>
-    (function () {
-      var list = document.getElementById('archive-list');
-      var emptyMsg = document.getElementById('archive-empty');
-      var filtersEl = document.getElementById('archive-filters');
-      var posts = [];
-      var activeFilter = 'all';
-
-      fetch('index.json')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-          posts = data;
-          render();
-          bindEvents();
-        })
-        .catch(function () {
-          list.innerHTML = '<p class="arc-empty">아카이브를 불러오지 못했습니다.</p>';
+    /* Archive 카드 렌더링 */
+    fetch('index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (posts) {
+        var grid = document.getElementById('archive-grid');
+        if (!grid || !posts.length) return;
+        posts.forEach(function (p, i) {
+          var card = document.createElement('a');
+          card.href = p.slug + '/';
+          card.className = 'archive-card';
+          card.dataset.category = p.category || 'essay';
+          card.style.animationDelay = (i * 0.06) + 's';
+          card.setAttribute('data-reveal', '');
+          card.innerHTML =
+            '<span class="archive-card__label">' + (p.issue || '') + '</span>' +
+            '<strong class="archive-card__title">' + p.title + '</strong>' +
+            '<span class="archive-card__date">' + p.date + '</span>' +
+            (p.preview ? '<span class="archive-card__preview">' + p.preview + '</span>' : '');
+          grid.appendChild(card);
         });
 
-      function renderFeatured() {
-        if (!posts || posts.length === 0) return;
-        var p = posts[0];
-        var featuredEl = document.getElementById('arc-featured');
-        document.getElementById('feat-issue').textContent = p.issue || '';
-        document.getElementById('feat-cat').textContent = p.category ? p.category.toUpperCase() : '';
-        document.getElementById('feat-date').textContent = p.date || '';
-        document.getElementById('feat-read').textContent = p.readMin ? p.readMin + ' min' : '';
-        document.getElementById('feat-title').textContent = p.title || '';
-        document.getElementById('feat-preview').textContent = p.preview || '';
-        document.getElementById('feat-link').href = p.slug + '/';
-        featuredEl.style.display = 'block';
-      }
-
-      function render() {
-        /* Featured: 항상 posts[0] 고정 (필터 무관) */
-        renderFeatured();
-
-        /* 목록: featured(posts[0])를 제외한 나머지 + 필터 적용 */
-        var filtered = posts.slice(1).filter(function (p) {
-          return activeFilter === 'all' || p.category.toLowerCase() === activeFilter;
-        });
-
-        list.innerHTML = '';
-
-        if (filtered.length === 0) {
-          emptyMsg.style.display = 'block';
-        } else {
-          emptyMsg.style.display = 'none';
-        }
-
-        filtered.forEach(function (post, idx) {
-          var issueNum = post.issue ? post.issue.replace('Issue ', '').replace('Issue', '').trim() : '00';
-          var row = document.createElement('a');
-          row.href = post.slug + '/';
-          row.className = 'arc-row';
-          row.setAttribute('data-index', idx);
-
-          var typeLabel = post.type ? post.type.toUpperCase() : '';
-          var catLabel = post.category || '';
-          row.innerHTML =
-            '<span class="arc-row-num">' + issueNum.padStart(3, '0') + '</span>' +
-            '<span class="arc-row-title">' + post.title + '</span>' +
-            '<span class="arc-row-date">' + post.date + '</span>' +
-            '<span class="arc-row-cat">' + catLabel + (typeLabel ? ' · ' + typeLabel : '') + '</span>';
-
-          list.appendChild(row);
-        });
-
-        /* slide-in observer with staggered delay */
-        list.querySelectorAll('.arc-row').forEach(function (el) {
-          var obs = new IntersectionObserver(function (entries) {
-            if (entries[0].isIntersecting) {
-              var delay = parseInt(el.getAttribute('data-index'), 10) * 0.05;
-              el.style.transitionDelay = delay + 's';
-              el.classList.add('visible');
-              obs.unobserve(entries[0].target);
-            }
-          }, { threshold: 0.05 });
-          obs.observe(el);
-        });
-      }
-
-      function bindEvents() {
-        filtersEl.addEventListener('click', function (e) {
-          if (!e.target.classList.contains('arc-filter')) return;
-          filtersEl.querySelectorAll('.arc-filter').forEach(function (b) {
-            b.classList.remove('active');
+        /* 필터 */
+        document.querySelectorAll('.filter-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var f = this.dataset.filter;
+            document.querySelectorAll('.filter-btn').forEach(function (b) {
+              b.classList.remove('active');
+              b.setAttribute('aria-selected', 'false');
+            });
+            this.classList.add('active');
+            this.setAttribute('aria-selected', 'true');
+            document.querySelectorAll('.archive-card').forEach(function (c) {
+              c.hidden = (f !== 'all' && c.dataset.category !== f);
+            });
           });
-          e.target.classList.add('active');
-          activeFilter = e.target.dataset.filter;
-          render();
         });
-      }
-    })();
 
+        /* Intersection reveal */
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); }
+          });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('[data-reveal]').forEach(function (el) { obs.observe(el); });
+      })
+      .catch(function () { console.warn('archive: index.json 없음'); });
   </script>
-  <script src="../assets/js/bg-field.js" defer></script>
-
 </body>
 
 </html>
