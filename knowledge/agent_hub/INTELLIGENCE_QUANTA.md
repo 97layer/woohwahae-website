@@ -64,10 +64,10 @@
 
 ## 🎯 다음 작업
 
-1. ✅ VM 재배포 완료 — core/ 구조 + nginx redirect + systemd 경로 수정
-2. [CRITICAL] website HTML 리빌딩 — Archive|Practice|About 네비 + 깨진 링크 전면 수정 + media/ 경로 반영
+1. [DESIGN] 비주얼 Phase 2 — Practice 서비스 상세, 에세이 읽기 경험, 모바일 최적화
+2. [DESIGN] About 카피 확정 — 매니페스토/본문/Philosophy/Journey/Editor 텍스트 순호 검토
 3. content_publisher.py — essay-NNN 타입 접두사 패턴 적용
-4. [NEW] Ralph 피드백 루프 구현 — STAP 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
+4. Ralph 피드백 루프 구현 — STAP 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
 5. 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
 6. Growth Dashboard 첫 수익 입력 (`/admin/growth`, 2026-02 데이터)
 
@@ -77,6 +77,8 @@
 - ✅ HTTPS/SSL (certbot, Let's Encrypt)
 - ✅ VM git 초기화
 - ✅ 4축 구조 정렬 Ver 11.0 (d6a448b0)
+- ✅ website HTML 리빌딩 — 네비/푸터 전체 통일 (Archive|Practice|About), 깨진 참조 0건
+- ✅ 비주얼 Phase 1 — 캔버스 복구, 패밀리룩 디자인 프레임, 배경색 통일, SVG 히어로
 
 ---
 
