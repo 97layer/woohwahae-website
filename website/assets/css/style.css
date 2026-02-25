@@ -6472,6 +6472,18 @@ body.home-radical::after {
   height: 100%;
 }
 
+/* ─── Nav Symbol ─── */
+.nav-symbol {
+  height: 22px;
+  width: auto;
+  opacity: 0.7;
+  transition: opacity var(--duration) var(--ease-out);
+}
+
+.nav-brand:hover .nav-symbol {
+  opacity: 1;
+}
+
 /* ─── Home ─── */
 .page-home {
   background: var(--bg);
@@ -6486,24 +6498,129 @@ body.home-radical::after {
   justify-content: center;
 }
 
+.home-hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.home-symbol {
+  width: 48px;
+  height: auto;
+  opacity: 0;
+  animation: hb-fade 2s var(--ease-wave) 0.2s both;
+}
+
 .home-brand {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   font-weight: var(--fw-light);
-  letter-spacing: var(--ls-wide);
-  color: var(--text);
+  letter-spacing: 0.28em;
+  color: var(--text-faint);
   text-transform: uppercase;
-  animation: hb-fade 1.2s var(--ease-out) 0.1s both;
+  opacity: 0;
+  animation: hb-fade 2s var(--ease-wave) 0.8s both;
 }
 
 @keyframes hb-fade {
-  from {
-    opacity: 0;
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  to {
-    opacity: 1;
+/* ─── Home Below (하단 세션) ─── */
+.home-below {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  padding: var(--space-2xl) 0;
+}
+
+.home-tagline {
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--line);
+}
+
+.home-tagline p {
+  font-size: 1.1rem;
+  font-weight: var(--fw-light);
+  color: var(--text-sub);
+  letter-spacing: var(--ls-tight);
+  line-height: 1.8;
+}
+
+.home-entries {
+  padding-top: var(--space-lg);
+}
+
+.home-entry {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+  transition: opacity var(--duration) var(--ease-out);
+}
+
+.home-entry:hover {
+  opacity: 0.55;
+}
+
+.home-entry__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.home-entry__desc {
+  font-size: 0.85rem;
+  font-weight: var(--fw-light);
+  color: var(--text-faint);
+}
+
+.home-entry__arrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  transition: color var(--duration) var(--ease-out);
+}
+
+.home-entry:hover .home-entry__arrow {
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .home-entry {
+    grid-template-columns: 1fr auto;
   }
+  .home-entry__desc {
+    display: none;
+  }
+}
+
+/* ─── Footer Symbol ─── */
+.footer-symbol {
+  width: 28px;
+  height: auto;
+  opacity: 0.4;
+  margin-bottom: var(--space-md);
+}
+
+.footer-meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-label);
+  color: var(--text-faint);
+  margin-top: var(--space-sm);
 }
 
 /* ─── Archive ─── */
@@ -7138,6 +7255,8 @@ body.home-radical::after {
 
 /* ─── Footer (신규) ─── */
 .site-footer {
+  position: relative;
+  z-index: 2;
   background: var(--bg-dark);
   border-top: 1px solid var(--line);
   padding: var(--space-xl) 0;
