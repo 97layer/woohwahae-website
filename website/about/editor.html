@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Service — WOOHWAHAE Practice">
-    <title>Service — WOOHWAHAE</title>
+    <meta name="description" content="Editor — WOOHWAHAE">
+    <title>Editor — WOOHWAHAE</title>
     <meta name="theme-color" content="#E4E2DC">
     <link rel="icon" href="../assets/img/symbol.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,14 +21,14 @@
     </script>
 </head>
 
-<body class="page-service">
+<body class="page-editor">
 
     <nav class="site-nav" id="site-nav">
         <a href="/" class="nav-brand">WOOHWAHAE</a>
         <ul class="nav-links" id="nav-links">
             <li><a href="../archive/">Archive</a></li>
-            <li><a href="../practice/" class="active">Practice</a></li>
-            <li><a href="../about/">About</a></li>
+            <li><a href="../practice/">Practice</a></li>
+            <li><a href="../about/" class="active">About</a></li>
         </ul>
         <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
             <span></span><span></span>
@@ -43,54 +43,33 @@
 
     <main class="page-main">
 
-        <div class="service-hero container--wide">
-            <span class="section-label">PRACTICE — SERVICE</span>
+        <div class="editor-hero container--wide">
+            <span class="section-label">EDITOR</span>
         </div>
 
-        <div class="service-stack container--wide">
-
-            <div class="service-item" id="atelier" data-reveal>
-                <div>
-                    <strong class="service-item__name">Atelier</strong>
-                    <span class="service-item__meta">헤어 · 예약제 · 1일 3명</span>
-                </div>
-                <div class="service-item__body">
-                    <p>예약제로 운영한다. 하루 3명.</p>
-                    <p>상담은 30분. 시술 전 충분히 나눈다.</p>
-                    <p>예약은 연락으로.</p>
-                </div>
-            </div>
-
-            <div class="service-item" id="direction" data-reveal>
-                <div>
-                    <strong class="service-item__name">Direction</strong>
-                    <span class="service-item__meta">브랜드 디렉션</span>
-                </div>
-                <div class="service-item__body">
-                    <p>브랜드의 방향을 잡는 작업이다.</p>
-                    <p>비주얼 아이덴티티, 공간 콘셉트, 언어 체계.</p>
-                    <p>의뢰는 연락으로.</p>
-                </div>
-            </div>
-
-            <div class="service-item" id="project" data-reveal>
-                <div>
-                    <strong class="service-item__name">Project</strong>
-                    <span class="service-item__meta">외부 협업</span>
-                </div>
-                <div class="service-item__body">
-                    <p>협업 의뢰를 받는다.</p>
-                    <p>공간, 브랜드, 콘텐츠.</p>
-                    <p>의뢰는 연락으로.</p>
-                </div>
-            </div>
-
+        <div class="editor-profile container" data-reveal>
+            <!--
+        사진 파일이 준비되면 아래 img src 교체.
+        없으면 img 태그 제거하고 여백만 유지.
+      -->
+            <!-- <img src="../assets/img/woosunho.jpg" alt="WOOSUNHO" class="editor-photo"> -->
+            <p class="editor-name">WOOSUNHO</p>
+            <p class="editor-title">Editor &middot; Hair Artisan</p>
+            <p class="editor-bio">기록하고, 다듬고, 비워내는 사람.</p>
         </div>
 
-        <div class="practice-contact container--wide">
-            <a href="contact.html" class="practice-contact-link" data-reveal>
-                <span>연락</span>
-                <span class="practice-card__arrow">→</span>
+        <div class="editor-links container">
+            <a href="../woosunho/" class="editor-link" data-reveal>
+                <span>Portfolio</span>
+                <span>→</span>
+            </a>
+            <a href="../archive/" class="editor-link" data-reveal>
+                <span>Archive</span>
+                <span>→</span>
+            </a>
+            <a href="https://instagram.com/woosunhokr" class="editor-link" target="_blank" rel="noopener" data-reveal>
+                <span>Instagram</span>
+                <span>↗</span>
             </a>
         </div>
 

@@ -35,6 +35,12 @@
     </button>
   </nav>
 
+  <div class="nav-overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="메뉴">
+    <a href="../archive/">Archive</a>
+    <a href="../practice/">Practice</a>
+    <a href="../about/">About</a>
+  </div>
+
   <main class="page-main">
 
     <div class="practice-hero container--wide">
@@ -42,30 +48,47 @@
     </div>
 
     <div class="practice-grid container--wide">
-      <a href="atelier/" class="practice-card" data-reveal>
-        <span class="practice-card__name">Atelier</span>
-        <span class="practice-card__sub">헤어</span>
+
+      <a href="service.html" class="practice-card" data-reveal>
+        <div>
+          <span class="practice-card__name">Atelier</span>
+          <span class="practice-card__sub">헤어 · 예약제 · 1일 3명</span>
+          <span class="practice-card__desc">헤어. 예약제. 1일 3명.</span>
+        </div>
         <span class="practice-card__arrow">→</span>
       </a>
-      <a href="direction/" class="practice-card" data-reveal>
-        <span class="practice-card__name">Direction</span>
-        <span class="practice-card__sub">방향</span>
+
+      <a href="service.html#direction" class="practice-card" data-reveal>
+        <div>
+          <span class="practice-card__name">Direction</span>
+          <span class="practice-card__sub">브랜드 디렉션</span>
+          <span class="practice-card__desc">브랜드 디렉션.</span>
+        </div>
         <span class="practice-card__arrow">→</span>
       </a>
-      <a href="project/" class="practice-card" data-reveal>
-        <span class="practice-card__name">Project</span>
-        <span class="practice-card__sub">협업</span>
+
+      <a href="service.html#project" class="practice-card" data-reveal>
+        <div>
+          <span class="practice-card__name">Project</span>
+          <span class="practice-card__sub">외부 협업</span>
+          <span class="practice-card__desc">외부 협업.</span>
+        </div>
         <span class="practice-card__arrow">→</span>
       </a>
-      <a href="product/" class="practice-card" data-reveal>
-        <span class="practice-card__name">Product</span>
-        <span class="practice-card__sub">오브제</span>
-        <span class="practice-card__arrow">→</span>
+
+      <a href="#" class="practice-card" data-reveal data-status="hold" aria-disabled="true" tabindex="-1">
+        <div>
+          <span class="practice-card__name">Product</span>
+          <span class="practice-card__sub">오브제 큐레이션 · 2027</span>
+          <span class="practice-card__desc">오브제 큐레이션.</span>
+        </div>
+        <span class="practice-card__arrow">—</span>
       </a>
+
     </div>
 
     <div class="practice-contact container--wide">
-      <a href="contact/" class="practice-contact-link" data-reveal>
+      <a href="contact.html" class="practice-contact-link" data-reveal>
         <span>연락</span>
         <span class="practice-card__arrow">→</span>
       </a>

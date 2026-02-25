@@ -1,89 +1,70 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 — WOOHWAHAE</title>
-  <link rel="apple-touch-icon" href="/assets/img/symbol.png">
-  <link rel="icon" href="/assets/img/symbol.png" type="image/svg+xml">
-    <!-- fonts: preconnect + parallel loading -->
+  <meta name="theme-color" content="#E4E2DC">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/assets/img/symbol.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="preload" href="/assets/css/style.css?v=renewal_v9" as="style">
-  <link rel="stylesheet" href="/assets/css/style.css?v=renewal_v9">
-  <meta name="robots" content="noindex">
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <script>
+    (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+  </script>
 </head>
-<body class="home-radical">
 
-  <canvas id="field-bg" class="field-bg-canvas"></canvas>
+<body class="page-404">
 
-  <nav>
-    <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="/service.html">Service</a></li>
-      <li><a href="/about.html">About</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="lab/">Lab</a></li>
+  <nav class="site-nav" id="site-nav">
+    <a href="/" class="nav-brand">WOOHWAHAE</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/archive/">Archive</a></li>
+      <li><a href="/practice/">Practice</a></li>
+      <li><a href="/about/">About</a></li>
     </ul>
-    <button class="nav-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+      <span></span><span></span>
     </button>
   </nav>
 
-  <main class="container--wide">
+  <main class="page-main">
     <div style="min-height: 70vh; display: flex; align-items: center; justify-content: center; text-align: center;">
       <div>
-        <p class="section-label fade-in visible">404</p>
-        <h1 class="fade-in visible" style="margin-bottom: 2rem;">
-          길을 잃으셨군요
-        </h1>
-        <p class="fade-in visible" style="color: var(--text-sub); margin-bottom: 3rem;">
-          찾으시는 페이지가 존재하지 않습니다.<br>
-          잠시 멈춰 서서, 다시 돌아가보세요.
+        <p class="section-label">404</p>
+        <p style="color: var(--text-sub); margin-top: 2rem;">
+          찾으시는 페이지가 존재하지 않습니다.
         </p>
-        <div class="fade-in visible">
-          <a href="/" class="cta">홈으로 돌아가기 →</a>
-        </div>
+        <a href="/" style="display: inline-block; margin-top: 3rem; color: var(--text-sub);">← 홈으로</a>
       </div>
     </div>
   </main>
 
-  <footer class="section--light">
+  <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-brand-row">
-        <p class="footer-brand-name">WOOHWAHAE</p>
+      <p class="footer-brand">WOOHWAHAE</p>
+      <nav class="footer-nav">
+        <a href="/archive/">Archive</a>
+        <a href="/practice/">Practice</a>
+        <a href="/about/">About</a>
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+      <div class="footer-legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
       </div>
-      <div class="footer-nav-row">
-        <a href="archive/">Archive</a>
-        <a href="/service.html">Service</a>
-        <a href="/about.html">About</a>
-        <a href="contact.html">Contact</a>
-        <a href="lab/">Lab</a>
-      </div>
-      <div class="footer-connect-row">
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
-        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
-        <a href="mailto:hello@woohwahae.kr">Email</a>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
-        <div class="footer-legal">
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Terms</a>
-        </div>
-      </div>
+      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </footer>
 
-  <script src="/assets/js/main.js"></script>
-  <script src="/assets/js/bg-field.js" defer></script>
+  <script src="/assets/js/site.js" defer></script>
 </body>
+
 </html>
