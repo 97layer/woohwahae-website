@@ -18,9 +18,9 @@
      PRIMARY PALETTE (Monochrome 90%+)
      "낡은 종이 위의 잉크"
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  --bg: #E4E2DC;
-  /* 메인 배경 (낡은 종이) */
-  --bg-dark: #E8E7E2;
+  --bg: #E3E2E0;
+  /* 메인 배경 (중립 그레이) */
+  --bg-dark: #DDDCDA;
   /* 보조 배경, hover 상태 */
   --text: #1a1a1a;
   /* 본문 텍스트 (잉크) */
@@ -3826,8 +3826,8 @@ footer.section--light {
 
 /* ── Time-Aware Atmosphere ── */
 :root.time-dawn {
-  --bg: #F0EFE9;
-  --bg-dark: #E8E7E0;
+  --bg: #EAEAE8;
+  --bg-dark: #E2E2E0;
   --text-faint: #777;
   --duration-slow: 1.8s;
   --breath: 4.8s;
@@ -3835,8 +3835,8 @@ footer.section--light {
 }
 
 :root.time-evening {
-  --bg: #FAF8F2;
-  --bg-dark: #F3F0E8;
+  --bg: #E6E5E3;
+  --bg-dark: #DEDDD9;
   --text-faint: #9A8F85;
   --duration-slow: 1.5s;
   --breath: 4.2s;
@@ -3844,8 +3844,8 @@ footer.section--light {
 }
 
 :root.time-night {
-  --bg: #EDECEA;
-  --bg-dark: #E5E3E0;
+  --bg: #DCDCDA;
+  --bg-dark: #D5D5D3;
   --text-faint: #777;
   --duration-slow: 2s;
   --breath: 5.2s;
@@ -4720,8 +4720,8 @@ body.home-radical .contact-section {
 /* ─── About 페이지 전용 시각 조정 ─── */
 /* 서늘한 무채색 온도 (크림 #F0EFEB → 중립 회백색) */
 body.home-radical {
-  --bg: #ECECEA;
-  --bg-dark: #E2E2DF;
+  --bg: #E3E2E0;
+  --bg-dark: #DDDCDA;
   --line: #CCCCC9;
 }
 
