@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Philosophy — WOOHWAHAE">
     <title>Philosophy — WOOHWAHAE</title>
-    <meta name="theme-color" content="#E4E2DC">
     <link rel="icon" href="../assets/img/symbol.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,42 +15,342 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* ── 페이지 고유 스타일 ── */
+
+        /* 읽기 영역: 680px 최대, 좌우 충분한 여백 */
+        .phil-wrap {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 var(--space-md) var(--space-2xl);
+        }
+
+        /* 아티클 헤더 — 넉넉한 상단 여백 */
+        .phil-header {
+            padding: 10rem 0 5rem;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 5rem;
+        }
+
+        .phil-header .section-label {
+            display: block;
+            margin-bottom: 2rem;
+        }
+
+        /* 대제목 — 허물을 벗고 드러나는 느낌 */
+        .phil-title {
+            font-family: var(--font-body);
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            font-weight: 200;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            color: var(--text);
+            font-style: italic;
+            max-width: 480px;
+        }
+
+        /* ── SVG 다이어그램 영역 ── */
+        .phil-diagram {
+            margin: 5rem 0 6rem;
+            /* 다이어그램 자체 여백 */
+        }
+
+        .phil-diagram__svg {
+            display: block;
+            width: 100%;
+            max-width: 480px;
+            /* 본문 너비 안에서 */
+            margin: 0 auto;
+            overflow: visible;
+        }
+
+        /* SVG 내 텍스트 */
+        .diag-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            fill: var(--text-faint);
+        }
+
+        .diag-label--center {
+            font-size: 8px;
+            fill: var(--text-sub);
+            letter-spacing: 0.16em;
+        }
+
+        /* ── 호흡 애니메이션 ── */
+        /* 3.8s = 브랜드 호흡 주기 */
+        @keyframes breath-ring-1 {
+
+            0%,
+            100% {
+                r: 42;
+                opacity: 0.9;
+            }
+
+            50% {
+                r: 44;
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes breath-ring-2 {
+
+            0%,
+            100% {
+                r: 82;
+                opacity: 0.55;
+            }
+
+            50% {
+                r: 86;
+                opacity: 0.28;
+            }
+        }
+
+        @keyframes breath-ring-3 {
+
+            0%,
+            100% {
+                r: 126;
+                opacity: 0.22;
+            }
+
+            50% {
+                r: 132;
+                opacity: 0.10;
+            }
+        }
+
+        /* 레이블 페이드 — 링과 반주기 위상차 */
+        @keyframes label-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.55;
+            }
+        }
+
+        .ring-1 {
+            animation: breath-ring-1 3.8s ease-in-out infinite;
+        }
+
+        .ring-2 {
+            animation: breath-ring-2 3.8s ease-in-out infinite;
+            animation-delay: 0.28s;
+        }
+
+        .ring-3 {
+            animation: breath-ring-3 3.8s ease-in-out infinite;
+            animation-delay: 0.56s;
+        }
+
+        .diag-label {
+            animation: label-pulse 3.8s ease-in-out infinite;
+        }
+
+        /* ── 본문 조판 ── */
+        .phil-body {
+            /* art-body 클래스에 추가 세팅 */
+        }
+
+        .phil-body p {
+            /* art-body p 위에 자간 강화 */
+            word-break: keep-all;
+        }
+
+        /* 섹션 구분자 — 침묵 표시 */
+        .phil-divider {
+            display: block;
+            width: 1px;
+            height: 4rem;
+            background: var(--line);
+            margin: 4rem 0;
+        }
+
+        /* 소제목 h2 재정의 */
+        .phil-body h2 {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 1rem;
+            letter-spacing: 0.06em;
+            color: var(--text-faint);
+            text-transform: uppercase;
+            margin: 4rem 0 1.2rem;
+            border: none;
+        }
+
+        /* 인용구 */
+        .phil-body blockquote {
+            border-left: 1px solid var(--navy);
+            padding: 0.4rem 0 0.4rem 1.8rem;
+            margin: 4rem 0;
+            font-family: 'Crimson Text', Georgia, serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            line-height: 1.55;
+            color: var(--stone-dark);
+            letter-spacing: 0.01em;
+        }
+
+        /* 스크롤 진행 바 (우측) */
+        .read-progress {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 2px;
+            height: 100dvh;
+            background: rgba(26, 26, 26, 0.07);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .read-progress__fill {
+            width: 100%;
+            height: 0%;
+            background: var(--stone-dark);
+            transition: height 0.1s linear;
+        }
+
+        /* 내비 뒤로 가기 링크 */
+        .phil-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            letter-spacing: var(--ls-label);
+            color: var(--text-faint);
+            text-decoration: none;
+            border-bottom: none !important;
+            margin-bottom: 3rem;
+            transition: color 0.6s var(--ease-out);
+        }
+
+        .phil-back:hover {
+            color: var(--text-sub);
+            border-bottom: none;
+        }
+
+        @media (max-width: 640px) {
+            .phil-header {
+                padding: 6rem 0 3rem;
+            }
+
+            .phil-body blockquote {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
     <script>
-        (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+        (function () {
+            var h = new Date().getHours();
+            document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night';
+        })();
     </script>
 </head>
 
 <body class="page-article">
+
+    <!-- 읽기 진행 바 -->
+    <div class="read-progress" aria-hidden="true">
+        <div class="read-progress__fill" id="read-fill"></div>
+    </div>
 
     <nav class="site-nav" id="site-nav">
         <a href="/" class="nav-brand">WOOHWAHAE</a>
         <ul class="nav-links" id="nav-links">
             <li><a href="../archive/">Archive</a></li>
             <li><a href="../practice/">Practice</a></li>
-            <li><a href="../about/" class="active">About</a></li>
+            <li><a href="../about.html" class="active">About</a></li>
         </ul>
         <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
             <span></span><span></span>
         </button>
     </nav>
 
-    <main class="page-main">
-        <article class="art-body container">
+    <div class="nav-overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="메뉴">
+        <a href="../archive/">Archive</a>
+        <a href="../practice/">Practice</a>
+        <a href="../about.html">About</a>
+    </div>
 
-            <header class="art-header">
-                <span class="section-label">PHILOSOPHY</span>
+    <main id="read-main">
+        <div class="phil-wrap">
+
+            <!-- 헤더 -->
+            <header class="phil-header" data-reveal>
+                <a href="../about.html" class="phil-back">← About</a>
+                <span class="section-label">Philosophy</span>
+                <h1 class="phil-title">소음이 걷힌 진공에 다다라서야<br>명징한 본질이 나선다.</h1>
             </header>
 
-            <div class="art-content" data-reveal>
-                <!-- THE_ORIGIN Part I 공개 번역 -->
+            <!-- SVG 다이어그램 — 브랜드 3원칙 (호흡 시각화) -->
+            <figure class="phil-diagram" data-reveal>
+                <svg class="phil-diagram__svg" viewBox="0 0 480 300" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    role="img" aria-label="WOOHWAHAE 브랜드 세계관 — 본질주의, 공명, 자기긍정의 동심 파동">
+                    <!-- 배경 없음, 잉크 선만 -->
+
+                    <!-- 중심 원 — 本質 핵 -->
+                    <circle cx="200" cy="150" r="4" fill="currentColor" opacity="0.85" />
+
+                    <!-- Ring 1 — 본질주의 (Essentialism) -->
+                    <circle class="ring-1" cx="200" cy="150" r="42" stroke="currentColor" stroke-width="0.75"
+                        opacity="0.9" />
+
+                    <!-- Ring 2 — 공명 (Resonance) -->
+                    <circle class="ring-2" cx="200" cy="150" r="82" stroke="currentColor" stroke-width="0.5"
+                        opacity="0.55" />
+
+                    <!-- Ring 3 — 자기긍정 (Self-Affirmation) -->
+                    <circle class="ring-3" cx="200" cy="150" r="126" stroke="currentColor" stroke-width="0.35"
+                        opacity="0.22" />
+
+                    <!-- 십자 축 — 좌표 기준선 -->
+                    <line x1="200" y1="18" x2="200" y2="282" stroke="currentColor" stroke-width="0.3" opacity="0.12" />
+                    <line x1="62" y1="150" x2="338" y2="150" stroke="currentColor" stroke-width="0.3" opacity="0.12" />
+
+                    <!-- 레이블 — 오른쪽 영역에 수직 나열 -->
+                    <!-- 본질주의 -->
+                    <line x1="243" y1="150" x2="310" y2="109" stroke="currentColor" stroke-width="0.4" opacity="0.18" />
+                    <text x="315" y="106" class="diag-label">Essentialism</text>
+
+                    <!-- 공명 -->
+                    <line x1="282" y1="150" x2="320" y2="148" stroke="currentColor" stroke-width="0.4" opacity="0.18" />
+                    <text x="325" y="152" class="diag-label">Resonance</text>
+
+                    <!-- 자기긍정 -->
+                    <line x1="266" y1="222" x2="310" y2="200" stroke="currentColor" stroke-width="0.4" opacity="0.18" />
+                    <text x="315" y="203" class="diag-label">Self-Affirmation</text>
+
+                    <!-- 중심 레이블 -->
+                    <text x="200" y="143" class="diag-label--center" text-anchor="middle">羽化</text>
+
+                    <!-- 호흡 주기 태그 -->
+                    <text x="200" y="288" class="diag-label" text-anchor="middle"
+                        style="font-size:8px; opacity:0.5;">3.8s breath cycle</text>
+                </svg>
+            </figure>
+
+            <!-- 본문 — art-body 원본 클래스 사용 -->
+            <div class="art-body phil-body" data-reveal>
+
                 <p>목적지를 향한 직선의 궤도가 매몰된 시대다. 맹목적인 속도는 본연의 결을 마비시키고, 타자의 욕망을 체화한 규격화된 문법은 내면의 리듬을 흩트린다.</p>
 
                 <p>우화(羽化). 번데기가 성충이 되는 변태. 동양 철학에서는 허물을 벗고 새로운 경지에 이르는 것. 내면의 변화는 외부의 속도와 무관하게 직조된다. 완성을 향한 이동이 아닌, 흐트러진
                     의식이 구심점으로 돌아오는 반복되는 과정 그 자체다.</p>
 
                 <blockquote>
-                    소음이 걷힌 진공에 다다라서야 명징한 본질이 나선다.
+                    소음이 걷힌 진공에 다다라서야<br>명징한 본질이 나선다.
                 </blockquote>
+
+                <span class="phil-divider" aria-hidden="true"></span>
 
                 <h2>본질주의</h2>
                 <p>수사를 걷어낸다. 기능의 나열이 아닌 존재의 이유. 밀도는 무언가를 덧치장하는 가산(加算)이 아니라, 차분히 깎아내는 소거(消去)로 증명된다.</p>
@@ -61,9 +360,10 @@
 
                 <h2>자기긍정</h2>
                 <p>생존을 위한 관리가 아닌 미학적 구원을 향한 의식(儀式)이다. 침묵의 시간만으로도 흩어진 하루의 기저를 다시 지배할 수 있다.</p>
-            </div>
 
-        </article>
+            </div><!-- /.art-body -->
+
+        </div><!-- /.phil-wrap -->
     </main>
 
     <footer class="site-footer">
@@ -72,7 +372,7 @@
             <nav class="footer-nav">
                 <a href="../archive/">Archive</a>
                 <a href="../practice/">Practice</a>
-                <a href="../about/">About</a>
+                <a href="../about.html">About</a>
                 <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
             </nav>
             <div class="footer-legal">
@@ -84,6 +384,23 @@
     </footer>
 
     <script src="../assets/js/site.js" defer></script>
+    <script>
+        // 읽기 진행 바
+        (function () {
+            var fill = document.getElementById('read-fill');
+            var main = document.getElementById('read-main');
+            if (!fill || !main) return;
+            function onScroll() {
+                var rect = main.getBoundingClientRect();
+                var total = main.scrollHeight - window.innerHeight;
+                var scrolled = Math.max(0, -rect.top);
+                var pct = total > 0 ? Math.min(100, (scrolled / total) * 100) : 0;
+                fill.style.height = pct + '%';
+            }
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
+    </script>
 </body>
 
 </html>

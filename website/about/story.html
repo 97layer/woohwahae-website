@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Story — WOOHWAHAE">
     <title>Story — WOOHWAHAE</title>
-    <meta name="theme-color" content="#E4E2DC">
     <link rel="icon" href="../assets/img/symbol.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,50 +15,287 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .story-wrap {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 var(--space-md) var(--space-2xl);
+        }
+
+        .story-header {
+            padding: 10rem 0 5rem;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 5rem;
+        }
+
+        .story-header .section-label {
+            display: block;
+            margin-bottom: 2rem;
+        }
+
+        .story-title {
+            font-family: var(--font-body);
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+            font-weight: 200;
+            font-style: italic;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        .story-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            letter-spacing: var(--ls-label);
+            color: var(--text-faint);
+            text-decoration: none;
+            border-bottom: none !important;
+            margin-bottom: 3rem;
+            transition: color 0.6s var(--ease-out);
+        }
+
+        .story-back:hover {
+            color: var(--text-sub);
+        }
+
+        /* ── SVG 타임라인 ── */
+        .story-timeline {
+            margin: 5rem 0 6rem;
+        }
+
+        .story-timeline__svg {
+            display: block;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            overflow: visible;
+        }
+
+        .tl-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 9px;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            fill: var(--text-faint);
+        }
+
+        .tl-year {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8px;
+            font-weight: 300;
+            fill: var(--stone-dark);
+            letter-spacing: 0.08em;
+        }
+
+        /* 타임라인 수직선 위로 그려지는 드로잉 애니메이션 */
+        @keyframes tl-draw {
+            from {
+                stroke-dashoffset: 300;
+            }
+
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .tl-axis {
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: tl-draw 2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+        }
+
+        /* 각 노드 순차 페이드 */
+        @keyframes tl-node-in {
+            from {
+                opacity: 0;
+                transform: translateX(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .tl-node-g {
+            opacity: 0;
+        }
+
+        .tl-node-g:nth-child(1) {
+            animation: tl-node-in 0.6s var(--ease-out) 1.2s forwards;
+        }
+
+        .tl-node-g:nth-child(2) {
+            animation: tl-node-in 0.6s var(--ease-out) 1.6s forwards;
+        }
+
+        .tl-node-g:nth-child(3) {
+            animation: tl-node-in 0.6s var(--ease-out) 2.0s forwards;
+        }
+
+        .tl-node-g:nth-child(4) {
+            animation: tl-node-in 0.6s var(--ease-out) 2.4s forwards;
+        }
+
+        /* 본문 */
+        .story-body {
+            /* art-body 공유 */
+        }
+
+        .story-body blockquote {
+            border-left: 1px solid var(--navy);
+            padding: 0.4rem 0 0.4rem 1.8rem;
+            margin: 4rem 0;
+            font-family: 'Crimson Text', Georgia, serif;
+            font-style: italic;
+            font-size: 1.35rem;
+            line-height: 1.55;
+            color: var(--stone-dark);
+            letter-spacing: 0.01em;
+        }
+
+        /* 읽기 진행 바 */
+        .read-progress {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 2px;
+            height: 100dvh;
+            background: rgba(26, 26, 26, 0.07);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .read-progress__fill {
+            width: 100%;
+            height: 0%;
+            background: var(--stone-dark);
+            transition: height 0.1s linear;
+        }
+
+        @media (max-width: 640px) {
+            .story-header {
+                padding: 6rem 0 3rem;
+            }
+
+            .story-body blockquote {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
     <script>
-        (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+        (function () {
+            var h = new Date().getHours();
+            document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night';
+        })();
     </script>
 </head>
 
 <body class="page-article">
+
+    <div class="read-progress" aria-hidden="true">
+        <div class="read-progress__fill" id="read-fill"></div>
+    </div>
 
     <nav class="site-nav" id="site-nav">
         <a href="/" class="nav-brand">WOOHWAHAE</a>
         <ul class="nav-links" id="nav-links">
             <li><a href="../archive/">Archive</a></li>
             <li><a href="../practice/">Practice</a></li>
-            <li><a href="../about/" class="active">About</a></li>
+            <li><a href="../about.html" class="active">About</a></li>
         </ul>
         <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
             <span></span><span></span>
         </button>
     </nav>
 
-    <main class="page-main">
-        <article class="art-body container">
+    <div class="nav-overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="메뉴">
+        <a href="../archive/">Archive</a>
+        <a href="../practice/">Practice</a>
+        <a href="../about.html">About</a>
+    </div>
 
-            <header class="art-header">
-                <span class="section-label">STORY</span>
+    <main id="read-main">
+        <div class="story-wrap">
+
+            <header class="story-header" data-reveal>
+                <a href="../about.html" class="story-back">← About</a>
+                <span class="section-label">Story</span>
+                <h1 class="story-title">태도가 모든 것이다.<br>기술은 부차적인 표상에 불과하다.</h1>
             </header>
 
-            <div class="art-content" data-reveal>
-                <!-- THE_ORIGIN Part IV Narrative 공개 번역 — 1인칭 회고 -->
+            <!-- SVG 타임라인 — 4개 전환점 시각화 -->
+            <figure class="story-timeline" data-reveal>
+                <svg class="story-timeline__svg" viewBox="0 0 420 260" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    role="img" aria-label="우수호의 서사 타임라인 — 4개의 전환점">
+                    <!-- 수직 축 (왼쪽에서 80px 고정) -->
+                    <line class="tl-axis" x1="80" y1="20" x2="80" y2="240" stroke="currentColor" stroke-width="0.5"
+                        opacity="0.25" />
+
+                    <!-- 노드 1 — 최초 매료 -->
+                    <g class="tl-node-g">
+                        <circle cx="80" cy="50" r="3.5" fill="currentColor" opacity="0.7" />
+                        <line x1="80" y1="50" x2="110" y2="50" stroke="currentColor" stroke-width="0.4" opacity="0.2" />
+                        <text x="115" y="47" class="tl-year">2006</text>
+                        <text x="115" y="60" class="tl-label">최초의 매료 — 헤어 롤</text>
+                    </g>
+
+                    <!-- 노드 2 — 침잠 -->
+                    <g class="tl-node-g">
+                        <circle cx="80" cy="110" r="3.5" fill="currentColor" opacity="0.5" />
+                        <line x1="80" y1="110" x2="110" y2="110" stroke="currentColor" stroke-width="0.4"
+                            opacity="0.2" />
+                        <text x="115" y="107" class="tl-year">2008</text>
+                        <text x="115" y="120" class="tl-label">의도된 고립 — 8평 반지하</text>
+                    </g>
+
+                    <!-- 노드 3 — 단절과 응시 -->
+                    <g class="tl-node-g">
+                        <circle cx="80" cy="170" r="3.5" fill="currentColor" opacity="0.35" />
+                        <line x1="80" y1="170" x2="110" y2="170" stroke="currentColor" stroke-width="0.4"
+                            opacity="0.2" />
+                        <text x="115" y="167" class="tl-year">2020</text>
+                        <text x="115" y="180" class="tl-label">팬데믹 — 내면 주파수 응시</text>
+                    </g>
+
+                    <!-- 노드 4 — 우화 -->
+                    <g class="tl-node-g">
+                        <circle cx="80" cy="230" r="5" fill="currentColor" opacity="0.9" />
+                        <line x1="80" y1="230" x2="110" y2="230" stroke="currentColor" stroke-width="0.4"
+                            opacity="0.2" />
+                        <text x="115" y="227" class="tl-year">현재</text>
+                        <text x="115" y="240" class="tl-label" style="fill:var(--text-sub);">WOOHWAHAE — 羽化</text>
+                    </g>
+
+                    <!-- 하단 주석 -->
+                    <text x="80" y="258" class="tl-label" text-anchor="middle" style="font-size:7px;opacity:0.4;">one
+                        axis. four inflections.</text>
+                </svg>
+            </figure>
+
+            <!-- 본문 -->
+            <div class="art-body story-body" data-reveal>
+
                 <p>중학교 3학년. 점수라는 기준에 떠밀려 헤어 롤을 집어 들었다. 거친 질감이 손끝에 의해 하나의 형상으로 귀결되는 창조의 과정에서 본질에 매료되었다.</p>
 
                 <p>단 2년이었다. 기계적 공정 속에서 직업의 사명감은 생존 유지라는 관성으로 풍화되었다. 수동적 일상을 멈추는 의도된 고립을 택했다. 일체의 기반을 버리고, 월세 8평 반지하로
                     침잠했다.</p>
 
                 <blockquote>
-                    눅눅한 고립 지대는 도피처가 아니었다. 사유를 정제하는 빈방이었다.
+                    눅눅한 고립 지대는 도피처가 아니었다.<br>사유를 정제하는 빈방이었다.
                 </blockquote>
 
                 <p>팬데믹이라는 피할 수 없는 단절이 당도해서야 내면의 주파수를 거울처럼 응시할 시공간이 열렸다. 타인들이 맹목적으로 방향을 추종할 때, 선과 여백의 아키텍처를 살피며 노동의 과정 위에
                     인문학의 밀도를 조용히 덧씌웠다.</p>
 
                 <p>기술은 부차적인 표상이다. 오직 태도와 흔들림 없는 관점이 모든 것임을 통찰했다. 그 결의가 이 기록으로 남는다.</p>
+
             </div>
 
-        </article>
+        </div>
     </main>
 
     <footer class="site-footer">
@@ -68,7 +304,7 @@
             <nav class="footer-nav">
                 <a href="../archive/">Archive</a>
                 <a href="../practice/">Practice</a>
-                <a href="../about/">About</a>
+                <a href="../about.html">About</a>
                 <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
             </nav>
             <div class="footer-legal">
@@ -80,6 +316,21 @@
     </footer>
 
     <script src="../assets/js/site.js" defer></script>
+    <script>
+        (function () {
+            var fill = document.getElementById('read-fill');
+            var main = document.getElementById('read-main');
+            if (!fill || !main) return;
+            function onScroll() {
+                var rect = main.getBoundingClientRect();
+                var total = main.scrollHeight - window.innerHeight;
+                var pct = total > 0 ? Math.min(100, Math.max(0, -rect.top / total) * 100) : 0;
+                fill.style.height = pct + '%';
+            }
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
+    </script>
 </body>
 
 </html>

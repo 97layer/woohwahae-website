@@ -15,13 +15,25 @@
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css?v=wave1">
   <script>
     (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
   </script>
 </head>
 
 <body class="page-about">
+
+  <!-- 파동 배경 SVG -->
+  <div class="wave-bg" aria-hidden="true" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:120vmax;height:120vmax;z-index:0;pointer-events:none;opacity:0.6">
+    <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <g fill="none" stroke="#D5D4CF" stroke-width="0.5" opacity="0.4">
+        <circle cx="400" cy="400" r="60"><animate attributeName="r" values="60;80;60" dur="3.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0.15;0.4" dur="3.8s" repeatCount="indefinite"/></circle>
+        <circle cx="400" cy="400" r="140"><animate attributeName="r" values="140;170;140" dur="3.8s" begin="0.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.1;0.3" dur="3.8s" begin="0.4s" repeatCount="indefinite"/></circle>
+        <circle cx="400" cy="400" r="240"><animate attributeName="r" values="240;280;240" dur="3.8s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.2;0.06;0.2" dur="3.8s" begin="0.8s" repeatCount="indefinite"/></circle>
+        <circle cx="400" cy="400" r="360"><animate attributeName="r" values="360;400;360" dur="3.8s" begin="1.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.12;0.03;0.12" dur="3.8s" begin="1.2s" repeatCount="indefinite"/></circle>
+      </g>
+    </svg>
+  </div>
 
   <nav class="site-nav" id="site-nav">
     <a href="/" class="nav-brand">WOOHWAHAE</a>
@@ -35,25 +47,51 @@
     </button>
   </nav>
 
-  <main class="page-main">
-    <div class="about-hero">
-      <!-- 여백 -->
-    </div>
+  <div class="nav-overlay" id="nav-overlay">
+    <a href="../archive/">Archive</a>
+    <a href="../practice/">Practice</a>
+    <a href="../about/">About</a>
+  </div>
 
-    <div class="about-links container">
+  <main class="page-main" style="position:relative;z-index:1">
+
+    <header class="about-manifesto container--content">
+      <p class="about-manifesto__text">
+        소음을 제거하면, 본질이 남는다.
+      </p>
+    </header>
+
+    <section class="about-body container--content">
+      <p>
+        반지하 8평. 거울 하나. 의자 하나.<br>
+        이 공간에서 머리카락을 자르고, 글을 쓰고, 브랜드를 만든다.
+      </p>
+      <p>
+        빠르게 만들고 빠르게 버리는 세상에서,<br>
+        천천히 깎고 오래 남기는 일을 한다.
+      </p>
+    </section>
+
+    <hr class="about-divider container--content">
+
+    <nav class="about-links container--content">
       <a href="philosophy.html" class="about-link" data-reveal>
         <span class="about-link__label">Philosophy</span>
+        <span class="about-link__desc">동아시아적 수행, 슬로우라이프, 세 가지 원칙.</span>
         <span class="about-link__arrow">→</span>
       </a>
       <a href="story.html" class="about-link" data-reveal>
         <span class="about-link__label">Story</span>
+        <span class="about-link__desc">반지하에서 시작된 기록.</span>
         <span class="about-link__arrow">→</span>
       </a>
       <a href="editor.html" class="about-link" data-reveal>
         <span class="about-link__label">Editor</span>
+        <span class="about-link__desc">우순호. 편집자이자 미용사.</span>
         <span class="about-link__arrow">→</span>
       </a>
-    </div>
+    </nav>
+
   </main>
 
   <footer class="site-footer">
