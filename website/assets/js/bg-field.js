@@ -131,18 +131,21 @@
   var symbolMesh = null;
   (function () {
     var loader = new THREE.TextureLoader();
-    loader.load('/assets/img/symbol.png', function (tex) {
-      tex.minFilter = THREE.LinearFilter;
-      var geo = new THREE.PlaneGeometry(0.72, 0.72);
+    loader.load('/assets/media/brand/symbol.png', function (tex) {
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      tex.generateMipmaps = true;
+      var geo = new THREE.PlaneGeometry(1.2, 1.2);
       var mat = new THREE.MeshBasicMaterial({
         map:         tex,
         transparent: true,
-        opacity:     0.55,
+        opacity:     0.45,
         depthTest:   false,
-        alphaTest:   0.02
+        alphaTest:   0.01
       });
       symbolMesh = new THREE.Mesh(geo, mat);
-      symbolMesh.renderOrder = 10;  /* 필드선 위에 렌더 */
+      symbolMesh.renderOrder = 10;
       fieldGroup.add(symbolMesh);
     });
   })();
