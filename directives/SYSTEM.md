@@ -49,8 +49,8 @@
 │  "세상에 어떻게 보이는가"
 │
 ├── website/           웹사이트 (정적 HTML/CSS/JS)
-│   ├── archive/       발행된 에세이 (issue-NNN-slug/)
-│   ├── service/       서비스 페이지
+│   ├── archive/       발행된 에세이 (essay-NNN-slug/)
+│   ├── practice/      Practice 섹션 (atelier, direction, project, product, contact)
 │   ├── lab/           실험 프로토타입
 │   └── assets/        CSS, JS, 이미지
 │

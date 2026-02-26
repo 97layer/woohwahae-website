@@ -47,5 +47,5 @@
 
 - 읽기: `.infra/queue/tasks/pending/` (agent_type: CE)
 - 쓰기: `.infra/queue/tasks/completed/`
-- 산출물: `website/archive/issue-{NNN}-{slug}/index.html`
+- 산출물: `website/archive/essay-{NNN}-{slug}/index.html`
 - 금지: `core/` `scripts/` `directives/`

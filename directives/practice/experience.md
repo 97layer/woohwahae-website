@@ -1,7 +1,7 @@
 # Experience Map — 웹사이트 경험 설계
 
 > **상위**: THE_ORIGIN.md §2.5 (3섹션 IA)
-> **역할**: 7개의 발현체(섹션 IA)와 기술 스택의 실무 규격.
+> **역할**: 3섹션 IA (About, Archive, Practice)와 기술 스택의 실무 규격.
 > **권한**: PROPOSE
 
 ---
@@ -19,7 +19,7 @@ woohwahae.kr/
 
 네비: `Archive | Practice | About`
 
-**WOOHWAHAE는 7개 섹션이 하나의 철학을 표현하는 다른 방식들이다.**
+**WOOHWAHAE는 3섹션이 하나의 철학을 표현하는 다른 방식들이다.**
 
 ---
 
@@ -58,10 +58,10 @@ woohwahae.kr/
 ## 3. 네비게이션
 
 ```
-[WOOHWAHAE]  About  Archive  Service  Playlist  Project  Photography
+[WOOHWAHAE]  Archive  Practice  About
 ```
 
-- 고정 상단 네비게이션
+- 고정 상단 네비게이션 (3섹션)
 - 모바일: 햄버거 메뉴
 - 현재 섹션 active 표시
 - 최소주의: 드롭다운 없음, 깊이 1단계

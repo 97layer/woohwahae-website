@@ -1,127 +1,160 @@
-# 97LAYER OS (Sanctuary Ver 3.0)
+# 97LAYER OS (Ver 11.0 — THE ORIGIN Enforcement)
 
-> **상태**: Clean Architecture (Refactored)
-> **최종 갱신**: 2026-02-16
+> **상태**: THE ORIGIN 기반 강제 구조 완성 (Filesystem Validator + 3-Layer Defense)
+> **최종 갱신**: 2026-02-26
 
-## 📂 핵심 구조 (Core Architecture)
+---
+
+## 📂 4축 구조 (The Quadrant)
 
 ```
 97layerOS/
-├── core/                    # 🎯 실행 코드 (Unified)
-│   ├── agents/             # AssetManager, AsyncAgentHub
-│   ├── system/             # handoff, orchestrator, ralph_loop
-│   ├── daemons/            # telegram_secretary (main)
-│   ├── bridges/            # notebooklm, gdrive
-│   └── utils/              # parsers, helpers
+├── directives/              # 🧠 뇌 — 철학, 규칙, 규격
+│   ├── THE_ORIGIN.md       # SSOT (Single Source of Truth)
+│   ├── SYSTEM.md           # 운영 프로토콜
+│   ├── MANIFEST.md         # Filesystem 배치 규칙
+│   ├── practice/           # 실행 규격 (visual, language, content, audience, experience, offering)
+│   └── agents/             # 에이전트 판단 기준 (SA, CE, AD, CD)
 │
-├── directives/              # 📜 철학 및 규칙
-│   ├── THE_ORIGIN.md       # Slow Life 브랜드 철학
-│   └── SYSTEM.md           # 운영 프로토콜
+├── knowledge/               # 📚 기억 — 데이터, 신호, 상태
+│   ├── agent_hub/          # INTELLIGENCE_QUANTA.md, council_room.md
+│   ├── signals/            # 원시 신호 (텔레그램/유튜브/메모)
+│   ├── corpus/             # 구조화 지식 (SA 분석 결과)
+│   ├── clients/            # CRM 클라이언트 (Ritual Module)
+│   ├── service/            # 서비스 아이템 카탈로그
+│   ├── reports/            # 리포트 (morning, evening, audit)
+│   └── system/             # 런타임 상태 (work_lock, cache, schemas)
 │
-├── knowledge/               # 📚 데이터 레이어
-│   ├── signals/            # 입력 신호
-│   ├── assets/             # 생성 자산 (registry.json)
-│   ├── reports/            # 일일/주간 보고서
-│   └── docs/               # 기술 문서
+├── core/                    # ⚙️  엔진 — 코드, 스크립트, 스킬, 테스트
+│   ├── agents/             # SA, CE, AD, CD, Code, Gardener
+│   ├── system/             # 파이프라인 + AI엔진 + bridges + modules (23개)
+│   ├── daemons/            # 상주 서비스 (telegram, dashboard, nightguard)
+│   ├── admin/              # 웹 대시보드 (Flask)
+│   ├── scripts/            # 자동화 (deploy/, session, sync)
+│   ├── skills/             # 에이전트 스킬 (deploy, signal_capture, data_curation, etc.)
+│   └── tests/              # 테스트
 │
-├── .infra/                  # 🔧 Container-only (gitignored)
-│   ├── cache/
-│   ├── logs/
-│   └── tmp/
-│
-└── archive/                 # 📦 백업 및 레거시
+└── website/                 # 🌐 얼굴 — HTML/CSS/JS, 네비: Archive | Practice | About
+    ├── index.html          # 홈
+    ├── about/              # About — 철학, 서사, 에디터
+    ├── archive/            # Archive — essay-NNN-slug/, magazine/, lookbook/
+    ├── practice/           # Practice — atelier, direction, project, product, contact
+    ├── woosunho/           # 에디터 포트폴리오
+    ├── lab/                # 실험 (네비 미노출)
+    └── assets/             # CSS, JS, 이미지
 ```
+
+---
 
 ## 🚀 실행 (Execution)
 
-### 1. Telegram Bot 시작
+### VM (Production)
 ```bash
-./start_telegram.sh
+ssh 97layer-vm
+systemctl status 97layer-telegram 97layer-ecosystem 97layer-gardener
+sudo journalctl -u 97layer-ecosystem -n 50 --no-pager
 ```
 
-### 2. 실시간 모니터링
+### 로컬 (Development)
 ```bash
-./start_monitor.sh
+# Telegram Bot
+python3 core/daemons/telegram_secretary.py
+
+# Dashboard
+python3 core/admin/server.py
+
+# Filesystem Guard (Daemon)
+python3 core/system/filesystem_guard.py
 ```
 
-### 3. Python Import
-```python
-from core.system.handoff import HandoffEngine
-from core.agents.asset_manager import AssetManager
-from core.bridges.notebooklm_bridge import NotebookLMBridge
-from core.daemons.telegram_secretary import TelegramSecretary
+---
+
+## 🎯 핵심 시스템
+
+### 1. THE ORIGIN Guidance Route
+철학적 순환망: THE_ORIGIN → practice/ → agents/ → 산출물 → THE_ORIGIN 회귀
+
+### 2. 3-Layer Filesystem Defense
+- **Layer 1**: Python API Wrapper (`filesystem_validator.py::safe_write()`)
+- **Layer 2**: Pre-commit Hook (Git staged 파일 MANIFEST 검증)
+- **Layer 3**: Daemon (`filesystem_guard.py` — 15초 스캔 → 격리)
+
+### 3. THE CYCLE (구심점으로 돌아오는 반복)
+```
+점 (Signal) → 지층 (Archive) → 결속 (Synapse) → 세공 (Craft) → 발현 (Manifestation) → 회귀 (Return)
 ```
 
-## 🎯 주요 기능
+### 4. STAP 품질 게이트 (5 Pillars)
+Ralph Agent 검증: 진정성, 실효적 파동, 단호한 여백, 정밀한 조율, 주권의 획득 (90점 임계치)
 
-### Phase 1-2: 기반 인프라
-- ✅ Session Handoff (세션 연속성)
-- ✅ Parallel Orchestrator (멀티에이전트 병렬)
-- ✅ Ralph Loop (STAP 품질 검증)
-- ✅ Asset Manager (자산 생명주기)
-- ✅ Daily Automation (아침 브리핑, 저녁 리포트)
-
-### Phase 3-4: Anti-Gravity Protocol
-- ✅ YouTube Analyzer (NotebookLM 기반)
-- ✅ NotebookLM MCP Integration (28 tools)
-- ✅ RAG 질의 (요약, 인사이트, 브랜드 연결)
-- ✅ Audio Overview (Google Gemini)
-
-### Phase 5: Clean Architecture
-- ✅ execution+system → core 통합
-- ✅ Container-First 명확화
-- ✅ Google Drive 동기화 준비
-- ✅ Legacy dependency 제거
+---
 
 ## 📡 Telegram Commands
 
 ```
-/start       - 시스템 소개
-/status      - 현재 상태
-/report      - 오늘의 작업 보고
-/analyze     - 마지막 신호 분석
-/signal      - 새 신호 입력
-/morning     - 아침 브리핑 (09:00 권장)
-/evening     - 저녁 리포트 (21:00 권장)
-/search      - 과거 지식 베이스 검색
-/memo        - 빠른 메모 저장
-/sync        - 클라우드 동기화
-/youtube     - YouTube Anti-Gravity 분석 (NotebookLM)
+/start       시스템 소개
+/status      파이프라인 현황 (신호/Corpus/고객/Growth/VM)
+/signal      새 신호 입력 (URL, 텍스트, 유튜브)
+/morning     아침 리포트 생성 (morning_YYYYMMDD.md)
+/doctor      시스템 상태 진단 (QUANTA + work_lock + cache)
+/handoff     세션 종료 핸드오프 (다음 에이전트용)
 ```
-
-## 🔄 Container-First 원칙
-
-- **macOS 호스트**: 코드 작성, Git 관리, NotebookLM 인증
-- **Podman 컨테이너**: Python 실행, Telegram Bot, MCP CLI
-
-## 📝 세션 연속성
-
-모든 작업 전후 `INTELLIGENCE_QUANTA.md` 자동 업데이트:
-- 현재 상태
-- 완료된 작업
-- 다음 단계
-- 문제 해결 기록
-
-## 🎨 Slow Life 철학
-
-- **속도보다 방향**: 급하게 하지 않고 구조부터 고민
-- **효율보다 본질**: 당장 되는 것보다 장기적 유지보수성
-- **완벽보다 진행**: 100% 아니어도 점진적으로 개선
-
-## 🔐 환경 설정
-
-`.env` 파일 필요:
-```bash
-TELEGRAM_BOT_TOKEN=your_token_here
-ANTHROPIC_API_KEY=your_key_here
-```
-
-## 📚 Documentation
-
-- [THE_ORIGIN.md](directives/THE_ORIGIN.md) - 브랜드 철학
-- [SYSTEM.md](directives/SYSTEM.md) - 운영 프로토콜
-- [INTELLIGENCE_QUANTA.md](knowledge/agent_hub/INTELLIGENCE_QUANTA.md) - 세션 연속성
 
 ---
 
-> "Remove the Noise, Reveal the Essence" — LAYER OS
+## 🔐 슬래시 커맨드 (Claude Code)
+
+```
+/doctor       시스템 상태 진단
+/deploy       GCP VM 배포 (전체 or 특정 파일/서비스)
+/audit        폴더 구조 감사 (중복/orphan/금지 파일)
+/status       LAYER OS 파이프라인 현황
+/brand        Brand OS 핵심 규칙 참조
+/quanta       INTELLIGENCE_QUANTA.md 갱신
+/handoff      세션 종료 + 상태 기록
+```
+
+---
+
+## 🛡️  강제 메커니즘
+
+| Layer | 메커니즘 | 위치 |
+|-------|---------|------|
+| 1 | CLAUDE.md / .ai_rules | 루트 |
+| 2 | Claude Code Hooks | `.claude/hooks/` |
+| 3 | Claude Code Rules | `.claude/rules/` |
+| 4 | Git Pre-Commit Hook | `.git/hooks/pre-commit` |
+| 5 | Bootstrap Script | `core/scripts/session_bootstrap.sh` |
+
+---
+
+## 🎨 Slow Life 철학 (THE ORIGIN)
+
+- **본질주의**: 조용히 덜어내어 투명한 뼈대만 렌더링
+- **공명**: 넓게 흩뿌리는 확장이 아닌 수직으로 꽂히는 하강
+- **자기긍정**: 생존 관리가 아닌 미학적 구원을 향한 의식
+
+→ 상세: [THE_ORIGIN.md](directives/THE_ORIGIN.md)
+
+---
+
+## 📚 Documentation
+
+- [THE_ORIGIN.md](directives/THE_ORIGIN.md) — 브랜드 철학 SSOT
+- [SYSTEM.md](directives/SYSTEM.md) — 운영 프로토콜
+- [MANIFEST.md](directives/MANIFEST.md) — Filesystem 배치 규칙
+- [INTELLIGENCE_QUANTA.md](knowledge/agent_hub/INTELLIGENCE_QUANTA.md) — 세션 연속성
+
+---
+
+## 🔄 최근 주요 업데이트
+
+- ✅ Ver 11.0 (2026-02-26): THE ORIGIN 기반 파일시스템 강제 구조 구축
+- ✅ 3-Layer Defense: Python validator + Pre-commit hook + Daemon
+- ✅ 레거시 위반 파일 59개 청산 (11개 archive 이동)
+- ✅ 4축 구조 정렬 (directives/knowledge/core/website)
+- ✅ Website HTML 리빌딩 (네비/푸터 통일, Phase 1 비주얼 완성)
+
+---
+
+> "소음이 걷힌 진공에 다다라서야 명징한 본질이 나선다." — THE ORIGIN
