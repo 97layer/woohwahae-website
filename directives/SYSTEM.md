@@ -174,7 +174,7 @@ cat knowledge/system/work_lock.json
 | Signal Router | `python core/system/signal_router.py --watch` | 신호→큐 자동 라우팅 |
 | Heartbeat | `python core/system/heartbeat.py` | Mac↔GCP 상태 감지 |
 | Nightguard | `python core/system/nightguard_v2.py` | 쿠키/API/서비스 감시 |
-| Drive Sync | `python core/bridges/gdrive_sync.py --all` | Google Drive 동기화 |
+| Drive Sync | `python core/system/gdrive_sync.py --all` | Google Drive 동기화 |
 
 ---
 

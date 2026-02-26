@@ -33,8 +33,8 @@ case "$1" in
     SCP /Users/97layer/97layerOS/core/system/*.py $VM:$REMOTE_BASE/core/system/
     # core/agents
     SCP /Users/97layer/97layerOS/core/agents/*.py $VM:$REMOTE_BASE/core/agents/
-    # core/bridges
-    SCP /Users/97layer/97layerOS/core/bridges/*.py $VM:$REMOTE_BASE/core/bridges/
+    # core/system
+    SCP /Users/97layer/97layerOS/core/system/*.py $VM:$REMOTE_BASE/core/system/
     echo "=== 서비스 재시작 ==="
     echo "sudo systemctl restart 97layer-telegram && echo '✅ 재시작 완료'" | SSH
     ;;

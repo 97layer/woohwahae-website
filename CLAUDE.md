@@ -53,8 +53,8 @@ work_lock.json = 잠금 상태면 STOP. 다른 에이전트 작업 중.
 ## ✅ REQUIRED WORKFLOW
 
 ```
-Session Start → ./scripts/session_bootstrap.sh → Task → Register Asset
-→ Update INTELLIGENCE_QUANTA.md → ./scripts/session_handoff.sh → End
+Session Start → ./core/scripts/session_bootstrap.sh → Task → Register Asset
+→ Update INTELLIGENCE_QUANTA.md → ./core/scripts/session_handoff.sh → End
 ```
 
 스크립트 없는 환경: QUANTA → work_lock → filesystem_cache 순 수동 확인.
@@ -96,7 +96,7 @@ Direct & Factual | Zero Noise (인사/사과 제거) | Evidence-Based | Slow Lif
 ## 🔄 HANDOFF PROTOCOL
 
 ```bash
-./scripts/session_handoff.sh "agent-id" "요약" "다음태스크1" "다음태스크2"
+./core/scripts/session_handoff.sh "agent-id" "요약" "다음태스크1" "다음태스크2"
 # 스크립트 없는 환경:
 python core/system/handoff.py --handoff
 ```

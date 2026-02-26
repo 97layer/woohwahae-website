@@ -6,23 +6,23 @@ Haiku 서브에이전트로 fresh context에서 실행합니다.
 
 ## 1. Python 구문 검증
 ```bash
-find core/ scripts/ -name "*.py" -exec python3 -m py_compile {} + 2>&1
+find core/ -name "*.py" -exec python3 -m py_compile {} + 2>&1
 ```
 
 ## 2. f-string 로깅 위반
 ```bash
-grep -rn 'logger\.\(info\|debug\|warning\|error\|critical\)(f["\x27]' core/ scripts/ --include="*.py"
+grep -rn 'logger\.\(info\|debug\|warning\|error\|critical\)(f["\x27]' core/ --include="*.py"
 ```
 위반 발견 시 파일:라인 목록을 출력하세요.
 
 ## 3. 빈 except 블록
 ```bash
-grep -rn '^\s*except:\s*$' core/ scripts/ --include="*.py"
+grep -rn '^\s*except:\s*$' core/ --include="*.py"
 ```
 
 ## 4. 하드코딩 비밀
 ```bash
-grep -rn '(api_key|secret|token|password)\s*=\s*["\x27][a-zA-Z0-9_-]\{16,\}["\x27]' core/ scripts/ --include="*.py"
+grep -rn '(api_key|secret|token|password)\s*=\s*["\x27][a-zA-Z0-9_-]\{16,\}["\x27]' core/ --include="*.py"
 ```
 
 ## 5. 금지 파일 존재

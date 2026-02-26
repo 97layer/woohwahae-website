@@ -7,7 +7,7 @@ Role:
 1. Discovery: 슬로우라이프 브랜드 자동 발굴 (SNS/웹 크롤링)
 2. Screening: 브랜드 철학 적합성 평가 (WOOHWAHAE 5 Pillars 기준)
 3. Data Gathering: 승인된 브랜드 컨텐츠 수집
-4. Dossier 생성: knowledge/brands/[brand_name]/ 구조화
+4. Dossier 생성: knowledge/corpus/brands/[brand_name]/ 구조화
 
 LLM: Gemini 2.5 Flash (분석), Gemini Pro (심층 평가)
 Output: 브랜드 도시에 → Magazine CE Agent 소재
@@ -388,7 +388,7 @@ JSON만 출력하세요."""
 
     def create_dossier(self, screening: Dict, data: Dict) -> Path:
         """
-        브랜드 도시에 생성 → knowledge/brands/[slug]/
+        브랜드 도시에 생성 → knowledge/corpus/brands/[slug]/
 
         구조:
         - profile.json: 메타데이터 + 스크리닝 결과

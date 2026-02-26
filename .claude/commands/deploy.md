@@ -9,7 +9,7 @@ description: GCP VM 배포 — 전체 or 특정 파일/서비스 타겟
 ## 사용법
 
 ```
-/deploy              → 전체 배포 (scripts/deploy/deploy.sh)
+/deploy              → 전체 배포 (core/scripts/deploy/deploy.sh)
 /deploy ecosystem    → ecosystem 서비스 재시작만
 /deploy telegram     → telegram 서비스 재시작만
 /deploy gardener     → gardener 서비스 재시작만

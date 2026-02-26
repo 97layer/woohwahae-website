@@ -65,7 +65,7 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 
 ### 금지 Write 경로
 - `core/`              ❌ 코드 수정 절대 금지
-- `scripts/`           ❌ 배포 스크립트 수정 금지
+- `core/scripts/`      ❌ 배포 스크립트 수정 금지
 - `directives/`        ❌ 헌법/정책 수정 금지
 - `knowledge/system/`  ❌ 런타임 상태 직접 수정 금지
 - 루트(`/`)            ❌ 어떤 파일도 생성 금지
@@ -138,7 +138,7 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 ```
 Session Start
   ↓
-./scripts/session_bootstrap.sh  (자동: QUANTA 읽기 + lock 확인 + cache 확인)
+./core/scripts/session_bootstrap.sh  (자동: QUANTA 읽기 + lock 확인 + cache 확인)
   ↓
 Perform Task
   ↓
@@ -146,7 +146,7 @@ Register Asset (자산 등록)
   ↓
 Update INTELLIGENCE_QUANTA.md (다음 세션 준비)
   ↓
-./scripts/session_handoff.sh "agent-id" "summary" "task1" "task2"
+./core/scripts/session_handoff.sh "agent-id" "summary" "task1" "task2"
   ↓
 Session End
 ```
@@ -262,7 +262,7 @@ Input → Store → Connect → Generate → Publish → Input again
 At session end, ALWAYS run:
 
 ```bash
-./scripts/session_handoff.sh "agent-id" "작업 요약" "다음 태스크1" "다음 태스크2"
+./core/scripts/session_handoff.sh "agent-id" "작업 요약" "다음 태스크1" "다음 태스크2"
 ```
 
 스크립트 없는 환경:
@@ -282,8 +282,8 @@ This saves the current state for the next AI agent.
 |-------|---------|------|
 | 1 | Git Pre-Commit Hook (자동 검증) | `.git/hooks/pre-commit` |
 | 2 | GitHub Actions CI/CD | `.github/workflows/session-integrity.yml` |
-| 3 | Bootstrap Script | `scripts/session_bootstrap.sh` |
-| 4 | Handoff Script | `scripts/session_handoff.sh` |
+| 3 | Bootstrap Script | `core/scripts/session_bootstrap.sh` |
+| 4 | Handoff Script | `core/scripts/session_handoff.sh` |
 
 검증 항목: 필수 파일 존재 / JSON 유효성 / QUANTA freshness(72h) / 금지 파일 부재
 **handoff 미실행 시 커밋 차단.**

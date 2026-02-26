@@ -582,17 +582,16 @@ JSON만 출력."""
 <body>
 
     <nav>
-        <a href="/" class="nav-logo">
-            <img src="../../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
+        <a href="/" class="nav-brand" aria-label="WOOHWAHAE">
+            <img src="../../assets/media/brand/symbol.png" alt="WOOHWAHAE" class="nav-symbol">
         </a>
-        <ul class="nav-links">
+        <ul class="nav-links" id="nav-links">
             <li><a href="../../archive/" class="active">Archive</a></li>
-            <li><a href="../../service.html">Service</a></li>
-            <li><a href="../../about.html">About</a></li>
-            <li><a href="../../contact.html">Contact</a></li>
+            <li><a href="../../practice/">Practice</a></li>
+            <li><a href="../../about/">About</a></li>
         </ul>
-        <button class="nav-toggle" aria-label="Menu">
-            <span></span><span></span><span></span>
+        <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+            <span></span><span></span>
         </button>
     </nav>
 
@@ -611,27 +610,15 @@ JSON만 출력."""
 
     </div>
 
-    <footer class="section--light">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <img src="../../assets/img/symbol.jpg" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
-                <p class="footer-brand-name">WOOHWAHAE</p>
-                <p class="footer-brand-desc">Archive for Slow Life</p>
-            </div>
-            <div>
-                <p class="footer-nav-title">Navigate</p>
-                <ul class="footer-nav-list">
-                    <li><a href="../../archive/">Archive</a></li>
-                    <li><a href="../../service.html">Service</a></li>
-                    <li><a href="../../about.html">About</a></li>
-                    <li><a href="../../contact.html">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <p class="footer-connect-title">Connect</p>
-                <ul class="footer-connect-list">
-                    <li><a href="{instagram_url}" target="_blank" rel="noopener">Instagram</a></li>
-                </ul>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p class="footer-brand">WOOHWAHAE</p>
+            <nav class="footer-nav">
+                <a href="../../archive/">Archive</a>
+                <a href="../../practice/">Practice</a>
+                <a href="../../about/">About</a>
+                <a href="{instagram_url}" target="_blank" rel="noopener">Instagram</a>
+            </nav>
             </div>
         </div>
         <p class="footer-copy">&copy; 2026 WOOHWAHAE. All rights reserved.</p>
