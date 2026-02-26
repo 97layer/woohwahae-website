@@ -31,6 +31,24 @@
             "command": ".claude/hooks/command-guard.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/context-guard.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/context-guard.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
