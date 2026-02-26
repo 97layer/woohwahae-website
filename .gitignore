@@ -71,3 +71,9 @@ knowledge/system/asset_registry.json
 # NOTE: /system/ (root level only, not core/system/)
 /execution/
 /system/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
