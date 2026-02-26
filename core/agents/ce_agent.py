@@ -477,7 +477,7 @@ JSON만 출력."""
             return {"error": str(e), "theme": theme}
 
     def _save_essay_html(self, result: dict, theme: str):
-        """CE 에세이 결과를 website/archive/issue-NNN-slug/index.html 로 저장."""
+        """CE 에세이 결과를 website/archive/essay-NNN-slug/index.html 로 저장."""
         import re as _re
         from datetime import datetime as _dt
         from pathlib import Path as _Path
@@ -498,16 +498,16 @@ JSON만 출력."""
         # ── 이슈 번호 자동 계산 ──
         existing = sorted([
             d for d in archive_dir.iterdir()
-            if d.is_dir() and _re.match(r'issue-\d+', d.name)
+            if d.is_dir() and _re.match(r'essay-\d+', d.name)
         ])
         # issue-00 ~ issue-008 형태 모두 포함해서 최댓값 추출
         max_num = 0
         for d in existing:
-            m = _re.match(r'issue-0*(\d+)', d.name)
+            m = _re.match(r'essay-0*(\d+)', d.name)
             if m:
                 max_num = max(max_num, int(m.group(1)))
         next_num = max_num + 1
-        issue_num_str = f"{next_num:03d}"  # 009, 010 ...
+        essay_num_str = f"{next_num:03d}"  # 009, 010 ...
 
         # ── slug 생성 (테마 → 소문자 영문 slug) ──
         # 단어 단위 매핑 — 복합 테마도 처리 (첫 번째 매칭 키워드 사용)
@@ -540,9 +540,9 @@ JSON만 출력."""
             slug = ascii_slug if ascii_slug and ascii_slug[0].isascii() else 'essay'
         slug = slug[:30]
 
-        folder_name = f"issue-{issue_num_str}-{slug}"
-        issue_dir = archive_dir / folder_name
-        issue_dir.mkdir(parents=True, exist_ok=True)
+        folder_name = f"essay-{essay_num_str}-{slug}"
+        essay_dir = archive_dir / folder_name
+        essay_dir.mkdir(parents=True, exist_ok=True)
 
         essay_title = result.get('essay_title', theme)
         pull_quote = result.get('pull_quote', '')
@@ -571,8 +571,8 @@ JSON만 출력."""
   <meta charset="UTF-8">
   <link rel="apple-touch-icon" href="../../assets/img/symbol.jpg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Issue {issue_num_str} — {essay_title}. {pull_quote}">
-  <title>Issue {issue_num_str}: {essay_title} — WOOHWAHAE Archive</title>
+  <meta name="description" content="Issue {essay_num_str} — {essay_title}. {pull_quote}">
+  <title>Issue {essay_num_str}: {essay_title} — WOOHWAHAE Archive</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#FAFAF7">
   <link rel="icon" href="../../assets/img/symbol.jpg" type="image/jpeg">
@@ -598,7 +598,7 @@ JSON만 출력."""
     <div class="article-container">
 
         <header class="article-header">
-            <p class="article-meta fade-in">Issue {issue_num_str} &nbsp;·&nbsp; {content_category_label + ' · ' if content_category_label else ''}{content_type_label} &nbsp;·&nbsp; {today}</p>
+            <p class="article-meta fade-in">Issue {essay_num_str} &nbsp;·&nbsp; {content_category_label + ' · ' if content_category_label else ''}{content_type_label} &nbsp;·&nbsp; {today}</p>
             <h1 class="article-title fade-in">{essay_title}</h1>
             <p class="article-subtitle fade-in">{pull_quote}</p>
         </header>
@@ -628,13 +628,13 @@ JSON만 출력."""
 </body>
 </html>"""
 
-        html_path = issue_dir / 'index.html'
+        html_path = essay_dir / 'index.html'
         html_path.write_text(html, encoding='utf-8')
         print(f"CE: HTML 저장 완료 — {html_path.relative_to(PROJECT_ROOT)}")
-        print(f"CE: Issue {issue_num_str} '{essay_title}' → archive/{folder_name}/")
+        print(f"CE: Issue {essay_num_str} '{essay_title}' → archive/{folder_name}/")
 
         # AgentLogger: 작업 완료
-        self.logger.done(f"Issue {issue_num_str}: {essay_title}")
+        self.logger.done(f"Issue {essay_num_str}: {essay_title}")
 
     def start_watching(self, interval: int = 5):
         watcher = AgentWatcher(agent_type=self.agent_type, agent_id=self.agent_id)

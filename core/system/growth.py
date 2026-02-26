@@ -124,7 +124,7 @@ class GrowthModule:
         essays_count = 0
         if ARCHIVE_DIR.exists():
             for d in ARCHIVE_DIR.iterdir():
-                if d.is_dir() and d.name.startswith("issue-"):
+                if d.is_dir() and d.name.startswith("essay-"):
                     essays_count += 1
         content["essays_published"] = essays_count
 

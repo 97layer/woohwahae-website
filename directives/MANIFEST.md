@@ -2,7 +2,7 @@
 
 > **Authority**: 모든 에이전트(Claude/Gemini/GPT)는 파일 생성 전 이 문서를 반드시 참조한다.
 > **갱신 정책**: 구조 변경 시에만 수정. 덮어쓰기.
-> **마지막 갱신**: 2026-02-25 (4축 정렬 Ver 11.0 — directives/knowledge/core/website)
+> **마지막 갱신**: 2026-02-26 (레거시 청산 완료 + knowledge/docs 추가)
 
 ---
 
@@ -31,7 +31,7 @@
 
 ---
 
-## knowledge/ — 데이터 (7폴더)
+## knowledge/ — 데이터 (8폴더)
 
 | 경로 | 용도 |
 |------|------|
@@ -40,6 +40,7 @@
 | `corpus/entries/` | 구조화 지식 (SA 분석 결과) |
 | `clients/` | CRM 클라이언트 데이터 (Ritual Module) |
 | `service/` | 서비스 아이템 카탈로그 (items.json) |
+| `docs/` | 시스템 문서 (검증 보고서, 아키텍처 기록) |
 | `reports/` | 리포트. 하위: daily/, growth/ |
 | `system/` | 런타임 상태 + schemas/. work_lock, cache, registry 등 |
 
@@ -49,7 +50,7 @@
 
 ---
 
-## core/ — 엔진 (7폴더)
+## core/ — 엔진 (8폴더)
 
 | 경로 | 용도 |
 |------|------|
@@ -57,6 +58,7 @@
 | `system/` | 파이프라인 + AI엔진 + bridges + modules 통합 (23개) |
 | `daemons/` | 상주 서비스 (telegram, dashboard, nightguard) |
 | `admin/` | 웹 대시보드 (Flask) |
+| `backend/` | Flask 백엔드 서버 (VM 24/7 서비스, 포트 5000) |
 | `scripts/` | 자동화 (deploy/, session, sync) |
 | `skills/` | 에이전트 스킬 (`<name>/SKILL.md`) |
 | `tests/` | 테스트 |

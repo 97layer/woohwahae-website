@@ -24,7 +24,7 @@ import json
 import re
 import sys
 from datetime import datetime
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Union
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 MANIFEST = PROJECT_ROOT / "directives" / "MANIFEST.md"
@@ -161,7 +161,7 @@ def validate_write(path: Path) -> Tuple[bool, str]:
 
 
 def safe_write(
-    path: Path | str,
+    path: "Union[Path, str]",
     content: str,
     agent_id: str = "unknown",
     auto_register: bool = True

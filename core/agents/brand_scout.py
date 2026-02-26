@@ -607,7 +607,7 @@ JSON만 출력하세요."""
 **분석 요구사항:**
 1. **Global Wellness Keywords**: 현재 반복적으로 나타나는 핵심 키워드 3가지
 2. **Key Narratives**: 단순 유행이 아닌, 삶을 대하는 태도의 변화 양상 요약
-3. **Application for WOOHWAHAE**: 우리가 콘텐츠나 서비스에 바로 적용할 수 있는 구체적 제안 (Shop 큐레이션, 아카이브 주제 등)
+3. **Application for WOOHWAHAE**: 우리가 콘텐츠나 서비스에 바로 적용할 수 있는 구체적 제안 (Practice 큐레이션, 아카이브 주제 등)
 
 **출력 언어**: 반드시 **한국어(Korean)**로 작성하세요.
 **톤앤매너**: 차분하고 통찰력 있게. (해요체 사용)
@@ -645,7 +645,7 @@ Kinfolk와 Cereal의 최근 아티클들은 매끈하게 다듬어진 공간보�
 이는 "기능적 완벽함"에 지친 사람들이 "정서적 온전함"을 찾기 시작했음을 시사합니다.
 
 ## 3. Application for WOOHWAHAE
-**A. Shop 큐레이션 제안**:
+**A. Practice 큐레이션 제안**:
 - 'Raw Materiality'르 반영하여, 마감되지 않은 목재나 거친 도자기 질감의 오브제 라인업 강화.
 - 기능 설명보다 '만져지는 감각'에 집중한 제품 카피라이팅.
 
@@ -817,7 +817,7 @@ JSON 포맷으로 출력:
     <nav class="nav-container">
         <a href="/" class="nav-logo">WOOHWAHAE</a>
         <div class="nav-links">
-            <a href="/shop.html">Shop</a>
+            <a href="/practice/">Practice</a>
             <a href="/archive/index.html" class="active">Archive</a>
             <a href="/atelier.html">Atelier</a>
             <a href="/contact.html">Contact</a>

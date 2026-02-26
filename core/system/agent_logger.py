@@ -173,7 +173,7 @@ if __name__ == "__main__":
     logger.idle("대기 중")
     logger.think("에세이 주제 선정")
     logger.search("슬로우 라이프")
-    logger.write("issue-011-freedom.html")
+    logger.write("essay-011-freedom.html")
     logger.done("에세이 발행 완료")
 
     # 최근 이벤트 조회
