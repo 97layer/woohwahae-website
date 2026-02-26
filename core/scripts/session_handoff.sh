@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 97layerOS Session Handoff - MANDATORY execution at session end
+# LAYER OS Session Handoff - MANDATORY execution at session end
 # Usage: ./scripts/session_handoff.sh "agent-name" "Work summary" "next-task-1" "next-task-2"
 
 set -e
@@ -27,7 +27,7 @@ if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "No summary provided" ]; then
 fi
 
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║  97layerOS Session Handoff - Recording Session                ║"
+echo "║  LAYER OS Session Handoff - Recording Session                 ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
 echo "Agent ID: $AGENT_ID"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# 97layerOS → Google Drive 동기화 (allowlist)
+# LAYER OS → Google Drive 동기화 (allowlist)
 # knowledge/ + directives/ 만 올림. 나머지 전부 무시.
 
 set -e

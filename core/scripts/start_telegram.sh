@@ -1,12 +1,12 @@
 #!/bin/bash
-# Start 97layerOS Telegram Executive Secretary
+# Start LAYER OS Telegram Executive Secretary
 # v6 (JARVIS Plus Edition): NotebookLM Deep RAG + Multi-Agent + Premium UX
 
 cd /Users/97layer/97layerOS
 export PYTHONPATH=/Users/97layer/97layerOS
 
 echo "=========================================="
-echo "97layerOS Telegram Executive Secretary"
+echo "LAYER OS Telegram Executive Secretary"
 echo "v6: NotebookLM RAG + Multi-Agent + Premium UX"
 echo "=========================================="
 echo ""

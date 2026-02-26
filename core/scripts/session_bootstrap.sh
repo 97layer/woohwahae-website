@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 97layerOS Session Bootstrap - MANDATORY execution at session start
+# LAYER OS Session Bootstrap - MANDATORY execution at session start
 # This script MUST be run by every AI agent before starting work
 
 set -e
@@ -8,7 +8,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║  97layerOS Session Bootstrap - Enforced Protocol              ║"
+echo "║  LAYER OS Session Bootstrap - Enforced Protocol               ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
 

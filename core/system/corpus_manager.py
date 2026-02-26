@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Corpus Manager — 97layerOS 지식 풀 관리자
+Corpus Manager — LAYER OS 지식 풀 관리자
 
 역할:
   1. SA 분석 결과 → corpus/entries/ 저장

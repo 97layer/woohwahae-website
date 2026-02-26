@@ -1,5 +1,5 @@
 #!/bin/bash
-# 97layerOS Ecosystem — SA + AD + CE + CD + Orchestrator
+# LAYER OS Ecosystem — SA + AD + CE + CD + Orchestrator
 # systemd 서비스(97layer-ecosystem)에서 호출. SIGTERM 수신 시 자식 프로세스 정리.
 
 VENV="/home/skyto5339_gmail_com/97layerOS/.venv/bin/python3"

@@ -4,7 +4,7 @@ build_archive.py — WOOHWAHAE 아카이브 SSG 빌드
 
 사용:
   python scripts/build_archive.py           # 전체 빌드
-  python scripts/build_archive.py --slug issue-010-work-and-essence  # 단일 글
+  python scripts/build_archive.py --slug essay-010-work-and-essence  # 단일 글
 
 입력:  website/_content/*.md
 출력:  website/archive/{slug}/index.html

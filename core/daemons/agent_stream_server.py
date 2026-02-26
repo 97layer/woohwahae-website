@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-97layerOS Agent Event Stream Server
+LAYER OS Agent Event Stream Server
 Flask SSE로 에이전트 이벤트를 브라우저에 실시간 전송
 
-Author: 97layerOS + Claude Code
+Author: LAYER OS + Claude Code
 Port: 8082 (dashboard_server.py가 8081 사용 중)
 """
 

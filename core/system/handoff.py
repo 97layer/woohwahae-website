@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-97layerOS Session Handoff Engine
+LAYER OS Session Handoff Engine
 세션 연속성 보장 + Container-First 원칙 준수 + 멀티에이전트 병렬 지원
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 """
 
 import json
@@ -195,7 +195,7 @@ class HandoffEngine:
 
 ---
 
-> "첫 번째 기록. 지금부터 모든 세션이 연결된다." — 97layerOS
+> "첫 번째 기록. 지금부터 모든 세션이 연결된다." — LAYER OS
 """
         with open(self.quanta_path, 'w', encoding='utf-8') as f:
             f.write(initial_content)
@@ -424,7 +424,7 @@ class HandoffEngine:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="97layerOS Session Handoff Engine")
+    parser = argparse.ArgumentParser(description="LAYER OS Session Handoff Engine")
     parser.add_argument('--onboard', action='store_true', help='세션 시작 (맥락 복구)')
     parser.add_argument('--handoff', action='store_true', help='세션 종료 (상태 저장)')
     parser.add_argument('--agent-id', type=str, default='Unknown', help='에이전트 ID')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Strategy Analyst (SA) Agent
+LAYER OS Strategy Analyst (SA) Agent
 Phase 6.2: Independent agent with Gemini Flash API
 
 Role:
@@ -13,7 +13,7 @@ LLM: Gemini 2.5 Flash (Free tier, fast)
 Queue: Autonomous task claiming via AgentWatcher
 Output: Structured analysis → passed to AD/CE
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Updated: 2026-02-16 (google.genai SDK 마이그레이션)
 """
 
@@ -442,7 +442,7 @@ if __name__ == '__main__':
     from core.system.env_validator import validate_env
     validate_env("sa_agent")
 
-    parser = argparse.ArgumentParser(description='97layerOS Strategy Analyst Agent')
+    parser = argparse.ArgumentParser(description='LAYER OS Strategy Analyst Agent')
     parser.add_argument('--agent-id', default='sa-worker-1', help='Agent instance ID')
     parser.add_argument('--interval', type=int, default=5, help='Queue poll interval (seconds)')
     parser.add_argument('--test', action='store_true', help='Run test mode (single analysis)')

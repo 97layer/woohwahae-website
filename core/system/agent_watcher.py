@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Agent Watcher - Queue Monitoring & Task Dispatch
+LAYER OS Agent Watcher - Queue Monitoring & Task Dispatch
 Phase 6.1: Autonomous agent task claiming
 
 Architecture:
@@ -16,7 +16,7 @@ Usage:
   watcher = AgentWatcher(agent_type='SA', agent_id='sa-worker-1')
   watcher.watch(callback=process_task, interval=5)
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 

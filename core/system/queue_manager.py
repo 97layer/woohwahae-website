@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Queue Manager - File-based Message Queue
+LAYER OS Queue Manager - File-based Message Queue
 Phase 6.1: Multi-agent communication infrastructure
 
 Architecture:
@@ -23,7 +23,7 @@ Queue Structure:
 └── locks/           # File locks (atomic claims)
     └── {task_id}.lock
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Nightguard V2: Self-Diagnostic Autonomous Daemon
+LAYER OS Nightguard V2: Self-Diagnostic Autonomous Daemon
 Purpose: Monitor system health, detect failures, auto-recover, and alert admin
 Philosophy: Intelligence Autonomy - self-awareness and self-healing
 
@@ -11,7 +11,7 @@ Critical Responsibilities:
 4. Auto-Recovery (restart failed services)
 5. Admin Alerts (Telegram notifications)
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 Priority: P0 (Critical)
 """
@@ -616,7 +616,7 @@ async def main():
     """CLI entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='97layerOS Nightguard V2 - Self-Diagnostic Daemon')
+    parser = argparse.ArgumentParser(description='LAYER OS Nightguard V2 - Self-Diagnostic Daemon')
     parser.add_argument(
         '--interval',
         type=int,

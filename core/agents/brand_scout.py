@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Brand Scout Agent
+LAYER OS Brand Scout Agent
 Magazine B 방향 전환 — 슬로우라이프/미니멀 브랜드 자동 발굴 시스템
 
 Role:
@@ -12,7 +12,7 @@ Role:
 LLM: Gemini 2.5 Flash (분석), Gemini Pro (심층 평가)
 Output: 브랜드 도시에 → Magazine CE Agent 소재
 
-Author: 97layerOS
+Author: LAYER OS
 Created: 2026-02-17
 """
 
@@ -712,7 +712,7 @@ Kinfolk와 Cereal의 최근 아티클들은 매끈하게 다듬어진 공간보�
 **출력**:
 JSON 포맷으로 출력:
 {{
-  "slug": "issue-auto-keyword", 
+  "slug": "essay-auto-keyword", 
   "korean_title": "제목", 
   "preview": "프리뷰(2문장)", 
   "html_content": "<!DOCTYPE html>..."
@@ -802,7 +802,7 @@ JSON 포맷으로 출력:
         sample_data = {
             "title": "Raw Materiality",
             "korean_title": "날것의 물성",
-            "slug": "issue-008-raw-materiality",
+            "slug": "essay-008-raw-materiality",
             "preview": "매끄러운 마감은 눈을 속이지만, 거친 질감은 손끝을 깨운다. 우리는 본질적인 감각으로 돌아가야 한다.",
             "html_content": f"""<!DOCTYPE html>
 <html lang="ko">
@@ -819,7 +819,7 @@ JSON 포맷으로 출력:
         <div class="nav-links">
             <a href="/practice/">Practice</a>
             <a href="/archive/index.html" class="active">Archive</a>
-            <a href="/atelier.html">Atelier</a>
+            <a href="/practice/">Practice</a>
             <a href="/contact.html">Contact</a>
         </div>
     </nav>

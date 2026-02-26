@@ -21,23 +21,20 @@ WOOHWAHAE는 **Archive for Slow Life**를 컨셉으로 하는 브랜드 웹사�
 ### 2. **Archive** - 생각의 기록
 - 슬로우 라이프 관련 에세이, 실천 방법
 - 검색 및 카테고리 필터 기능
-- Issue 기반 시리즈 형태
+- Essay 기반 시리즈 형태
 
 ### 3. **Atelier** - 실천의 공간
 - 울산 헤어 아틀리에 소개
 - 예약 시스템 연동 (네이버 예약)
 - 서비스 철학 및 접근 방식
 
-### 4. **Shop** - 의식적 소비
-엄선된 제품 큐레이션 (Coming Soon)
-
-### 5. **Playlist** - 공간의 소리
+### 4. **Playlist** - 공간의 소리
 아틀리에 공간을 위한 음악 큐레이션
 
-### 6. **Project** - 협업의 실험
+### 5. **Project** - 협업의 실험
 브랜드 협업 및 프로젝트 (Coming Soon)
 
-### 7. **Photography** - 순간의 포착
+### 6. **Photography** - 순간의 포착
 일상의 순간들을 담은 사진
 
 ## 🛠 기술 스택
@@ -63,8 +60,7 @@ WOOHWAHAE는 **Archive for Slow Life**를 컨셉으로 하는 브랜드 웹사�
 website/
 ├── index.html              # 메인 페이지
 ├── /about/              # About 페이지
-├── /service/            # 아틀리에 소개
-├── /shop/               # Shop (Coming Soon)
+├── /practice/           # 아틀리에 소개
 ├── playlist.html           # Playlist
 ├── project.html            # Project (Coming Soon)
 ├── /photography/        # Photography
@@ -79,10 +75,10 @@ website/
 ├── archive/                # Archive 섹션
 │   ├── index.html          # Archive 메인
 │   ├── index.json          # Archive 콘텐츠 데이터
-│   ├── issue-00/           # Issue 00 - Manifesto
-│   ├── issue-001-beginning/
-│   ├── issue-002-slow-life/
-│   └── issue-003-hair-and-daily/
+│   ├── essay-00/           # Essay 00 - Manifesto
+│   ├── essay-001-beginning/
+│   ├── essay-002-slow-life/
+│   └── essay-003-hair-and-daily/
 │
 ├── assets/
 │   ├── css/
@@ -155,7 +151,7 @@ curl -X POST http://localhost:5000/api/archive \
   -H "Content-Type: application/json" \
   -H "Cookie: session=YOUR_SESSION_COOKIE" \
   -d '{
-    "slug": "issue-005-new-topic",
+    "slug": "essay-005-new-topic",
     "title": "새로운 주제",
     "date": "2026.03.01",
     "issue": "Issue 005",
@@ -167,7 +163,7 @@ curl -X POST http://localhost:5000/api/archive \
 
 ### 방법 2: 수동으로 추가
 1. `archive/index.json`에 새 항목 추가
-2. `archive/issue-XXX/` 폴더 생성
+2. `archive/essay-XXX/` 폴더 생성
 3. `index.html` 파일 작성
 4. Git commit 및 push
 
@@ -223,7 +219,7 @@ nano sitemap.xml
 ### 추적 이벤트
 - 페이지뷰
 - 스크롤 깊이 (25%, 50%, 75%, 100%)
-- 버튼 클릭 (예약, 문의, Shop 제품)
+- 버튼 클릭 (예약, 문의)
 - 세션 시간
 
 ## 🔒 보안

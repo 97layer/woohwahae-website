@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Signal Router — 97layerOS
+Signal Router — LAYER OS
 
 역할:
   - knowledge/signals/ 디렉토리를 감시
@@ -213,7 +213,7 @@ def run_watch() -> None:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="97layerOS Signal Router")
+    parser = argparse.ArgumentParser(description="LAYER OS Signal Router")
     parser.add_argument(
         "--once",
         action="store_true",

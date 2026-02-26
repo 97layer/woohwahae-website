@@ -1,5 +1,5 @@
 #!/bin/bash
-# 97layerOS GCP VM → 로컬 knowledge 동기화
+# LAYER OS GCP VM → 로컬 knowledge 동기화
 # Usage: ./sync.sh
 #
 # GCP VM에 쌓인 signals, long_term_memory를 로컬로 pull

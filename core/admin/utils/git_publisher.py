@@ -6,7 +6,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # 97layerOS root
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # LAYER OS root
 
 
 def publish_to_website() -> tuple[bool, str]:

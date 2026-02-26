@@ -8,7 +8,7 @@ from pathlib import Path
 
 import markdown
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # 97layerOS root
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # LAYER OS root
 WEBSITE_DIR = BASE_DIR / 'website'
 ARCHIVE_DIR = WEBSITE_DIR / 'archive'
 INDEX_PATH = ARCHIVE_DIR / 'index.json'
@@ -36,7 +36,7 @@ POST_TEMPLATE = """<!DOCTYPE html>
     </a>
     <ul class="nav-links">
       <li><a href="../../about.html">About</a></li>
-      <li><a href="../../atelier.html">Atelier</a></li>
+      <li><a href="../../practice/">Practice</a></li>
       <li><a href="../../archive/" class="active">Archive</a></li>
       <li><a href="../../contact.html">Contact</a></li>
     </ul>
@@ -71,9 +71,8 @@ POST_TEMPLATE = """<!DOCTYPE html>
         <p class="footer-nav-title">Navigate</p>
         <ul class="footer-nav-list">
           <li><a href="../../about.html">About</a></li>
-          <li><a href="../../atelier.html">Atelier</a></li>
+          <li><a href="../../practice/">Practice</a></li>
           <li><a href="../../archive/">Archive</a></li>
-          <li><a href="../../shop/">Shop</a></li>
           <li><a href="../../contact.html">Contact</a></li>
         </ul>
       </div>

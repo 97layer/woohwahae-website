@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Signal Processor
+LAYER OS Signal Processor
 자동으로 신호를 감지하고 Multi-Agent를 실행
 
 Features:
@@ -9,7 +9,7 @@ Features:
 - 백그라운드 처리
 - 결과 알림
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 

@@ -231,8 +231,7 @@ def generate_post_html(data):
     <ul class="nav-links">
       <li><a href="../..//about/">About</a></li>
       <li><a href="../">Archive</a></li>
-      <li><a href="../..//shop/">Shop</a></li>
-      <li><a href="../..//service/">Atelier</a></li>
+      <li><a href="../../practice/">Practice</a></li>
       <li><a href="../../playlist.html">Playlist</a></li>
       <li><a href="../../project.html">Project</a></li>
       <li><a href="../..//photography/">Photography</a></li>

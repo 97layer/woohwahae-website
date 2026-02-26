@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Intent Classifier
+LAYER OS Intent Classifier
 대화 vs 인사이트 지능형 분류
 
 Features:
@@ -8,7 +8,7 @@ Features:
 - 질문 vs 명령 vs 인사이트 구분
 - 컨텍스트 기반 판단
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Art Director (AD) Agent
+LAYER OS Art Director (AD) Agent
 Phase 6.3: NotebookLM 시각 레퍼런스 쿼리 연동
 
 Role:
@@ -14,7 +14,7 @@ Visual Reference: NotebookLM MCP (WOOHWAHAE 시각 아카이브 참조)
 Queue: Autonomous task claiming via AgentWatcher
 Output: Visual concepts, style guides, image prompts
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Updated: 2026-02-16 (Phase 6.3 — NotebookLM 시각 레퍼런스 연동)
 """
 
@@ -328,7 +328,7 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 시각 아이덴티티를 기반�
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='97layerOS Art Director Agent')
+    parser = argparse.ArgumentParser(description='LAYER OS Art Director Agent')
     parser.add_argument('--agent-id', default='ad-worker-1')
     parser.add_argument('--interval', type=int, default=5)
     parser.add_argument('--test', action='store_true')

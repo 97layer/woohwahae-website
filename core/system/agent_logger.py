@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-97layerOS Agent Event Logger
+LAYER OS Agent Event Logger
 에이전트 활동을 JSONL 형식으로 실시간 기록 → Pixel Dashboard로 스트리밍
 
-Author: 97layerOS + Claude Code
+Author: LAYER OS + Claude Code
 """
 
 import json

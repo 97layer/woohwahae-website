@@ -46,7 +46,7 @@ FROZEN_PATHS = {
     "knowledge/agent_hub/INTELLIGENCE_QUANTA.md",
 }
 
-SYSTEM_PROMPT = """You are a surgical code editor for the 97layerOS / WOOHWAHAE project.
+SYSTEM_PROMPT = """You are a surgical code editor for the LAYER OS / WOOHWAHAE project.
 
 Rules:
 - Return ONLY a JSON object. No prose, no explanation.

@@ -120,6 +120,7 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 ### [2026-02-26 12:00] 인프라 구조조정 — claude-opus
 
 **인프라 재편 실행**:
+
 - nginx: api.woohwahae.kr 서버 블록 추가 (CORS 포함), woohwahae.kr 블록은 CF Pages 전환까지 유지
 - JS: cms.js/photography.js API URL 로컬/프로덕션 동적 판별 적용
 - deploy.sh: scp → git pull 기반으로 재작성
@@ -127,7 +128,8 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 - VM 정리: serve.py(:8081) kill, .DS_Store 삭제
 
 **남은 수동 작업**:
+
 - Cloudflare Dashboard → Pages 연결 (repo + build config)
-- DNS: woohwahae.kr CNAME → pages.dev, api.woohwahae.kr A → VM IP
+- DNS: woohwahae.kr CNAME → pages.dev, api.woohwahae.kr A → VM IP 진행함 - 확인해줘
 
 **업데이트 시간**: 2026-02-26T12:00:00

@@ -324,8 +324,7 @@ async def admin_panel():
                     <option value="">페이지를 선택하세요</option>
                     <option value="index">메인 페이지</option>
                     <option value="about">About</option>
-                    <option value="shop">Shop</option>
-                    <option value="atelier">Atelier</option>
+                    <option value="practice">Practice</option>
                     <option value="playlist">Playlist</option>
                     <option value="project">Project</option>
                     <option value="photography">Photography</option>

@@ -2691,29 +2691,6 @@ main.container--wide {
   border: 1px solid #ef9a9a;
 }
 
-/* ─── Shop (Coming Soon) ─── */
-.shop-coming-soon {
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-  padding: var(--space-2xl) 0;
-}
-
-.shop-coming-desc {
-  font-size: 0.95rem;
-  color: var(--text-sub);
-  line-height: 1.85;
-  max-width: 400px;
-  margin-top: var(--space-md);
-}
-
-.shop-coming-note {
-  font-family: var(--font-body);
-  font-style: italic;
-  color: var(--text-faint);
-  margin-top: var(--space-md);
-}
-
 /* ─── Brand Archive Image ─── */
 .brand-archive-image {
   max-width: 800px;
@@ -3067,23 +3044,6 @@ footer.section--light {
   opacity: 0.6;
 }
 
-/* ─── Shop Grid (Objects) ─── */
-.shop-header {
-  margin-bottom: var(--space-xl);
-  text-align: left;
-}
-
-.shop-price {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  color: var(--text-sub);
-  margin-top: 0.5rem;
-}
-
-.shop-card-info {
-  margin-top: var(--space-sm);
-}
-
 /* ─── Article Header fade-in stagger ─── */
 .article-header .article-meta.fade-in {
   transition-delay: 0s;
@@ -3095,23 +3055,6 @@ footer.section--light {
 
 .article-header .article-subtitle.fade-in {
   transition-delay: 0.15s;
-}
-
-/* ─── Shop Grid (Objects) ─── */
-.shop-header {
-  margin-bottom: var(--space-xl);
-  text-align: left;
-}
-
-.shop-price {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  color: var(--text-sub);
-  margin-top: 0.5rem;
-}
-
-.shop-card-info {
-  margin-top: var(--space-sm);
 }
 
 /* ═══════════════════════════════════════════════
@@ -3724,42 +3667,6 @@ footer.section--light {
     letter-spacing: var(--ls-wide);
     text-transform: uppercase;
     margin-bottom: 2px;
-  }
-}
-
-/* ─── Shop Grid (offering//shop/) ─── */
-.shop-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--line);
-}
-
-.shop-item {
-  background: var(--bg);
-  padding: var(--space-lg) var(--space-md);
-}
-
-.shop-item-img {
-  width: 100%;
-  aspect-ratio: 3/4;
-  background: var(--bg-dark);
-  margin-bottom: var(--space-sm);
-}
-
-.shop-item-name {
-  font-size: 0.88rem;
-  margin-bottom: 4px;
-}
-
-.shop-item-price {
-  font-size: 0.8rem;
-  color: var(--text-faint);
-}
-
-@media (max-width: 767px) {
-  .shop-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MacBook Heartbeat Monitor — 97layerOS
+MacBook Heartbeat Monitor — LAYER OS
 
 역할:
   - MacBook 측에서 30초마다 knowledge/system/execution_context.json 갱신
@@ -158,7 +158,7 @@ def run_once() -> None:
 # ─── CLI ────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="97layerOS Heartbeat Monitor")
+    parser = argparse.ArgumentParser(description="LAYER OS Heartbeat Monitor")
     parser.add_argument(
         "--once",
         action="store_true",

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-97layerOS Real-Time Monitoring Dashboard
+LAYER OS Real-Time Monitoring Dashboard
 Purpose: Display current system status, active tasks, and work progress
 Philosophy: Transparency in slow life - see the process, not just results
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 
@@ -187,7 +187,7 @@ class MonitorDashboard:
         # Header
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print("=" * 80)
-        print("  97layerOS Real-Time Monitoring Dashboard".center(80))
+        print("  LAYER OS Real-Time Monitoring Dashboard".center(80))
         print(f"  {now}".center(80))
         print("=" * 80)
         print()
@@ -276,7 +276,7 @@ class MonitorDashboard:
         Args:
             refresh_interval: Refresh every N seconds
         """
-        print(f"🖥️  Starting 97layerOS Monitoring Dashboard...")
+        print(f"🖥️  Starting LAYER OS Monitoring Dashboard...")
         print(f"   Refreshing every {refresh_interval} seconds")
         print()
         time.sleep(2)
@@ -294,7 +294,7 @@ def main():
     """CLI entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='97layerOS Real-Time Monitoring Dashboard')
+    parser = argparse.ArgumentParser(description='LAYER OS Real-Time Monitoring Dashboard')
     parser.add_argument(
         '--refresh',
         type=int,

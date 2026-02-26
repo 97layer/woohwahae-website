@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Pipeline Orchestrator
+LAYER OS Pipeline Orchestrator
 SA → AD → CE → CD → ContentPublisher 자동 파이프라인
 
 역할:
@@ -13,7 +13,7 @@ SA → AD → CE → CD → ContentPublisher 자동 파이프라인
 
 중복 방지: .infra/queue/orchestrated.json
 
-Author: 97layerOS
+Author: LAYER OS
 Created: 2026-02-17
 """
 

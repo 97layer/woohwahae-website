@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Content Publisher
+LAYER OS Content Publisher
 CD 승인 후 최종 아웃풋 패키징 + Telegram push
 
 아웃풋:
@@ -15,7 +15,7 @@ CD 승인 후 최종 아웃풋 패키징 + Telegram push
 - image.jpg (또는 image_prompt.txt)
 - meta.json
 
-Author: 97layerOS
+Author: LAYER OS
 Created: 2026-02-17
 """
 
@@ -437,7 +437,7 @@ class ContentPublisher:
   <nav>
     <a href="/" class="nav-logo">WOOHWAHAE</a>
     <ul class="nav-links">
-      <li><a href="../../atelier.html">아틀리에</a></li>
+      <li><a href="../../practice/">Practice</a></li>
       <li><a href="../" class="active">아카이브</a></li>
       <li><a href="../../contact.html">연락</a></li>
     </ul>
@@ -510,7 +510,7 @@ class ContentPublisher:
         """website/ 변경사항 git push → GitHub Pages 자동 배포"""
         import subprocess
 
-        repo_root = website_root.parent  # 97layerOS 루트
+        repo_root = website_root.parent  # LAYER OS 루트
         try:
             cmds = [
                 ["git", "-C", str(repo_root), "add", "website/"],

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Conversation Engine
+LAYER OS Conversation Engine
 Gemini LLM을 사용한 자연스러운 대화
 
 Features:
@@ -9,7 +9,7 @@ Features:
 - 대화 컨텍스트 유지
 - 97layer 브랜드 철학 반영
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 
@@ -309,7 +309,7 @@ JSON으로만 응답:
 {knowledge}
 """
 
-        prompt = f"""너는 97layer(순호)의 개인 비서 겸 콘텐츠 실행 파트너야. 이름은 97layerOS.
+        prompt = f"""너는 97layer(순호)의 개인 비서 겸 콘텐츠 실행 파트너야. 이름은 LAYER OS.
 
 순호에 대해 알고 있는 것:
 {self.brand_philosophy[:1500]}
@@ -334,7 +334,7 @@ JSON으로만 응답:
 - 순호의 말이 **질문/대화**면 → 자연스럽게 대화해.
 - 비서답게, 친근하되 존중하는 톤. 감탄사 없이. 결과물 먼저, 설명은 짧게.
 
-97layerOS:"""
+LAYER OS:"""
 
         return prompt
 

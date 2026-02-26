@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-NotebookLM Bridge - 97layerOS
+NotebookLM Bridge - LAYER OS
 notebooklm-py 라이브러리 기반 (HTTP API 직접 호출, 브라우저 불필요)
 
 인증: ~/.notebooklm/storage_state.json (1회 로그인 후 영구 재사용)
       또는 NOTEBOOKLM_AUTH_JSON 환경변수 (GCP/컨테이너 배포용)
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Updated: 2026-02-16 (notebooklm-py 마이그레이션)
 """
 
@@ -23,9 +23,9 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # 97layer 전용 노트북 타이틀
-NB_SIGNAL_ARCHIVE = "97layerOS: Signal Archive"
-NB_ESSAY_ARCHIVE  = "97layerOS: Essay Archive"
-NB_BRAND_GUIDE    = "97layerOS: Identity Framework and System Implementation Guide"
+NB_SIGNAL_ARCHIVE = "LAYER OS: Signal Archive"
+NB_ESSAY_ARCHIVE  = "LAYER OS: Essay Archive"
+NB_BRAND_GUIDE    = "LAYER OS: Identity Framework and System Implementation Guide"
 
 
 def _get_storage_path() -> Optional[Path]:
@@ -91,7 +91,7 @@ def _run(coro):
 
 class NotebookLMBridge:
     """
-    97layerOS NotebookLM 브릿지
+    LAYER OS NotebookLM 브릿지
 
     notebooklm-py 기반. 브라우저 없이 HTTP API 직접 호출.
     동기 인터페이스 제공 (기존 에이전트 코드와 호환).
@@ -350,7 +350,7 @@ def main():
     import argparse
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-    parser = argparse.ArgumentParser(description="97layerOS NotebookLM Bridge CLI")
+    parser = argparse.ArgumentParser(description="LAYER OS NotebookLM Bridge CLI")
     parser.add_argument("command", choices=["status", "list", "query", "add-signal"])
     parser.add_argument("--query",   help="쿼리 텍스트")
     parser.add_argument("--content", help="신호 내용")

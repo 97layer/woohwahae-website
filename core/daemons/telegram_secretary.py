@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Telegram Secretary v6 - JARVIS Plus Edition
+LAYER OS Telegram Secretary v6 - JARVIS Plus Edition
 초고도화된 AI 비서: Deep RAG + Premium UX + Multi-Agent Visibility
 
 Features:
@@ -112,7 +112,7 @@ class TelegramSecretaryV6:
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
         welcome_msg = (
-            f"<b>97layerOS</b>\n\n"
+            f"<b>LAYER OS</b>\n\n"
             f"안녕하세요, {_escape_html(user.first_name)}님.\n\n"
             f"<b>명령어</b>\n"
             f"/status — 파이프라인 현황\n"
@@ -393,7 +393,7 @@ class TelegramSecretaryV6:
                         f"분석:\n{json.dumps(analysis, ensure_ascii=False, indent=2)}\n\n"
                         f"자막 요약:\n{result.get('transcript', '')[:3000]}"
                     )
-                    nb_id = self.notebooklm.get_or_create_notebook("97layerOS: Signal Archive")
+                    nb_id = self.notebooklm.get_or_create_notebook("LAYER OS: Signal Archive")
                     title = f"[YouTube] {analysis.get('title', video_id)[:60]}"
                     self.notebooklm.add_source_text(nb_id, content_text, title)
                     nlm_saved = True

@@ -45,7 +45,7 @@ Server will run on `http://localhost:5000`
 curl -X POST http://localhost:5000/api/archive \
   -H "Content-Type: application/json" \
   -d '{
-    "slug": "issue-004-minimal-life",
+    "slug": "essay-004-minimal-life",
     "title": "미니멀 라이프",
     "date": "2026.02.18",
     "issue": "Issue 004",

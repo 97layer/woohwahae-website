@@ -51,22 +51,8 @@ const isDevelopment = window.location.hostname === 'localhost' || window.locatio
         }
     };
 
-    // Shop 제품 클릭 트래킹
+    // 링크 클릭 트래킹
     document.addEventListener('DOMContentLoaded', function() {
-        // 제품 카드 클릭 트래킹
-        document.querySelectorAll('.product-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const productName = this.querySelector('.product-name')?.textContent;
-                const productPrice = this.querySelector('.product-price')?.textContent;
-
-                trackEvent('select_item', {
-                    item_name: productName,
-                    price: productPrice,
-                    currency: 'KRW'
-                });
-            });
-        });
-
         // 카카오톡 버튼 클릭 트래킹
         document.querySelectorAll('a[href*="kakao"]').forEach(link => {
             link.addEventListener('click', function() {

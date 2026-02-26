@@ -1,5 +1,5 @@
 """
-97layerOS Environment Validator
+LAYER OS Environment Validator
 ================================
 모든 에이전트/서비스 시작 시 호출.
 필수 환경변수 누락 → 즉시 FATAL 출력 후 종료.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Cortex Edge
+LAYER OS Cortex Edge
 The Central Intelligence Gateway for systemic coordination.
 
 Features:

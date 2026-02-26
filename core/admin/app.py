@@ -1,6 +1,6 @@
 """
 WOOHWAHAE Admin Panel
-Flask-based CMS for managing archive posts and reviewing 97layerOS pipeline output.
+Flask-based CMS for managing archive posts and reviewing LAYER OS pipeline output.
 """
 
 import os
@@ -32,7 +32,7 @@ except ImportError:
     pass
 
 # ─── Paths ───
-BASE_DIR = Path(__file__).resolve().parent.parent.parent  # 97layerOS root
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # LAYER OS root
 sys.path.insert(0, str(BASE_DIR))  # core.system 접근용
 
 # Ritual / Growth 모듈
@@ -50,7 +50,7 @@ UPLOAD_DIR = WEBSITE_DIR / 'assets' / 'img' / 'uploads'
 SIGNALS_DIR = BASE_DIR / 'knowledge' / 'signals'
 MEMORY_FILE = BASE_DIR / 'knowledge' / 'long_term_memory.json'
 AUDIT_LOG_FILE = BASE_DIR / 'knowledge' / 'reports' / 'audit.log'
-OFFERING_FILE = BASE_DIR / 'knowledge' / 'offering' / 'items.json'
+SERVICE_FILE = BASE_DIR / 'knowledge' / 'service' / 'items.json'
 TELEGRAM_LOG_FILE = BASE_DIR / 'logs' / 'telegram.log'
 SYSTEMD_SERVICES = ['97layer-telegram', '97layer-ecosystem', '97layer-gardener']
 
@@ -516,7 +516,7 @@ def upload_image():
 @login_required
 def growth_dashboard():
     if not _MODULES_AVAILABLE:
-        flash('모듈 로드 실패. core/modules 경로 확인.')
+        flash('모듈 로드 실패. core/system 경로 확인.')
         return redirect(url_for('dashboard'))
 
     gm = get_growth_module()
@@ -579,7 +579,7 @@ def growth_revenue():
 @login_required
 def ritual_dashboard():
     if not _MODULES_AVAILABLE:
-        flash('모듈 로드 실패. core/modules 경로 확인.')
+        flash('모듈 로드 실패. core/system 경로 확인.')
         return redirect(url_for('dashboard'))
 
     rm = get_ritual_module()
@@ -904,39 +904,39 @@ def command_api():
     return jsonify(result)
 
 
-# ─── 오퍼링 관리 ───
+# ─── 서비스 관리 ───
 
-def _load_offering_items() -> list:
-    if not OFFERING_FILE.exists():
+def _load_service_items() -> list:
+    if not SERVICE_FILE.exists():
         return []
     try:
-        return json.loads(OFFERING_FILE.read_text(encoding='utf-8'))
+        return json.loads(SERVICE_FILE.read_text(encoding='utf-8'))
     except (json.JSONDecodeError, IOError):
         return []
 
 
-def _save_offering_items(items: list) -> None:
-    OFFERING_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OFFERING_FILE.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding='utf-8')
+def _save_service_items(items: list) -> None:
+    SERVICE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SERVICE_FILE.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding='utf-8')
 
 
-@app.route('/offering')
+@app.route('/service')
 @login_required
-def offering_admin():
-    items = _load_offering_items()
-    _audit('offering_view')
+def service_admin():
+    items = _load_service_items()
+    _audit('service_view')
     return render_template('offering.html', items=items)
 
 
-@app.route('/offering/add', methods=['POST'])
+@app.route('/service/add', methods=['POST'])
 @login_required
-def offering_add():
+def service_add():
     name = request.form.get('name', '').strip()
     if not name:
         flash('이름은 필수입니다.')
-        return redirect(url_for('offering_admin'))
+        return redirect(url_for('service_admin'))
 
-    items = _load_offering_items()
+    items = _load_service_items()
     item_id = 'item_%03d' % (len(items) + 1)
     items.append({
         'item_id': item_id,
@@ -948,23 +948,23 @@ def offering_add():
         'url': request.form.get('url', '').strip(),
         'created_at': datetime.now().strftime('%Y-%m-%d'),
     })
-    _save_offering_items(items)
-    _audit('offering_add', 'name=%s' % name)
+    _save_service_items(items)
+    _audit('service_add', 'name=%s' % name)
     flash('"%s" 추가되었습니다.' % name)
-    return redirect(url_for('offering_admin'))
+    return redirect(url_for('service_admin'))
 
 
-@app.route('/offering/<item_id>/toggle', methods=['POST'])
+@app.route('/service/<item_id>/toggle', methods=['POST'])
 @login_required
-def offering_toggle(item_id):
-    items = _load_offering_items()
+def service_toggle(item_id):
+    items = _load_service_items()
     for item in items:
         if item.get('item_id') == item_id:
             item['active'] = not item.get('active', True)
             break
-    _save_offering_items(items)
-    _audit('offering_toggle', 'item=%s' % item_id)
-    return redirect(url_for('offering_admin'))
+    _save_service_items(items)
+    _audit('service_toggle', 'item=%s' % item_id)
+    return redirect(url_for('service_admin'))
 
 
 # ─── 도구 ───

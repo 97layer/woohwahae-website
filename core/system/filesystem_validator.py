@@ -145,7 +145,6 @@ def validate_write(path: Path) -> Tuple[bool, str]:
             "knowledge/system/",
             "knowledge/docs/",
             "knowledge/brands/",
-            "knowledge/offering/",
             "knowledge/service/",
             "knowledge/corpus/",  # index.json, entries/
         ]

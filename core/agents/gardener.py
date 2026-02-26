@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Gardener — 97layerOS 자가진화 에이전트
+Gardener — LAYER OS 자가진화 에이전트
 
 매일 새벽 3시 실행. 데이터를 분석하고 시스템을 진화시킨다.
 
@@ -9,7 +9,7 @@ Gardener — 97layerOS 자가진화 에이전트
   PROPOSE — 순호 승인 후 적용 (SA/AD/CE.md, intent 기준)
   AUTO    — 자동 갱신 (long_term_memory, QUANTA)
 
-Author: 97layerOS
+Author: LAYER OS
 Updated: 2026-02-16
 """
 
@@ -177,7 +177,7 @@ class Gardener:
         joon_content = self._load_directive('SA.md')
         if joon_content and stats['top_themes']:
             themes_str = ', '.join(f"{t}({c}회)" for t, c in stats['top_themes'][:5])
-            prompt = f"""너는 97layerOS Gardener다.
+            prompt = f"""너는 LAYER OS Gardener다.
 
 지난 {stats['period_days']}일 데이터:
 - 신호 수: {stats['signal_count']}개
@@ -325,7 +325,7 @@ JSON만 출력."""
 
         concepts_str = ", ".join(k for k, _ in top_concepts)
 
-        prompt = f"""너는 97layerOS의 지식 큐레이터다.
+        prompt = f"""너는 LAYER OS의 지식 큐레이터다.
 
 아래는 최근 수집된 신호들의 요약이다:
 {entries_text}
@@ -832,7 +832,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-    parser = argparse.ArgumentParser(description='97layerOS Gardener')
+    parser = argparse.ArgumentParser(description='LAYER OS Gardener')
     parser.add_argument('--run-now', action='store_true', help='즉시 1회 실행')
     parser.add_argument('--days', type=int, default=7, help='분석 기간 (기본: 7일)')
     parser.add_argument('--schedule', action='store_true', help='24시간 스케줄 모드')

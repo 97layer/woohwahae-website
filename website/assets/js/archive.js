@@ -81,8 +81,8 @@ function renderGrid(posts, category) {
                 <img src="${imageUrl}" alt="${post.title}" loading="lazy">
             </div>
             <div class="archive-card-meta">
-                <span class="issue-num">${post.issue || 'ISSUE'}</span>
-                <span class="issue-date">${post.date}</span>
+                <span class="essay-num">${post.essay || 'ESSAY'}</span>
+                <span class="essay-date">${post.date}</span>
             </div>
             <h3 class="archive-card-title">${post.title}</h3>
             <p class="archive-card-preview">${post.preview}</p>

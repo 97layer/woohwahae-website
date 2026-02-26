@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-97layerOS YouTube Analyzer
+LAYER OS YouTube Analyzer
 Automatically extracts, analyzes, and stores YouTube content
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-97layerOS Image Analyzer
+LAYER OS Image Analyzer
 Automatically analyzes images and extracts insights
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 

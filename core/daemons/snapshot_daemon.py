@@ -56,7 +56,7 @@ def verify_environment():
 def create_snapshot():
     """실제 스냅샷 생성"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    zip_filename = f"97layerOS_Intelligence_{timestamp}.zip"
+    zip_filename = f"LAYER_OS_Intelligence_{timestamp}.zip"
 
     # 작업 디렉토리 생성
     Path(TEMP_WORK_DIR).mkdir(parents=True, exist_ok=True)

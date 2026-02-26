@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-97layerOS Google Drive Sync Utility
+LAYER OS Google Drive Sync Utility
 Purpose: Sync intelligence files (INTELLIGENCE_QUANTA.md, daily reports) to Google Drive
 Philosophy: Cloud-backed session continuity for model-agnostic knowledge preservation
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Created: 2026-02-16
 """
 
@@ -29,7 +29,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 class GDriveSync:
     """
-    Google Drive Sync for 97layerOS Knowledge Base
+    Google Drive Sync for LAYER OS Knowledge Base
 
     Features:
     - Upload INTELLIGENCE_QUANTA.md (session continuity)
@@ -309,7 +309,7 @@ def main():
     """CLI interface for manual sync"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='97layerOS Google Drive Sync')
+    parser = argparse.ArgumentParser(description='LAYER OS Google Drive Sync')
     parser.add_argument('--intelligence', action='store_true', help='Sync INTELLIGENCE_QUANTA.md')
     parser.add_argument('--reports', action='store_true', help='Sync daily reports')
     parser.add_argument('--all', action='store_true', help='Sync everything')

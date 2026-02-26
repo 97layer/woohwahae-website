@@ -9,17 +9,18 @@ description: FILESYSTEM_MANIFEST 기반 배치 규칙 조회
 ## 실행 순서
 
 1. **매니페스트 읽기**
+
 ```bash
 cat directives/MANIFEST.md
 ```
 
-2. **산출물 배치 규칙 요약 출력**
+1. **산출물 배치 규칙 요약 출력**
 
 | 산출물 유형 | 저장 경로 | 명명 규칙 |
 |---|---|---|
 | 신호 (원시) | knowledge/signals/ | {type}_{YYYYMMDD}_{HHMMSS}.json |
 | 신호 (분석) | knowledge/corpus/entries/ | entry_{signal_id}.json |
-| 에세이 HTML | website/archive/issue-{NNN}-{slug}/ | index.html |
+| 에세이 HTML | website/archive/essay-{NNN}-{slug}/ | index.html |
 | 리포트 | knowledge/reports/ | {type}_{YYYYMMDD}.md |
 | 자산 등록 | knowledge/system/asset_registry.json | append |
 | 에이전트 제안 | knowledge/agent_hub/council_room.md | append |

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-97layerOS Chief Editor (CE) Agent
+LAYER OS Chief Editor (CE) Agent
 Phase 6.3: NotebookLM 브랜드 가이드 쿼리 연동
 
 Role:
@@ -14,7 +14,7 @@ Brand Reference: NotebookLM MCP (쿠키 인증 필요, 없으면 fallback)
 Queue: Autonomous task claiming via AgentWatcher
 Output: Finalized content ready for CD approval
 
-Author: 97layerOS Technical Director
+Author: LAYER OS Technical Director
 Updated: 2026-02-16 (Phase 6.3 — NotebookLM 브랜드 연동)
 """
 
@@ -500,7 +500,7 @@ JSON만 출력."""
             d for d in archive_dir.iterdir()
             if d.is_dir() and _re.match(r'essay-\d+', d.name)
         ])
-        # issue-00 ~ issue-008 형태 모두 포함해서 최댓값 추출
+        # essay-000 ~ essay-008 형태 모두 포함해서 최댓값 추출
         max_num = 0
         for d in existing:
             m = _re.match(r'essay-0*(\d+)', d.name)
@@ -652,7 +652,7 @@ if __name__ == '__main__':
     from core.system.env_validator import validate_env
     validate_env("ce_agent")
 
-    parser = argparse.ArgumentParser(description='97layerOS Chief Editor Agent')
+    parser = argparse.ArgumentParser(description='LAYER OS Chief Editor Agent')
     parser.add_argument('--agent-id', default='ce-worker-1')
     parser.add_argument('--interval', type=int, default=5)
     parser.add_argument('--test', action='store_true')
