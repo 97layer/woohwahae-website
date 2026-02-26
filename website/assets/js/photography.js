@@ -6,7 +6,8 @@
 (function() {
     'use strict';
 
-    const API_URL = 'http://localhost:8083';
+    const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    const API_URL = IS_LOCAL ? 'http://localhost:8083' : 'https://api.woohwahae.kr/photos';
     let currentCategory = 'all';
     let allImages = [];
 

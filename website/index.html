@@ -1,27 +1,25 @@
 <!DOCTYPE html>
-<html lang="ko">
 
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WOOHWAHAE — Remove the Noise, Reveal the Essence.">
-  <meta property="og:title" content="WOOHWAHAE">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://woohwahae.kr/">
-  <title>WOOHWAHAE</title>
-  <meta name="theme-color" content="#E3E2E0">
-  <link rel="icon" href="assets/media/brand/symbol.png" type="image/png">
-  <link rel="apple-touch-icon" href="assets/media/brand/icon-192.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="stylesheet" href="assets/css/style.css?v=hero1">
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="WOOHWAHAE — Remove the Noise, Reveal the Essence." name="description"/>
+<meta content="WOOHWAHAE" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://woohwahae.kr/" property="og:url"/>
+<title>WOOHWAHAE</title>
+<meta content="#E3E2E0" name="theme-color"/>
+<link href="assets/media/brand/symbol.png" rel="icon" type="image/png"/>
+<link href="assets/media/brand/icon-192.png" rel="apple-touch-icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
+<link href="assets/css/style.css?v=hero1" rel="stylesheet"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
     (function () {
       var h = new Date().getHours();
       document.documentElement.className =
@@ -31,93 +29,87 @@
     })();
   </script>
 </head>
+<body class="page-home"><nav class="site-nav" id="site-nav">
+<a aria-label="WOOHWAHAE" class="nav-brand" href="./">
+<img alt="WOOHWAHAE" class="nav-symbol" src="./assets/img/symbol.png"/>
+</a>
+<ul class="nav-links" id="nav-links">
+<li><a href="./archive/">Archive</a></li>
+<li><a href="./practice/">Practice</a></li>
+<li><a href="./about/">About</a></li>
+</ul>
+<button aria-expanded="false" aria-label="메뉴" class="nav-toggle" id="nav-toggle">
+<span></span><span></span>
+</button>
+</nav><div class="nav-overlay" id="nav-overlay">
+<a href="./archive/">Archive</a>
+<a href="./practice/">Practice</a>
+<a href="./about/">About</a>
+</div><!-- wave-bg 추가 --><div aria-hidden="true" class="wave-bg" style="position:fixed;top:50%;left:50%;
+           transform:translate(-50%,-50%);
+           width:120vmax;height:120vmax;
+           z-index:0;pointer-events:none;opacity:0.6">
+<svg height="100%" viewbox="0 0 800 800" width="100%">
+<g fill="none" opacity="0.4" stroke="#D5D4CF" stroke-width="0.5">
+<circle cx="400" cy="400" opacity="0.4" r="60">
+<animate attributename="r" begin="0s" dur="3.8s" repeatcount="indefinite" values="60;70;60"></animate>
+<animate attributename="opacity" begin="0s" dur="3.8s" repeatcount="indefinite" values="0.4;0.2;0.4"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.3" r="140">
+<animate attributename="r" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="140;155;140"></animate>
+<animate attributename="opacity" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="0.3;0.15;0.3"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.2" r="240">
+<animate attributename="r" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="240;260;240"></animate>
+<animate attributename="opacity" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="0.2;0.1;0.2"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.12" r="360">
+<animate attributename="r" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="360;385;360"></animate>
+<animate attributename="opacity" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="0.12;0.05;0.12"></animate>
+</circle>
+</g>
+</svg>
+</div>
 
-<body class="page-home">
 
-  <canvas id="field-bg" class="field-bg"></canvas>
+<!-- wave-bg 추가 -->
+<canvas class="field-bg" id="field-bg"></canvas>
+<!-- 홈 히어로: 100dvh -->
+<section class="home-hero">
+<div aria-hidden="true" class="home-hero__svg">
+<object class="home-hero__graphic" data="assets/media/brand/hero-graphic.svg" type="image/svg+xml"></object>
+</div>
+<p class="home-brand" data-breath="">WOOHWAHAE</p>
+</section>
+<!-- 홈 하단: 간결한 입구 -->
+<section class="home-below">
+<div class="home-below__inner container--content">
+</div>
+</section>
+<script defer="" src="assets/js/bg-field.js"></script>
+<script defer="" src="assets/js/site.js"></script>
 
-  <nav class="site-nav" id="site-nav">
-    <a href="/" class="nav-brand" aria-label="WOOHWAHAE">
-      <img src="assets/media/brand/symbol.png" alt="WOOHWAHAE" class="nav-symbol">
-    </a>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="practice/">Practice</a></li>
-      <li><a href="about/">About</a></li>
-    </ul>
-    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
-      <span></span><span></span>
-    </button>
-  </nav>
-
-  <div class="nav-overlay" id="nav-overlay">
-    <a href="archive/">Archive</a>
-    <a href="practice/">Practice</a>
-    <a href="about/">About</a>
-  </div>
-
-  <!-- 홈 히어로: 100dvh -->
-  <section class="home-hero">
-    <div class="home-hero__svg" aria-hidden="true">
-      <object data="assets/media/brand/hero-graphic.svg" type="image/svg+xml" class="home-hero__graphic"></object>
-    </div>
-    <p class="home-brand" data-breath>WOOHWAHAE</p>
-  </section>
-
-  <!-- 홈 하단: 간결한 입구 -->
-  <section class="home-below">
-    <div class="home-below__inner container--content">
-
-      <nav class="home-entries" data-reveal>
-        <a href="archive/" class="home-entry">
-          <span class="home-entry__label">Archive</span>
-          <span class="home-entry__desc">사유의 지층.</span>
-          <span class="home-entry__arrow">→</span>
-        </a>
-        <a href="practice/" class="home-entry">
-          <span class="home-entry__label">Practice</span>
-          <span class="home-entry__desc">예약제. 1일 3명.</span>
-          <span class="home-entry__arrow">→</span>
-        </a>
-        <a href="about/" class="home-entry">
-          <span class="home-entry__label">About</span>
-          <span class="home-entry__desc">반지하 8평의 철학.</span>
-          <span class="home-entry__arrow">→</span>
-        </a>
-      </nav>
-
-    </div>
-  </section>
-
-  <footer class="site-footer">
-    <div class="footer-inner">
-
-      <div class="footer-contact">
-        <span class="footer-contact__label">Contact</span>
-        <div class="footer-contact__grid">
-          <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-          <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <nav class="footer-nav">
-          <a href="archive/">Archive</a>
-          <a href="practice/">Practice</a>
-          <a href="about/">About</a>
-        </nav>
-        <div class="footer-legal">
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Terms</a>
-        </div>
-        <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
-      </div>
-
-    </div>
-  </footer>
-
-  <script src="assets/js/bg-field.js" defer></script>
-  <script src="assets/js/site.js" defer></script>
-</body>
-
+<footer class="site-footer">
+<div class="footer-inner">
+<div class="footer-contact">
+<span class="footer-contact__label">Contact</span>
+<div class="footer-contact__grid">
+<a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+<a href="https://instagram.com/woohwahae" rel="noopener" target="_blank">@woohwahae</a>
+</div>
+</div>
+<div class="footer-bottom">
+<nav class="footer-nav">
+<a href="./archive/">Archive</a>
+<a href="./practice/">Practice</a>
+<a href="./about/">About</a>
+</nav>
+<div class="footer-legal">
+<a href="./privacy.html">Privacy</a>
+<a href="./terms.html">Terms</a>
+</div>
+<p class="footer-copy">© 2026 WOOHWAHAE</p>
+</div>
+</div>
+</footer></body>
 </html>

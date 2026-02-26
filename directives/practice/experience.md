@@ -1,6 +1,6 @@
 # Experience Map — 웹사이트 경험 설계
 
-> **상위**: THE_ORIGIN.md Part III §3.6
+> **상위**: THE_ORIGIN.md §2.5 (3섹션 IA)
 > **역할**: 7개의 발현체(섹션 IA)와 기술 스택의 실무 규격.
 > **권한**: PROPOSE
 

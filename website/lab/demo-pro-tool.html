@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="ko">
 
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sectioning Architect 3D (B2B SaaS Mockup)</title>
-    <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" href="../assets/img/symbol.png" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sectioning Architect 3D (B2B SaaS Mockup)</title>
+<meta content="noindex, nofollow" name="robots"/>
+<link href="../assets/img/symbol.png" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
+<style>
         :root {
             --bg: #1a1814;
             --panel: #22201c;
@@ -147,72 +147,104 @@
         }
     </style>
 </head>
+<body><nav class="site-nav" id="site-nav">
+<a aria-label="WOOHWAHAE" class="nav-brand" href="../">
+<img alt="WOOHWAHAE" class="nav-symbol" src="../assets/img/symbol.png"/>
+</a>
+<ul class="nav-links" id="nav-links">
+<li><a href="../archive/">Archive</a></li>
+<li><a href="../practice/">Practice</a></li>
+<li><a href="../about/">About</a></li>
+</ul>
+<button aria-expanded="false" aria-label="메뉴" class="nav-toggle" id="nav-toggle">
+<span></span><span></span>
+</button>
+</nav><div class="nav-overlay" id="nav-overlay">
+<a href="../archive/">Archive</a>
+<a href="../practice/">Practice</a>
+<a href="../about/">About</a>
+</div><!-- wave-bg 추가 --><div aria-hidden="true" class="wave-bg" style="position:fixed;top:50%;left:50%;
+           transform:translate(-50%,-50%);
+           width:120vmax;height:120vmax;
+           z-index:0;pointer-events:none;opacity:0.6">
+<svg height="100%" viewbox="0 0 800 800" width="100%">
+<g fill="none" opacity="0.4" stroke="#D5D4CF" stroke-width="0.5">
+<circle cx="400" cy="400" opacity="0.4" r="60">
+<animate attributename="r" begin="0s" dur="3.8s" repeatcount="indefinite" values="60;70;60"></animate>
+<animate attributename="opacity" begin="0s" dur="3.8s" repeatcount="indefinite" values="0.4;0.2;0.4"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.3" r="140">
+<animate attributename="r" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="140;155;140"></animate>
+<animate attributename="opacity" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="0.3;0.15;0.3"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.2" r="240">
+<animate attributename="r" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="240;260;240"></animate>
+<animate attributename="opacity" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="0.2;0.1;0.2"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.12" r="360">
+<animate attributename="r" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="360;385;360"></animate>
+<animate attributename="opacity" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="0.12;0.05;0.12"></animate>
+</circle>
+</g>
+</svg>
+</div>
 
-<body>
 
-    <script>
+<!-- wave-bg 추가 -->
+
+<!-- wave-bg 추가 -->
+<script>
         // Protection fallback
         if (sessionStorage.getItem('wh_pro_access') !== 'granted') {
             window.location.href = 'private-auth.html';
         }
     </script>
-
-    <div class="viewport">
-        <div class="overlay-ui">
-            <div class="overlay-status" id="viewStatus">뷰: 측후면 (Side-Back) | 각도: 45°</div>
-        </div>
-        <canvas id="appCanvas"></canvas>
-    </div>
-
-    <div class="sidebar">
-        <div class="header">
-            <div class="header-tag">WOOHWAHAE Pro System</div>
-            <h1 class="header-title">Sectioning Architect 3D</h1>
-        </div>
-
-        <div class="controls">
-            <div class="control-group">
-                <div class="control-label">Base Skeleton</div>
-                <div class="tool-grid">
-                    <button class="btn active" onclick="alert('B2B SaaS 프로토타입: 두상 베이스 로드됨.')">Head Mesh</button>
-                    <button class="btn" onclick="alert('B2B SaaS 프로토타입: 골격 표고점 표시됨.')">Bones</button>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">Division Tools (나누기)</div>
-                <div class="tool-grid">
-                    <button class="btn">Horizontal</button>
-                    <button class="btn">Vertical</button>
-                    <button class="btn">Diagonal Fwd</button>
-                    <button class="btn">Diagonal Back</button>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <div class="control-label">Weight Line (무게선)</div>
-                <input type="range" min="0" max="100" value="30" style="width: 100%;">
-                <div
-                    style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-top: 0.4rem;">
-                    <span>High Layer</span>
-                    <span>Bob (Heavy)</span>
-                </div>
-            </div>
-
-            <p
-                style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); line-height: 1.6; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                * 본 툴은 미용 아카데미 및 프로페셔널 스페셜리스트를 위한 B2B 구독 교육 플랫폼 프로토타입입니다.<br><br>
+<div class="viewport">
+<div class="overlay-ui">
+<div class="overlay-status" id="viewStatus">뷰: 측후면 (Side-Back) | 각도: 45°</div>
+</div>
+<canvas id="appCanvas"></canvas>
+</div>
+<div class="sidebar">
+<div class="header">
+<div class="header-tag">WOOHWAHAE Pro System</div>
+<h1 class="header-title">Sectioning Architect 3D</h1>
+</div>
+<div class="controls">
+<div class="control-group">
+<div class="control-label">Base Skeleton</div>
+<div class="tool-grid">
+<button class="btn active" onclick="alert('B2B SaaS 프로토타입: 두상 베이스 로드됨.')">Head Mesh</button>
+<button class="btn" onclick="alert('B2B SaaS 프로토타입: 골격 표고점 표시됨.')">Bones</button>
+</div>
+</div>
+<div class="control-group">
+<div class="control-label">Division Tools (나누기)</div>
+<div class="tool-grid">
+<button class="btn">Horizontal</button>
+<button class="btn">Vertical</button>
+<button class="btn">Diagonal Fwd</button>
+<button class="btn">Diagonal Back</button>
+</div>
+</div>
+<div class="control-group">
+<div class="control-label">Weight Line (무게선)</div>
+<input max="100" min="0" style="width: 100%;" type="range" value="30"/>
+<div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-top: 0.4rem;">
+<span>High Layer</span>
+<span>Bob (Heavy)</span>
+</div>
+</div>
+<p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); line-height: 1.6; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                * 본 툴은 미용 아카데미 및 프로페셔널 스페셜리스트를 위한 B2B 구독 교육 플랫폼 프로토타입입니다.<br/><br/>
                 2D 평면 화이트보드 교육의 한계를 극복하고 시각적 아카이빙 폴더를 구축합니다.
             </p>
-        </div>
-
-        <button class="btn btn-export"
-            onclick="alert('디지털 자산(PDF/3D Link)으로 Export되어 결제/공유를 위한 URL이 생성됩니다.\n→ 월간 구독자 전용 기능')">Export Recipe to
+</div>
+<button class="btn btn-export" onclick="alert('디지털 자산(PDF/3D Link)으로 Export되어 결제/공유를 위한 URL이 생성됩니다.\n→ 월간 구독자 전용 기능')">Export Recipe to
             PDF</button>
-    </div>
-
-    <!-- Three.js -->
-    <script type="importmap">
+</div>
+<!-- Three.js -->
+<script type="importmap">
   {
     "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
@@ -220,7 +252,7 @@
     }
   }
   </script>
-    <script type="module">
+<script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -310,6 +342,28 @@
         }
         animate();
     </script>
-</body>
 
+<footer class="site-footer">
+<div class="footer-inner">
+<div class="footer-contact">
+<span class="footer-contact__label">Contact</span>
+<div class="footer-contact__grid">
+<a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+<a href="https://instagram.com/woohwahae" rel="noopener" target="_blank">@woohwahae</a>
+</div>
+</div>
+<div class="footer-bottom">
+<nav class="footer-nav">
+<a href="../archive/">Archive</a>
+<a href="../practice/">Practice</a>
+<a href="../about/">About</a>
+</nav>
+<div class="footer-legal">
+<a href="../privacy.html">Privacy</a>
+<a href="../terms.html">Terms</a>
+</div>
+<p class="footer-copy">© 2026 WOOHWAHAE</p>
+</div>
+</div>
+</footer></body>
 </html>

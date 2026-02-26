@@ -1,83 +1,77 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>결제 실패 — WOOHWAHAE</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=tone1">
-  <script src="assets/js/payment.js" defer></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>결제 실패 — WOOHWAHAE</title>
+<link href="assets/css/style.css?v=tone1" rel="stylesheet"/>
+<script defer="" src="assets/js/payment.js"></script>
 </head>
-<body onload="handlePaymentFail()">
+<body onload="handlePaymentFail()"><nav class="site-nav" id="site-nav">
+<a aria-label="WOOHWAHAE" class="nav-brand" href="./">
+<img alt="WOOHWAHAE" class="nav-symbol" src="./assets/img/symbol.png"/>
+</a>
+<ul class="nav-links" id="nav-links">
+<li><a href="./archive/">Archive</a></li>
+<li><a href="./practice/">Practice</a></li>
+<li><a href="./about/">About</a></li>
+</ul>
+<button aria-expanded="false" aria-label="메뉴" class="nav-toggle" id="nav-toggle">
+<span></span><span></span>
+</button>
+</nav><div class="nav-overlay" id="nav-overlay">
+<a href="./archive/">Archive</a>
+<a href="./practice/">Practice</a>
+<a href="./about/">About</a>
+</div><!-- wave-bg 추가 --><div aria-hidden="true" class="wave-bg" style="position:fixed;top:50%;left:50%;
+           transform:translate(-50%,-50%);
+           width:120vmax;height:120vmax;
+           z-index:0;pointer-events:none;opacity:0.6">
+<svg height="100%" viewbox="0 0 800 800" width="100%">
+<g fill="none" opacity="0.4" stroke="#D5D4CF" stroke-width="0.5">
+<circle cx="400" cy="400" opacity="0.4" r="60">
+<animate attributename="r" begin="0s" dur="3.8s" repeatcount="indefinite" values="60;70;60"></animate>
+<animate attributename="opacity" begin="0s" dur="3.8s" repeatcount="indefinite" values="0.4;0.2;0.4"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.3" r="140">
+<animate attributename="r" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="140;155;140"></animate>
+<animate attributename="opacity" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="0.3;0.15;0.3"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.2" r="240">
+<animate attributename="r" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="240;260;240"></animate>
+<animate attributename="opacity" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="0.2;0.1;0.2"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.12" r="360">
+<animate attributename="r" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="360;385;360"></animate>
+<animate attributename="opacity" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="0.12;0.05;0.12"></animate>
+</circle>
+</g>
+</svg>
+</div>
 
-  <nav>
-    <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="/service/">Service</a></li>
-      <li><a href="/about/">About</a></li>
-      <li><a href="practice/">Practice</a></li>
-      <li></li>
-    </ul>
-    <button class="nav-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
 
-  <main class="container--wide" style="padding-top: var(--space-xl); min-height: 60vh;">
-    <div class="mag-row mag-row--intro fade-in">
-      <div class="mag-label">
-        <p class="section-label">Payment Failed</p>
-        <p class="mag-heading">결제<br>실패</p>
-      </div>
-      <div class="mag-body">
-        <p class="lead">결제가 완료되지 않았습니다.</p>
-        <p id="error-info">오류 정보를 확인하는 중...</p>
-        <p style="margin-top: 2rem;">
+<!-- wave-bg 추가 -->
+
+<!-- wave-bg 추가 -->
+<main class="container--wide" style="padding-top: var(--space-xl); min-height: 60vh;">
+<div class="mag-row mag-row--intro fade-in">
+<div class="mag-label">
+<p class="section-label">Payment Failed</p>
+<p class="mag-heading">결제<br/>실패</p>
+</div>
+<div class="mag-body">
+<p class="lead">결제가 완료되지 않았습니다.</p>
+<p id="error-info">오류 정보를 확인하는 중...</p>
+<p style="margin-top: 2rem;">
           문제가 계속되면 hello@woohwahae.kr로 문의해주세요.
         </p>
-        <a href="/service/" class="cta-inline" style="margin-top: 2rem;">다시 시도하기 →</a>
-      </div>
-    </div>
-  </main>
-
-  <footer class="section--light">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <img src="assets/img/symbol.png" alt="WOOHWAHAE" width="28" class="footer-brand-symbol">
-        <p class="footer-brand-name">WOOHWAHAE</p>
-        <p class="footer-brand-desc">Archive for Slow Life</p>
-      </div>
-      <div>
-        <p class="footer-nav-title">Navigate</p>
-        <ul class="footer-nav-list">
-          <li><a href="archive/">Archive</a></li>
-          <li><a href="/service/">Service</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="practice/">Practice</a></li>
-          <li></li>
-        </ul>
-      </div>
-      <div>
-        <p class="footer-connect-title">Connect</p>
-        <ul class="footer-connect-list">
-          <li><a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="mailto:hello@woohwahae.kr">Email</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE &middot; Archive for Slow Life</p>
-      <div class="footer-legal">
-        <a href="privacy.html">개인정보처리방침</a>
-        <a href="terms.html">이용약관</a>
-      </div>
-    </div>
-  </footer>
-
-  <script src="assets/js/main.js"></script>
-  <script>
+<a class="cta-inline" href="/service/" style="margin-top: 2rem;">다시 시도하기 →</a>
+</div>
+</div>
+</main>
+<script src="assets/js/main.js"></script>
+<script>
     // 오류 정보 표시
     function handlePaymentFail() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -92,5 +86,28 @@
       }
     }
   </script>
-</body>
+
+<footer class="site-footer">
+<div class="footer-inner">
+<div class="footer-contact">
+<span class="footer-contact__label">Contact</span>
+<div class="footer-contact__grid">
+<a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+<a href="https://instagram.com/woohwahae" rel="noopener" target="_blank">@woohwahae</a>
+</div>
+</div>
+<div class="footer-bottom">
+<nav class="footer-nav">
+<a href="./archive/">Archive</a>
+<a href="./practice/">Practice</a>
+<a href="./about/">About</a>
+</nav>
+<div class="footer-legal">
+<a href="./privacy.html">Privacy</a>
+<a href="./terms.html">Terms</a>
+</div>
+<p class="footer-copy">© 2026 WOOHWAHAE</p>
+</div>
+</div>
+</footer></body>
 </html>

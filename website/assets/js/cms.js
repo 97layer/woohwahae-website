@@ -10,7 +10,8 @@
 (function() {
     'use strict';
 
-    const CMS_API = 'http://localhost:8082/api';
+    const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    const CMS_API = IS_LOCAL ? 'http://localhost:8082/api' : 'https://api.woohwahae.kr/cms';
     let isEditMode = false;
     let adminToken = localStorage.getItem('woohwahae_admin_token');
 

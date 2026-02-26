@@ -1,6 +1,6 @@
 # Audience — 타겟 독자 정의
 
-> **상위**: THE_ORIGIN.md Part III §3.5
+> **상위**: THE_ORIGIN.md §2.5 (3섹션 IA)
 > **역할**: 주파수를 수신할 공명자(Resonator) 공간의 실무 규격.
 > **권한**: PROPOSE (Gardener 제안 → CD 승인)
 

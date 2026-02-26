@@ -1,15 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="ko">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offering (Prototype) — WOOHWAHAE</title>
-
-    <!-- 원본 스타일 로드 -->
-    <link rel="stylesheet" href="../assets/css/style.css">
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Offering (Prototype) — WOOHWAHAE</title>
+<!-- 원본 스타일 로드 -->
+<link href="../assets/css/style.css" rel="stylesheet"/>
+<style>
         /* =========================================
        [PROTOTYPE] EXTREME EDITORIAL OVERRIDES
        글래스모피즘 전면 폐기, 솔리드 + 1px 파단선.
@@ -160,108 +158,139 @@
         }
     </style>
 </head>
+<body><nav class="site-nav" id="site-nav">
+<a aria-label="WOOHWAHAE" class="nav-brand" href="../">
+<img alt="WOOHWAHAE" class="nav-symbol" src="../assets/img/symbol.png"/>
+</a>
+<ul class="nav-links" id="nav-links">
+<li><a href="../archive/">Archive</a></li>
+<li><a href="../practice/">Practice</a></li>
+<li><a href="../about/">About</a></li>
+</ul>
+<button aria-expanded="false" aria-label="메뉴" class="nav-toggle" id="nav-toggle">
+<span></span><span></span>
+</button>
+</nav><div class="nav-overlay" id="nav-overlay">
+<a href="../archive/">Archive</a>
+<a href="../practice/">Practice</a>
+<a href="../about/">About</a>
+</div><!-- wave-bg 추가 --><div aria-hidden="true" class="wave-bg" style="position:fixed;top:50%;left:50%;
+           transform:translate(-50%,-50%);
+           width:120vmax;height:120vmax;
+           z-index:0;pointer-events:none;opacity:0.6">
+<svg height="100%" viewbox="0 0 800 800" width="100%">
+<g fill="none" opacity="0.4" stroke="#D5D4CF" stroke-width="0.5">
+<circle cx="400" cy="400" opacity="0.4" r="60">
+<animate attributename="r" begin="0s" dur="3.8s" repeatcount="indefinite" values="60;70;60"></animate>
+<animate attributename="opacity" begin="0s" dur="3.8s" repeatcount="indefinite" values="0.4;0.2;0.4"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.3" r="140">
+<animate attributename="r" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="140;155;140"></animate>
+<animate attributename="opacity" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="0.3;0.15;0.3"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.2" r="240">
+<animate attributename="r" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="240;260;240"></animate>
+<animate attributename="opacity" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="0.2;0.1;0.2"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.12" r="360">
+<animate attributename="r" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="360;385;360"></animate>
+<animate attributename="opacity" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="0.12;0.05;0.12"></animate>
+</circle>
+</g>
+</svg>
+</div>
 
-<body>
 
-    <!-- Solid Navigation (글래스모피즘 폐기) -->
-    <nav>
-    <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="/service/">Service</a></li>
-      <li><a href="/about/">About</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="lab/">Lab</a></li>
-    </ul>
-    <button class="nav-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
+<!-- wave-bg 추가 -->
 
-    <main class="container--wide">
+<!-- wave-bg 추가 -->
+<!-- Solid Navigation (글래스모피즘 폐기) -->
+<main class="container--wide">
+<!-- 인트로 (기존 대비 자간/행간 타격감 상승) -->
+<div class="mag-row mag-row--intro fade-in">
+<div class="mag-label">
+<p class="section-label">Offering</p>
+<p class="mag-heading">같은 철학의 다른 형태들.</p>
+</div>
+<div class="mag-body">
+<p class="lead">하나의 철학에서 출발한 네 가지 방식입니다.</p>
+<p>헤어를 설계하고, 기준을 전수하고, 작업을 함께 하고, 일상을 위한 것들을 고릅니다. 형태는 달라도 질문은 하나입니다.</p>
+</div>
+</div>
+<!-- 변태적인 Editorial List (Asymmetrical Grid) -->
+<div class="editorial-list fade-in">
+<!-- 001 Atelier -->
+<div class="editorial-item" onclick="location.href='../service//service/'">
+<div class="ed-meta">
+<span class="ed-num">001</span>
+<span class="ed-label">FOR INDIVIDUAL</span>
+</div>
+<div class="ed-link">
+<h3 class="ed-title">Atelier</h3>
+<p class="ed-desc">헤어. 구조를 먼저 읽고 그 사람에게 맞는 형태를 설계합니다.</p>
+<span class="ed-arrow">→</span>
+</div>
+</div>
+<!-- 002 Consulting -->
+<div class="editorial-item" onclick="location.href='../service/consulting.html'">
+<div class="ed-meta">
+<span class="ed-num">002</span>
+<span class="ed-label">FOR SYSTEM</span>
+</div>
+<div class="ed-link">
+<h3 class="ed-title">Consulting</h3>
+<p class="ed-desc">브랜드, 교육, 협업. 방향이 맞는 경우에만 함께합니다.</p>
+<span class="ed-arrow">→</span>
+</div>
+</div>
+<!-- 003 Project -->
+<div class="editorial-item" onclick="location.href='../service/project.html'">
+<div class="ed-meta">
+<span class="ed-num">003</span>
+<span class="ed-label">FOR PROJECT</span>
+</div>
+<div class="ed-link">
+<h3 class="ed-title">Project</h3>
+<p class="ed-desc">모델 작업, 에디토리얼, 협업. 방향성이 맞는 프로젝트에 한합니다.</p>
+<span class="ed-arrow">→</span>
+</div>
+</div>
+<!-- 004 Shop -->
+<div class="editorial-item" onclick="location.href='../service//shop/'">
+<div class="ed-meta">
+<span class="ed-num">004</span>
+<span class="ed-label">FOR DAILY</span>
+</div>
+<div class="ed-link">
+<h3 class="ed-title">Shop</h3>
+<p class="ed-desc">직접 써보고, 오래 쓰고, 다시 찾게 된 것들을 고릅니다.</p>
+<span class="ed-arrow">→</span>
+</div>
+</div>
+</div>
+</main>
 
-        <!-- 인트로 (기존 대비 자간/행간 타격감 상승) -->
-        <div class="mag-row mag-row--intro fade-in">
-            <div class="mag-label">
-                <p class="section-label">Offering</p>
-                <p class="mag-heading">같은 철학의 다른 형태들.</p>
-            </div>
-            <div class="mag-body">
-                <p class="lead">하나의 철학에서 출발한 네 가지 방식입니다.</p>
-                <p>헤어를 설계하고, 기준을 전수하고, 작업을 함께 하고, 일상을 위한 것들을 고릅니다. 형태는 달라도 질문은 하나입니다.</p>
-            </div>
-        </div>
-
-        <!-- 변태적인 Editorial List (Asymmetrical Grid) -->
-        <div class="editorial-list fade-in">
-
-            <!-- 001 Atelier -->
-            <div class="editorial-item" onclick="location.href='../service//service/'">
-                <div class="ed-meta">
-                    <span class="ed-num">001</span>
-                    <span class="ed-label">FOR INDIVIDUAL</span>
-                </div>
-                <div class="ed-link">
-                    <h3 class="ed-title">Atelier</h3>
-                    <p class="ed-desc">헤어. 구조를 먼저 읽고 그 사람에게 맞는 형태를 설계합니다.</p>
-                    <span class="ed-arrow">→</span>
-                </div>
-            </div>
-
-            <!-- 002 Consulting -->
-            <div class="editorial-item" onclick="location.href='../service/consulting.html'">
-                <div class="ed-meta">
-                    <span class="ed-num">002</span>
-                    <span class="ed-label">FOR SYSTEM</span>
-                </div>
-                <div class="ed-link">
-                    <h3 class="ed-title">Consulting</h3>
-                    <p class="ed-desc">브랜드, 교육, 협업. 방향이 맞는 경우에만 함께합니다.</p>
-                    <span class="ed-arrow">→</span>
-                </div>
-            </div>
-
-            <!-- 003 Project -->
-            <div class="editorial-item" onclick="location.href='../service/project.html'">
-                <div class="ed-meta">
-                    <span class="ed-num">003</span>
-                    <span class="ed-label">FOR PROJECT</span>
-                </div>
-                <div class="ed-link">
-                    <h3 class="ed-title">Project</h3>
-                    <p class="ed-desc">모델 작업, 에디토리얼, 협업. 방향성이 맞는 프로젝트에 한합니다.</p>
-                    <span class="ed-arrow">→</span>
-                </div>
-            </div>
-
-            <!-- 004 Shop -->
-            <div class="editorial-item" onclick="location.href='../service//shop/'">
-                <div class="ed-meta">
-                    <span class="ed-num">004</span>
-                    <span class="ed-label">FOR DAILY</span>
-                </div>
-                <div class="ed-link">
-                    <h3 class="ed-title">Shop</h3>
-                    <p class="ed-desc">직접 써보고, 오래 쓰고, 다시 찾게 된 것들을 고릅니다.</p>
-                    <span class="ed-arrow">→</span>
-                </div>
-            </div>
-
-        </div>
-
-    </main>
-
-    <footer class="section--light">
-        <!-- Footer 내용 간소화 처리 (원본 유지) -->
-        <div class="container--wide">
-            <p
-                style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); margin-bottom: var(--space-xl);">
-                WOOHWAHAE PROTOTYPE</p>
-        </div>
-    </footer>
-
-</body>
-
+<footer class="site-footer">
+<div class="footer-inner">
+<div class="footer-contact">
+<span class="footer-contact__label">Contact</span>
+<div class="footer-contact__grid">
+<a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+<a href="https://instagram.com/woohwahae" rel="noopener" target="_blank">@woohwahae</a>
+</div>
+</div>
+<div class="footer-bottom">
+<nav class="footer-nav">
+<a href="../archive/">Archive</a>
+<a href="../practice/">Practice</a>
+<a href="../about/">About</a>
+</nav>
+<div class="footer-legal">
+<a href="../privacy.html">Privacy</a>
+<a href="../terms.html">Terms</a>
+</div>
+<p class="footer-copy">© 2026 WOOHWAHAE</p>
+</div>
+</div>
+</footer></body>
 </html>

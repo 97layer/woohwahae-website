@@ -200,7 +200,7 @@ directives/
 
 변하지 않는 절대 상수는 `style.css :root` 에 봉인된다.
 
-- `--bg`: `#E4E2DC` (창백하게 낡아가는 종이)
+- `--bg`: `#E3E2E0` (창백하게 낡아가는 종이)
 - `--text`: `#1A1A1A` (사유를 짓누르는 단정한 잉크)
 - `--text-sub`: `#4A4A4A` (가르치지 않는 보조 텍스트)
 - Typography: Pretendard Variable (정보), Crimson Text (사색)

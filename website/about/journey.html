@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko">
 
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Journey — WOOHWAHAE">
-    <title>Journey — WOOHWAHAE</title>
-    <link rel="icon" href="../assets/img/symbol.png" type="image/png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Journey — WOOHWAHAE" name="description"/>
+<title>Journey — WOOHWAHAE</title>
+<link href="../assets/img/symbol.png" rel="icon" type="image/png"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
+<link href="../assets/css/style.css" rel="stylesheet"/>
+<style>
         .story-wrap {
             max-width: 680px;
             margin: 0 auto;
@@ -186,137 +184,123 @@
             }
         }
     </style>
-    <script>
+<script>
         (function () {
             var h = new Date().getHours();
             document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night';
         })();
     </script>
 </head>
+<body class="page-article"><nav class="site-nav" id="site-nav">
+<a aria-label="WOOHWAHAE" class="nav-brand" href="../">
+<img alt="WOOHWAHAE" class="nav-symbol" src="../assets/img/symbol.png"/>
+</a>
+<ul class="nav-links" id="nav-links">
+<li><a href="../archive/">Archive</a></li>
+<li><a href="../practice/">Practice</a></li>
+<li><a href="../about/">About</a></li>
+</ul>
+<button aria-expanded="false" aria-label="메뉴" class="nav-toggle" id="nav-toggle">
+<span></span><span></span>
+</button>
+</nav><div class="nav-overlay" id="nav-overlay">
+<a href="../archive/">Archive</a>
+<a href="../practice/">Practice</a>
+<a href="../about/">About</a>
+</div><!-- wave-bg 추가 --><div aria-hidden="true" class="wave-bg" style="position:fixed;top:50%;left:50%;
+           transform:translate(-50%,-50%);
+           width:120vmax;height:120vmax;
+           z-index:0;pointer-events:none;opacity:0.6">
+<svg height="100%" viewbox="0 0 800 800" width="100%">
+<g fill="none" opacity="0.4" stroke="#D5D4CF" stroke-width="0.5">
+<circle cx="400" cy="400" opacity="0.4" r="60">
+<animate attributename="r" begin="0s" dur="3.8s" repeatcount="indefinite" values="60;70;60"></animate>
+<animate attributename="opacity" begin="0s" dur="3.8s" repeatcount="indefinite" values="0.4;0.2;0.4"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.3" r="140">
+<animate attributename="r" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="140;155;140"></animate>
+<animate attributename="opacity" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="0.3;0.15;0.3"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.2" r="240">
+<animate attributename="r" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="240;260;240"></animate>
+<animate attributename="opacity" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="0.2;0.1;0.2"></animate>
+</circle>
+<circle cx="400" cy="400" opacity="0.12" r="360">
+<animate attributename="r" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="360;385;360"></animate>
+<animate attributename="opacity" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="0.12;0.05;0.12"></animate>
+</circle>
+</g>
+</svg>
+</div>
 
-<body class="page-article">
 
-    <div class="read-progress" aria-hidden="true">
-        <div class="read-progress__fill" id="read-fill"></div>
-    </div>
+<!-- wave-bg 추가 -->
 
-    <nav class="site-nav" id="site-nav">
-        <a href="/" class="nav-brand">WOOHWAHAE</a>
-        <ul class="nav-links" id="nav-links">
-            <li><a href="../archive/">Archive</a></li>
-            <li><a href="../practice/">Practice</a></li>
-            <li><a href="../about/" class="active">About</a></li>
-        </ul>
-        <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
-            <span></span><span></span>
-        </button>
-    </nav>
-
-    <div class="nav-overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="메뉴">
-        <a href="../archive/">Archive</a>
-        <a href="../practice/">Practice</a>
-        <a href="../about/">About</a>
-    </div>
-
-    <main id="read-main">
-        <div class="story-wrap">
-
-            <header class="story-header" data-reveal>
-                <a href="../about/" class="story-back">← About</a>
-                <span class="section-label">Journey</span>
-                <h1 class="story-title">태도가 모든 것이다.<br>기술은 부차적인 표상에 불과하다.</h1>
-            </header>
-
-            <!-- SVG 타임라인 — 4개 전환점 시각화 -->
-            <figure class="story-timeline" data-reveal>
-                <svg class="story-timeline__svg" viewBox="0 0 420 260" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    role="img" aria-label="우수호의 서사 타임라인 — 4개의 전환점">
-                    <!-- 수직 축 (왼쪽에서 80px 고정) -->
-                    <line class="tl-axis" x1="80" y1="20" x2="80" y2="240" stroke="currentColor" stroke-width="0.5"
-                        opacity="0.25" />
-
-                    <!-- 노드 1 — 최초 매료 -->
-                    <g class="tl-node-g">
-                        <circle cx="80" cy="50" r="3.5" fill="currentColor" opacity="0.7" />
-                        <line x1="80" y1="50" x2="110" y2="50" stroke="currentColor" stroke-width="0.4" opacity="0.2" />
-                        <text x="115" y="47" class="tl-year">2006</text>
-                        <text x="115" y="60" class="tl-label">최초의 매료 — 헤어 롤</text>
-                    </g>
-
-                    <!-- 노드 2 — 침잠 -->
-                    <g class="tl-node-g">
-                        <circle cx="80" cy="110" r="3.5" fill="currentColor" opacity="0.5" />
-                        <line x1="80" y1="110" x2="110" y2="110" stroke="currentColor" stroke-width="0.4"
-                            opacity="0.2" />
-                        <text x="115" y="107" class="tl-year">2008</text>
-                        <text x="115" y="120" class="tl-label">의도된 고립 — 8평 반지하</text>
-                    </g>
-
-                    <!-- 노드 3 — 단절과 응시 -->
-                    <g class="tl-node-g">
-                        <circle cx="80" cy="170" r="3.5" fill="currentColor" opacity="0.35" />
-                        <line x1="80" y1="170" x2="110" y2="170" stroke="currentColor" stroke-width="0.4"
-                            opacity="0.2" />
-                        <text x="115" y="167" class="tl-year">2020</text>
-                        <text x="115" y="180" class="tl-label">팬데믹 — 내면 주파수 응시</text>
-                    </g>
-
-                    <!-- 노드 4 — 우화 -->
-                    <g class="tl-node-g">
-                        <circle cx="80" cy="230" r="5" fill="currentColor" opacity="0.9" />
-                        <line x1="80" y1="230" x2="110" y2="230" stroke="currentColor" stroke-width="0.4"
-                            opacity="0.2" />
-                        <text x="115" y="227" class="tl-year">현재</text>
-                        <text x="115" y="240" class="tl-label" style="fill:var(--text-sub);">WOOHWAHAE — 羽化</text>
-                    </g>
-
-                    <!-- 하단 주석 -->
-                    <text x="80" y="258" class="tl-label" text-anchor="middle" style="font-size:7px;opacity:0.4;">one
+<!-- wave-bg 추가 -->
+<div aria-hidden="true" class="read-progress">
+<div class="read-progress__fill" id="read-fill"></div>
+</div>
+<main id="read-main">
+<div class="story-wrap">
+<header class="story-header" data-reveal="">
+<a class="story-back" href="../about/">← About</a>
+<span class="section-label">Journey</span>
+<h1 class="story-title">태도가 모든 것이다.<br/>기술은 부차적인 표상에 불과하다.</h1>
+</header>
+<!-- SVG 타임라인 — 4개 전환점 시각화 -->
+<figure class="story-timeline" data-reveal="">
+<svg aria-label="우수호의 서사 타임라인 — 4개의 전환점" class="story-timeline__svg" fill="none" role="img" viewbox="0 0 420 260" xmlns="http://www.w3.org/2000/svg">
+<!-- 수직 축 (왼쪽에서 80px 고정) -->
+<line class="tl-axis" opacity="0.25" stroke="currentColor" stroke-width="0.5" x1="80" x2="80" y1="20" y2="240"></line>
+<!-- 노드 1 — 최초 매료 -->
+<g class="tl-node-g">
+<circle cx="80" cy="50" fill="currentColor" opacity="0.7" r="3.5"></circle>
+<line opacity="0.2" stroke="currentColor" stroke-width="0.4" x1="80" x2="110" y1="50" y2="50"></line>
+<text class="tl-year" x="115" y="47">2006</text>
+<text class="tl-label" x="115" y="60">최초의 매료 — 헤어 롤</text>
+</g>
+<!-- 노드 2 — 침잠 -->
+<g class="tl-node-g">
+<circle cx="80" cy="110" fill="currentColor" opacity="0.5" r="3.5"></circle>
+<line opacity="0.2" stroke="currentColor" stroke-width="0.4" x1="80" x2="110" y1="110" y2="110"></line>
+<text class="tl-year" x="115" y="107">2008</text>
+<text class="tl-label" x="115" y="120">의도된 고립 — 8평 반지하</text>
+</g>
+<!-- 노드 3 — 단절과 응시 -->
+<g class="tl-node-g">
+<circle cx="80" cy="170" fill="currentColor" opacity="0.35" r="3.5"></circle>
+<line opacity="0.2" stroke="currentColor" stroke-width="0.4" x1="80" x2="110" y1="170" y2="170"></line>
+<text class="tl-year" x="115" y="167">2020</text>
+<text class="tl-label" x="115" y="180">팬데믹 — 내면 주파수 응시</text>
+</g>
+<!-- 노드 4 — 우화 -->
+<g class="tl-node-g">
+<circle cx="80" cy="230" fill="currentColor" opacity="0.9" r="5"></circle>
+<line opacity="0.2" stroke="currentColor" stroke-width="0.4" x1="80" x2="110" y1="230" y2="230"></line>
+<text class="tl-year" x="115" y="227">현재</text>
+<text class="tl-label" style="fill:var(--text-sub);" x="115" y="240">WOOHWAHAE — 羽化</text>
+</g>
+<!-- 하단 주석 -->
+<text class="tl-label" style="font-size:7px;opacity:0.4;" text-anchor="middle" x="80" y="258">one
                         axis. four inflections.</text>
-                </svg>
-            </figure>
-
-            <!-- 본문 -->
-            <div class="art-body story-body" data-reveal>
-
-                <p>중학교 3학년. 점수라는 기준에 떠밀려 헤어 롤을 집어 들었다. 거친 질감이 손끝에 의해 하나의 형상으로 귀결되는 창조의 과정에서 본질에 매료되었다.</p>
-
-                <p>단 2년이었다. 기계적 공정 속에서 직업의 사명감은 생존 유지라는 관성으로 풍화되었다. 수동적 일상을 멈추는 의도된 고립을 택했다. 일체의 기반을 버리고, 월세 8평 반지하로
+</svg>
+</figure>
+<!-- 본문 -->
+<div class="art-body story-body" data-reveal="">
+<p>중학교 3학년. 점수라는 기준에 떠밀려 헤어 롤을 집어 들었다. 거친 질감이 손끝에 의해 하나의 형상으로 귀결되는 창조의 과정에서 본질에 매료되었다.</p>
+<p>단 2년이었다. 기계적 공정 속에서 직업의 사명감은 생존 유지라는 관성으로 풍화되었다. 수동적 일상을 멈추는 의도된 고립을 택했다. 일체의 기반을 버리고, 월세 8평 반지하로
                     침잠했다.</p>
-
-                <blockquote>
-                    눅눅한 고립 지대는 도피처가 아니었다.<br>사유를 정제하는 빈방이었다.
+<blockquote>
+                    눅눅한 고립 지대는 도피처가 아니었다.<br/>사유를 정제하는 빈방이었다.
                 </blockquote>
-
-                <p>팬데믹이라는 피할 수 없는 단절이 당도해서야 내면의 주파수를 거울처럼 응시할 시공간이 열렸다. 타인들이 맹목적으로 방향을 추종할 때, 선과 여백의 아키텍처를 살피며 노동의 과정 위에
+<p>팬데믹이라는 피할 수 없는 단절이 당도해서야 내면의 주파수를 거울처럼 응시할 시공간이 열렸다. 타인들이 맹목적으로 방향을 추종할 때, 선과 여백의 아키텍처를 살피며 노동의 과정 위에
                     인문학의 밀도를 조용히 덧씌웠다.</p>
-
-                <p>기술은 부차적인 표상이다. 오직 태도와 흔들림 없는 관점이 모든 것임을 통찰했다. 그 결의가 이 기록으로 남는다.</p>
-
-            </div>
-
-        </div>
-    </main>
-
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <p class="footer-brand">WOOHWAHAE</p>
-            <nav class="footer-nav">
-                <a href="../archive/">Archive</a>
-                <a href="../practice/">Practice</a>
-                <a href="../about/">About</a>
-                <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
-            </nav>
-            <div class="footer-legal">
-                <a href="../privacy.html">Privacy</a>
-                <a href="../terms.html">Terms</a>
-            </div>
-            <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
-        </div>
-    </footer>
-
-    <script src="../assets/js/site.js" defer></script>
-    <script>
+<p>기술은 부차적인 표상이다. 오직 태도와 흔들림 없는 관점이 모든 것임을 통찰했다. 그 결의가 이 기록으로 남는다.</p>
+</div>
+</div>
+</main>
+<script defer="" src="../assets/js/site.js"></script>
+<script>
         (function () {
             var fill = document.getElementById('read-fill');
             var main = document.getElementById('read-main');
@@ -331,6 +315,28 @@
             onScroll();
         })();
     </script>
-</body>
 
+<footer class="site-footer">
+<div class="footer-inner">
+<div class="footer-contact">
+<span class="footer-contact__label">Contact</span>
+<div class="footer-contact__grid">
+<a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+<a href="https://instagram.com/woohwahae" rel="noopener" target="_blank">@woohwahae</a>
+</div>
+</div>
+<div class="footer-bottom">
+<nav class="footer-nav">
+<a href="../archive/">Archive</a>
+<a href="../practice/">Practice</a>
+<a href="../about/">About</a>
+</nav>
+<div class="footer-legal">
+<a href="../privacy.html">Privacy</a>
+<a href="../terms.html">Terms</a>
+</div>
+<p class="footer-copy">© 2026 WOOHWAHAE</p>
+</div>
+</div>
+</footer></body>
 </html>

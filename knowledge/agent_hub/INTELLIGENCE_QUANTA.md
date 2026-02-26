@@ -55,31 +55,36 @@
 
 ## 🏗️ 인프라 핵심
 
-- **Ver**: 11.0 — 4축 통합: directives(뇌) / knowledge(기억) / core(엔진: agents+system+daemons+admin+scripts+skills+tests) / website(얼굴). offering→service 통일. bridges/modules→system 통합. orphan 12개 아카이브.
-- **GCP VM**: `97layer-vm` = `136.109.201.201` | 앱 경로: `/home/skyto5339_gmail_com/97layerOS/`
-- **서비스**: 97layer-telegram / 97layer-ecosystem / 97layer-gardener / woohwahae-backend (5000) / cortex-admin (5001)
-- **파이프라인**: 신호 유입 → signal.schema.json → SA 분석 → Gardener 군집화 → CE 에세이 → 발행
+- **Ver**: 11.0 — 4축 통합: directives(뇌) / knowledge(기억) / core(엔진) / website(얼굴)
+- **웹**: Cloudflare Pages (`git push` = 자동 배포, woohwahae.kr)
+- **API**: `api.woohwahae.kr` → VM `136.109.201.201` (nginx reverse proxy)
+- **VM 서비스 (8개)**: nginx(80/443) / woohwahae-backend(5000) / cortex-admin(5001) / cortex-dashboard(8000) / 97layer-telegram / 97layer-ecosystem / 97layer-gardener / 97layer-code-agent
+- **배포**: 웹=`git push` / 코드=`deploy.sh [all|서비스명]` (git pull + restart)
+- **파이프라인**: 신호 유입 → signal.schema.json → SA 분석 → Gardener 군집화 → CE 에세이 → git push → CF Pages 자동 발행
 
 ---
 
 ## 🎯 다음 작업
 
-1. [CRITICAL] 컴포넌트 통일 — nav/footer/wave-bg를 _templates/ 기준으로 정의 후 전 페이지 일괄 적용. 현재 페이지마다 구조 불일치.
-2. [DESIGN] 비주얼 Phase 2 — Practice 서비스 상세, 에세이 읽기 경험, 모바일 최적화
-2. [DESIGN] About 카피 확정 — 매니페스토/본문/Philosophy/Journey/Editor 텍스트 순호 검토
-3. content_publisher.py — essay-NNN 타입 접두사 패턴 적용
-4. Ralph 피드백 루프 구현 — STAP 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
-5. 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
-6. Growth Dashboard 첫 수익 입력 (`/admin/growth`, 2026-02 데이터)
+1. [INFRA] Cloudflare Pages 연결 — Dashboard에서 repo 연결 + DNS CNAME 변경 (수동)
+2. [INFRA] content_publisher.py — 에세이 발행 시 git commit & push 자동화 (CF Pages 연동)
+3. [CRITICAL] 컴포넌트 통일 — nav/footer/wave-bg를 _templates/ 기준으로 정의 후 전 페이지 일괄 적용
+4. [DESIGN] 비주얼 Phase 2 — Practice 서비스 상세, 에세이 읽기 경험, 모바일 최적화
+5. [DESIGN] About 카피 확정 — 매니페스토/본문/Philosophy/Journey/Editor 텍스트 순호 검토
+6. content_publisher.py — essay-NNN 타입 접두사 패턴 적용
+7. Ralph 피드백 루프 구현 — STAP 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
+8. cortex-admin 세컨드 브레인 UI — knowledge/ 열람/검색 기능 추가
+9. 첫 고객 Ritual Module 등록 → `/me/{token}` URL 실사용 검증
 
 **완료됨**:
 
-- ✅ DNS A레코드 연결 (Cloudflare 경유, 104.21.51.203)
+- ✅ DNS A레코드 연결 (Cloudflare 경유)
 - ✅ HTTPS/SSL (certbot, Let's Encrypt)
 - ✅ VM git 초기화
 - ✅ 4축 구조 정렬 Ver 11.0 (d6a448b0)
-- ✅ website HTML 리빌딩 — 네비/푸터 전체 통일 (Archive|Practice|About), 깨진 참조 0건
+- ✅ website HTML 리빌딩 — 네비/푸터 전체 통일, 깨진 참조 0건
 - ✅ 비주얼 Phase 1 — 캔버스 복구, 패밀리룩 디자인 프레임, 배경색 통일, SVG 히어로
+- ✅ 인프라 구조조정 Phase 2-3-5 — nginx API 분리, deploy.sh git pull 전환, 레거시 스크립트 삭제, 유령 프로세스 정리
 
 ---
 
@@ -96,9 +101,15 @@
 ## 🚀 실행 명령
 
 ```bash
-ssh 97layer-vm "systemctl is-active 97layer-telegram 97layer-ecosystem 97layer-gardener"
+# 웹 배포 (Cloudflare Pages)
+git push origin main                    # 30초 내 woohwahae.kr 반영
+
+# 코드 배포 (VM)
+core/scripts/deploy/deploy.sh all       # git pull + 전 서비스 재시작
+core/scripts/deploy/deploy.sh --status  # 서비스 상태 확인
+
+# 직접 관리
 ssh 97layer-vm "sudo journalctl -u 97layer-ecosystem -n 50 --no-pager"
-scp <file> 97layer-vm:/home/skyto5339_gmail_com/97layerOS/<path>/
 ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 ```
 
@@ -106,14 +117,17 @@ ssh 97layer-vm "sudo systemctl restart 97layer-ecosystem"
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-26 03:30] Manual-Update — claude-opus
+### [2026-02-26 12:00] 인프라 구조조정 — claude-opus
 
-**커밋 14건** (2581f4d0 → b31f4bd5):
-- HTML 리빌딩 + 네비/푸터 전체 통일 (Archive|Practice|About)
-- 비주얼 Phase 1: 캔버스 복구, SVG 히어로, 패밀리룩 디자인 프레임
-- 배경색 톤다운 (#E4E2DC → #E3E2E0), Story→Journey 통일
-- 홈 히어로 리빌딩 (로고 심볼 + 하단 세션 + 푸터 Contact)
-- 레거시 경로 전수조사 + 일괄 수정 (.ai_rules, CLAUDE.md, ce_agent.py 등)
-- ⚠️  website/service/
+**인프라 재편 실행**:
+- nginx: api.woohwahae.kr 서버 블록 추가 (CORS 포함), woohwahae.kr 블록은 CF Pages 전환까지 유지
+- JS: cms.js/photography.js API URL 로컬/프로덕션 동적 판별 적용
+- deploy.sh: scp → git pull 기반으로 재작성
+- 레거시 삭제: deploy_vm.sh, deploy_light.sh, deploy_native.sh
+- VM 정리: serve.py(:8081) kill, .DS_Store 삭제
 
-**업데이트 시간**: 2026-02-25T20:35:28.059601
+**남은 수동 작업**:
+- Cloudflare Dashboard → Pages 연결 (repo + build config)
+- DNS: woohwahae.kr CNAME → pages.dev, api.woohwahae.kr A → VM IP
+
+**업데이트 시간**: 2026-02-26T12:00:00
