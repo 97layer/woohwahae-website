@@ -70,7 +70,7 @@ def get_db():
         db.close()
 
 # 간단한 인증 (실제 환경에서는 JWT 사용 권장)
-ADMIN_PASSWORD = "woohwahae2026"  # 실제로는 환경변수로 관리
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "changeme")
 
 class AdminAuth(BaseModel):
     password: str
