@@ -13,7 +13,8 @@
 ├── directives/     뇌 — 철학, 규칙, 규격
 ├── knowledge/      기억 — 데이터, 신호, 상태
 ├── core/           엔진 — 코드, 스크립트, 스킬, 테스트
-└── website/        얼굴 — HTML/CSS/JS, 네비: Archive | Practice | About
+├── website/        얼굴 — HTML/CSS/JS, 네비: Archive | Practice | About
+└── .infra/         런타임 — 로그, 큐, nginx 설정 (.gitignore 대상)
 ```
 
 ---

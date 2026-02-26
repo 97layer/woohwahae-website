@@ -156,6 +156,12 @@ Essence > Speed | Record > Memory | Process > Result | Self-Affirmation
 - PROPOSE (practice/*.md) → 에이전트 재프롬프트 큐잉
 - AUTO (css/data) → 캐시 무효화만 (AI 자동 수정 금지)
 
+**실행**:
+```bash
+cat knowledge/system/dependency_graph.json          # 그래프 확인
+python -c "from core.system.cascade_manager import CascadeManager; cm=CascadeManager(); print(cm.on_file_change('directives/practice/visual.md').affected_nodes)"  # 영향권 분석
+```
+
 **안전 장치**:
 - auto_modify=False 기본값
 - DAG 구조 강제 (순환 참조 0건)

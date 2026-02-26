@@ -749,12 +749,18 @@ section {
 
   /* ── 모바일 spacing 토큰 전면 축소 ── */
   :root {
-    --space-xs: 0.5rem;     /* 8px (8px 배수) */
-    --space-sm: 0.5rem;     /* 8px */
-    --space-md: 1rem;       /* 16px */
-    --space-lg: 2rem;       /* 32px (1.75rem=28px → 2rem=32px) */
-    --space-xl: 2.5rem;     /* 40px */
-    --space-2xl: 3.5rem;    /* 56px */
+    --space-xs: 0.5rem;
+    /* 8px (8px 배수) */
+    --space-sm: 0.5rem;
+    /* 8px */
+    --space-md: 1rem;
+    /* 16px */
+    --space-lg: 2rem;
+    /* 32px (1.75rem=28px → 2rem=32px) */
+    --space-xl: 2.5rem;
+    /* 40px */
+    --space-2xl: 3.5rem;
+    /* 56px */
   }
 
   section {
@@ -971,8 +977,8 @@ section+section {
     max-width: 320px;
     height: 100dvh;
     background: rgba(228, 226, 220, 0.97);
-    backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
@@ -6213,6 +6219,14 @@ body.home-radical::after {
   padding: 0 var(--space-md);
   background: var(--bg);
   border-bottom: 1px solid var(--line);
+  transition: background-color 1.2s ease, border-color 1.2s ease;
+}
+
+/* 홈 화면 전용 무거운 등장 및 투명화 (캔버스 노출 극대화) */
+.page-home .site-nav {
+  background: transparent;
+  border-bottom-color: transparent;
+  animation: entries-fade 2.4s cubic-bezier(0.4, 0, 0.2, 1) 2.5s both;
 }
 
 .nav-brand {
@@ -6412,50 +6426,153 @@ body.home-radical::after {
 
 .home-hero {
   position: relative;
-  z-index: 1;
+  z-index: 5;
+  /* 캔버스보다 위 */
   min-height: 100dvh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+  overflow: hidden;
 }
 
-.home-hero__svg {
+/* ─── Hero Metadata (Technical Authority) ─── */
+.home-metadata {
   position: absolute;
-  inset: 0;
+  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+.home-metadata--top {
+  top: 80px;
+}
+
+.home-metadata--bottom {
+  bottom: var(--space-lg);
+}
+
+/* ─── Hero Center Title (Presence) ─── */
+.home-hero-content {
+  text-align: center;
   pointer-events: none;
 }
 
-.home-hero__graphic {
-  width: min(70vw, 500px);
-  height: auto;
-  opacity: 0.7;
+.home-hero-brand {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.35em;
   color: var(--text);
+  opacity: 0.5;
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
-.home-brand {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  font-weight: var(--fw-light);
-  letter-spacing: 0.28em;
-  color: var(--text-faint);
-  text-transform: uppercase;
-  opacity: 0;
-  animation: hb-fade 2s var(--ease-wave) 0.8s both;
+/* ─── Cinematic Grain Overlay (Texture) ─── */
+.home-grain {
+  position: absolute;
+  inset: -100%;
+  width: 300%;
+  height: 300%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.045;
+  /* 극도로 미세하게 */
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 6;
+  animation: grain-shift 0.8s steps(10) infinite;
+}
+
+@keyframes grain-shift {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  10% {
+    transform: translate(-5%, -10%);
+  }
+
+  30% {
+    transform: translate(3%, -5%);
+  }
+
+  50% {
+    transform: translate(12%, 9%);
+  }
+
+  70% {
+    transform: translate(9%, 4%);
+  }
+
+  90% {
+    transform: translate(-10%, 7%);
+  }
 }
 
 @keyframes hb-fade {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
 
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ─── Entry Sequence (Cinematic Preloader) ─── */
+.home-preloader {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(227, 226, 224, 1.0);
+  /* var(--bg) */
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 2.0s cubic-bezier(0.4, 0, 0.2, 1), visibility 2.0s;
+}
+
+.home-preloader__logo {
+  width: 28px;
+  height: auto;
+  opacity: 0.25;
+  animation: preloader-pulse 2.4s infinite ease-in-out;
+}
+
+@keyframes preloader-pulse {
+
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(1.02);
+  }
+}
+
+body.is-loaded .home-preloader {
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* ─── Home Scroll Space — field-bg 클로즈업 구간 ─── */
@@ -6470,8 +6587,9 @@ body.home-radical::after {
 .home-below {
   position: relative;
   z-index: 1;
-  background: linear-gradient(to bottom, transparent 0%, var(--bg) 20%);
-  padding: var(--space-2xl) 0 var(--space-lg);
+  /* 아주 깊고 완만한 그라데이션으로 캔버스와 종이 질감을 자연스럽게 병합 */
+  background: linear-gradient(to bottom, transparent 0%, rgba(227, 226, 224, 0.8) 45%, var(--bg) 85%);
+  padding: calc(var(--space-2xl) * 1.5) 0 var(--space-xl);
 }
 
 .home-tagline {
@@ -6489,29 +6607,54 @@ body.home-radical::after {
 
 .home-entries {
   padding-top: var(--space-lg);
+  /* UI 등장 속도: 배경 텐션과 동기화 */
+  animation: entries-fade 2.4s cubic-bezier(0.4, 0, 0.2, 1) 2.5s both;
+}
+
+@keyframes entries-fade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .home-entry {
   display: grid;
-  grid-template-columns: 120px 1fr auto;
+  grid-template-columns: 80px 160px 1fr;
   align-items: center;
   gap: var(--space-md);
-  padding: var(--space-md) 0;
+  padding: calc(var(--space-md) * 1.5) 0;
   border-bottom: 1px solid var(--line);
   text-decoration: none;
   color: inherit;
-  transition: opacity var(--duration) var(--ease-out);
+  /* 호버 속도를 0.3s -> 1.6s 급의 물리적 질량감으로 전환 */
+  transition: opacity 1.6s cubic-bezier(0.25, 0, 0.1, 1), transform 1.6s cubic-bezier(0.25, 0, 0.1, 1);
 }
 
 .home-entry:hover {
-  opacity: 0.55;
+  opacity: 0.45;
+  /* 가벼운 색상 전환이 아닌, 무게감 있는 살짝의 눌림 효과 */
+  transform: scale(0.998);
+  transition: opacity 1.2s cubic-bezier(0.25, 0, 0.1, 1), transform 1.2s cubic-bezier(0.25, 0, 0.1, 1);
+}
+
+.home-entry__index {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
 }
 
 .home-entry__label {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  font-weight: var(--fw-light);
-  letter-spacing: var(--ls-label);
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text);
 }
@@ -6520,14 +6663,16 @@ body.home-radical::after {
 .home-entry__sub {
   font-size: 0.85rem;
   font-weight: var(--fw-light);
-  color: var(--text-faint);
+  color: var(--text-sub);
+  /* faint -> sub: 깊이감 조절 */
 }
 
 .home-entry__arrow {
   font-family: var(--font-mono);
   font-size: 0.6rem;
   color: var(--text-faint);
-  transition: color var(--duration) var(--ease-out);
+  /* 매우 느린 전환 */
+  transition: color 1.6s cubic-bezier(0.25, 0, 0.1, 1);
 }
 
 .home-entry:hover .home-entry__arrow {

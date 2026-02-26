@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 
 <html lang="ko">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="WOOHWAHAE — Remove the Noise, Reveal the Essence." name="description"/>
-<meta content="WOOHWAHAE" property="og:title"/>
-<meta content="website" property="og:type"/>
-<meta content="https://woohwahae.kr/" property="og:url"/>
-<title>WOOHWAHAE</title>
-<meta content="#E3E2E0" name="theme-color"/>
-<link href="assets/media/brand/symbol.png" rel="icon" type="image/png"/>
-<link href="assets/media/brand/icon-192.png" rel="apple-touch-icon"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="assets/css/style.css?v=field2" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="WOOHWAHAE — Remove the Noise, Reveal the Essence." name="description" />
+  <meta content="WOOHWAHAE" property="og:title" />
+  <meta content="website" property="og:type" />
+  <meta content="https://woohwahae.kr/" property="og:url" />
+  <title>WOOHWAHAE</title>
+  <meta content="#E3E2E0" name="theme-color" />
+  <link href="assets/media/brand/symbol.png" rel="icon" type="image/png" />
+  <link href="assets/media/brand/icon-192.png" rel="apple-touch-icon" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://cdn.jsdelivr.net" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+    rel="stylesheet" />
+  <link href="assets/css/style.css?v=field2" rel="stylesheet" />
+  <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
     (function () {
       var h = new Date().getHours();
       document.documentElement.className =
@@ -29,77 +33,112 @@
     })();
   </script>
 </head>
-<body class="page-home"><!-- COMPONENT:nav -->
-<nav class="site-nav" id="site-nav">
-  <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
-    <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
-  </a>
-  <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
-  </ul>
-  <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
-    <span></span><span></span>
-  </button>
-</nav>
-<div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
-</div>
-<!-- /COMPONENT:nav -->
-<canvas class="field-bg" id="field-bg"></canvas>
-<!-- 홈 히어로: 100dvh -->
-<section class="home-hero">
-</section>
-<!-- 스크롤 여백: field-bg 클로즈업 구간 -->
-<div class="home-scroll-space"></div>
-<!-- 홈 하단: 섹션 입구 -->
-<section class="home-below">
-<div class="home-below__inner container--content">
-  <nav class="home-entries" data-reveal>
-    <a class="home-entry" href="/archive/">
-      <span class="home-entry__label">Archive</span>
-      <span class="home-entry__sub">슬로우 라이프의 기록</span>
-    </a>
-    <a class="home-entry" href="/practice/">
-      <span class="home-entry__label">Practice</span>
-      <span class="home-entry__sub">예약제 아틀리에</span>
-    </a>
-    <a class="home-entry" href="/about/">
-      <span class="home-entry__label">About</span>
-      <span class="home-entry__sub">소음을 제거하면, 본질이 남는다</span>
-    </a>
-  </nav>
-</div>
-</section>
-<script defer="" src="assets/js/bg-field.js"></script>
-<script defer="" src="assets/js/site.js"></script>
 
-<!-- COMPONENT:footer -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <nav class="footer-nav">
-        <a href="/archive/">Archive</a>
-        <a href="/practice/">Practice</a>
-        <a href="/about/">About</a>
-      </nav>
-      <div class="footer-legal">
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
-      </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
-    </div>
+<body class="page-home">
+  <!-- COMPONENT:preloader -->
+  <div class="home-preloader" id="preloader">
+    <img src="/assets/media/brand/symbol.png" alt="" class="home-preloader__logo">
   </div>
-</footer>
-<!-- /COMPONENT:footer --></body>
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        document.body.classList.add('is-loaded');
+      }, 600); // 600ms 동안 렌더 엔진 안정화 후 베일 벗기기
+    });
+  </script>
+  <!-- /COMPONENT:preloader -->
+  <!-- COMPONENT:nav -->
+  <nav class="site-nav" id="site-nav">
+    <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+      <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/archive/">Archive</a></li>
+      <li><a href="/practice/">Practice</a></li>
+      <li><a href="/about/">About</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-overlay" id="nav-overlay">
+    <a href="/archive/">Archive</a>
+    <a href="/practice/">Practice</a>
+    <a href="/about/">About</a>
+  </div>
+  <!-- /COMPONENT:nav -->
+  <canvas class="field-bg" id="field-bg"></canvas>
+  <!-- 홈 히어로: 100dvh — 수치와 기하학적 정보로 빈약함 해결 -->
+  <section class="home-hero">
+    <div class="home-metadata home-metadata--top" data-reveal>
+      <span class="mono">STUDIO — ULSAN / KR</span>
+      <span class="mono">35.5384° N / 129.3114° E</span>
+    </div>
+
+    <div class="home-hero-content" data-reveal>
+      <div class="home-hero-brand mono">[ WOOHWAHAE / STUDIO ]</div>
+    </div>
+
+    <div class="home-metadata home-metadata--bottom" data-reveal>
+      <span class="mono">소음이 걷힌 진공에 다다라서야 명징한 본질이 나선다.</span>
+      <span class="mono">EST. 2026 — 羽化 (RESONANCE)</span>
+    </div>
+
+    <!-- 미세 노이즈 입자 레이어 (Depth) -->
+    <div class="home-grain"></div>
+  </section>
+  <!-- 스크롤 여백: field-bg 클로즈업 구간 -->
+  <div class="home-scroll-space"></div>
+  <!-- 홈 하단: 섹션 입구 -->
+  <section class="home-below">
+    <div class="home-below__inner container--content">
+      <nav class="home-entries" data-reveal>
+        <a class="home-entry" href="/archive/">
+          <span class="home-entry__index mono">[01/3]</span>
+          <span class="home-entry__label">Archive</span>
+          <span class="home-entry__sub">슬로우 라이프의 기록</span>
+        </a>
+        <a class="home-entry" href="/practice/">
+          <span class="home-entry__index mono">[02/3]</span>
+          <span class="home-entry__label">Practice</span>
+          <span class="home-entry__sub">예약제 아틀리에</span>
+        </a>
+        <a class="home-entry" href="/about/">
+          <span class="home-entry__index mono">[03/3]</span>
+          <span class="home-entry__label">About</span>
+          <span class="home-entry__sub">소음을 제거하면, 본질이 남는다</span>
+        </a>
+      </nav>
+    </div>
+  </section>
+  <script defer="" src="assets/js/bg-field.js"></script>
+  <script defer="" src="assets/js/site.js"></script>
+
+  <!-- COMPONENT:footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-contact">
+        <span class="footer-contact__label">Contact</span>
+        <div class="footer-contact__grid">
+          <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+          <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <nav class="footer-nav">
+          <a href="/archive/">Archive</a>
+          <a href="/practice/">Practice</a>
+          <a href="/about/">About</a>
+        </nav>
+        <div class="footer-legal">
+          <a href="/privacy.html">Privacy</a>
+          <a href="/terms.html">Terms</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
+      </div>
+    </div>
+  </footer>
+  <!-- /COMPONENT:footer -->
+</body>
+
 </html>
