@@ -11,6 +11,13 @@ if [ -z "$COMMAND" ]; then
   exit 0
 fi
 
+# ─── VM 직접 접근 차단 (/deploy 스킬 강제) ────────────────────
+
+if echo "$COMMAND" | grep -qE 'ssh\s+97layer-vm'; then
+  echo "BLOCKED: VM 직접 SSH 금지. /deploy 스킬을 사용하세요." >&2
+  exit 2
+fi
+
 # ─── 파괴적 명령 패턴 ───────────────────────────────────────
 
 # 시스템 파괴
@@ -25,9 +32,9 @@ if echo "$COMMAND" | grep -qE '^\s*(env|printenv)\s*$'; then
   exit 2
 fi
 
-# .env 파일 읽기
-if echo "$COMMAND" | grep -qE 'cat\s+.*\.env'; then
-  echo "BLOCKED: .env 파일 직접 읽기 금지" >&2
+# .env 파일 읽기 (로컬 + SSH 원격 포함)
+if echo "$COMMAND" | grep -qE '(cat|less|more|head|tail|vi|vim|nano)\s+.*\.env'; then
+  echo "BLOCKED: .env 파일 직접 읽기 금지 (비밀 유출 위험)" >&2
   exit 2
 fi
 
