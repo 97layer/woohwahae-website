@@ -24,12 +24,23 @@ class ImpactReport:
 
 
 class CascadeManager:
-    """파일 변경 시 연쇄 영향 추적 및 자동 전파"""
+    """
+    파일 변경 시 연쇄 영향 추적 및 자동 전파
 
-    def __init__(self, graph_path: str = None):
+    안전 장치:
+    - 분석만 수행 (AI 자동 수정 비활성화)
+    - FROZEN/PROPOSE: 수동 승인 필요
+    - AUTO: 캐시 무효화만 (HTML 재생성 금지)
+    """
+
+    def __init__(self, graph_path: str = None, auto_modify: bool = False):
         self.project_root = Path(os.getenv('PROJECT_ROOT', os.getcwd()))
-        self.graph_path = graph_path or self.project_root / 'knowledge/system/dependency_graph.json'
+        if graph_path:
+            self.graph_path = Path(graph_path)
+        else:
+            self.graph_path = self.project_root / 'knowledge/system/dependency_graph.json'
         self.graph = self._load_graph()
+        self.auto_modify = auto_modify  # 기본값: False (안전 모드)
 
     def _load_graph(self) -> Dict:
         """의존성 그래프 로드"""
@@ -171,17 +182,41 @@ class CascadeManager:
     def _invalidate_cache(self, nodes: Set[str]):
         """캐시 무효화"""
         print(f"   └─ 캐시 무효화: {len(nodes)}개 노드")
-        # TODO: filesystem_cache.json 갱신
+        cache_path = self.project_root / 'knowledge/system/filesystem_cache.json'
+
+        if not cache_path.exists():
+            print(f"      (캐시 파일 없음, 스킵)")
+            return
+
+        try:
+            with open(cache_path, 'r', encoding='utf-8') as f:
+                cache = json.load(f)
+
+            # 영향받는 노드 캐시 삭제
+            modified = False
+            for node in nodes:
+                if node in cache:
+                    del cache[node]
+                    modified = True
+
+            if modified:
+                with open(cache_path, 'w', encoding='utf-8') as f:
+                    json.dump(cache, f, indent=2, ensure_ascii=False)
+                print(f"      ✅ 캐시 갱신됨")
+        except Exception as e:
+            print(f"      ⚠️  캐시 갱신 실패: {e}")
 
     def _regenerate_html(self, nodes: Set[str]):
         """HTML 재생성"""
         print(f"   └─ HTML 재생성: {len(nodes)}개 파일")
-        # TODO: content_publisher 호출
+        # Note: content_publisher는 수동 실행 권장
+        # 자동 재생성은 위험성 높음 (데이터 손실 가능)
+        print(f"      → 수동 실행 권장: python core/system/content_publisher.py")
 
     def _trigger_deploy(self):
         """배포 트리거"""
         print(f"   └─ CF Pages 배포 예약")
-        # TODO: git commit + push
+        print(f"      → git push 시 자동 배포됨")
 
 
 # CLI 인터페이스
