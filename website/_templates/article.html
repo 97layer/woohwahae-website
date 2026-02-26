@@ -9,45 +9,33 @@
   <meta property="og:description" content="{{preview}}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://woohwahae.kr/archive/{{slug}}/">
-  <meta property="og:image" content="https://woohwahae.kr/assets/img/symbol.jpg">
+  <meta property="og:image" content="https://woohwahae.kr/assets/media/brand/symbol.jpg">
   <title>{{issue}}: {{title}} — WOOHWAHAE Archive</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#E3E2E0">
-  <link rel="icon" href="../../assets/img/symbol.png" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-    <!-- fonts: preconnect + parallel loading -->
+  <link rel="icon" href="/assets/media/brand/symbol.png" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/media/brand/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="preload" href="../../assets/css/style.css?v=tone1" as="style">
-  <link rel="stylesheet" href="../../assets/css/style.css?v=tone1">
-  <script src="../../assets/js/analytics.js" defer></script>
+  <link rel="preload" href="/assets/css/style.css?v=tone1" as="style">
+  <link rel="stylesheet" href="/assets/css/style.css?v=tone1">
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+  </script>
 </head>
 
 <body>
 
-  <nav>
-    <a href="/" class="nav-logo">
-      <img src="assets/img/symbol.png" class="nav-symbol" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links">
-      <li><a href="archive/">Archive</a></li>
-      <li><a href="/practice/">Practice</a></li>
-      <li><a href="/about/">About</a></li>
-      
-      <li><a href="lab/">Lab</a></li>
-    </ul>
-    <button class="nav-toggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-
   <div class="reading-progress-container">
     <div class="reading-progress-bar" id="reading-progress-bar"></div>
   </div>
+
+  <!-- COMPONENT:nav -->
+  <!-- /COMPONENT:nav -->
 
   <div class="art-progress-side" id="art-progress-side">
     <div class="art-progress-side-fill" id="art-progress-side-fill"></div>
@@ -58,7 +46,7 @@
     <div class="art-container">
 
       <div class="art-back fade-in">
-        <a href="../../archive/">← Archive</a>
+        <a href="/archive/">← Archive</a>
       </div>
 
       <header class="art-header">
@@ -99,47 +87,22 @@
         </div>
         <div class="art-outro-nav">
           {{prev_link}}
-          <a href="../../archive/" class="art-nav-link">Archive ↑</a>
+          <a href="/archive/" class="art-nav-link">Archive ↑</a>
         </div>
       </footer>
 
     </div>
   </article>
 
-  <footer class="section--light">
-    <div class="footer-inner">
-      <div class="footer-brand-row">
-        <p class="footer-brand-name">WOOHWAHAE</p>
-      </div>
-      <div class="footer-nav-row">
-        <a href="../../archive/">Archive</a>
-        <a href="../../practice/">Practice</a>
-        <a href="../../about/">About</a>
-        <a href="../../practice/">Practice</a>
-        
-      </div>
-      <div class="footer-connect-row">
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-        <a href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">@woosunhokr</a>
-        <a href="https://map.naver.com/p/entry/place/1017153611?lng=129.3497445&lat=35.5592547&placePath=/stylist" target="_blank" rel="noopener">Booking</a>
-        <a href="mailto:hello@woohwahae.kr">Email</a>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-bottom-copy">&copy; 2024 WOOHWAHAE. All rights reserved.</p>
-        <div class="footer-legal">
-          <a href="../../privacy.html">Privacy</a>
-          <a href="../../terms.html">Terms</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <!-- COMPONENT:footer -->
+  <!-- /COMPONENT:footer -->
 
   <nav class="art-float-nav" id="art-float-nav">
     <a class="art-float-prev" href="#" id="art-prev-link">← 이전</a>
     <a class="art-float-next" href="#" id="art-next-link">다음 →</a>
   </nav>
 
-  <script src="../../assets/js/main.js"></script>
+  <script src="/assets/js/site.js" defer></script>
   <script>
     /* 읽기시간 */
     (function () {

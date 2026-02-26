@@ -17,7 +17,7 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="assets/css/style.css?v=hero1" rel="stylesheet"/>
+<link href="assets/css/style.css?v=field2" rel="stylesheet"/>
 <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
     (function () {
@@ -29,87 +29,77 @@
     })();
   </script>
 </head>
-<body class="page-home"><nav class="site-nav" id="site-nav">
-<a aria-label="WOOHWAHAE" class="nav-brand" href="./">
-<img alt="WOOHWAHAE" class="nav-symbol" src="./assets/img/symbol.png"/>
-</a>
-<ul class="nav-links" id="nav-links">
-<li><a href="./archive/">Archive</a></li>
-<li><a href="./practice/">Practice</a></li>
-<li><a href="./about/">About</a></li>
-</ul>
-<button aria-expanded="false" aria-label="메뉴" class="nav-toggle" id="nav-toggle">
-<span></span><span></span>
-</button>
-</nav><div class="nav-overlay" id="nav-overlay">
-<a href="./archive/">Archive</a>
-<a href="./practice/">Practice</a>
-<a href="./about/">About</a>
-</div><!-- wave-bg 추가 --><div aria-hidden="true" class="wave-bg" style="position:fixed;top:50%;left:50%;
-           transform:translate(-50%,-50%);
-           width:120vmax;height:120vmax;
-           z-index:0;pointer-events:none;opacity:0.6">
-<svg height="100%" viewbox="0 0 800 800" width="100%">
-<g fill="none" opacity="0.4" stroke="#D5D4CF" stroke-width="0.5">
-<circle cx="400" cy="400" opacity="0.4" r="60">
-<animate attributename="r" begin="0s" dur="3.8s" repeatcount="indefinite" values="60;70;60"></animate>
-<animate attributename="opacity" begin="0s" dur="3.8s" repeatcount="indefinite" values="0.4;0.2;0.4"></animate>
-</circle>
-<circle cx="400" cy="400" opacity="0.3" r="140">
-<animate attributename="r" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="140;155;140"></animate>
-<animate attributename="opacity" begin="0.4s" dur="3.8s" repeatcount="indefinite" values="0.3;0.15;0.3"></animate>
-</circle>
-<circle cx="400" cy="400" opacity="0.2" r="240">
-<animate attributename="r" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="240;260;240"></animate>
-<animate attributename="opacity" begin="0.8s" dur="3.8s" repeatcount="indefinite" values="0.2;0.1;0.2"></animate>
-</circle>
-<circle cx="400" cy="400" opacity="0.12" r="360">
-<animate attributename="r" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="360;385;360"></animate>
-<animate attributename="opacity" begin="1.2s" dur="3.8s" repeatcount="indefinite" values="0.12;0.05;0.12"></animate>
-</circle>
-</g>
-</svg>
+<body class="page-home"><!-- COMPONENT:nav -->
+<nav class="site-nav" id="site-nav">
+  <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+    <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="/archive/">Archive</a></li>
+    <li><a href="/practice/">Practice</a></li>
+    <li><a href="/about/">About</a></li>
+  </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+    <span></span><span></span>
+  </button>
+</nav>
+<div class="nav-overlay" id="nav-overlay">
+  <a href="/archive/">Archive</a>
+  <a href="/practice/">Practice</a>
+  <a href="/about/">About</a>
 </div>
-
-
-<!-- wave-bg 추가 -->
+<!-- /COMPONENT:nav -->
 <canvas class="field-bg" id="field-bg"></canvas>
 <!-- 홈 히어로: 100dvh -->
 <section class="home-hero">
-<div aria-hidden="true" class="home-hero__svg">
-<object class="home-hero__graphic" data="assets/media/brand/hero-graphic.svg" type="image/svg+xml"></object>
-</div>
-<p class="home-brand" data-breath="">WOOHWAHAE</p>
 </section>
-<!-- 홈 하단: 간결한 입구 -->
+<!-- 스크롤 여백: field-bg 클로즈업 구간 -->
+<div class="home-scroll-space"></div>
+<!-- 홈 하단: 섹션 입구 -->
 <section class="home-below">
 <div class="home-below__inner container--content">
+  <nav class="home-entries" data-reveal>
+    <a class="home-entry" href="/archive/">
+      <span class="home-entry__label">Archive</span>
+      <span class="home-entry__sub">슬로우 라이프의 기록</span>
+    </a>
+    <a class="home-entry" href="/practice/">
+      <span class="home-entry__label">Practice</span>
+      <span class="home-entry__sub">예약제 아틀리에</span>
+    </a>
+    <a class="home-entry" href="/about/">
+      <span class="home-entry__label">About</span>
+      <span class="home-entry__sub">소음을 제거하면, 본질이 남는다</span>
+    </a>
+  </nav>
 </div>
 </section>
 <script defer="" src="assets/js/bg-field.js"></script>
 <script defer="" src="assets/js/site.js"></script>
 
+<!-- COMPONENT:footer -->
 <footer class="site-footer">
-<div class="footer-inner">
-<div class="footer-contact">
-<span class="footer-contact__label">Contact</span>
-<div class="footer-contact__grid">
-<a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-<a href="https://instagram.com/woohwahae" rel="noopener" target="_blank">@woohwahae</a>
-</div>
-</div>
-<div class="footer-bottom">
-<nav class="footer-nav">
-<a href="./archive/">Archive</a>
-<a href="./practice/">Practice</a>
-<a href="./about/">About</a>
-</nav>
-<div class="footer-legal">
-<a href="./privacy.html">Privacy</a>
-<a href="./terms.html">Terms</a>
-</div>
-<p class="footer-copy">© 2026 WOOHWAHAE</p>
-</div>
-</div>
-</footer></body>
+  <div class="footer-inner">
+    <div class="footer-contact">
+      <span class="footer-contact__label">Contact</span>
+      <div class="footer-contact__grid">
+        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <nav class="footer-nav">
+        <a href="/archive/">Archive</a>
+        <a href="/practice/">Practice</a>
+        <a href="/about/">About</a>
+      </nav>
+      <div class="footer-legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
+    </div>
+  </div>
+</footer>
+<!-- /COMPONENT:footer --></body>
 </html>

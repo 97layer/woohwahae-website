@@ -73,12 +73,9 @@
     }
 
     /* ─── 현재 섹션 Nav active ─── */
-    var path = window.location.pathname;
-    document.querySelectorAll('.site-nav .nav-links a').forEach(function (a) {
-        var href = a.getAttribute('href') || '';
-        /* 이미 active면 건드리지 않음 */
-        if (a.classList.contains('active')) return;
-        if (href && path.indexOf(href) !== -1 && href !== '/') {
+    var section = location.pathname.split('/').filter(Boolean)[0] || 'home';
+    document.querySelectorAll('.nav-links a, .nav-overlay a').forEach(function (a) {
+        if (section !== 'home' && a.href.indexOf('/' + section + '/') > -1) {
             a.classList.add('active');
         }
     });
