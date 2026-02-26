@@ -7325,6 +7325,56 @@ body.home-radical::after {
   color: var(--text-sub);
 }
 
+/* ─── Footer Contact ─── */
+.footer-contact {
+  padding-bottom: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--line);
+}
+
+.footer-contact__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--space-md);
+}
+
+.footer-contact__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm) var(--space-lg);
+}
+
+.footer-contact__grid a,
+.footer-contact__grid span {
+  font-size: 0.82rem;
+  font-weight: var(--fw-light);
+  color: var(--text-sub);
+  text-decoration: none;
+  transition: color var(--duration) var(--ease-out);
+}
+
+.footer-contact__grid a:hover {
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .footer-contact__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
 .footer-copy {
   font-family: var(--font-mono);
   font-size: 0.55rem;
