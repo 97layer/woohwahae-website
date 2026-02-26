@@ -495,6 +495,12 @@ class ContentPublisher:
 
             logger.info("[Publisher] 웹사이트 HTML 생성: %s", slug)
 
+            # items.json 자동 갱신 (Dependency Graph 연동)
+            self._update_items_json(signal_id, title, slug, today, meta)
+
+            # Cascade Manager 실행 (의존성 전파)
+            self._trigger_cascade("knowledge/service/items.json")
+
             # git push (GITHUB_TOKEN 있을 때만)
             if github_token and github_repo:
                 return self._git_push_website(website_root, slug, today)
@@ -506,15 +512,90 @@ class ContentPublisher:
             logger.error("[Publisher] 웹사이트 발행 실패: %s", e, exc_info=True)
             return False
 
+    def _trigger_cascade(self, changed_file: str):
+        """
+        Cascade Manager 호출 → 의존성 전파
+        items.json 변경 시 영향받는 파일 자동 추적
+        """
+        try:
+            # Lazy import (순환 참조 방지)
+            import sys
+            sys.path.insert(0, str(self.base_path))
+            from core.system.cascade_manager import CascadeManager
+
+            manager = CascadeManager()
+            report = manager.on_file_change(changed_file)
+
+            logger.info(
+                "[Publisher] Cascade triggered: %s (Tier: %s, Affected: %d nodes)",
+                changed_file, report.tier, len(report.affected_nodes)
+            )
+
+        except Exception as e:
+            logger.warning("[Publisher] Cascade Manager 실행 실패 (비치명적): %s", e)
+
+    def _update_items_json(self, signal_id: str, title: str, slug: str, date: str, meta: Dict) -> bool:
+        """
+        items.json에 새 에세이 자동 추가
+        Dependency Graph 연동: items.json 변경 → cascade_manager 실행
+        """
+        items_path = self.base_path / 'knowledge/service/items.json'
+
+        try:
+            # 기존 items 로드
+            if items_path.exists():
+                with open(items_path, 'r', encoding='utf-8') as f:
+                    items = json.load(f)
+            else:
+                items = []
+
+            # 중복 확인
+            if any(item.get('item_id') == f"essay-{signal_id}" for item in items):
+                logger.info("[Publisher] items.json에 이미 존재: essay-%s", signal_id)
+                return True
+
+            # 새 에세이 추가
+            new_item = {
+                "item_id": f"essay-{signal_id}",
+                "name": title,
+                "category": "essay",
+                "price": 0,
+                "active": True,
+                "url": f"/archive/{slug}/",
+                "created_at": date,
+                "themes": meta.get("themes", []),
+                "signal_id": signal_id
+            }
+            items.append(new_item)
+
+            # 저장
+            with open(items_path, 'w', encoding='utf-8') as f:
+                json.dump(items, f, indent=2, ensure_ascii=False)
+
+            logger.info("[Publisher] items.json 갱신: essay-%s 추가", signal_id)
+            return True
+
+        except Exception as e:
+            logger.error("[Publisher] items.json 갱신 실패: %s", e)
+            return False
+
     def _git_push_website(self, website_root: Path, slug: str, date: str) -> bool:
-        """website/ 변경사항 git push → GitHub Pages 자동 배포"""
+        """website/ 변경사항 git push → CF Pages 자동 배포"""
         import subprocess
 
         repo_root = website_root.parent  # LAYER OS 루트
+
+        # Commit message with Co-Authored-By
+        commit_msg = f"""archive: {slug} ({date})
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"""
+
         try:
             cmds = [
-                ["git", "-C", str(repo_root), "add", "website/"],
-                ["git", "-C", str(repo_root), "commit", "-m", f"archive: {slug} ({date})"],
+                ["git", "-C", str(repo_root), "add", "website/", "knowledge/service/items.json"],
+                ["git", "-C", str(repo_root), "commit", "-m", commit_msg],
                 ["git", "-C", str(repo_root), "push"],
             ]
             for cmd in cmds:
@@ -525,7 +606,7 @@ class ContentPublisher:
                         continue
                     logger.warning("[Publisher] git 명령 실패: %s\n%s", ' '.join(cmd), result.stderr[:200])
 
-            logger.info("[Publisher] git push 완료 → GitHub Pages 반영 예정")
+            logger.info("[Publisher] git push 완료 → CF Pages 자동 배포 예정")
             return True
 
         except Exception as e:

@@ -57,9 +57,10 @@
     "knowledge/service/items.json": {
       "type": "data",
       "tier": "AUTO",
-      "description": "서비스 목록 데이터",
-      "dependencies": ["directives/practice/offering.md"],
+      "description": "서비스 목록 데이터 (에세이 + 서비스)",
+      "dependencies": ["directives/practice/service.md"],
       "dependents": [
+        "website/archive/index.html",
         "website/practice/*.html",
         "core/admin/app.py"
       ],
