@@ -22,12 +22,14 @@ fi
 BASENAME=$(basename "$REL_PATH")
 DIRNAME=$(dirname "$REL_PATH")
 
-# 1. 루트에 .md/.json/.txt 파일 (CLAUDE.md, README.md 제외) — 차단
+# 1. 루트에 .md/.json/.txt 파일 (허용 리스트 외) — 차단
+ALLOWED_ROOT_FILES="CLAUDE.md README.md .ai_rules"
 if [ "$DIRNAME" = "." ]; then
   case "$BASENAME" in
     *.md|*.json|*.txt)
-      if [ "$BASENAME" != "CLAUDE.md" ] && [ "$BASENAME" != "README.md" ]; then
-        echo "[ValidatePath] 🚫 BLOCKED: 루트에 파일 생성 금지 — $BASENAME (허용: CLAUDE.md, README.md)"
+      # 허용 리스트 체크
+      if ! echo "$ALLOWED_ROOT_FILES" | grep -q "\b$BASENAME\b"; then
+        echo "[ValidatePath] 🚫 BLOCKED: 루트에 파일 생성 금지 — $BASENAME (허용: $ALLOWED_ROOT_FILES)"
         exit 2
       fi
       ;;

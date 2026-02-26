@@ -1,6 +1,9 @@
 # LAYER OS AI Agent Constitution
 # Priority: 0 (MAXIMUM - All AI models MUST obey)
-# Last Updated: 2026-02-18
+# Last Updated: 2026-02-26
+# Sync Target: CLAUDE.md (Claude), ~/.gemini/GEMINI.md (Gemini)
+
+---
 
 ## 🔴 MANDATORY SESSION PROTOCOL
 
@@ -42,7 +45,7 @@ cat knowledge/system/filesystem_cache.json
 
 If already exists in cache → DO NOT CREATE AGAIN.
 
-### 4. Asset Registration (생성 후 필수)
+### 5. Asset Registration (생성 후 필수)
 
 After creating ANY content (insight, document, code, visual):
 
@@ -102,7 +105,7 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 - audit_report_*.json (루트 또는 임의 경로)
 - *_report_*.json (루트에 생성 금지 — knowledge/reports/growth/ 외)
 
-**루트(/)에 어떤 파일도 생성 금지** (.md, .json, .txt 모두). CLAUDE.md, README.md, .ai_rules, FILESYSTEM_MANIFEST.md 제외.
+**루트(/)에 어떤 파일도 생성 금지** (.md, .json, .txt 모두). CLAUDE.md, README.md, .ai_rules, AI_CONSTITUTION.md 제외.
 
 허용 위치:
 - 세션 기록 → `knowledge/docs/sessions/`에만 저장
@@ -155,6 +158,71 @@ Session End
 > 1. `cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md`
 > 2. `cat knowledge/system/work_lock.json`
 > 3. `cat knowledge/system/filesystem_cache.json`
+
+---
+
+## 🏗️ DEPENDENCY GRAPH (파일 영향권 추적 시스템)
+
+**Ver 1.0** (2026-02-26 구축 완료)
+
+### 핵심 개념
+
+파일 변경 시 **자동으로 영향받는 파일 추적** + **3-Tier 처리**
+
+**구조**:
+```
+파일 변경 감지 (file_watcher.py)
+  ↓
+의존성 그래프 BFS 탐색 (cascade_manager.py)
+  ↓
+영향권 계산 + Tier별 처리
+  ↓
+FROZEN → CD 승인 필수
+PROPOSE → 에이전트 재프롬프트 큐잉
+AUTO → 캐시 무효화만 (자동 반영 금지)
+```
+
+### 실행 방법
+
+**그래프 확인**:
+```bash
+cat knowledge/system/dependency_graph.json
+```
+
+**영향권 분석**:
+```python
+from core.system.cascade_manager import CascadeManager
+cm = CascadeManager()
+impact = cm.on_file_change("directives/practice/visual.md")
+print(impact.affected_nodes)  # 영향받는 파일 리스트
+```
+
+**실시간 감시** (백그라운드):
+```bash
+python core/system/file_watcher.py
+```
+
+### Tier 정의
+
+| Tier | 대상 | 처리 방식 |
+|------|------|----------|
+| FROZEN | THE_ORIGIN.md | CD 승인 + 전체 재검증 필수 |
+| PROPOSE | practice/*.md, agents/*.md | 에이전트 재프롬프트 + 큐잉 |
+| AUTO | style.css, items.json, essay-*.md | 캐시 무효화만 (AI 자동 수정 금지) |
+
+### 안전 장치 (AI 환각 방지)
+
+1. **auto_modify=False** — 기본값. 분석만 수행, 자동 수정 금지.
+2. **DAG 구조 강제** — 순환 참조 검증 (`graph_validator.py`)
+3. **HTML 재생성 비활성화** — PROPOSE/AUTO Tier 모두 수동 승인 권장
+4. **Git auto-commit 미구현** — 수동 검토 후 커밋
+
+### Phase 3 (미구현)
+- Ralph Loop 통합 (AI diff → CD 승인 워크플로우)
+- Git transaction (all-or-nothing)
+- PROPOSE Tier 자동 에이전트 재프롬프트
+
+**참고 문서**: `knowledge/system/dependency_graph.json`
 
 ---
 

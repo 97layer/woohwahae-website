@@ -1,7 +1,17 @@
-# LAYER OS AI Agent Constitution
+# LAYER OS AI Agent Constitution — Claude Edition
 # Priority: 0 (MAXIMUM)
-# Last Updated: 2026-02-24
-# Sync: .ai_rules (비Claude 환경용) | ~/.gemini/GEMINI.md (Gemini용)
+# Source: directives/AI_CONSTITUTION.md (SSOT)
+# Last Updated: 2026-02-26
+
+---
+
+**이 파일은 Claude Code 전용 참조 파일입니다.**
+
+모든 AI 모델 공통 규칙은 아래 파일을 참조하세요:
+
+```bash
+cat directives/AI_CONSTITUTION.md
+```
 
 ---
 
@@ -35,7 +45,7 @@ work_lock.json = 잠금 상태면 STOP. 다른 에이전트 작업 중.
 
 금지 파일명: `SESSION_SUMMARY_*.md` / `WAKEUP_REPORT.md` / `DEEP_WORK_PROGRESS.md` / `DEPLOY_*.md` / `NEXT_STEPS.md` / `audit_report_*.json` / `*_report_*.json`
 
-**루트(/)에 .md/.json/.txt 등 어떤 파일도 생성 금지** (CLAUDE.md, README.md 제외)
+**루트(/)에 .md/.json/.txt 등 어떤 파일도 생성 금지** (CLAUDE.md, README.md, .ai_rules, AI_CONSTITUTION.md 제외)
 
 허용 위치: 세션기록 → `knowledge/agent_hub/` | 보고서 → `knowledge/reports/morning_YYYYMMDD.md`
 
@@ -134,6 +144,22 @@ Essence > Speed | Record > Memory | Process > Result | Self-Affirmation
 
 **Imperfect completion is acceptable. Hallucinated success is NOT.**
 
+---
+
+## 🏗️ DEPENDENCY GRAPH (파일 영향권 추적 시스템)
+
+**상세 문서**: `directives/AI_CONSTITUTION.md` § Dependency Graph 섹션 참조
+
+**핵심**:
+- 파일 변경 → 의존성 그래프 BFS → 영향권 계산 → Tier별 처리
+- FROZEN (THE_ORIGIN.md) → CD 승인 필수
+- PROPOSE (practice/*.md) → 에이전트 재프롬프트 큐잉
+- AUTO (css/data) → 캐시 무효화만 (AI 자동 수정 금지)
+
+**안전 장치**:
+- auto_modify=False 기본값
+- DAG 구조 강제 (순환 참조 0건)
+- HTML 재생성 비활성화 (수동 승인)
 
 ---
 

@@ -23,11 +23,12 @@
 | 경로 | 용도 | 권한 |
 |------|------|------|
 | `THE_ORIGIN.md` | 브랜드 철학 SSOT | FROZEN |
+| `AI_CONSTITUTION.md` | **AI 헌법 SSOT (모든 모델 공통)** | FROZEN |
 | `SYSTEM.md` | 운영 프로토콜 | 덮어쓰기 |
 | `MANIFEST.md` | 이 문서 | 덮어쓰기 |
 | `README.md` | 인덱스 | 덮어쓰기 |
-| `agents/{sa,ce,ad,cd}.md` | 에이전트별 판단 기준 | PROPOSE |
-| `practice/` | 실행 규격 7개 (visual, language, content, audience, experience, offering, references) | 참조용 |
+| `agents/{SA,CE,AD,CD,GEMINI}.md` | 에이전트별 판단 기준 (GEMINI.md = Gemini 전용 특수 규칙) | PROPOSE |
+| `practice/` | 실행 규격 7개 (visual, language, content, audience, experience, service, references) | 참조용 |
 
 ---
 
