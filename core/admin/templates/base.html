@@ -12,9 +12,11 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Crimson+Text:ital,wght@0,400;1,400&display=swap"
     rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link
-    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Crimson+Text:ital,wght@0,400;1,400&display=swap"
-    rel="stylesheet"></noscript>
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Crimson+Text:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet">
+  </noscript>
   <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
 </head>
 
@@ -37,8 +39,7 @@
         <!-- THE DAILY -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">THE DAILY</div>
-          <a href="{{ url_for('dashboard') }}"
-            class="sidebar-link {% if request.path == '/' %}active{% endif %}">
+          <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.path == '/' %}active{% endif %}">
             오늘
           </a>
         </div>
@@ -55,8 +56,7 @@
         <!-- LAYER 2 -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">LAYER 2 — DESIGN</div>
-          <a href="{{ url_for('lab_panel') }}"
-            class="sidebar-link {% if request.path == '/lab' %}active{% endif %}">
+          <a href="{{ url_for('lab_panel') }}" class="sidebar-link {% if request.path == '/lab' %}active{% endif %}">
             랩
           </a>
         </div>
@@ -72,8 +72,7 @@
             class="sidebar-link {% if request.path.startswith('/pipeline') %}active{% endif %}">
             파이프라인
           </a>
-          <a href="{{ url_for('cockpit') }}"
-            class="sidebar-link {% if request.path == '/cockpit' %}active{% endif %}">
+          <a href="{{ url_for('cockpit') }}" class="sidebar-link {% if request.path == '/cockpit' %}active{% endif %}">
             두뇌
           </a>
         </div>

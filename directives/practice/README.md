@@ -19,7 +19,7 @@ Expression ─── "어떻게 보이고 말하는가"
 │
 Production ─── "무엇을 만들고 제공하는가"
 │  content.md     콘텐츠 생산 (에세이, 품질 게이트, 교육 포맷)
-│  offering.md    서비스 + 제품 (아틀리에, 큐레이션)
+│  service.md    서비스 + 제품 (아틀리에, 큐레이션)
 │
 Connection ─── "누구에게 어디서 닿는가"
    audience.md    공명 대상 (페르소나, Anti-Audience)
@@ -33,7 +33,7 @@ Connection ─── "누구에게 어디서 닿는가"
 | 상황 | 행동 |
 |------|------|
 | 새 영역 추가 | 3축 중 해당 축에 파일 추가 (예: motion.md → Expression) |
-| 파일 비대화 | 축 안에서 분리 (예: offering → service.md + product.md) |
+| 파일 비대화 | 축 안에서 분리 (예: service.md → service.md + product.md) |
 | 축 자체 추가 | THE_ORIGIN.md 개정 필요 (FROZEN) |
 
 ---

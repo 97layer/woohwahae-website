@@ -112,6 +112,22 @@
   /* 들이쉬고 내쉬는 곡선 */
   --ease-wave: cubic-bezier(0.37, 0, 0.63, 1);
   /* 파동 = 정현파에 가까운 S곡선 */
+
+  /* Shadow tokens — 절제된 깊이 */
+  --shadow-sm: 0 4px 30px rgba(0, 0, 0, 0.03);
+  /* 부드러운 ambient shadow */
+  --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.06);
+  /* hover 상태, 카드 */
+
+  /* Radius tokens — 최소한의 둥근 모서리 */
+  --radius-none: 0;
+  /* 기본값 (각진 형태 유지) */
+  --radius-sm: 2px;
+  /* 미세한 부드러움 */
+  --radius-md: 4px;
+  /* 버튼, 입력 필드 */
+  --radius-full: 50%;
+  /* 원형 (아바타, 아이콘) */
 }
 
 /* 시간대별 호흡 주기 변조 */
@@ -286,8 +302,7 @@ a:hover {
   backdrop-filter: var(--glass-blur);
   padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--glass-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
-  /* Soft ambient shadow */
+  box-shadow: var(--shadow-sm);
 }
 
 .nav-logo {
@@ -734,12 +749,12 @@ section {
 
   /* ── 모바일 spacing 토큰 전면 축소 ── */
   :root {
-    --space-xs: 0.25rem;
-    --space-sm: 0.5rem;
-    --space-md: 1rem;
-    --space-lg: 1.75rem;
-    --space-xl: 2.5rem;
-    --space-2xl: 3.5rem;
+    --space-xs: 0.5rem;     /* 8px (8px 배수) */
+    --space-sm: 0.5rem;     /* 8px */
+    --space-md: 1rem;       /* 16px */
+    --space-lg: 2rem;       /* 32px (1.75rem=28px → 2rem=32px) */
+    --space-xl: 2.5rem;     /* 40px */
+    --space-2xl: 3.5rem;    /* 56px */
   }
 
   section {
@@ -1117,9 +1132,8 @@ section+section {
 
 .content-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
   z-index: 2;
-  /* Bring to front */
 }
 
 /* ─── Bento Spotlight (Fresh UX) ─── */
@@ -6087,7 +6101,7 @@ body.home-radical::after {
 
 .card--lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 /* ─── Grid Layouts ─── */
@@ -6444,12 +6458,20 @@ body.home-radical::after {
   }
 }
 
+/* ─── Home Scroll Space — field-bg 클로즈업 구간 ─── */
+.home-scroll-space {
+  position: relative;
+  z-index: 1;
+  height: 200vh;
+  pointer-events: none;
+}
+
 /* ─── Home Below (하단 세션) ─── */
 .home-below {
   position: relative;
   z-index: 1;
-  background: var(--bg);
-  padding: var(--space-2xl) 0;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 20%);
+  padding: var(--space-2xl) 0 var(--space-lg);
 }
 
 .home-tagline {
@@ -6494,7 +6516,8 @@ body.home-radical::after {
   color: var(--text);
 }
 
-.home-entry__desc {
+.home-entry__desc,
+.home-entry__sub {
   font-size: 0.85rem;
   font-weight: var(--fw-light);
   color: var(--text-faint);

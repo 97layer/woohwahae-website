@@ -925,7 +925,7 @@ def _save_service_items(items: list) -> None:
 def service_admin():
     items = _load_service_items()
     _audit('service_view')
-    return render_template('offering.html', items=items)
+    return render_template('service.html', items=items)
 
 
 @app.route('/service/add', methods=['POST'])
@@ -942,7 +942,7 @@ def service_add():
         'item_id': item_id,
         'name': name,
         'category': request.form.get('category', 'service'),
-        'price': int(request.form.get('price', 0) or 0),
+        'price': int(request.form.get('price', 0)),
         'active': True,
         'description': request.form.get('description', '').strip(),
         'url': request.form.get('url', '').strip(),

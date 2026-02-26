@@ -165,7 +165,7 @@ directives/
 │   ├── visual.md            ← 시각적 무게 중심 조율
 │   ├── language.md          ← 단어와 문장의 톤 지침
 │   ├── content.md           ← 발행 및 질문 촉발의 방향성
-│   ├── offering.md          ← 다도(茶道)적 공간 서비스 진행 규격
+│   ├── service.md          ← 다도(茶道)적 공간 서비스 진행 규격
 │   ├── audience.md          ← 타겟이 아닌 흩뿌려질 주파수 전파 대상
 │   └── experience.md        ← UX/UI 흐름의 설계, 사용자 동선의 여백화
 └── agents/                  ← 체계 자의식 및 객체 판단 알고리즘
@@ -227,7 +227,7 @@ directives/
 
 - **공명의 여정 7단계**: Discovery(감지) → Exploration(탐색) → Booking(결단) → Consultation(조율) → Service(제의) → Completion(정돈) → Continuation(유지)
 
-→ 상세: `practice/offering.md`
+→ 상세: `practice/service.md`
 
 ## Guidance Route (판단의 순환망)
 

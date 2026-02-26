@@ -46,7 +46,7 @@ woohwahae.kr/
 - 서비스 랜딩 + 4가지 방식 (atelier, direction, project, product)
 - 연락/예약 (contact.html)
 - 톤: 정확하고 정중하게. 불필요한 친목 수식 배제.
-- 참조: `practice/offering.md`
+- 참조: `practice/service.md`
 
 ### `/woosunho/` — 에디터 포트폴리오
 
