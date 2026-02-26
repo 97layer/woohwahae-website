@@ -1,0 +1,15 @@
+{
+  "type": "youtube_video",
+  "source": "https://youtu.be/7HBhL7lltpU",
+  "video_id": "7HBhL7lltpU",
+  "captured_at": "2026-02-18T23:39:54.482902",
+  "transcript": null,
+  "full_transcript_length": 0,
+  "analysis": {
+    "summary": "Transcript unavailable (video from cloud IP blocked by YouTube)",
+    "key_insights": [],
+    "topics": [],
+    "note": "Manual review needed"
+  },
+  "status": "captured"
+}

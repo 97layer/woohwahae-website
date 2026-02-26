@@ -1,0 +1,13 @@
+{
+  "type": "youtube_video",
+  "source": "https://youtu.be/DpD0wnGk03s",
+  "video_id": "DpD0wnGk03s",
+  "captured_at": "2026-02-16T15:52:00.665750",
+  "analysis": {
+    "summary": "분석 불가 (Gemini API 없음)",
+    "key_insights": [],
+    "topics": [],
+    "actionable_items": []
+  },
+  "status": "captured"
+}

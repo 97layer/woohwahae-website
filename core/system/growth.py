@@ -269,8 +269,10 @@ class GrowthModule:
             datetime.now().isoformat(),
         )
 
-        report_path = PROJECT_ROOT / "knowledge" / "reports" / ("growth_%s.md" % period.replace("-", ""))
-        report_path.write_text(report, encoding="utf-8")
+        # MANIFEST 검증 적용 (growth_YYYYMM.json이 정확한 형식)
+        from core.system.filesystem_validator import safe_write
+        report_path = PROJECT_ROOT / "knowledge" / "reports" / "growth" / ("growth_%s.json" % period.replace("-", ""))
+        safe_write(report_path, report, agent_id="Growth")
         logger.info("월간 리포트 생성: %s", report_path.name)
         return str(report_path)
 

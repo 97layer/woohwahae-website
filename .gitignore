@@ -66,10 +66,10 @@ knowledge/docs/archive/quarantine/
 
 # Runtime-generated data (not for version control)
 .container_data/
-knowledge/signals/
+knowledge/signals/*.tmp
+knowledge/signals/images/
 knowledge/content/
 knowledge/archive/
-knowledge/reports/
 knowledge/corpus/entries/
 knowledge/corpus/index.json
 knowledge/long_term_memory.json

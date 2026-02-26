@@ -1,0 +1,14 @@
+{
+  "signal_id": "text_insight_20260216_070928",
+  "type": "text_insight",
+  "status": "stored",
+  "content": "콘텐츠아이디어\n\n## Metadata\n\n- Status: captured\n- Requires Analysis: true",
+  "captured_at": "2026-02-24T09:36:47.560413",
+  "from_user": "97layer",
+  "source_channel": "telegram",
+  "metadata": {
+    "title": "콘텐츠아이디어\n\n## Metadata\n\n- Status: captured\n- Require",
+    "migrated_from": "auto_20260216_070928.md"
+  },
+  "stored_at": "2026-02-24T09:36:48.088296"
+}

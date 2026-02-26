@@ -1,0 +1,14 @@
+{
+  "type": "youtube_video",
+  "source": "https://youtu.be/DpD0wnGk03s",
+  "video_id": "DpD0wnGk03s",
+  "captured_at": "2026-02-16T15:55:45.658628",
+  "analysis": {
+    "summary": "분석 실패",
+    "key_insights": [],
+    "topics": [],
+    "actionable_items": []
+  },
+  "status": "analyzed",
+  "analyzed_at": "2026-02-18T23:41:08.480364"
+}
