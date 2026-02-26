@@ -60,24 +60,165 @@
     </g>
   </svg>
 </div>
-<!-- /COMPONENT:wave-bg --><!-- 패밀리룩 배경 SVG — 동심원 파동 -->
-<main class="page-main">
-<header class="about-manifesto container--content">
-<p class="about-manifesto__text">
-        소음을 제거하면, 본질이 남는다.
-      </p>
-</header>
-<section class="about-body container--content">
-<p>
-        반지하 8평. 거울 하나. 의자 하나.<br/>
-        이 공간에서 머리카락을 자르고, 글을 쓰고, 브랜드를 만든다.
-      </p>
-<p>
-        빠르게 만들고 빠르게 버리는 세상에서,<br/>
-        천천히 깎고 오래 남기는 일을 한다.
-      </p>
-</section>
-<hr class="about-divider container--content"/>
+<!-- /COMPONENT:wave-bg -->
+<style>
+  .about-diagram { margin: 6rem auto 4rem; max-width: 480px; padding: 0 var(--space-md); }
+  .about-diagram__svg { display: block; width: 100%; max-width: 480px; margin: 0 auto; overflow: visible; }
+  .diag-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--text-faint); animation: about-label-pulse 3.8s ease-in-out infinite; }
+  .diag-label--center { font-size: 8px; fill: var(--text-sub); letter-spacing: 0.16em; }
+  @keyframes about-ring-1 { 0%,100% { r: 42; opacity: 0.9; } 50% { r: 44; opacity: 0.6; } }
+  @keyframes about-ring-2 { 0%,100% { r: 82; opacity: 0.55; } 50% { r: 86; opacity: 0.28; } }
+  @keyframes about-ring-3 { 0%,100% { r: 126; opacity: 0.22; } 50% { r: 132; opacity: 0.10; } }
+  @keyframes about-label-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+  .about-ring-1 { animation: about-ring-1 3.8s ease-in-out infinite; }
+  .about-ring-2 { animation: about-ring-2 3.8s ease-in-out infinite; animation-delay: 0.28s; }
+  .about-ring-3 { animation: about-ring-3 3.8s ease-in-out infinite; animation-delay: 0.56s; }
+  .about-body { max-width: 680px; margin: 0 auto; padding: 0 var(--space-md) var(--space-lg); }
+  .about-body p { font-size: 0.95rem; font-weight: var(--fw-light); line-height: 2; color: var(--text-sub); word-break: keep-all; margin-bottom: 1.6rem; }
+  .about-dir { max-width: 680px; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-xl); border-top: 1px solid var(--line); }
+  .about-dir__item { display: grid; grid-template-columns: 60px 140px 1fr; align-items: center; gap: var(--space-sm); padding: var(--space-md) 0; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; transition: opacity var(--duration) var(--ease-out); }
+  .about-dir__item:hover { opacity: 0.55; }
+  .about-dir__num { font-family: var(--font-mono); font-size: 0.6rem; font-weight: var(--fw-light); color: var(--text-faint); letter-spacing: var(--ls-label); }
+  .about-dir__title { font-family: var(--font-mono); font-size: 0.6rem; font-weight: var(--fw-light); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text); }
+  .about-dir__sub { font-size: 0.85rem; font-weight: var(--fw-light); color: var(--text-faint); }
+  @media (max-width: 640px) { .about-dir__item { grid-template-columns: 50px 1fr; } .about-dir__sub { display: none; } }
+
+  /* Brand Guide */
+  .brand-section { max-width: 860px; margin: 0 auto var(--space-xl); padding: 0 var(--space-md); }
+  .brand-section__label { font-family: var(--font-mono); font-size: 0.55rem; font-weight: var(--fw-light); letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--text-faint); margin-bottom: 2rem; display: block; }
+  .brand-section__divider { width: 1px; height: 3rem; background: var(--line); margin: 0 0 2rem; }
+  .brand-symbol { display: flex; align-items: center; justify-content: center; padding: 3rem 0; }
+  .brand-symbol img { height: 100px; width: auto; }
+  .brand-variants { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-top: var(--space-md); }
+  .brand-variant-box { border: 1px solid var(--line); padding: 2.5rem; display: flex; align-items: center; justify-content: center; }
+  .brand-variant-box--dark { background: var(--text); }
+  .brand-variant-box--dark img { filter: invert(1); }
+  .brand-variant-box img { height: 48px; width: auto; }
+  .brand-wordmark { font-family: var(--font-mono); font-weight: var(--fw-light); letter-spacing: 0.10em; text-transform: uppercase; font-size: 1.2rem; color: var(--text); padding: 2rem 0; }
+  .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-sm); }
+  .color-swatch { border: 1px solid var(--line); overflow: hidden; }
+  .color-swatch__fill { height: 64px; }
+  .color-swatch__info { padding: 0.6rem; }
+  .color-swatch__name { font-family: var(--font-mono); font-size: 0.55rem; font-weight: var(--fw-light); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text); display: block; margin-bottom: 0.2rem; }
+  .color-swatch__hex { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-faint); }
+  .type-specimen { margin-bottom: var(--space-md); padding-bottom: var(--space-md); border-bottom: 1px solid var(--line); }
+  .type-specimen__name { font-family: var(--font-mono); font-size: 0.5rem; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.6rem; display: block; }
+  .type-specimen__sample--body { font-family: var(--font-body); font-weight: var(--fw-light); font-size: 1rem; line-height: 1.8; color: var(--text); }
+  .type-specimen__sample--mono { font-family: var(--font-mono); font-weight: var(--fw-light); font-size: 0.8rem; letter-spacing: 0.04em; color: var(--text); }
+  .type-specimen__sample--serif { font-family: 'Crimson Text', Georgia, serif; font-style: italic; font-size: 1.2rem; line-height: 1.5; color: var(--text); }
+  .brand-note { font-size: 0.85rem; font-weight: var(--fw-light); color: var(--text-sub); line-height: 1.8; }
+  .breath-demo { display: flex; align-items: center; justify-content: center; padding: 2rem 0; }
+  .breath-dot { width: 10px; height: 10px; background: var(--text); border-radius: 50%; animation: brand-breath 3.8s ease-in-out infinite; }
+  @keyframes brand-breath { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.8); } }
+  @media (max-width: 640px) { .brand-variants { grid-template-columns: 1fr; } .color-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+<main class="page-main" style="position:relative;z-index:1">
+
+  <!-- 다이어그램: 3원칙 동심원 -->
+  <figure class="about-diagram" data-reveal>
+    <svg class="about-diagram__svg" viewBox="0 0 480 300" fill="none" role="img" aria-label="WOOHWAHAE 세계관 — 본질주의, 공명, 자기긍정" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="200" cy="150" r="4" fill="currentColor" opacity="0.85"/>
+      <circle class="about-ring-1" cx="200" cy="150" r="42" stroke="currentColor" stroke-width="0.75" opacity="0.9"/>
+      <circle class="about-ring-2" cx="200" cy="150" r="82" stroke="currentColor" stroke-width="0.5" opacity="0.55"/>
+      <circle class="about-ring-3" cx="200" cy="150" r="126" stroke="currentColor" stroke-width="0.35" opacity="0.22"/>
+      <line x1="200" x2="200" y1="18" y2="282" stroke="currentColor" stroke-width="0.3" opacity="0.12"/>
+      <line x1="62" x2="338" y1="150" y2="150" stroke="currentColor" stroke-width="0.3" opacity="0.12"/>
+      <line x1="243" x2="310" y1="150" y2="109" stroke="currentColor" stroke-width="0.4" opacity="0.18"/>
+      <text class="diag-label" x="315" y="106">Essentialism</text>
+      <line x1="282" x2="320" y1="150" y2="148" stroke="currentColor" stroke-width="0.4" opacity="0.18"/>
+      <text class="diag-label" x="325" y="152">Resonance</text>
+      <line x1="266" x2="310" y1="222" y2="200" stroke="currentColor" stroke-width="0.4" opacity="0.18"/>
+      <text class="diag-label" x="315" y="203">Self-Affirmation</text>
+      <text class="diag-label--center" text-anchor="middle" x="200" y="143">羽化</text>
+      <text class="diag-label" style="font-size:8px;opacity:0.5;" text-anchor="middle" x="200" y="288">3.8s breath cycle</text>
+    </svg>
+  </figure>
+
+  <!-- 본문 -->
+  <section class="about-body" data-reveal>
+    <p>도달점에 복무하는 시대를 횡단하고 있습니다.<br>물리적 가속은 존재 고유의 결을 마모시키고,<br>타인이 세운 규격화된 문법은 내면의 리듬을 해체합니다.</p>
+    <p>다도의 절제, 서예의 반복, 선의 묵언.<br>과정의 반복 속에서 시간은 밀도를 갖습니다.</p>
+    <p>이 감각을 일상에 적용하는 태도를 Slow라 정의합니다.<br>단순한 속도 저하가 아닙니다.<br>관성에 제동을 걸고, 자신의 호흡으로<br>삶의 영점을 다시 잡는 방식입니다.</p>
+    <p>소음이 소거되고 나서야,<br>온전한 공명이 발생합니다.</p>
+  </section>
+
+  <!-- Brand Identity -->
+  <section class="brand-section" data-reveal>
+    <div class="brand-section__divider"></div>
+    <span class="brand-section__label">Symbol</span>
+    <div class="brand-symbol">
+      <img src="/assets/media/brand/symbol.png" alt="WOOHWAHAE Symbol">
+    </div>
+    <div class="brand-variants">
+      <div class="brand-variant-box"><img src="/assets/media/brand/symbol.png" alt="Light"></div>
+      <div class="brand-variant-box brand-variant-box--dark"><img src="/assets/media/brand/symbol.png" alt="Dark"></div>
+    </div>
+  </section>
+
+  <section class="brand-section" data-reveal>
+    <div class="brand-section__divider"></div>
+    <span class="brand-section__label">Wordmark</span>
+    <div class="brand-wordmark">WOOHWAHAE</div>
+    <p class="brand-note">IBM Plex Mono · 300 · ls 0.10em · uppercase</p>
+  </section>
+
+  <section class="brand-section" data-reveal>
+    <div class="brand-section__divider"></div>
+    <span class="brand-section__label">Palette</span>
+    <div class="color-grid">
+      <div class="color-swatch"><div class="color-swatch__fill" style="background:#E3E2E0"></div><div class="color-swatch__info"><span class="color-swatch__name">bg</span><span class="color-swatch__hex">#E3E2E0</span></div></div>
+      <div class="color-swatch"><div class="color-swatch__fill" style="background:#1A1A1A"></div><div class="color-swatch__info"><span class="color-swatch__name">text</span><span class="color-swatch__hex">#1A1A1A</span></div></div>
+      <div class="color-swatch"><div class="color-swatch__fill" style="background:#4A4A4A"></div><div class="color-swatch__info"><span class="color-swatch__name">text-sub</span><span class="color-swatch__hex">#4A4A4A</span></div></div>
+      <div class="color-swatch"><div class="color-swatch__fill" style="background:#8E8E88"></div><div class="color-swatch__info"><span class="color-swatch__name">text-faint</span><span class="color-swatch__hex">#8E8E88</span></div></div>
+      <div class="color-swatch"><div class="color-swatch__fill" style="background:#D5D4CF"></div><div class="color-swatch__info"><span class="color-swatch__name">line</span><span class="color-swatch__hex">#D5D4CF</span></div></div>
+      <div class="color-swatch"><div class="color-swatch__fill" style="background:#7A6E5A"></div><div class="color-swatch__info"><span class="color-swatch__name">stone</span><span class="color-swatch__hex">#7A6E5A</span></div></div>
+      <div class="color-swatch"><div class="color-swatch__fill" style="background:#1B2D4F"></div><div class="color-swatch__info"><span class="color-swatch__name">navy</span><span class="color-swatch__hex">#1B2D4F</span></div></div>
+    </div>
+  </section>
+
+  <section class="brand-section" data-reveal>
+    <div class="brand-section__divider"></div>
+    <span class="brand-section__label">Typography</span>
+    <div class="type-specimen">
+      <span class="type-specimen__name">Pretendard Variable — Body</span>
+      <p class="type-specimen__sample--body">소음이 걷힌 진공에 다다라서야, 명징한 본질이 나섭니다.</p>
+    </div>
+    <div class="type-specimen">
+      <span class="type-specimen__name">IBM Plex Mono — Label</span>
+      <p class="type-specimen__sample--mono">ARCHIVE · PRACTICE · ABOUT — 0123456789</p>
+    </div>
+    <div class="type-specimen">
+      <span class="type-specimen__name">Crimson Text — Serif Accent</span>
+      <p class="type-specimen__sample--serif">Remove the noise, reveal the essence.</p>
+    </div>
+  </section>
+
+  <section class="brand-section" data-reveal>
+    <div class="brand-section__divider"></div>
+    <span class="brand-section__label">Breath · 3.8s</span>
+    <div class="breath-demo"><div class="breath-dot"></div></div>
+    <p class="brand-note">호흡 주기 3.8s · dawn 4.8s · day 3.8s · evening 4.2s · night 5.2s</p>
+  </section>
+
+  <!-- 디렉토리 -->
+  <nav class="about-dir" data-reveal>
+    <a class="about-dir__item" href="philosophy.html">
+      <span class="about-dir__num">[01]</span>
+      <span class="about-dir__title">Philosophy</span>
+      <span class="about-dir__sub">세계관과 나침반</span>
+    </a>
+    <a class="about-dir__item" href="journey.html">
+      <span class="about-dir__num">[02]</span>
+      <span class="about-dir__title">Journey</span>
+      <span class="about-dir__sub">수행자의 궤적</span>
+    </a>
+    <a class="about-dir__item" href="editor.html">
+      <span class="about-dir__num">[03]</span>
+      <span class="about-dir__title">Editor</span>
+      <span class="about-dir__sub">WOOSUNHO</span>
+    </a>
+  </nav>
+
 </main>
 <script defer="" src="../assets/js/site.js"></script>
 
