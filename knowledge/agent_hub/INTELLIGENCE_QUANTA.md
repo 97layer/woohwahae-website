@@ -64,7 +64,8 @@
 
 ## 🎯 다음 작업
 
-1. [DESIGN] 비주얼 Phase 2 — Practice 서비스 상세, 에세이 읽기 경험, 모바일 최적화
+1. [CRITICAL] 컴포넌트 통일 — nav/footer/wave-bg를 _templates/ 기준으로 정의 후 전 페이지 일괄 적용. 현재 페이지마다 구조 불일치.
+2. [DESIGN] 비주얼 Phase 2 — Practice 서비스 상세, 에세이 읽기 경험, 모바일 최적화
 2. [DESIGN] About 카피 확정 — 매니페스토/본문/Philosophy/Journey/Editor 텍스트 순호 검토
 3. content_publisher.py — essay-NNN 타입 접두사 패턴 적용
 4. Ralph 피드백 루프 구현 — STAP 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
