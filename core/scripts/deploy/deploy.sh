@@ -1,21 +1,39 @@
 #!/bin/bash
 # LAYER OS 배포 스크립트
-# 웹: git push → Cloudflare Pages 자동 배포
-# 코드: VM git pull + 서비스 재시작
+# SSOT: knowledge/system/vm_services.json
 #
 # Usage:
 #   ./deploy.sh              코드 pull만 (재시작 없음)
-#   ./deploy.sh all          코드 pull + 전 서비스 재시작
+#   ./deploy.sh all          코드 pull + active 서비스 전체 재시작
 #   ./deploy.sh web          Cloudflare Pages 안내
-#   ./deploy.sh <서비스명>   특정 서비스 재시작
+#   ./deploy.sh <서비스명>   특정 서비스 재시작 (active만 허용)
 #   ./deploy.sh --status     서비스 상태 확인
+#   ./deploy.sh --list       배포 가능 서비스 목록
 
 set -e
 
-VM_HOST="97layer-vm"
-VM_PATH="/home/skyto5339_gmail_com/97layerOS"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+VM_SERVICES_JSON="$PROJECT_ROOT/knowledge/system/vm_services.json"
 
-SERVICES_ALL="97layer-telegram 97layer-ecosystem 97layer-gardener woohwahae-backend cortex-admin"
+# vm_services.json에서 설정 읽기
+if [ ! -f "$VM_SERVICES_JSON" ]; then
+  echo "ERROR: $VM_SERVICES_JSON 없음. 배포 중단." >&2
+  exit 1
+fi
+
+VM_HOST=$(python3 -c "import json; d=json.load(open('$VM_SERVICES_JSON')); print(d['vm']['host_alias'])")
+VM_PATH=$(python3 -c "import json; d=json.load(open('$VM_SERVICES_JSON')); print(d['vm']['app_path'])")
+SERVICES_ACTIVE=$(python3 -c "import json; d=json.load(open('$VM_SERVICES_JSON')); print(' '.join(d['active'].keys()))")
+
+# 서비스가 active 목록에 있는지 확인
+is_active_service() {
+  python3 -c "
+import json, sys
+d = json.load(open('$VM_SERVICES_JSON'))
+sys.exit(0 if '$1' in d['active'] else 1)
+" 2>/dev/null
+}
 
 case "${1:-pull}" in
   web)
@@ -24,17 +42,32 @@ case "${1:-pull}" in
     ;;
 
   --status)
-    echo "=== VM 서비스 상태 ==="
-    ssh ${VM_HOST} "for s in ${SERVICES_ALL}; do printf '%-25s %s\n' \$s \$(systemctl is-active \$s 2>/dev/null || echo 'not-found'); done"
+    echo "=== VM 서비스 상태 (active 목록) ==="
+    ssh ${VM_HOST} "for s in ${SERVICES_ACTIVE}; do printf '%-25s %s\n' \$s \$(systemctl is-active \$s 2>/dev/null || echo 'not-found'); done"
+    ;;
+
+  --list)
+    echo "=== 배포 가능 서비스 (active) ==="
+    python3 -c "
+import json
+d = json.load(open('$VM_SERVICES_JSON'))
+for name, info in d['active'].items():
+    port = info.get('port') or '-'
+    print(f'  {name:<25} port={port:<6} {info[\"role\"]}')
+print()
+print('=== 배포 불가 (inactive) ===')
+for name, info in d['inactive'].items():
+    print(f'  {name:<25} {info[\"reason\"]}')
+"
     ;;
 
   all)
     echo "[1/2] git pull..."
     ssh ${VM_HOST} "cd ${VM_PATH} && git pull origin main"
-    echo "[2/2] 전 서비스 재시작..."
-    ssh ${VM_HOST} "sudo systemctl restart ${SERVICES_ALL}"
+    echo "[2/2] active 서비스 전체 재시작 (${SERVICES_ACTIVE})..."
+    ssh ${VM_HOST} "sudo systemctl restart ${SERVICES_ACTIVE}"
     sleep 3
-    ssh ${VM_HOST} "for s in ${SERVICES_ALL}; do printf '%-25s %s\n' \$s \$(systemctl is-active \$s); done"
+    ssh ${VM_HOST} "for s in ${SERVICES_ACTIVE}; do printf '%-25s %s\n' \$s \$(systemctl is-active \$s); done"
     ;;
 
   pull)
@@ -43,6 +76,14 @@ case "${1:-pull}" in
     ;;
 
   *)
+    # 서비스명 검증
+    if ! is_active_service "$1"; then
+      echo "ERROR: '$1'은(는) active 서비스가 아닙니다." >&2
+      echo "배포 가능 목록: ${SERVICES_ACTIVE}" >&2
+      echo "전체 목록: ./deploy.sh --list" >&2
+      exit 1
+    fi
+
     echo "[1/2] git pull..."
     ssh ${VM_HOST} "cd ${VM_PATH} && git pull origin main"
     echo "[2/2] ${1} 재시작..."

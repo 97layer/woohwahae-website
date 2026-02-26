@@ -1,0 +1,44 @@
+{
+  "_doc": "VM 배포 대상 서비스 레지스트리 (SSOT). deploy.sh + command-guard hook이 참조.",
+  "_updated": "2026-02-27",
+  "active": {
+    "97layer-telegram": {
+      "port": null,
+      "role": "텔레그램 봇 — 신호 수신"
+    },
+    "97layer-ecosystem": {
+      "port": null,
+      "role": "에이전트 파이프라인 (SA/CE/AD/CD)"
+    },
+    "97layer-gardener": {
+      "port": null,
+      "role": "자가 진화 (3AM)"
+    },
+    "woohwahae-backend": {
+      "port": 5000,
+      "role": "고객 API/결제/예약"
+    },
+    "cortex-admin": {
+      "port": 5001,
+      "role": "대시보드 + 세컨드 브레인"
+    }
+  },
+  "inactive": {
+    "fastapi-cms": {
+      "port": 8082,
+      "file": "core/backend/main.py",
+      "reason": "미사용 — 인라인 CMS, 프로덕션 미가동"
+    },
+    "gallery-api": {
+      "port": 8083,
+      "file": null,
+      "reason": "미사용 — 갤러리 API, 프로덕션 미가동"
+    }
+  },
+  "vm": {
+    "host_alias": "97layer-vm",
+    "ip": "136.109.201.201",
+    "user": "skyto5339_gmail_com",
+    "app_path": "/home/skyto5339_gmail_com/97layerOS"
+  }
+}

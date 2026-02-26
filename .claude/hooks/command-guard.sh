@@ -1,20 +1,35 @@
 #!/bin/bash
-# command-guard.sh — PreToolUse(Bash) 파괴적 명령 차단
+# command-guard.sh — PreToolUse(Bash) 파괴적 명령 + VM 배포 차단
 # 위험 명령 패턴 감지 → 차단
 #
 # exit 0 = 허용
 # exit 2 = 차단 (stderr 메시지 출력)
 
-COMMAND=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('command',''))" 2>/dev/null)
+# stdin에서 JSON 읽기 (Claude Code가 stdin으로 전달)
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('command',''))" 2>/dev/null)
 
 if [ -z "$COMMAND" ]; then
   exit 0
 fi
 
 # ─── VM 직접 접근 차단 (/deploy 스킬 강제) ────────────────────
+# SSH: alias, IP, user@host 전부 차단
+# SCP: 동일
+# 허용: deploy.sh 경유만 (deploy.sh 내부에서 ssh 호출은 사용자가 직접 실행)
 
-if echo "$COMMAND" | grep -qE 'ssh\s+97layer-vm'; then
-  echo "BLOCKED: VM 직접 SSH 금지. /deploy 스킬을 사용하세요." >&2
+VM_PATTERNS='97layer-vm|136\.109\.201\.201|skyto5339_gmail_com@'
+
+if echo "$COMMAND" | grep -qE "(ssh|scp)\s+.*($VM_PATTERNS)"; then
+  echo "BLOCKED: VM 직접 SSH/SCP 금지." >&2
+  echo "  → /deploy 스킬 또는 deploy.sh 사용하세요." >&2
+  echo "  → 배포 가능 서비스: knowledge/system/vm_services.json 참조" >&2
+  exit 2
+fi
+
+# systemctl 원격 실행 차단 (ssh 경유)
+if echo "$COMMAND" | grep -qE "ssh.*systemctl"; then
+  echo "BLOCKED: VM systemctl 직접 실행 금지. /deploy 스킬 사용하세요." >&2
   exit 2
 fi
 

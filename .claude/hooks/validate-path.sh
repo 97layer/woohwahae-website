@@ -5,7 +5,9 @@
 # exit 2 = 위반 시 차단
 # exit 0 = 통과
 
-FILE_PATH=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('file_path',''))" 2>/dev/null)
+# stdin에서 JSON 읽기 (Claude Code가 stdin으로 전달)
+INPUT=$(cat)
+FILE_PATH=$(echo "$INPUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('file_path',''))" 2>/dev/null)
 
 if [ -z "$FILE_PATH" ]; then
   exit 0

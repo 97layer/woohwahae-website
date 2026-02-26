@@ -1,10 +1,24 @@
 """
 WOOHWAHAE CMS Backend Configuration
-Simple Flask-based backend for content management
+Flask-based backend — 보안 강화 버전
 """
 
 import os
+import sys
 from pathlib import Path
+
+# core.system 접근
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(_PROJECT_ROOT))
+
+from core.system.security import require_env, hash_password
+
+# Load .env
+try:
+    from dotenv import load_dotenv
+    load_dotenv(_PROJECT_ROOT / '.env')
+except ImportError:
+    pass
 
 # Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,16 +29,22 @@ UPLOADS_DIR = BASE_DIR / "assets" / "uploads"
 # Ensure directories exist
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Flask config
-SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
-DEBUG = os.environ.get('FLASK_DEBUG', 'True') == 'True'
+# Flask config — fallback 없음, 환경변수 필수
+SECRET_KEY = require_env('FLASK_SECRET_KEY')
+DEBUG = False
 
-# Authentication (simple password-based for now)
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'woohwahae2026')
+# Authentication — 해시 기반, 평문 fallback 제거
+ADMIN_PASSWORD_HASH = require_env('FLASK_ADMIN_PASSWORD_HASH')
 
 # Content settings
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max upload
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
 
-# CORS settings
-CORS_ORIGINS = ['http://localhost:3000', 'https://woohwahae.kr']
+# CORS settings — 허용 오리진 명시
+CORS_ORIGINS = os.getenv(
+    'CORS_ORIGINS',
+    'https://woohwahae.kr'
+).split(',')
+
+# Audit log path
+AUDIT_LOG_FILE = _PROJECT_ROOT / 'knowledge' / 'reports' / 'cms_audit.log'

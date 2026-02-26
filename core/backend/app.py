@@ -1,6 +1,6 @@
 """
 WOOHWAHAE CMS Backend
-Simple Flask-based content management system
+Flask-based content management system — 보안 강화 버전
 """
 
 import sys
@@ -16,7 +16,17 @@ import json
 import os
 from datetime import datetime
 from functools import wraps
+from werkzeug.utils import secure_filename
 import config
+
+from core.system.security import (
+    verify_password,
+    apply_security_headers,
+    sanitize_html_field,
+    safe_path,
+    setup_audit_logger,
+    RateLimiter,
+)
 
 # Ritual / Growth 모듈
 try:
@@ -28,7 +38,32 @@ except ImportError:
 
 app = Flask(__name__)
 app.config.from_object(config)
-CORS(app, origins=config.CORS_ORIGINS)
+
+# CORS — 명시적 오리진만 허용, 메서드/헤더 제한
+CORS(app, origins=config.CORS_ORIGINS, methods=['GET', 'POST', 'PUT', 'DELETE'],
+     allow_headers=['Content-Type', 'Authorization'])
+
+# 보안 쿠키 설정
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE='Strict',
+    PERMANENT_SESSION_LIFETIME=3600,  # 1시간
+)
+
+# 보안 헤더
+app.after_request(apply_security_headers)
+
+# 감사 로거
+_audit_logger = setup_audit_logger('cms_audit', config.AUDIT_LOG_FILE)
+
+# 로그인 레이트 리미터 (5회/분)
+_login_limiter = RateLimiter(max_requests=5, window_seconds=60)
+
+
+def _audit(action: str, detail: str = '') -> None:
+    ip = request.remote_addr if request else 'system'
+    _audit_logger.info("ip=%s action=%s detail=%s", ip, action, detail)
 
 
 # Authentication decorator
@@ -44,34 +79,44 @@ def require_auth(f):
 # Authentication routes
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    """Simple password-based login"""
-    data = request.get_json()
-    password = data.get('password')
+    """해시 기반 비밀번호 인증 + 레이트 리미팅"""
+    ip = request.remote_addr or 'unknown'
 
-    if password == config.ADMIN_PASSWORD:
+    if _login_limiter.is_limited(ip):
+        _audit('login_rate_limited', ip)
+        return jsonify({'error': 'Too many attempts. Try later.'}), 429
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Invalid request'}), 400
+
+    password = data.get('password', '')
+
+    if verify_password(password, config.ADMIN_PASSWORD_HASH):
         session['authenticated'] = True
+        session.permanent = True
+        _audit('login_success', ip)
         return jsonify({'success': True, 'message': 'Authenticated'})
 
+    _audit('login_failed', ip)
     return jsonify({'error': 'Invalid password'}), 401
 
 
 @app.route('/api/auth/logout', methods=['POST'])
 def logout():
-    """Logout"""
+    _audit('logout')
     session.pop('authenticated', None)
     return jsonify({'success': True})
 
 
 @app.route('/api/auth/check', methods=['GET'])
 def check_auth():
-    """Check authentication status"""
     return jsonify({'authenticated': session.get('authenticated', False)})
 
 
 # Archive content management
 @app.route('/api/archive', methods=['GET'])
 def get_archive():
-    """Get all archive posts"""
     try:
         with open(config.ARCHIVE_JSON, 'r', encoding='utf-8') as f:
             posts = json.load(f)
@@ -83,100 +128,90 @@ def get_archive():
 @app.route('/api/archive', methods=['POST'])
 @require_auth
 def create_post():
-    """Create new archive post"""
     data = request.get_json()
 
-    # Validate required fields
     required = ['slug', 'title', 'date', 'issue', 'preview', 'category']
     if not all(field in data for field in required):
         return jsonify({'error': 'Missing required fields'}), 400
 
-    # Load existing posts
+    # XSS 방어 — 사용자 입력 이스케이프
+    sanitized = {}
+    for field in required:
+        sanitized[field] = sanitize_html_field(str(data[field])[:500])
+
+    # slug 경로 방어
+    if safe_path(sanitized['slug'], config.ARCHIVE_DIR) is None:
+        return jsonify({'error': 'Invalid slug'}), 400
+
     try:
         with open(config.ARCHIVE_JSON, 'r', encoding='utf-8') as f:
             posts = json.load(f)
     except FileNotFoundError:
         posts = []
 
-    # Check for duplicate slug
-    if any(post['slug'] == data['slug'] for post in posts):
+    if any(post['slug'] == sanitized['slug'] for post in posts):
         return jsonify({'error': 'Slug already exists'}), 400
 
-    # Add new post (at the beginning for newest first)
-    posts.insert(0, {
-        'slug': data['slug'],
-        'title': data['title'],
-        'date': data['date'],
-        'issue': data['issue'],
-        'preview': data['preview'],
-        'category': data['category']
-    })
+    posts.insert(0, sanitized)
 
-    # Save
     with open(config.ARCHIVE_JSON, 'w', encoding='utf-8') as f:
         json.dump(posts, f, ensure_ascii=False, indent=2)
 
-    # Create post directory
-    post_dir = config.ARCHIVE_DIR / data['slug']
+    # 디렉토리 생성 (safe_path로 검증 완료)
+    post_dir = config.ARCHIVE_DIR / sanitized['slug']
     post_dir.mkdir(exist_ok=True)
 
-    # Create basic index.html if content provided
     if 'content' in data:
-        html_content = generate_post_html(data)
+        sanitized_content = sanitize_html_field(str(data['content']))
+        html_content = generate_post_html({**sanitized, 'content': sanitized_content})
         with open(post_dir / 'index.html', 'w', encoding='utf-8') as f:
             f.write(html_content)
 
-    return jsonify({'success': True, 'post': data})
+    _audit('create_post', sanitized['slug'])
+    return jsonify({'success': True, 'post': sanitized})
 
 
 @app.route('/api/archive/<slug>', methods=['PUT'])
 @require_auth
 def update_post(slug):
-    """Update existing archive post"""
     data = request.get_json()
 
-    # Load existing posts
     try:
         with open(config.ARCHIVE_JSON, 'r', encoding='utf-8') as f:
             posts = json.load(f)
     except FileNotFoundError:
         return jsonify({'error': 'Archive not found'}), 404
 
-    # Find and update post
     post_index = next((i for i, p in enumerate(posts) if p['slug'] == slug), None)
     if post_index is None:
         return jsonify({'error': 'Post not found'}), 404
 
-    # Update fields
     for field in ['title', 'date', 'issue', 'preview', 'category']:
         if field in data:
-            posts[post_index][field] = data[field]
+            posts[post_index][field] = sanitize_html_field(str(data[field])[:500])
 
-    # Save
     with open(config.ARCHIVE_JSON, 'w', encoding='utf-8') as f:
         json.dump(posts, f, ensure_ascii=False, indent=2)
 
+    _audit('update_post', slug)
     return jsonify({'success': True, 'post': posts[post_index]})
 
 
 @app.route('/api/archive/<slug>', methods=['DELETE'])
 @require_auth
 def delete_post(slug):
-    """Delete archive post"""
-    # Load existing posts
     try:
         with open(config.ARCHIVE_JSON, 'r', encoding='utf-8') as f:
             posts = json.load(f)
     except FileNotFoundError:
         return jsonify({'error': 'Archive not found'}), 404
 
-    # Remove post
     posts = [p for p in posts if p['slug'] != slug]
 
-    # Save
     with open(config.ARCHIVE_JSON, 'w', encoding='utf-8') as f:
         json.dump(posts, f, ensure_ascii=False, indent=2)
 
+    _audit('delete_post', slug)
     return jsonify({'success': True})
 
 
@@ -184,7 +219,6 @@ def delete_post(slug):
 @app.route('/api/upload', methods=['POST'])
 @require_auth
 def upload_image():
-    """Upload image file"""
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
 
@@ -192,34 +226,35 @@ def upload_image():
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
 
-    # Check file extension
-    ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+    # secure_filename으로 파일명 정규화
+    safe_name = secure_filename(file.filename)
+    if not safe_name:
+        return jsonify({'error': 'Invalid filename'}), 400
+
+    ext = safe_name.rsplit('.', 1)[1].lower() if '.' in safe_name else ''
     if ext not in config.ALLOWED_EXTENSIONS:
         return jsonify({'error': 'Invalid file type'}), 400
 
-    # Generate unique filename
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"{timestamp}_{file.filename}"
+    filename = "%s_%s" % (timestamp, safe_name)
     filepath = config.UPLOADS_DIR / filename
 
-    # Save file
     file.save(filepath)
 
-    # Return URL
-    url = f"/assets/uploads/{filename}"
+    _audit('upload_image', filename)
+    url = "/assets/uploads/%s" % filename
     return jsonify({'success': True, 'url': url})
 
 
-# Utility: Generate post HTML
 def generate_post_html(data):
-    """Generate basic HTML for archive post"""
-    return f"""<!DOCTYPE html>
+    """HTML 생성 — 입력은 사전 이스케이프됨."""
+    return """<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="{data.get('preview', '')}">
-  <title>{data.get('title', '')} — WOOHWAHAE</title>
+  <meta name="description" content="{preview}">
+  <title>{title} — WOOHWAHAE</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
@@ -229,12 +264,9 @@ def generate_post_html(data):
       <img src="../../assets/img/symbol.jpg" class="nav-symbol" alt="WOOHWAHAE">
     </a>
     <ul class="nav-links">
-      <li><a href="../..//about/">About</a></li>
-      <li><a href="../">Archive</a></li>
-      <li><a href="../../practice/">Practice</a></li>
-      <li><a href="../../playlist.html">Playlist</a></li>
-      <li><a href="../../project.html">Project</a></li>
-      <li><a href="../..//photography/">Photography</a></li>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/archive/">Archive</a></li>
+      <li><a href="/practice/">Practice</a></li>
     </ul>
     <button class="nav-toggle" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -243,31 +275,30 @@ def generate_post_html(data):
 
   <article class="container">
     <header class="page-header">
-      <p class="section-label fade-in">{data.get('issue', '')}</p>
-      <h1 class="fade-in">{data.get('title', '')}</h1>
-      <p class="page-header-desc fade-in">{data.get('date', '')}</p>
+      <p class="section-label fade-in">{issue}</p>
+      <h1 class="fade-in">{title}</h1>
+      <p class="page-header-desc fade-in">{date}</p>
     </header>
 
     <section class="article-content fade-in">
-      {data.get('content', '<p>Content coming soon...</p>')}
+      {content}
     </section>
 
     <footer class="article-footer">
-      <a href="../" class="cta">← Back to Archive</a>
+      <a href="../" class="cta">&larr; Back to Archive</a>
     </footer>
   </article>
 
   <script src="../../assets/js/main.js"></script>
 </body>
 </html>
-"""
+""".format(**data)
 
 
 # ─── 고객 시술일지 포털 (/me/{token}) ──────────────────────────
 
 @app.route('/me/<token>')
 def client_portal(token):
-    """고객 전용 시술일지 페이지 — 로그인 없음, 토큰 기반 접근."""
     if not _MODULES_AVAILABLE:
         abort(503)
     rm = get_ritual_module()
@@ -275,7 +306,6 @@ def client_portal(token):
     if not client:
         abort(404)
 
-    # 내부 전용 필드 제거 (notes, color_formula 고객에게 비공개)
     visits = []
     for v in reversed(client.get('visits', [])):
         visits.append({
@@ -305,7 +335,6 @@ def client_portal(token):
 
 @app.route('/consult/<token>', methods=['GET', 'POST'])
 def consultation(token):
-    """예약 확정 후 고객에게 전송하는 사전상담 폼."""
     if not _MODULES_AVAILABLE:
         abort(503)
     rm = get_ritual_module()
@@ -314,36 +343,55 @@ def consultation(token):
         abort(404)
 
     if request.method == 'POST':
-        # 상담 내용 저장
-        design_memo = request.form.get('design_memo', '')
-        lifestyle = request.form.get('lifestyle', '')
-        length_pref = request.form.get('length_pref', '')
+        design_memo = sanitize_html_field(request.form.get('design_memo', ''))
+        lifestyle = sanitize_html_field(request.form.get('lifestyle', ''))
+        length_pref = sanitize_html_field(request.form.get('length_pref', ''))
         mood_keywords = request.form.getlist('mood')
-        expected_duration = request.form.get('expected_duration', '')
+        expected_duration = sanitize_html_field(request.form.get('expected_duration', ''))
 
         preference_notes = (
-            f"[{datetime.now().strftime('%Y-%m-%d')} 사전상담] "
-            f"길이: {length_pref} / 무드: {', '.join(mood_keywords)} / "
-            f"라이프스타일: {lifestyle} / 예상시간: {expected_duration}시간\n"
-            f"{design_memo}"
+            "[%s 사전상담] "
+            "길이: %s / 무드: %s / "
+            "라이프스타일: %s / 예상시간: %s시간\n"
+            "%s"
+        ) % (
+            datetime.now().strftime('%Y-%m-%d'),
+            length_pref,
+            ', '.join(sanitize_html_field(m) for m in mood_keywords),
+            lifestyle,
+            expected_duration,
+            design_memo,
         )
         rm.update_client(client['client_id'], preference_notes=preference_notes)
 
-        # 사진 업로드 처리
         if 'design_photo' in request.files:
             photo = request.files['design_photo']
             if photo and photo.filename:
-                ext = photo.filename.rsplit('.', 1)[-1].lower()
+                safe_name = secure_filename(photo.filename)
+                ext = safe_name.rsplit('.', 1)[-1].lower() if '.' in safe_name else ''
                 if ext in {'jpg', 'jpeg', 'png', 'webp', 'heic'}:
                     save_dir = _PROJECT_ROOT / 'website' / 'assets' / 'uploads' / 'consult'
                     save_dir.mkdir(parents=True, exist_ok=True)
                     ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-                    photo.save(save_dir / f"{client['client_id']}_{ts}.{ext}")
+                    photo.save(save_dir / ("%s_%s.%s" % (client['client_id'], ts, ext)))
 
-        return redirect(f'/me/{token}')
+        _audit('consultation_submit', client.get('client_id', 'unknown'))
+        return redirect('/me/%s' % token)
 
     return render_template('consult.html', client=client)
 
 
+# ─── 에러 핸들러 (디버그 정보 노출 방지) ──────────────────────
+
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify({'error': 'Internal server error'}), 500
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({'error': 'Not found'}), 404
+
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=config.DEBUG)
+    app.run(host='127.0.0.1', port=5000, debug=False)

@@ -25,3 +25,7 @@ pyyaml==6.0.1               # YAML parsing
 markdown==3.5.2             # Markdown processing
 youtube-transcript-api==1.2.4  # YouTube transcripts
 apscheduler==3.10.4          # APScheduler (PHASE 5: daily_routine.py 연결)
+
+# Dev / Security Audit
+pytest>=8.0.0                # 테스트 프레임워크
+pip-audit>=2.7.0             # 의존성 취약점 스캔
