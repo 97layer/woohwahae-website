@@ -67,13 +67,12 @@
 
 ## 🎯 다음 작업
 
-1. [NAMING] ~~**소문자 통일**~~ ✅ — 전 파일명 lowercase 리네임 + state.md 완료
-2. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
-3. [CODE] **.py 65개 전수조사** — 코드 구조 재설계 (agent_router 슬롯 자동파싱 등)
-4. [INFRA] content_publisher.py — 에세이 발행 자동화 (CF Pages 연동)
+1. [CODE] **P0 보안** — 하드코딩 비밀번호/경로 제거 (admin/app.py, photo_upload.py, snapshot_daemon.py)
+2. [CODE] **P1 directive_loader.py** — 섹션 단위 문서 로더 (토큰 최적화 핵심)
+3. [CODE] **P2 로깅 정규화** — print→logger 전환, f-string→lazy % (sa/ce_agent 등 24건+)
+4. [CODE] **P3 파이프라인 와이어링** — Gardener→CE→Ralph→AD→CD 연결
 5. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
-6. [DESIGN] **홈 히어로 SVG 리디자인** — dipole field 유지 중. 방향 보류.
-7. Ralph 피드백 루프 — STAP 자동 검증 + Gardener 수정 제안
+6. [INFRA] content_publisher.py — 에세이 발행 자동화 (CF Pages 연동)
 
 **완료됨**:
 
@@ -136,18 +135,25 @@ ssh 97layer-vm "for s in 97layer-telegram 97layer-ecosystem 97layer-gardener woo
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-28 01:00] 컨텍스트 전면 정렬 + 레거시 청산 — claude-opus-4-6
+### [2026-02-28 02:00] 전수조사 완료 (md+py) — claude-opus-4-6
 
-**커밋**: `1a70fa4b` — 12파일 변경, +216 -269
+**커밋**: `1a70fa4b` + `09e1bd7a`
 
 **실행 완료**:
 
 1. **THE_ORIGIN v5.0** — 합니다체 통일, 인용 20→10명 압축, "영점의 회귀" 용어 통일
-2. **전역 레거시 청산** — 구조 감사 38건→0건 (brand/, IDENTITY, CD, MANIFEST 경로 전면 교체)
-3. **STAP 수치 통일** — system.md 90점 → sage_architect/practice 70점 기준으로 단일화
-4. **system.md 중복 제거** — 시각/언어/파이프라인 구체 수치 → 참조 포인터 전환
-5. **코드 레거시 수정** — cd/ad/ce_agent, gardener, brand_scout, sa_agent, structure_audit
-6. **.md 전수조사 완료** — 21파일 SAGE-ARCHITECT 기반 적합성 확인
+2. **전역 레거시 청산** — 구조 감사 38건→0건
+3. **STAP 수치 통일** — 70점 기준 단일화
+4. **system.md 중복 제거** — 참조 포인터 전환
+5. **.md 21파일 전수조사 완료** — SAGE-ARCHITECT 적합성 확인
+6. **.py 65파일 전수조사 완료** — 44건 발견 (CRITICAL 11, HIGH 10, MEDIUM 18, LOW 5)
+
+**py 전수조사 주요 발견**:
+- 보안: admin/app.py 하드코딩 비밀번호, photo_upload/snapshot_daemon 절대경로
+- 로깅: sa_agent(9건), ce_agent(15건) print+f-string 위반
+- 아키텍처: signal_processor/cascade_manager TODO 스텁, CD 에이전트 풀 구현 잔존
+- 토큰: 에이전트 5개가 문서 전체 로드 후 truncate → 섹션 단위 로더 필요
+- 파이프라인: 70% 준비 (SA→Corpus 작동, Gardener→발행 미연결)
 
 **이전 커밋 체인**:
 - `7c0da4ea` 선제 구조 감사 + 능동 도구 활용 규칙
@@ -203,3 +209,18 @@ work_lock: unlocked
 - ⏳ content_publisher.py 자동화 + 디자인 레이아웃 확정
 
 **업데이트 시간**: 2026-02-27T23:21:50.181387
+
+
+---
+
+## 📍 현재 상태 (CURRENT STATE)
+
+### [2026-02-27 23:31] Session Update - claude-opus-20260228-b
+
+**완료한 작업**:
+- ✅ md 전수조사 완료 + py 65개 전수조사 완료 (44건 발견). THE_ORIGIN v5.0 + 레거시 청산 + STAP 통일 커밋됨
+
+**다음 단계**:
+- ⏳ P3 파이프라인 와이어링: Gardener→CE→Ralph→AD→CD 연결
+
+**업데이트 시간**: 2026-02-27T23:31:07.950326
