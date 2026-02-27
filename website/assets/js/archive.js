@@ -27,7 +27,7 @@ async function initArchive() {
     }
 
     console.log('[Archive] Posts loaded:', posts.length);
-    renderGrid(posts, 'All');
+    renderGrid(posts, 'all');
     setupFilters(posts);
 
   } catch (error) {
@@ -44,7 +44,7 @@ function setupFilters(posts) {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      const category = btn.getAttribute('data-category');
+      const category = btn.getAttribute('data-filter');
       renderGrid(posts, category);
     });
   });
@@ -55,13 +55,9 @@ function renderGrid(posts, category) {
   grid.innerHTML = '';
 
   // 필터링 필링
-  const filtered = category === 'All'
+  const filtered = category === 'all'
     ? posts
-    : posts.filter(p => {
-      if (category === 'Essays') return p.category === 'Essay';
-      if (category === 'Features') return p.category !== 'Essay';
-      return true;
-    });
+    : posts.filter(p => p.type && p.type.toLowerCase() === category);
 
   if (filtered.length === 0) {
     grid.innerHTML = '<p class="empty-msg">해당하는 기록이 없습니다.</p>';
@@ -77,11 +73,8 @@ function renderGrid(posts, category) {
     const imageUrl = post.image_url || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
     card.innerHTML = `
-            <div class="archive-card-image">
-                <img src="${imageUrl}" alt="${post.title}" loading="lazy">
-            </div>
             <div class="archive-card-meta">
-                <span class="essay-num">${post.essay || 'ESSAY'}</span>
+                <span class="essay-type">${post.type || 'Essay'}</span>
                 <span class="essay-date">${post.date}</span>
             </div>
             <h3 class="archive-card-title">${post.title}</h3>
