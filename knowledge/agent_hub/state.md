@@ -69,10 +69,10 @@
 
 1. [NAMING] ~~**소문자 통일**~~ ✅ — 전 파일명 lowercase 리네임 + state.md 완료
 2. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
-3. [DESIGN] **홈 히어로 SVG 리디자인** — dipole field 유지 중. 방향 보류.
-4. [INFRA] **`<head>` 컴포넌트화** — 디자인 확정 후 진행
-5. [INFRA] content_publisher.py — 에세이 발행 자동화 (CF Pages 연동)
-6. [CONTENT] the_origin.md 언어 수정 — SAGE-ARCHITECT 발현 후
+3. [CODE] **.py 65개 전수조사** — 코드 구조 재설계 (agent_router 슬롯 자동파싱 등)
+4. [INFRA] content_publisher.py — 에세이 발행 자동화 (CF Pages 연동)
+5. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
+6. [DESIGN] **홈 히어로 SVG 리디자인** — dipole field 유지 중. 방향 보류.
 7. Ralph 피드백 루프 — STAP 자동 검증 + Gardener 수정 제안
 
 **완료됨**:
@@ -136,15 +136,23 @@ ssh 97layer-vm "for s in 97layer-telegram 97layer-ecosystem 97layer-gardener woo
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-27 23:30] SAGE-ARCHITECT 대개편 완료 — claude-opus-4-6
+### [2026-02-28 01:00] 컨텍스트 전면 정렬 + 레거시 청산 — claude-opus-4-6
 
-**커밋**: `2f0b6077` — 38파일 변경, +1312 -2429
+**커밋**: `1a70fa4b` — 12파일 변경, +216 -269
 
-**실행 완료 (6 Phase)**:
+**실행 완료**:
 
-1. **sage_architect.md 생성** — language.md 격상 + CD.md §10 흡수 (FROZEN)
-2. **KERNEL 적출** — the_origin.md → 순수 철학 에세이. KERNEL → system.md 이관
-3. **3파일 통합** — glossary→sage_architect 부록, MANIFEST+AI_CONSTITUTION→system.md v10.0
+1. **THE_ORIGIN v5.0** — 합니다체 통일, 인용 20→10명 압축, "영점의 회귀" 용어 통일
+2. **전역 레거시 청산** — 구조 감사 38건→0건 (brand/, IDENTITY, CD, MANIFEST 경로 전면 교체)
+3. **STAP 수치 통일** — system.md 90점 → sage_architect/practice 70점 기준으로 단일화
+4. **system.md 중복 제거** — 시각/언어/파이프라인 구체 수치 → 참조 포인터 전환
+5. **코드 레거시 수정** — cd/ad/ce_agent, gardener, brand_scout, sa_agent, structure_audit
+6. **.md 전수조사 완료** — 21파일 SAGE-ARCHITECT 기반 적합성 확인
+
+**이전 커밋 체인**:
+- `7c0da4ea` 선제 구조 감사 + 능동 도구 활용 규칙
+- `6eec0f35` practice/ 통합 + 소문자 통일 + state.md 리네임
+- `2f0b6077` SAGE-ARCHITECT 대개편 (34→23 md)
 4. **에이전트 동기화** — SA/CE/AD 인격 뿌리 경로 변경, 코드 5파일 수정
 5. **파일 흡수** — experience→visual, audience→content, GEMINI→SYSTEM, origin_editor 삭제
 6. **전역 스위프** — 중복 README 3개 제거, pre-commit hook 갱신, filesystem_cache 정리
@@ -180,3 +188,18 @@ directives/ (9파일)
 **업데이트 시간**: 2026-02-27T23:30:00
 
 work_lock: unlocked
+
+
+---
+
+## 📍 현재 상태 (CURRENT STATE)
+
+### [2026-02-27 23:21] Session Update - claude-opus-20260228
+
+**완료한 작업**:
+- ✅ THE_ORIGIN v5.0 리뉴얼 + 전역 md/py 레거시 청산 + STAP 수치 통일 + system.md 중복 제거
+
+**다음 단계**:
+- ⏳ content_publisher.py 자동화 + 디자인 레이아웃 확정
+
+**업데이트 시간**: 2026-02-27T23:21:50.181387
