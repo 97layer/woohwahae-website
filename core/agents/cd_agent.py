@@ -63,12 +63,11 @@ class CreativeDirector:
         print(f"CD: 준비됨. 브랜드 기준 로드 완료.")
 
     def _load_criteria(self) -> str:
-        """WOOHWAHAE 브랜드 판단 기준 로드 — sage_architect.md §10 (품질 게이트)"""
-        path = PROJECT_ROOT / 'directives' / 'sage_architect.md'
+        """CD 품질 게이트 컨텍스트 로드 — sage_architect.md §10 + §9"""
         try:
-            if path.exists():
-                return path.read_text(encoding='utf-8')[:3000]
-        except Exception:
+            from core.system.directive_loader import load_for_agent
+            return load_for_agent("CD", max_total=3000)
+        except ImportError:
             pass
         return "본질 우선. 동작이 진실. 단순함이 답."
 

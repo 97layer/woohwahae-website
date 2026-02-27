@@ -43,18 +43,13 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# 디자인 토큰 로딩 — practice.md Part I
+# 디자인 토큰 로딩 — directive_loader 섹션 단위 추출
 def _load_design_tokens() -> str:
-    """practice.md Part I 로드 → AD 시각 기준"""
-    filepath = PROJECT_ROOT / "directives" / "practice.md"
+    """AD 에이전트 컨텍스트 로드 — practice.md Part I 시각 규격"""
     try:
-        content = filepath.read_text(encoding="utf-8")
-        # Part I 시각 섹션만 추출 (Part II 이전까지)
-        part1_end = content.find("# Part II")
-        if part1_end > 0:
-            return content[:part1_end][:2000]
-        return content[:2000]
-    except FileNotFoundError:
+        from core.system.directive_loader import load_for_agent
+        return load_for_agent("AD", max_total=4000)
+    except ImportError:
         pass
     # 최소 fallback
     return (

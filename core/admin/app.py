@@ -94,10 +94,10 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=3600,  # 1시간 세션 만료
 )
 
-ADMIN_PASSWORD_HASH = os.getenv(
-    'ADMIN_PASSWORD_HASH',
-    generate_password_hash('woohwahae2024', method='pbkdf2:sha256')
-)
+_admin_hash = os.getenv('ADMIN_PASSWORD_HASH')
+if not _admin_hash:
+    raise RuntimeError("ADMIN_PASSWORD_HASH 환경변수 필수. .env에 설정하세요.")
+ADMIN_PASSWORD_HASH = _admin_hash
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
 ALLOWED_MIME = {'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'}

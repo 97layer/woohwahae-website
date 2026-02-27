@@ -42,14 +42,13 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# 브랜드 보이스 로딩 — sage_architect.md (인격 SSOT)
+# 브랜드 보이스 로딩 — directive_loader 섹션 단위 추출
 def _load_brand_directives() -> str:
-    """sage_architect.md 로드 → CE 브랜드 보이스"""
-    filepath = PROJECT_ROOT / "directives" / "sage_architect.md"
+    """CE 에이전트 컨텍스트 로드 — 어조/금칙/에세이 규격"""
     try:
-        content = filepath.read_text(encoding="utf-8")
-        return content[:3000]
-    except FileNotFoundError:
+        from core.system.directive_loader import load_for_agent
+        return load_for_agent("CE", max_total=5000)
+    except ImportError:
         pass
     # 최소 fallback
     return (
@@ -57,7 +56,6 @@ def _load_brand_directives() -> str:
         "- 톤: 사색적, 절제된, 밀도 있는\n"
         "- 금지어: 대박, 꿀팁, 핫, 트렌디, 과장 형용사\n"
         "- 허용어: 본질, 기록, 순간, 흔적, 절제, 고요함\n"
-        "- 캡션: 50-100단어. 에세이: 5000-8000자\n"
         "- 어조: Archive=한다체, Magazine=합니다체"
     )
 

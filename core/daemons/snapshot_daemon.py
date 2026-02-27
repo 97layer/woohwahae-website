@@ -19,8 +19,8 @@ KNOWLEDGE_DIR = PROJECT_ROOT / "knowledge"
 EXECUTION_DIR = PROJECT_ROOT / "execution"
 
 # 백업 설정
-PRIMARY_DEST = "/Users/97layer/내 드라이브/97layerOS_Snapshots"
-TEMP_WORK_DIR = "/.scratch/tmp"
+PRIMARY_DEST = os.getenv("SNAPSHOT_DEST", "/tmp/97layerOS_Snapshots")
+TEMP_WORK_DIR = os.getenv("SNAPSHOT_TEMP", "/tmp/snapshot_work")
 SHADOW_DIR = "/.scratch/shadow"
 STATUS_FILE = PROJECT_ROOT / "knowledge/system/snapshot_status.json"
 

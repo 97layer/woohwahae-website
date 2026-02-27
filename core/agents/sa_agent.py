@@ -174,24 +174,13 @@ class StrategyAnalyst:
             }
 
     def _load_directive(self) -> str:
-        """sa.md 에이전트 지침 + practice.md 공명 대상 로드"""
-        parts = []
-        # SA 기본 지침
-        directive_path = PROJECT_ROOT / 'directives' / 'agents' / 'sa.md'
+        """SA 에이전트 컨텍스트 로드 — directive_loader 기반 섹션 단위 추출"""
         try:
-            if directive_path.exists():
-                parts.append(directive_path.read_text(encoding='utf-8'))
-        except Exception:
+            from core.system.directive_loader import load_for_agent
+            return load_for_agent("SA", max_total=4000)
+        except ImportError:
             pass
-        # 콘텐츠 + 공명 대상 기준 (practice.md Part II)
-        content_path = PROJECT_ROOT / 'directives' / 'practice.md'
-        try:
-            if content_path.exists():
-                content = content_path.read_text(encoding='utf-8')
-                parts.append(content[:1500])
-        except Exception:
-            pass
-        return "\n---\n".join(parts) if parts else "냉정하게 분석하라. 필요한 것만 말해라."
+        return "냉정하게 분석하라. 필요한 것만 말해라."
 
     def _feedback_to_memory(self, analysis: Dict[str, Any], original_content: str):
         """

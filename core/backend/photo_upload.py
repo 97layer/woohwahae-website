@@ -28,7 +28,7 @@ app.add_middleware(
 )
 
 # 업로드 디렉토리 설정
-UPLOAD_DIR = Path("/Users/97layer/97layerOS/website/assets/uploads")
+UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "website" / "assets" / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True, parents=True)
 
 # 카테고리별 디렉토리 생성
