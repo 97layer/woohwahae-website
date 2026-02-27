@@ -6738,6 +6738,50 @@ body.is-loaded .home-preloader__logo {
   }
 }
 
+/* ─── Home Nav List ─── */
+.home-nav-list {
+  padding: var(--space-lg) 0;
+}
+
+.home-nav-item {
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
+  align-items: center;
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.4s var(--ease);
+}
+.home-nav-item:last-child { border-bottom: 1px solid var(--border); }
+.home-nav-item:hover { opacity: 0.5; }
+
+.home-nav-item__name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.home-nav-item__desc {
+  font-size: 0.85rem;
+  font-weight: var(--fw-light);
+  color: var(--text-sub);
+}
+
+.home-nav-item__arrow {
+  font-size: 0.65rem;
+  color: var(--text-sub);
+}
+
+@media (max-width: 640px) {
+  .home-nav-item {
+    grid-template-columns: 100px 1fr auto;
+  }
+}
+
 /* ─── Home Latest Essay ─── */
 .home-latest {
   display: block;
