@@ -960,10 +960,26 @@
           "by": "unit_test"
         }
       ]
+    },
+    {
+      "id": "AST-2026-02-090",
+      "type": "module",
+      "source": "bot_templates",
+      "created_at": "2026-02-28T00:44:24.134055",
+      "path": "core/system/bot_templates.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-02-28T00:44:24.134059",
+          "by": "bot_templates"
+        }
+      ]
     }
   ],
   "stats": {
-    "total": 89,
+    "total": 90,
     "by_type": {
       "signal": 39,
       "content": 24,
@@ -974,10 +990,11 @@
       "document": 3,
       "page": 2,
       "test": 3,
-      "directive": 1
+      "directive": 1,
+      "module": 1
     },
     "by_status": {
-      "captured": 35,
+      "captured": 36,
       "completed": 1,
       "analyzed": 14,
       "stored": 1,

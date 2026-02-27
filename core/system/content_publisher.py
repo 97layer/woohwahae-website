@@ -28,6 +28,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Optional, Any
 
+from core.system.bot_templates import PUBLISH_ALERT
+
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -306,25 +308,16 @@ class ContentPublisher:
             sa_score = meta.get("sa_strategic_score", 0)
 
             # 메시지 구성
-            message = f"""📦 *오늘의 콘텐츠 패키지*
-
-🏷 테마: {themes_str}
-📊 SA 전략점수: {sa_score} | CD 브랜드점수: {score}
-
-━━━━━━━━━━━━━━━
-📸 *Instagram*
-
-{instagram_caption}
-
-{hashtags}
-
-━━━━━━━━━━━━━━━
-📝 *Archive Essay*
-
-{archive_essay[:600]}{"..." if len(archive_essay) > 600 else ""}
-
-━━━━━━━━━━━━━━━
-🗂 이미지: {meta.get('image_source', '없음')}"""
+            essay_preview = archive_essay[:600] + ("..." if len(archive_essay) > 600 else "")
+            message = PUBLISH_ALERT.format(
+                themes=themes_str,
+                sa_score=sa_score,
+                cd_score=score,
+                caption=instagram_caption,
+                hashtags=hashtags,
+                essay_preview=essay_preview,
+                image_source=meta.get('image_source', '없음'),
+            )
 
             api_url = f"https://api.telegram.org/bot{self.telegram_token}"
 

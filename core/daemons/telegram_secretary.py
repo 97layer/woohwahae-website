@@ -47,6 +47,10 @@ from core.system.conversation_engine import get_conversation_engine
 from core.system.intent_classifier import get_intent_classifier
 from core.system.youtube_analyzer import YouTubeAnalyzer
 from core.system.image_analyzer import ImageAnalyzer
+from core.system.bot_templates import (
+    DAILY_BRIEFING, DAILY_BRIEFING_RIPE, DAILY_BRIEFING_IDLE,
+    PUBLISH_COMPLETE,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -1200,13 +1204,14 @@ class TelegramSecretaryV6:
             else:
                 ripe = 0
 
-            msg = (
-                f"☀️ <b>일일 브리핑 — {today}</b>\n\n"
-                f"어젯밤 수집: {today_sigs}개 신호\n"
-                f"Corpus 군집: {clusters_total}개 (발행가능 {ripe}개)\n"
-                f"누적 발행: {published}개\n\n"
-                + (f"💡 <b>{ripe}개 군집이 발행 준비 완료</b>\n/publish 로 발행하세요." if ripe > 0
-                   else "Gardener가 03:00에 군집을 점검합니다.")
+            ripe_notice = (
+                DAILY_BRIEFING_RIPE.format(ripe=ripe) if ripe > 0
+                else DAILY_BRIEFING_IDLE
+            )
+            msg = DAILY_BRIEFING.format(
+                today=today, today_sigs=today_sigs,
+                clusters_total=clusters_total, ripe=ripe,
+                published=published, ripe_notice=ripe_notice,
             )
             await app.bot.send_message(chat_id=int(admin_id), text=msg, parse_mode=constants.ParseMode.HTML)
         except Exception as e:
@@ -1219,10 +1224,8 @@ class TelegramSecretaryV6:
             return
         try:
             link_text = f"\n🔗 {url}" if url else ""
-            msg = (
-                f"✅ <b>발행 완료</b>\n\n"
-                f"테마: {_escape_html(theme)}{link_text}\n"
-                f"website/archive/ 에 파일 저장됨\n(도메인 연결 후 웹에서 확인 가능)"
+            msg = PUBLISH_COMPLETE.format(
+                theme=_escape_html(theme), link_text=link_text,
             )
             await self._app.bot.send_message(
                 chat_id=int(admin_id), text=msg, parse_mode=constants.ParseMode.HTML

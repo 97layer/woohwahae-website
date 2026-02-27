@@ -33,6 +33,12 @@ except ImportError:
 
 import google.genai as genai
 
+from core.system.bot_templates import (
+    REVISIT_ALERT_HEADER, REVISIT_ALERT_ROW,
+    WEEKLY_REPORT, WEEKLY_REPORT_PROPOSALS_HEADER,
+    WEEKLY_REPORT_PROPOSAL_ROW, WEEKLY_REPORT_PROPOSALS_FOOTER,
+)
+
 logger = logging.getLogger(__name__)
 
 # ── 권한 정의 ─────────────────────────────────────
@@ -628,9 +634,11 @@ JSON만 출력."""
                 logger.warning("Telegram 환경변수 미설정 — 재방문 알림 생략")
                 return
 
-            lines = [f"⏰ <b>재방문 예정 고객 {len(due_clients)}명</b>"]
+            lines = [REVISIT_ALERT_HEADER.format(count=len(due_clients))]
             for c in due_clients:
-                lines.append(f"• {c['name']} ({c.get('rhythm', '보통')} 리듬)")
+                lines.append(REVISIT_ALERT_ROW.format(
+                    name=c['name'], rhythm=c.get('rhythm', '보통'),
+                ))
             msg = "\n".join(lines)
 
             import httpx
@@ -755,29 +763,28 @@ JSON만 출력."""
         themes = ', '.join(f"{t}" for t, _ in stats['top_themes'][:4]) or '없음'
         concepts = ', '.join(k for k, _ in stats['top_concepts'][:4]) or '없음'
 
-        lines = [
-            f"🌱 <b>Gardener 주간 리포트</b>",
-            f"",
-            f"<b>지난 {stats['period_days']}일 현황</b>",
-            f"신호 수집: {stats['signal_count']}개",
-            f"SA 분석: {stats['sa_analyzed']}개",
-            f"평균 전략점수: {stats['avg_score']}",
-            f"",
-            f"<b>부상 테마</b>",
-            f"{themes}",
-            f"",
-            f"<b>핵심 개념</b>",
-            f"{concepts}",
-        ]
+        body = WEEKLY_REPORT.format(
+            period_days=stats['period_days'],
+            signal_count=stats['signal_count'],
+            sa_analyzed=stats['sa_analyzed'],
+            avg_score=stats['avg_score'],
+            themes=themes,
+            concepts=concepts,
+        )
 
         if proposals:
-            lines += ["", f"<b>시스템 개선 제안 {len(proposals)}건</b>"]
+            lines = [
+                "",
+                WEEKLY_REPORT_PROPOSALS_HEADER.format(count=len(proposals)),
+            ]
             for p in proposals:
-                lines.append(f"• {p['target_file']}: {p['reason']}")
-            lines.append("")
-            lines.append("승인하려면 /approve, 거절하려면 /reject")
+                lines.append(WEEKLY_REPORT_PROPOSAL_ROW.format(
+                    target_file=p['target_file'], reason=p['reason'],
+                ))
+            lines += ["", WEEKLY_REPORT_PROPOSALS_FOOTER]
+            body += "\n".join(lines)
 
-        return "\n".join(lines)
+        return body
 
 
 # ── 스케줄러 (GCP systemd에서 실행) ──────────────
