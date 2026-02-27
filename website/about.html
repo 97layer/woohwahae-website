@@ -1,320 +1,377 @@
 <!DOCTYPE html>
 
 <html lang="ko">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="About — WOOHWAHAE" name="description"/>
-<title>About — WOOHWAHAE</title>
-<meta content="#E3E2E0" name="theme-color"/>
-<link href="assets/img/symbol.png" rel="icon" type="image/png"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="assets/css/style.css" rel="stylesheet"/>
-<script>
-        (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
-    </script>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="About — WOOHWAHAE" name="description" />
+  <meta content="About — WOOHWAHAE" property="og:title" />
+  <meta content="website" property="og:type" />
+  <meta content="https://woohwahae.kr/about/" property="og:url" />
+  <title>About — WOOHWAHAE</title>
+  <meta content="#E3E2E0" name="theme-color" />
+  <link href="assets/media/brand/symbol.png" rel="icon" type="image/png" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://cdn.jsdelivr.net" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+    rel="stylesheet" />
+  <link href="assets/css/style.css?v=a684dbb8" rel="stylesheet" />
+  <script>
+    (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+  </script>
 </head>
+
 <body class="page-about"><!-- COMPONENT:nav -->
-<nav class="site-nav" id="site-nav">
-  <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
-    <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
-  </a>
-  <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
-  </ul>
-  <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
-    <span></span><span></span>
-  </button>
-</nav>
-<div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
-</div>
-<!-- /COMPONENT:nav --><!-- COMPONENT:wave-bg -->
-<div class="wave-bg" aria-hidden="true" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:120vmax;height:120vmax;z-index:0;pointer-events:none;opacity:0.6">
-  <svg viewBox="0 0 800 800" width="100%" height="100%">
-    <g fill="none" stroke="#D5D4CF" stroke-width="0.5" opacity="0.4">
-      <circle cx="400" cy="400" r="60" opacity="0.4">
-        <animate attributeName="r" values="60;70;60" dur="3.8s" begin="0s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.4;0.2;0.4" dur="3.8s" begin="0s" repeatCount="indefinite"/>
-      </circle>
-      <circle cx="400" cy="400" r="140" opacity="0.3">
-        <animate attributeName="r" values="140;155;140" dur="3.8s" begin="0.4s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.3;0.15;0.3" dur="3.8s" begin="0.4s" repeatCount="indefinite"/>
-      </circle>
-      <circle cx="400" cy="400" r="240" opacity="0.2">
-        <animate attributeName="r" values="240;260;240" dur="3.8s" begin="0.8s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.2;0.1;0.2" dur="3.8s" begin="0.8s" repeatCount="indefinite"/>
-      </circle>
-      <circle cx="400" cy="400" r="360" opacity="0.12">
-        <animate attributeName="r" values="360;385;360" dur="3.8s" begin="1.2s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.12;0.05;0.12" dur="3.8s" begin="1.2s" repeatCount="indefinite"/>
-      </circle>
-    </g>
-  </svg>
-</div>
-<!-- /COMPONENT:wave-bg -->
-<div class="about-read-progress" aria-hidden="true">
-  <div class="about-read-progress__fill" id="read-fill"></div>
-</div>
-
-<main class="page-main" id="read-main" style="position:relative;z-index:1">
-
-<!-- ━━━ JOURNEY ━━━ -->
-<section class="about-section" id="journey" data-reveal>
-  <span class="about-section__label">Journey</span>
-  <header class="journey-header">
-    <h1 class="journey-title">태도가 모든 것이다.<br>기술은 부차적인 표상에 불과하다.</h1>
-  </header>
-
-  <figure class="journey-timeline" data-reveal>
-    <svg class="journey-timeline__svg" viewBox="0 0 420 260" fill="none" role="img" aria-label="우수호의 서사 타임라인 — 4개의 전환점">
-      <line class="tl-axis" x1="80" y1="20" x2="80" y2="240" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
-      <g class="tl-node-g">
-        <circle cx="80" cy="50" r="3.5" fill="currentColor" opacity="0.7"/>
-        <line x1="80" y1="50" x2="110" y2="50" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
-        <text class="tl-year" x="115" y="47">2006</text>
-        <text class="tl-label" x="115" y="60">최초의 매료 — 헤어 롤</text>
+  <nav class="site-nav" id="site-nav">
+    <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+      <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/archive/">Archive</a></li>
+      <li><a href="/practice/">Practice</a></li>
+      <li><a href="/about/">About</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-overlay" id="nav-overlay">
+    <a href="/archive/">Archive</a>
+    <a href="/practice/">Practice</a>
+    <a href="/about/">About</a>
+  </div>
+  <!-- /COMPONENT:nav --><!-- COMPONENT:wave-bg -->
+  <div class="wave-bg" aria-hidden="true">
+    <svg viewBox="0 0 800 800" width="100%" height="100%">
+      <g fill="none" stroke="#D5D4CF" stroke-width="0.5" opacity="0.4">
+        <circle cx="400" cy="400" r="60" opacity="0.4">
+          <animate attributeName="r" values="60;70;60" dur="3.8s" begin="0s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.4;0.2;0.4" dur="3.8s" begin="0s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="400" cy="400" r="140" opacity="0.3">
+          <animate attributeName="r" values="140;155;140" dur="3.8s" begin="0.4s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.3;0.15;0.3" dur="3.8s" begin="0.4s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="400" cy="400" r="240" opacity="0.2">
+          <animate attributeName="r" values="240;260;240" dur="3.8s" begin="0.8s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.2;0.1;0.2" dur="3.8s" begin="0.8s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="400" cy="400" r="360" opacity="0.12">
+          <animate attributeName="r" values="360;385;360" dur="3.8s" begin="1.2s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.12;0.05;0.12" dur="3.8s" begin="1.2s" repeatCount="indefinite" />
+        </circle>
       </g>
-      <g class="tl-node-g">
-        <circle cx="80" cy="110" r="3.5" fill="currentColor" opacity="0.5"/>
-        <line x1="80" y1="110" x2="110" y2="110" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
-        <text class="tl-year" x="115" y="107">2008</text>
-        <text class="tl-label" x="115" y="120">의도된 고립 — 8평 반지하</text>
-      </g>
-      <g class="tl-node-g">
-        <circle cx="80" cy="170" r="3.5" fill="currentColor" opacity="0.35"/>
-        <line x1="80" y1="170" x2="110" y2="170" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
-        <text class="tl-year" x="115" y="167">2020</text>
-        <text class="tl-label" x="115" y="180">팬데믹 — 내면 주파수 응시</text>
-      </g>
-      <g class="tl-node-g">
-        <circle cx="80" cy="230" r="5" fill="currentColor" opacity="0.9"/>
-        <line x1="80" y1="230" x2="110" y2="230" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
-        <text class="tl-year" x="115" y="227">현재</text>
-        <text class="tl-label" style="fill:var(--text-sub);" x="115" y="240">WOOHWAHAE — 羽化</text>
-      </g>
-      <text class="tl-label" style="font-size:7px;opacity:0.4;" text-anchor="middle" x="80" y="258">one axis. four inflections.</text>
     </svg>
-  </figure>
-
-  <div class="journey-body" data-reveal>
-    <p>중학교 3학년. 점수라는 기준에 떠밀려 헤어 롤을 집어 들었다. 거친 질감이 손끝에 의해 하나의 형상으로 귀결되는 창조의 과정에서 본질에 매료되었다.</p>
-    <p>단 2년이었다. 기계적 공정 속에서 직업의 사명감은 생존 유지라는 관성으로 풍화되었다. 수동적 일상을 멈추는 의도된 고립을 택했다. 일체의 기반을 버리고, 월세 8평 반지하로 침잠했다.</p>
-    <blockquote>
-      눅눅한 고립 지대는 도피처가 아니었다.<br>사유를 정제하는 빈방이었다.
-    </blockquote>
-    <p>팬데믹이라는 피할 수 없는 단절이 당도해서야 내면의 주파수를 거울처럼 응시할 시공간이 열렸다. 타인들이 맹목적으로 방향을 추종할 때, 선과 여백의 아키텍처를 살피며 노동의 과정 위에 인문학의 밀도를 조용히 덧씌웠다.</p>
-    <p>기술은 부차적인 표상이다. 오직 태도와 흔들림 없는 관점이 모든 것임을 통찰했다. 그 결의가 이 기록으로 남는다.</p>
   </div>
-</section>
-
-<!-- ━━━ PHILOSOPHY ━━━ -->
-<section class="about-section" id="philosophy" data-reveal>
-  <span class="about-section__label">Philosophy</span>
-
-  <div class="philosophy-principle" data-reveal>
-    <h3 class="philosophy-principle__name">본질주의 — 실용적 미학</h3>
-    <p class="philosophy-principle__desc">조용히 덜어내어 투명한 뼈대만을 렌더링한다. 수사의 멸각. 밀도는 덧치장이 아니라 철저한 소거로 증명된다.</p>
-    <p class="philosophy-principle__quote">"생명력을 손상하지 않는 선에서 덜어낼 빈 곳이 남아있는가?"</p>
+  <!-- /COMPONENT:wave-bg -->
+  <div class="about-read-progress" aria-hidden="true">
+    <div class="about-read-progress__fill" id="read-fill"></div>
   </div>
 
-  <div class="philosophy-principle" data-reveal>
-    <h3 class="philosophy-principle__name">공명 — 무언의 교감</h3>
-    <p class="philosophy-principle__desc">넓게 흩뿌리는 확장이 아니라 수직으로 꽂히는 하강이다. 상대를 통제하는 수사를 배제한다. 세공된 진정성은 고유한 주파수를 띠고 무언으로 전이된다.</p>
-    <p class="philosophy-principle__quote">"얕은 소음을 뚫고, 심연의 작은 떨림에 주파수가 맞닿았는가?"</p>
-  </div>
+  <main class="page-main" id="read-main">
 
-  <div class="philosophy-principle" data-reveal>
-    <h3 class="philosophy-principle__name">자기긍정 — 자아 긍정</h3>
-    <p class="philosophy-principle__desc">알고리즘 잣대에서 이탈하여 미학적 구원을 향하는 의식이다. 침묵만으로도 하루의 기저를 지배한다. 정적 속에서 스스로를 정돈한 자만이 세계를 포용한다.</p>
-    <p class="philosophy-principle__quote">"알고리즘 잣대에서 벗어나, 직관과 오독조차 긍정하도록 돕는가?"</p>
-  </div>
+    <!-- ━━━ THE ORIGIN: PROLOGUE ━━━ -->
+    <section class="about-section longform" id="prologue" data-reveal>
+      <span class="about-section__label">Primer</span>
+      <div class="longform-header">
+        <h1 class="longform-title">영점의 회귀 (Return to Zero)</h1>
+        <p class="longform-lead">가속의 관성이 지배하는 물리적 시점에서, 인간이 어떻게 자신의 주권을 회복하고 고유한 리듬으로 살아갈 수 있는지를 증명합니다.</p>
+      </div>
 
-  <ul class="philosophy-lens" data-reveal>
-    <li><strong>一期一會</strong>찰나의 폭발적 유일성 — 접객과 대화, 기계적 루틴 전락 방지</li>
-    <li><strong>侘び寂び</strong>불완전함의 완벽성 — 비대칭과 거친 질감, 인간의 온기</li>
-    <li><strong>禪</strong>관성의 의식화 — 반복되는 루틴을 실존적 의례로 승격</li>
-    <li><strong>留白</strong>여백의 적극적 개입 — 침묵의 언어</li>
-  </ul>
-</section>
+      <div class="longform-content">
+        <h3>시대의 통증</h3>
+        <p>도달점만을 향해 달리는 시대를 횡단하고 있습니다. 더 빠르게, 더 많이, 더 크게를 외치는 세계의 함성 속에서 인간의 고유한 박동은 점차 희미해집니다. 외부의 규격화된 기준과 끊임없는 가속은 존재
+          고유의 주파수를 교란합니다. 모든 것이 효율의 이름으로 획일화될 때, 인간이 잃어버리는 것은 자신만의 영점(Zero Point)입니다.</p>
+        <p>타인의 시선을 기준점으로 삼는 순간, 내면의 나침반은 이미 사라집니다. 외부의 즉각적인 인정이 자존감의 척도가 되고, 타인에게 전시된 일상이 결핍을 증명하는 거울이 됩니다. 매일 갱신되는 트렌드의
+          홍수 속에서 어제의 나는 오늘 이미 구식이 됩니다.</p>
 
-<!-- ━━━ BRAND ━━━ -->
-<section class="about-section" id="brand" data-reveal>
-  <span class="about-section__label">Brand Identity</span>
+        <h3>동양의 통찰: 우화(羽化)</h3>
+        <p>이 관성을 멈추기 위해, 동양의 가장 내밀한 통찰인 **우화(羽化)**로 시선을 돌립니다. 우화는 단순한 변화가 아닙니다. 고치 속 유충이 날개를 얻기까지의 철저한 해체와 재구성입니다. 인위적인
+          조작을 멈추고 본래의 흐름을 따르는 것. 타인에게 내어주었던 궤도를 고유한 구심점으로 회수하는 내면의 순환입니다.</p>
 
-  <div class="brand-grid">
-    <!-- Color Palette -->
-    <div class="brand-block">
-      <p class="brand-block__title">Palette</p>
-      <div class="brand-swatches">
-        <div class="brand-swatch">
-          <div class="brand-swatch__chip" style="background:var(--bg)"></div>
-          <div class="brand-swatch__info">Background<span>#E3E2E0</span></div>
+        <h3>슬로우의 철학</h3>
+        <p>이 통찰을 일상으로 번역하는 수행적 태도를 **슬로우(Slow)**라 부릅니다. 슬로우는 물리적 속도의 문제가 아닙니다. 타인의 속도를 추종하던 관성을 버리고, 각자가 지닌 고유한 시차(時差)를
+          온전히 긍정하는 과정입니다. 목적지가 아닌 행위 궤적 자체에 완결성을 부여하며 본질에 집중할 때 진정한 아름다움이 드러납니다.</p>
+
+        <h3>실용적 미학</h3>
+        <p>미(美)란 시각적 팽창이 아닙니다. 야나기 무네요시가 말한 "용(用)의 미" — 사용되는 과정에서 자연스럽게 드러나는 아름다움입니다. 완벽하지 않기에 아름다운 것들. 삶의 맥락을 침해하지 않는
+          간결함. 불필요한 장식을 덜어내고 본질만 남겼을 때 드러나는 명료함입니다.</p>
+
+        <div class="prologue-callout">
+          <p>이것은 도피가 아닙니다. 획일화된 속도에서 이탈하는 조용한 선택입니다.</p>
         </div>
-        <div class="brand-swatch">
-          <div class="brand-swatch__chip" style="background:var(--text)"></div>
-          <div class="brand-swatch__info">Ink<span>#1A1A1A</span></div>
+      </div>
+    </section>
+
+    <!-- ━━━ THE ORIGIN: CHAPTER 1 ━━━ -->
+    <section class="about-section longform" id="chapter1" data-reveal>
+      <span class="about-section__label">Chapter I</span>
+      <div class="longform-header">
+        <h1 class="longform-title">사유의 뿌리: 가속의 궤도를 벗어난 동방의 렌즈</h1>
+      </div>
+      <div class="longform-content">
+        <p>완벽주의라는 환상을 내려놓습니다. 일본의 와비사비 미학은 불완전함 속에서 아름다움을 발견합니다. 깨진 흔적이 새로운 무늬가 되고, 상처가 개성이 됩니다. 결과라는 도달점이 아니라, 과정의 궤적에
+          새겨진 시간의 지층(Layering)이 미래의 빈티지로 안착하는 것이라고 봅니다.</p>
+
+        <div class="principle-grid">
+          <div class="principle-item">
+            <h4>본질주의 (Essentialism)</h4>
+            <p>덧칠 없이 투명한 뼈대만을 구현하는 실용적 미학입니다. 밀도는 덧셈이 아니라 소거(Subtraction)로 증명됩니다. 비어있음은 무(無)가 아니라 무한한 가능성의 공간입니다.</p>
+          </div>
+          <div class="principle-item">
+            <h4>공명 (Resonance)</h4>
+            <p>확성기로 흩뿌리는 가벼운 확장이 아닙니다. 수직으로 무겁게 꽂히는 하강입니다. 침묵이 오히려 가장 풍부한 소리가 되는 역설을 지향합니다.</p>
+          </div>
+          <div class="principle-item">
+            <h4>자기긍정 (Self-Affirmation)</h4>
+            <p>계산된 대중의 통계에서 이탈하여, 스스로의 직관과 오독조차 끌어안는 긍정의 의식입니다. 내면의 질서가 잡힐 때 비로소 외부 세계를 명료하게 볼 수 있습니다.</p>
+          </div>
         </div>
-        <div class="brand-swatch">
-          <div class="brand-swatch__chip" style="background:var(--stone-dark)"></div>
-          <div class="brand-swatch__info">Stone Dark<span>#7A6E5A</span></div>
+
+        <p class="section-divider">동방의 지평: 一期一會 · 侘び寂び · 留白</p>
+      </div>
+    </section>
+
+    <!-- ━━━ THE ORIGIN: CHAPTER 2 ━━━ -->
+    <section class="about-section longform" id="chapter2" data-reveal>
+      <span class="about-section__label">Chapter II</span>
+      <div class="longform-header">
+        <h1 class="longform-title">시간의 지층과 건축: 5개의 층위와 순환</h1>
+      </div>
+      <div class="longform-content">
+        <p>철학은 단정한 건축물 위에 직조되어야 합니다. 관념에 머무는 사상은 죽은 것입니다. 손으로 만질 수 있고, 눈으로 볼 수 있으며, 일상에서 체감할 수 있을 때 철학은 살아있는 것이 됩니다.</p>
+
+        <div class="layer-list">
+          <p><strong>방향(Philosophy)의 영점</strong> : 타협 없는 거부권을 행사하는 구심점</p>
+          <p><strong>여백(Design)의 성소</strong> : 미니멀리즘을 넘어선 시각적 침묵</p>
+          <p><strong>서사(Content)의 기록자</strong> : 파편화된 신호를 화석화하는 작업</p>
+          <p><strong>제의적 공간(Service)</strong> : 행위가 고요한 의례로 승화되는 도래지</p>
+          <p><strong>궤적(Business)의 관조자</strong> : 분기 실적이 아닌 10년 후의 가치</p>
         </div>
-        <div class="brand-swatch">
-          <div class="brand-swatch__chip" style="background:var(--stone-mid)"></div>
-          <div class="brand-swatch__info">Stone Mid<span>#8B7355</span></div>
+
+        <div class="gate-callout">
+          <h4>다섯 개의 관문</h4>
+          <p>사유의 질량 · 진정성의 고립 · 실효적 파동 · 사유의 여백 · 고유한 주파수</p>
         </div>
-        <div class="brand-swatch">
-          <div class="brand-swatch__chip" style="background:var(--stone-light)"></div>
-          <div class="brand-swatch__info">Stone Light<span>#A89880</span></div>
+      </div>
+    </section>
+
+    <!-- ━━━ THE ORIGIN: CHAPTER 3 ━━━ -->
+    <section class="about-section longform" id="chapter3" data-reveal>
+      <span class="about-section__label">Chapter III</span>
+      <div class="longform-header">
+        <h1 class="longform-title">실천의 감각: 여백과 침묵의 기준점</h1>
+      </div>
+      <div class="longform-content">
+        <p>시각의 침묵(Visual Silence)을 지향합니다. 창백한 회색빛 종이와 먹처럼 단정한 검은 잉크. 인간의 호흡에 닿아 있는 3.8초의 맥동. 절대적으로 강제된 60%의 텅 빈 여백.</p>
+        <p>설명하지 않고 보여줍니다. 단어의 질량(Weight of Language)을 무겁게 유지합니다. '최적화' 대신 '한계까지의 정제'를 말하며, 판단과 사유의 영역은 독자의 몫으로 남겨둡니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ━━━ THE ORIGIN: EPILOGUE ━━━ -->
+    <section class="about-section longform" id="epilogue" data-reveal>
+      <span class="about-section__label">Epilogue</span>
+      <div class="longform-header">
+        <h1 class="longform-title">10년 뒤의 기록: 화석화될 세 개의 시간</h1>
+      </div>
+      <div class="longform-content">
+        <h3>양적 팽창으로부터의 이탈</h3>
+        <p>"하나의 결핍이 증폭하며 도달해 낸 보편성."</p>
+        <p>양적 팽창이라는 관성에서 벗어났습니다. 가장 내밀한 영점(Zero Point)에서 출발한 세계입니다. 목적지는 인프라 팽창이 아닙니다. 매장 100개를 여는 것이 아니라 공명자 100명을 만나는
+          것. 매출 100억이 아니라 100년 지속하는 것입니다. 지엽적 단절을 이겨내고 극단적 몰입이라는 보편을 구축해 내는 것입니다.</p>
+
+        <h3>10년의 약속</h3>
+        <p>1년짜리 트렌드나 알고리즘에 오르려는 얄팍한 호흡을 경계합니다. 팽팽한 활시위가 버텨낼 향후 10년의 궤적입니다. 끝에는, 바스라질 육체를 넘어 묵묵히 보존될 세 개의 화석을 남깁니다.</p>
+
+        <div class="fossil-grid">
+          <div class="fossil-item">
+            <h4>기록 (Archive)</h4>
+            <p>속도의 통증을 함께 인내했던 공명자들, 그들의 고요한 사유 지층입니다. 데이터베이스가 아니라 도서관입니다.</p>
+          </div>
+          <div class="fossil-item">
+            <h4>책 (Book)</h4>
+            <p>일회성 트렌드에 굴복하지 않고 빚어낸 변개 불가능한 물성 덩어리입니다. 한 권의 책은 한 세계의 응축입니다.</p>
+          </div>
+          <div class="fossil-item">
+            <h4>관점 (Perspective)</h4>
+            <p>모두가 빠름을 외칠 때, 불완전함을 수용하는 느린 리듬으로 갈라 낸 사유의 증명입니다. 방법론이 아니라 세계관입니다.</p>
+          </div>
         </div>
-        <div class="brand-swatch">
-          <div class="brand-swatch__chip" style="background:var(--navy)"></div>
-          <div class="brand-swatch__info">Navy<span>#1B2D4F — accent only</span></div>
+
+        <p class="epilogue-end">그때 이 세계는 브랜드가 아니라 문화가 되어 있을 것입니다. 상호가 아니라 보통명사가 되어 있을 것입니다.</p>
+        <p class="epilogue-symbol">WOOHWAHAE / 우화해</p>
+      </div>
+    </section>
+
+    <!-- ━━━ BRAND ━━━ -->
+    <section class="about-section" id="brand" data-reveal>
+      <span class="about-section__label">Brand Identity</span>
+
+      <div class="brand-grid">
+        <!-- Color Palette -->
+        <div class="brand-block">
+          <p class="brand-block__title">Palette</p>
+          <div class="brand-swatches">
+            <div class="brand-swatch">
+              <div class="brand-swatch__chip" style="background:var(--bg)"></div>
+              <div class="brand-swatch__info">Background<span>#E3E2E0</span></div>
+            </div>
+            <div class="brand-swatch">
+              <div class="brand-swatch__chip" style="background:var(--text)"></div>
+              <div class="brand-swatch__info">Ink<span>#1A1A1A</span></div>
+            </div>
+            <div class="brand-swatch">
+              <div class="brand-swatch__chip" style="background:var(--stone-dark)"></div>
+              <div class="brand-swatch__info">Stone Dark<span>#7A6E5A</span></div>
+            </div>
+            <div class="brand-swatch">
+              <div class="brand-swatch__chip" style="background:var(--stone-mid)"></div>
+              <div class="brand-swatch__info">Stone Mid<span>#8B7355</span></div>
+            </div>
+            <div class="brand-swatch">
+              <div class="brand-swatch__chip" style="background:var(--stone-light)"></div>
+              <div class="brand-swatch__info">Stone Light<span>#A89880</span></div>
+            </div>
+            <div class="brand-swatch">
+              <div class="brand-swatch__chip" style="background:var(--navy)"></div>
+              <div class="brand-swatch__info">Navy<span>#1B2D4F — accent only</span></div>
+            </div>
+            <div class="brand-swatch">
+              <div class="brand-swatch__chip" style="background:var(--line)"></div>
+              <div class="brand-swatch__info">Line<span>#D5D4CF</span></div>
+            </div>
+          </div>
         </div>
-        <div class="brand-swatch">
-          <div class="brand-swatch__chip" style="background:var(--line)"></div>
-          <div class="brand-swatch__info">Line<span>#D5D4CF</span></div>
+
+        <!-- Typography -->
+        <div class="brand-block">
+          <p class="brand-block__title">Typography</p>
+          <div class="brand-type-sample">
+            <p class="brand-type-sample__text">조용히 덜어내어 투명한 뼈대만을</p>
+            <p class="brand-type-sample__name">Pretendard Variable — Body</p>
+          </div>
+          <div class="brand-type-sample">
+            <p class="brand-type-sample__text brand-type-sample__text--mono">WOOHWAHAE / 2026</p>
+            <p class="brand-type-sample__name">IBM Plex Mono — Labels</p>
+          </div>
+          <div class="brand-type-sample">
+            <p class="brand-type-sample__text brand-type-sample__text--accent">One axis. Four inflections.</p>
+            <p class="brand-type-sample__name">Crimson Text — Accent</p>
+          </div>
         </div>
+
+        <!-- Breath Cycle -->
+        <div class="brand-block">
+          <p class="brand-block__title">Breath Cycle</p>
+          <div class="brand-breath">
+            <div class="brand-breath__circle"></div>
+            <div class="brand-breath__label">
+              var(--breath)<br>
+              Dawn 4.8s · Day 3.8s<br>
+              Evening 4.2s · Night 5.2s
+            </div>
+          </div>
+        </div>
+
+        <!-- Spacing -->
+        <div class="brand-block">
+          <p class="brand-block__title">Spacing</p>
+          <div class="brand-spacing">
+            <div class="brand-spacing__bar">
+              <div class="brand-spacing__fill brand-spacing__fill--xs"></div>
+              <span class="brand-spacing__name">xs — 0.5rem</span>
+            </div>
+            <div class="brand-spacing__bar">
+              <div class="brand-spacing__fill brand-spacing__fill--sm"></div>
+              <span class="brand-spacing__name">sm — 1rem</span>
+            </div>
+            <div class="brand-spacing__bar">
+              <div class="brand-spacing__fill brand-spacing__fill--md"></div>
+              <span class="brand-spacing__name">md — 2rem</span>
+            </div>
+            <div class="brand-spacing__bar">
+              <div class="brand-spacing__fill brand-spacing__fill--lg"></div>
+              <span class="brand-spacing__name">lg — 4rem</span>
+            </div>
+            <div class="brand-spacing__bar">
+              <div class="brand-spacing__fill brand-spacing__fill--xl"></div>
+              <span class="brand-spacing__name">xl — 8rem</span>
+            </div>
+            <div class="brand-spacing__bar">
+              <div class="brand-spacing__fill brand-spacing__fill--2xl"></div>
+              <span class="brand-spacing__name">2xl — 12rem</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ━━━ EDITOR ━━━ -->
+    <section class="about-section" id="editor" data-reveal>
+      <span class="about-section__label">The Editor</span>
+      <div class="editor-summary container">
+        <h2 class="editor-summary__title">WOOSUNHO</h2>
+        <p class="editor-summary__desc">기록하고, 다듬고, 이탈하는 편집자. 이 세계의 구축자이자 첫 번째 공명자입니다. 당신의 경험보다 더 치열했던 사유의 궤적을 독립된 기록으로
+          전합니다.</p>
+        <div class="editor-summary__actions">
+          <a class="editor-summary__link" href="editor.html">
+            <span>Explore Editor's Journey</span>
+            <span>→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script defer src="assets/js/site.js"></script>
+  <script>
+    (function () {
+      var fill = document.getElementById('read-fill');
+      var main = document.getElementById('read-main');
+      if (!fill || !main) return;
+      function onScroll() {
+        var rect = main.getBoundingClientRect();
+        var total = main.scrollHeight - window.innerHeight;
+        var pct = total > 0 ? Math.min(100, Math.max(0, -rect.top / total) * 100) : 0;
+        fill.style.height = pct + '%';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+  <!-- COMPONENT:footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-contact">
+        <span class="footer-contact__label">Contact</span>
+        <div class="footer-contact__grid">
+          <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+          <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <nav class="footer-nav">
+          <a href="/archive/">Archive</a>
+          <a href="/practice/">Practice</a>
+          <a href="/about/">About</a>
+        </nav>
+        <div class="footer-legal">
+          <a href="/privacy.html">Privacy</a>
+          <a href="/terms.html">Terms</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
       </div>
     </div>
+  </footer>
+  <!-- /COMPONENT:footer -->
+</body>
 
-    <!-- Typography -->
-    <div class="brand-block">
-      <p class="brand-block__title">Typography</p>
-      <div class="brand-type-sample">
-        <p class="brand-type-sample__text">조용히 덜어내어 투명한 뼈대만을</p>
-        <p class="brand-type-sample__name">Pretendard Variable — Body</p>
-      </div>
-      <div class="brand-type-sample">
-        <p class="brand-type-sample__text brand-type-sample__text--mono">WOOHWAHAE / 2026</p>
-        <p class="brand-type-sample__name">IBM Plex Mono — Labels</p>
-      </div>
-      <div class="brand-type-sample">
-        <p class="brand-type-sample__text" style="font-family:'Crimson Text',Georgia,serif;font-style:italic;font-size:1.35rem;">One axis. Four inflections.</p>
-        <p class="brand-type-sample__name">Crimson Text — Accent</p>
-      </div>
-    </div>
-
-    <!-- Breath Cycle -->
-    <div class="brand-block">
-      <p class="brand-block__title">Breath Cycle</p>
-      <div class="brand-breath">
-        <div class="brand-breath__circle"></div>
-        <div class="brand-breath__label">
-          var(--breath)<br>
-          Dawn 4.8s · Day 3.8s<br>
-          Evening 4.2s · Night 5.2s
-        </div>
-      </div>
-    </div>
-
-    <!-- Spacing -->
-    <div class="brand-block">
-      <p class="brand-block__title">Spacing</p>
-      <div class="brand-spacing">
-        <div class="brand-spacing__bar">
-          <div class="brand-spacing__fill" style="width:8px"></div>
-          <span class="brand-spacing__name">xs — 0.5rem</span>
-        </div>
-        <div class="brand-spacing__bar">
-          <div class="brand-spacing__fill" style="width:16px"></div>
-          <span class="brand-spacing__name">sm — 1rem</span>
-        </div>
-        <div class="brand-spacing__bar">
-          <div class="brand-spacing__fill" style="width:32px"></div>
-          <span class="brand-spacing__name">md — 2rem</span>
-        </div>
-        <div class="brand-spacing__bar">
-          <div class="brand-spacing__fill" style="width:64px"></div>
-          <span class="brand-spacing__name">lg — 4rem</span>
-        </div>
-        <div class="brand-spacing__bar">
-          <div class="brand-spacing__fill" style="width:128px"></div>
-          <span class="brand-spacing__name">xl — 8rem</span>
-        </div>
-        <div class="brand-spacing__bar">
-          <div class="brand-spacing__fill" style="width:192px"></div>
-          <span class="brand-spacing__name">2xl — 12rem</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ━━━ EDITOR ━━━ -->
-<section class="about-section" id="editor" data-reveal>
-  <span class="about-section__label">Editor</span>
-  <div class="editor-profile container">
-    <p class="editor-name">WOOSUNHO</p>
-    <p class="editor-title">Editor &middot; Hair Artisan</p>
-    <p class="editor-bio">기록하고, 다듬고, 비워내는 사람.</p>
-  </div>
-  <div class="editor-links container">
-    <a class="editor-link" href="woosunho/">
-      <span>Portfolio</span>
-      <span>→</span>
-    </a>
-    <a class="editor-link" href="archive/">
-      <span>Archive</span>
-      <span>→</span>
-    </a>
-    <a class="editor-link" href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">
-      <span>Instagram</span>
-      <span>↗</span>
-    </a>
-  </div>
-</section>
-
-</main>
-
-<script defer src="assets/js/site.js"></script>
-<script>
-(function () {
-  var fill = document.getElementById('read-fill');
-  var main = document.getElementById('read-main');
-  if (!fill || !main) return;
-  function onScroll() {
-    var rect = main.getBoundingClientRect();
-    var total = main.scrollHeight - window.innerHeight;
-    var pct = total > 0 ? Math.min(100, Math.max(0, -rect.top / total) * 100) : 0;
-    fill.style.height = pct + '%';
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-})();
-</script>
-
-<!-- COMPONENT:footer -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <nav class="footer-nav">
-        <a href="/archive/">Archive</a>
-        <a href="/practice/">Practice</a>
-        <a href="/about/">About</a>
-      </nav>
-      <div class="footer-legal">
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
-      </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
-    </div>
-  </div>
-</footer>
-<!-- /COMPONENT:footer --></body>
 </html>
