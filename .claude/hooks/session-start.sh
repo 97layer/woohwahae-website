@@ -43,4 +43,11 @@ fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# ─── 구조 감사 (선제 스캔) ──────────────────────────────────
+
+AUDIT_SCRIPT="$PROJECT_ROOT/core/scripts/structure_audit.py"
+if [ -f "$AUDIT_SCRIPT" ]; then
+  python3 "$AUDIT_SCRIPT" 2>/dev/null
+fi
+
 exit 0
