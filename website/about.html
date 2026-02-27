@@ -60,25 +60,237 @@
     </g>
   </svg>
 </div>
-<!-- /COMPONENT:wave-bg --><main class="page-main">
-<!-- 30vh 여백 -->
-<div class="about-hero"></div>
-<div class="about-links container">
-<a class="about-link" data-reveal="" href="about/philosophy.html">
-<span class="about-link__label">Philosophy</span>
-<span class="about-link__arrow">→</span>
-</a>
-<a class="about-link" data-reveal="" href="about/journey.html">
-<span class="about-link__label">Journey</span>
-<span class="about-link__arrow">→</span>
-</a>
-<a class="about-link" data-reveal="" href="about/editor.html">
-<span class="about-link__label">Editor</span>
-<span class="about-link__arrow">→</span>
-</a>
+<!-- /COMPONENT:wave-bg -->
+<div class="about-read-progress" aria-hidden="true">
+  <div class="about-read-progress__fill" id="read-fill"></div>
 </div>
+
+<main class="page-main" id="read-main" style="position:relative;z-index:1">
+
+<!-- ━━━ JOURNEY ━━━ -->
+<section class="about-section" id="journey" data-reveal>
+  <span class="about-section__label">Journey</span>
+  <header class="journey-header">
+    <h1 class="journey-title">태도가 모든 것이다.<br>기술은 부차적인 표상에 불과하다.</h1>
+  </header>
+
+  <figure class="journey-timeline" data-reveal>
+    <svg class="journey-timeline__svg" viewBox="0 0 420 260" fill="none" role="img" aria-label="우수호의 서사 타임라인 — 4개의 전환점">
+      <line class="tl-axis" x1="80" y1="20" x2="80" y2="240" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+      <g class="tl-node-g">
+        <circle cx="80" cy="50" r="3.5" fill="currentColor" opacity="0.7"/>
+        <line x1="80" y1="50" x2="110" y2="50" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
+        <text class="tl-year" x="115" y="47">2006</text>
+        <text class="tl-label" x="115" y="60">최초의 매료 — 헤어 롤</text>
+      </g>
+      <g class="tl-node-g">
+        <circle cx="80" cy="110" r="3.5" fill="currentColor" opacity="0.5"/>
+        <line x1="80" y1="110" x2="110" y2="110" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
+        <text class="tl-year" x="115" y="107">2008</text>
+        <text class="tl-label" x="115" y="120">의도된 고립 — 8평 반지하</text>
+      </g>
+      <g class="tl-node-g">
+        <circle cx="80" cy="170" r="3.5" fill="currentColor" opacity="0.35"/>
+        <line x1="80" y1="170" x2="110" y2="170" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
+        <text class="tl-year" x="115" y="167">2020</text>
+        <text class="tl-label" x="115" y="180">팬데믹 — 내면 주파수 응시</text>
+      </g>
+      <g class="tl-node-g">
+        <circle cx="80" cy="230" r="5" fill="currentColor" opacity="0.9"/>
+        <line x1="80" y1="230" x2="110" y2="230" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
+        <text class="tl-year" x="115" y="227">현재</text>
+        <text class="tl-label" style="fill:var(--text-sub);" x="115" y="240">WOOHWAHAE — 羽化</text>
+      </g>
+      <text class="tl-label" style="font-size:7px;opacity:0.4;" text-anchor="middle" x="80" y="258">one axis. four inflections.</text>
+    </svg>
+  </figure>
+
+  <div class="journey-body" data-reveal>
+    <p>중학교 3학년. 점수라는 기준에 떠밀려 헤어 롤을 집어 들었다. 거친 질감이 손끝에 의해 하나의 형상으로 귀결되는 창조의 과정에서 본질에 매료되었다.</p>
+    <p>단 2년이었다. 기계적 공정 속에서 직업의 사명감은 생존 유지라는 관성으로 풍화되었다. 수동적 일상을 멈추는 의도된 고립을 택했다. 일체의 기반을 버리고, 월세 8평 반지하로 침잠했다.</p>
+    <blockquote>
+      눅눅한 고립 지대는 도피처가 아니었다.<br>사유를 정제하는 빈방이었다.
+    </blockquote>
+    <p>팬데믹이라는 피할 수 없는 단절이 당도해서야 내면의 주파수를 거울처럼 응시할 시공간이 열렸다. 타인들이 맹목적으로 방향을 추종할 때, 선과 여백의 아키텍처를 살피며 노동의 과정 위에 인문학의 밀도를 조용히 덧씌웠다.</p>
+    <p>기술은 부차적인 표상이다. 오직 태도와 흔들림 없는 관점이 모든 것임을 통찰했다. 그 결의가 이 기록으로 남는다.</p>
+  </div>
+</section>
+
+<!-- ━━━ PHILOSOPHY ━━━ -->
+<section class="about-section" id="philosophy" data-reveal>
+  <span class="about-section__label">Philosophy</span>
+
+  <div class="philosophy-principle" data-reveal>
+    <h3 class="philosophy-principle__name">본질주의 — 실용적 미학</h3>
+    <p class="philosophy-principle__desc">조용히 덜어내어 투명한 뼈대만을 렌더링한다. 수사의 멸각. 밀도는 덧치장이 아니라 철저한 소거로 증명된다.</p>
+    <p class="philosophy-principle__quote">"생명력을 손상하지 않는 선에서 덜어낼 빈 곳이 남아있는가?"</p>
+  </div>
+
+  <div class="philosophy-principle" data-reveal>
+    <h3 class="philosophy-principle__name">공명 — 무언의 교감</h3>
+    <p class="philosophy-principle__desc">넓게 흩뿌리는 확장이 아니라 수직으로 꽂히는 하강이다. 상대를 통제하는 수사를 배제한다. 세공된 진정성은 고유한 주파수를 띠고 무언으로 전이된다.</p>
+    <p class="philosophy-principle__quote">"얕은 소음을 뚫고, 심연의 작은 떨림에 주파수가 맞닿았는가?"</p>
+  </div>
+
+  <div class="philosophy-principle" data-reveal>
+    <h3 class="philosophy-principle__name">자기긍정 — 자아 긍정</h3>
+    <p class="philosophy-principle__desc">알고리즘 잣대에서 이탈하여 미학적 구원을 향하는 의식이다. 침묵만으로도 하루의 기저를 지배한다. 정적 속에서 스스로를 정돈한 자만이 세계를 포용한다.</p>
+    <p class="philosophy-principle__quote">"알고리즘 잣대에서 벗어나, 직관과 오독조차 긍정하도록 돕는가?"</p>
+  </div>
+
+  <ul class="philosophy-lens" data-reveal>
+    <li><strong>一期一會</strong>찰나의 폭발적 유일성 — 접객과 대화, 기계적 루틴 전락 방지</li>
+    <li><strong>侘び寂び</strong>불완전함의 완벽성 — 비대칭과 거친 질감, 인간의 온기</li>
+    <li><strong>禪</strong>관성의 의식화 — 반복되는 루틴을 실존적 의례로 승격</li>
+    <li><strong>留白</strong>여백의 적극적 개입 — 침묵의 언어</li>
+  </ul>
+</section>
+
+<!-- ━━━ BRAND ━━━ -->
+<section class="about-section" id="brand" data-reveal>
+  <span class="about-section__label">Brand Identity</span>
+
+  <div class="brand-grid">
+    <!-- Color Palette -->
+    <div class="brand-block">
+      <p class="brand-block__title">Palette</p>
+      <div class="brand-swatches">
+        <div class="brand-swatch">
+          <div class="brand-swatch__chip" style="background:var(--bg)"></div>
+          <div class="brand-swatch__info">Background<span>#E3E2E0</span></div>
+        </div>
+        <div class="brand-swatch">
+          <div class="brand-swatch__chip" style="background:var(--text)"></div>
+          <div class="brand-swatch__info">Ink<span>#1A1A1A</span></div>
+        </div>
+        <div class="brand-swatch">
+          <div class="brand-swatch__chip" style="background:var(--stone-dark)"></div>
+          <div class="brand-swatch__info">Stone Dark<span>#7A6E5A</span></div>
+        </div>
+        <div class="brand-swatch">
+          <div class="brand-swatch__chip" style="background:var(--stone-mid)"></div>
+          <div class="brand-swatch__info">Stone Mid<span>#8B7355</span></div>
+        </div>
+        <div class="brand-swatch">
+          <div class="brand-swatch__chip" style="background:var(--stone-light)"></div>
+          <div class="brand-swatch__info">Stone Light<span>#A89880</span></div>
+        </div>
+        <div class="brand-swatch">
+          <div class="brand-swatch__chip" style="background:var(--navy)"></div>
+          <div class="brand-swatch__info">Navy<span>#1B2D4F — accent only</span></div>
+        </div>
+        <div class="brand-swatch">
+          <div class="brand-swatch__chip" style="background:var(--line)"></div>
+          <div class="brand-swatch__info">Line<span>#D5D4CF</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typography -->
+    <div class="brand-block">
+      <p class="brand-block__title">Typography</p>
+      <div class="brand-type-sample">
+        <p class="brand-type-sample__text">조용히 덜어내어 투명한 뼈대만을</p>
+        <p class="brand-type-sample__name">Pretendard Variable — Body</p>
+      </div>
+      <div class="brand-type-sample">
+        <p class="brand-type-sample__text brand-type-sample__text--mono">WOOHWAHAE / 2026</p>
+        <p class="brand-type-sample__name">IBM Plex Mono — Labels</p>
+      </div>
+      <div class="brand-type-sample">
+        <p class="brand-type-sample__text" style="font-family:'Crimson Text',Georgia,serif;font-style:italic;font-size:1.35rem;">One axis. Four inflections.</p>
+        <p class="brand-type-sample__name">Crimson Text — Accent</p>
+      </div>
+    </div>
+
+    <!-- Breath Cycle -->
+    <div class="brand-block">
+      <p class="brand-block__title">Breath Cycle</p>
+      <div class="brand-breath">
+        <div class="brand-breath__circle"></div>
+        <div class="brand-breath__label">
+          var(--breath)<br>
+          Dawn 4.8s · Day 3.8s<br>
+          Evening 4.2s · Night 5.2s
+        </div>
+      </div>
+    </div>
+
+    <!-- Spacing -->
+    <div class="brand-block">
+      <p class="brand-block__title">Spacing</p>
+      <div class="brand-spacing">
+        <div class="brand-spacing__bar">
+          <div class="brand-spacing__fill" style="width:8px"></div>
+          <span class="brand-spacing__name">xs — 0.5rem</span>
+        </div>
+        <div class="brand-spacing__bar">
+          <div class="brand-spacing__fill" style="width:16px"></div>
+          <span class="brand-spacing__name">sm — 1rem</span>
+        </div>
+        <div class="brand-spacing__bar">
+          <div class="brand-spacing__fill" style="width:32px"></div>
+          <span class="brand-spacing__name">md — 2rem</span>
+        </div>
+        <div class="brand-spacing__bar">
+          <div class="brand-spacing__fill" style="width:64px"></div>
+          <span class="brand-spacing__name">lg — 4rem</span>
+        </div>
+        <div class="brand-spacing__bar">
+          <div class="brand-spacing__fill" style="width:128px"></div>
+          <span class="brand-spacing__name">xl — 8rem</span>
+        </div>
+        <div class="brand-spacing__bar">
+          <div class="brand-spacing__fill" style="width:192px"></div>
+          <span class="brand-spacing__name">2xl — 12rem</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━ EDITOR ━━━ -->
+<section class="about-section" id="editor" data-reveal>
+  <span class="about-section__label">Editor</span>
+  <div class="editor-profile container">
+    <p class="editor-name">WOOSUNHO</p>
+    <p class="editor-title">Editor &middot; Hair Artisan</p>
+    <p class="editor-bio">기록하고, 다듬고, 비워내는 사람.</p>
+  </div>
+  <div class="editor-links container">
+    <a class="editor-link" href="woosunho/">
+      <span>Portfolio</span>
+      <span>→</span>
+    </a>
+    <a class="editor-link" href="archive/">
+      <span>Archive</span>
+      <span>→</span>
+    </a>
+    <a class="editor-link" href="https://instagram.com/woosunhokr" target="_blank" rel="noopener">
+      <span>Instagram</span>
+      <span>↗</span>
+    </a>
+  </div>
+</section>
+
 </main>
-<script defer="" src="assets/js/site.js"></script>
+
+<script defer src="assets/js/site.js"></script>
+<script>
+(function () {
+  var fill = document.getElementById('read-fill');
+  var main = document.getElementById('read-main');
+  if (!fill || !main) return;
+  function onScroll() {
+    var rect = main.getBoundingClientRect();
+    var total = main.scrollHeight - window.innerHeight;
+    var pct = total > 0 ? Math.min(100, Math.max(0, -rect.top / total) * 100) : 0;
+    fill.style.height = pct + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
 
 <!-- COMPONENT:footer -->
 <footer class="site-footer">

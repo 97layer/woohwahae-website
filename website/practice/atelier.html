@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="Editor — WOOHWAHAE" name="description"/>
-<title>Editor — WOOHWAHAE</title>
+<meta content="Atelier — WOOHWAHAE Practice" name="description"/>
+<title>Atelier — WOOHWAHAE</title>
 <meta content="#E3E2E0" name="theme-color"/>
 <link href="../assets/img/symbol.png" rel="icon" type="image/png"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -15,10 +14,10 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
 <link href="../assets/css/style.css" rel="stylesheet"/>
 <script>
-        (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
-    </script>
+(function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+</script>
 </head>
-<body class="page-editor"><!-- COMPONENT:nav -->
+<body class="page-service"><!-- COMPONENT:nav -->
 <nav class="site-nav" id="site-nav">
   <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
     <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
@@ -60,36 +59,31 @@
     </g>
   </svg>
 </div>
-<!-- /COMPONENT:wave-bg --><main class="page-main">
-<div class="editor-hero container--wide">
-<span class="section-label">EDITOR</span>
+<!-- /COMPONENT:wave-bg --><main class="page-main" style="position:relative;z-index:1">
+<div class="service-hero container--wide">
+  <span class="section-label">PRACTICE — ATELIER</span>
 </div>
-<div class="editor-profile container">
-<!--
-        사진 파일이 준비되면 아래 img src 교체.
-        없으면 img 태그 제거하고 여백만 유지.
-      -->
-<!-- <img src="../assets/img/woosunho.jpg" alt="WOOSUNHO" class="editor-photo"> -->
-<p class="editor-name">WOOSUNHO</p>
-<p class="editor-title">Editor · Hair Artisan</p>
-<p class="editor-bio">기록하고, 다듬고, 비워내는 사람.</p>
+<div class="service-stack container--wide">
+  <div class="service-item" data-reveal>
+    <div>
+      <strong class="service-item__name">Atelier</strong>
+      <span class="service-item__meta">헤어 · 예약제 · 1일 3명</span>
+    </div>
+    <div class="service-item__body">
+      <p>예약제로 운영한다. 하루 3명.</p>
+      <p>상담은 30분. 시술 전 충분히 나눈다.</p>
+      <p>예약은 연락으로.</p>
+    </div>
+  </div>
 </div>
-<div class="editor-links container">
-<a class="editor-link" href="../woosunho/">
-<span>Portfolio</span>
-<span>→</span>
-</a>
-<a class="editor-link" href="../archive/">
-<span>Archive</span>
-<span>→</span>
-</a>
-<a class="editor-link" href="https://instagram.com/woosunhokr" rel="noopener" target="_blank">
-<span>Instagram</span>
-<span>↗</span>
-</a>
+<div class="practice-contact container--wide">
+  <a class="practice-contact-link" data-reveal href="contact.html">
+    <span>연락</span>
+    <span class="practice-card__arrow">→</span>
+  </a>
 </div>
 </main>
-<script defer="" src="../assets/js/site.js"></script>
+<script defer src="../assets/js/site.js"></script>
 
 <!-- COMPONENT:footer -->
 <footer class="site-footer">

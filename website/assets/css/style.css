@@ -7353,6 +7353,333 @@ body.is-loaded .home-preloader__logo {
   color: var(--text-faint);
 }
 
+/* ─── About Unified ─── */
+
+.about-section {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: 0 var(--space-md) var(--space-2xl);
+}
+
+.about-section__label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 300;
+  letter-spacing: var(--ls-label);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-bottom: var(--space-lg);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--line);
+}
+
+/* Journey — Timeline */
+.journey-header {
+  padding: var(--space-xl) 0 var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.journey-title {
+  font-family: var(--font-body);
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-weight: 200;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.journey-timeline {
+  margin: var(--space-lg) 0 var(--space-xl);
+}
+
+.journey-timeline__svg {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.tl-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  fill: var(--text-faint);
+}
+
+.tl-year {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 300;
+  fill: var(--stone-dark);
+  letter-spacing: 0.08em;
+}
+
+@keyframes tl-draw {
+  from { stroke-dashoffset: 300; }
+  to { stroke-dashoffset: 0; }
+}
+
+.tl-axis {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: tl-draw 2s var(--ease-out) 0.4s forwards;
+}
+
+@keyframes tl-node-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.tl-node-g { opacity: 0; }
+.tl-node-g:nth-child(1) { animation: tl-node-in 0.6s var(--ease-out) 1.2s forwards; }
+.tl-node-g:nth-child(2) { animation: tl-node-in 0.6s var(--ease-out) 1.6s forwards; }
+.tl-node-g:nth-child(3) { animation: tl-node-in 0.6s var(--ease-out) 2.0s forwards; }
+.tl-node-g:nth-child(4) { animation: tl-node-in 0.6s var(--ease-out) 2.4s forwards; }
+
+.journey-body {
+  padding-bottom: var(--space-lg);
+}
+
+.journey-body p {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--text-sub);
+  line-height: 1.9;
+  margin-bottom: 1.4rem;
+}
+
+.journey-body blockquote {
+  border-left: 1px solid var(--navy);
+  padding: 0.4rem 0 0.4rem 1.8rem;
+  margin: var(--space-lg) 0;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.55;
+  color: var(--stone-dark);
+  letter-spacing: 0.01em;
+}
+
+/* Philosophy */
+.philosophy-principle {
+  margin-bottom: var(--space-xl);
+}
+
+.philosophy-principle__name {
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
+}
+
+.philosophy-principle__desc {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--text-sub);
+  line-height: 1.9;
+}
+
+.philosophy-principle__quote {
+  margin-top: var(--space-sm);
+  font-size: 0.92rem;
+  color: var(--text-faint);
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.philosophy-lens {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-lg);
+}
+
+.philosophy-lens li {
+  margin-bottom: 1.6rem;
+  font-size: 0.95rem;
+  color: var(--text-sub);
+  line-height: 1.8;
+}
+
+.philosophy-lens li strong {
+  color: var(--text);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+/* Brand Book */
+.brand-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+@media (max-width: 640px) {
+  .brand-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brand-block__title {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 300;
+  letter-spacing: var(--ls-label);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+
+/* Color swatches */
+.brand-swatches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.brand-swatch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.brand-swatch__chip {
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.brand-swatch__info {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: var(--text-sub);
+  letter-spacing: 0.04em;
+}
+
+.brand-swatch__info span {
+  display: block;
+  color: var(--text-faint);
+  font-size: 0.58rem;
+}
+
+/* Typography samples */
+.brand-type-sample {
+  margin-bottom: 1.4rem;
+}
+
+.brand-type-sample__text {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.brand-type-sample__text--mono {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+}
+
+.brand-type-sample__name {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+}
+
+/* Breath cycle demo */
+.brand-breath {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.brand-breath__circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--stone-dark);
+  animation: brand-breathe var(--breath) ease-in-out infinite;
+}
+
+@keyframes brand-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+.brand-breath__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+}
+
+/* Spacing scale */
+.brand-spacing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: var(--space-md);
+}
+
+.brand-spacing__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.brand-spacing__fill {
+  height: 6px;
+  background: var(--stone-light);
+  border-radius: 1px;
+  opacity: 0.6;
+}
+
+.brand-spacing__name {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* Reading progress (reused from journey) */
+.about-read-progress {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 2px;
+  height: 100dvh;
+  background: rgba(26, 26, 26, 0.07);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.about-read-progress__fill {
+  width: 100%;
+  height: 0%;
+  background: var(--stone-dark);
+  transition: height 0.1s linear;
+}
+
+@media (max-width: 640px) {
+  .journey-body blockquote {
+    font-size: 1.1rem;
+  }
+
+  .journey-header {
+    padding: var(--space-lg) 0 var(--space-md);
+  }
+}
+
 /* ─── Article ─── */
 .art-body {
   padding-bottom: var(--space-2xl);
