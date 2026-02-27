@@ -63,7 +63,7 @@ for name, info in d['inactive'].items():
 
   all)
     echo "[1/2] git pull..."
-    ssh ${VM_HOST} "cd ${VM_PATH} && git pull origin main"
+    ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main"
     echo "[2/2] active 서비스 전체 재시작 (${SERVICES_ACTIVE})..."
     ssh ${VM_HOST} "sudo systemctl restart ${SERVICES_ACTIVE}"
     sleep 3
@@ -72,7 +72,7 @@ for name, info in d['inactive'].items():
 
   pull)
     echo "git pull..."
-    ssh ${VM_HOST} "cd ${VM_PATH} && git pull origin main"
+    ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main"
     ;;
 
   *)
@@ -85,7 +85,7 @@ for name, info in d['inactive'].items():
     fi
 
     echo "[1/2] git pull..."
-    ssh ${VM_HOST} "cd ${VM_PATH} && git pull origin main"
+    ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main"
     echo "[2/2] ${1} 재시작..."
     ssh ${VM_HOST} "sudo systemctl restart ${1}"
     sleep 2
