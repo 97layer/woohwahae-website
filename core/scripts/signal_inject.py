@@ -16,11 +16,14 @@ SA 큐에 자동 전달된다.
 
 import argparse
 import json
+import logging
 import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 SIGNALS_DIR = PROJECT_ROOT / "knowledge" / "signals"
@@ -118,7 +121,7 @@ def inject_image(image_path: str) -> None:
     """이미지 신호 입력"""
     source = Path(image_path)
     if not source.exists():
-        print("파일 없음: %s" % image_path)
+        logger.error("파일 없음: %s", image_path)
         sys.exit(1)
 
     signal_id = generate_signal_id("image")
@@ -141,7 +144,7 @@ def inject_pdf(pdf_path: str) -> None:
     """PDF 신호 입력"""
     source = Path(pdf_path)
     if not source.exists():
-        print("파일 없음: %s" % pdf_path)
+        logger.error("파일 없음: %s", pdf_path)
         sys.exit(1)
 
     signal_id = generate_signal_id("pdf_document")
@@ -161,9 +164,9 @@ def inject_pdf(pdf_path: str) -> None:
                 content = "\n".join(pages_text)[:3000]  # 3000자 제한
                 print("PDF 텍스트 추출: %d페이지, %d자" % (len(pages_text), len(content)))
     except ImportError:
-        print("pdfplumber 미설치 — 텍스트 추출 생략 (pip install pdfplumber)")
+        logger.warning("pdfplumber 미설치 — 텍스트 추출 생략 (pip install pdfplumber)")
     except Exception as e:
-        print("PDF 추출 실패: %s" % e)
+        logger.error("PDF 추출 실패: %s", e)
 
     signal = create_signal(
         "pdf_document",

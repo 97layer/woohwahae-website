@@ -96,13 +96,13 @@ class ChiefEditor:
             from core.system.notebooklm_bridge import get_bridge, is_available
             if is_available():
                 self.nlm = get_bridge()
-                print(f"✅ {self.agent_id}: NotebookLM 브랜드 RAG 연결됨")
+                logger.info("%s: NotebookLM 브랜드 RAG 연결됨", self.agent_id)
             else:
-                print(f"⚠️  {self.agent_id}: NotebookLM 미연결 — fallback 브랜드 보이스 사용")
+                logger.warning("%s: NotebookLM 미연결 -- fallback 브랜드 보이스 사용", self.agent_id)
         except Exception as e:
             logger.warning("NotebookLM 초기화 실패: %s", e)
 
-        print(f"CE: 준비됨.")
+        logger.info("CE: 준비됨")
 
     def _get_brand_voice(self) -> str:
         """
@@ -150,7 +150,8 @@ class ChiefEditor:
             }
         """
         signal_id = analysis.get('signal_id', 'unknown')
-        print(f"CE: {signal_id} 초안 작업." + (f" (재작업 {retry_count}회차)" if retry_count > 0 else ""))
+        retry_msg = " (재작업 %d회차)" % retry_count if retry_count > 0 else ""
+        logger.info("CE: %s 초안 작업.%s", signal_id, retry_msg)
 
         # 브랜드 보이스 참조 (NotebookLM 또는 fallback)
         brand_voice = self._get_brand_voice()
@@ -256,7 +257,7 @@ JSON만 반환.
 
             caption_len = len(content.get('instagram_caption', ''))
             essay_len = len(content.get('archive_essay', ''))
-            print(f"CE: 초안 완료. 캡션 {caption_len}자, 에세이 {essay_len}자.")
+            logger.info("CE: 초안 완료. 캡션 %d자, 에세이 %d자.", caption_len, essay_len)
             return content
 
         except Exception as e:
@@ -267,7 +268,7 @@ JSON만 반환.
         task_type = task.task_type
         payload = task.payload
 
-        print(f"CE: {task.task_id} ({task_type})")
+        logger.info("CE: %s (%s)", task.task_id, task_type)
 
         if task_type == 'write_content':
             # Orchestrator에서 오는 새 payload 구조 지원
@@ -320,11 +321,11 @@ JSON만 반환.
                     result['published'] = pub_result.get('status') in ('success', 'published')
                     result['website_published'] = pub_result.get('website_published', False)
                     result['telegram_sent'] = pub_result.get('telegram_sent', False)
-                    tg = '✓' if result['telegram_sent'] else '✗'
+                    tg = 'Y' if result['telegram_sent'] else 'N'
                     ctype = result.get('content_type', 'essay')
-                    print(f"CE: 홈페이지 발행 완료 — {result.get('essay_title', 'N/A')} [{ctype}] | telegram={tg}")
+                    logger.info("CE: 홈페이지 발행 완료 -- %s [%s] | telegram=%s", result.get('essay_title', 'N/A'), ctype, tg)
                 except Exception as e:
-                    print(f"CE: 홈페이지 발행 실패 — {e}")
+                    logger.warning("CE: 홈페이지 발행 실패 -- %s", e)
                     result['published'] = False
 
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
@@ -353,7 +354,7 @@ JSON만 반환.
         content_category = payload.get("content_category", "")
 
         # AgentLogger: 에세이 작성 시작
-        self.logger.think(f"에세이 작성 중: {theme}")
+        self.logger.think("에세이 작성 중: %s" % theme)
 
         # essay: archive or essay type → 한다체, 독백, 300-800자
         # journal: magazine or journal type → 합니다체, ~~~하는 법, 1200-3000자
@@ -445,7 +446,7 @@ JSON만 출력."""
                 result = json.loads(match.group())
                 formats = [k for k in ['archive_essay', 'instagram_caption', 'carousel_slides',
                                         'telegram_summary', 'pull_quote'] if k in result]
-                print(f"CE: 원소스 멀티유즈 완료 — {theme} | 타입: {content_type} | 포맷: {', '.join(formats)}")
+                logger.info("CE: 원소스 멀티유즈 완료 -- %s | 타입: %s | 포맷: %s", theme, content_type, ', '.join(formats))
             else:
                 result = {
                     "archive_essay": text,
@@ -459,7 +460,7 @@ JSON만 출력."""
                 self._save_essay_html(result, theme)
             except Exception as html_e:
                 # HTML 저장 실패는 에세이 생성 결과에 영향 없음
-                print(f"CE: HTML 저장 실패 (무시) — {html_e}")
+                logger.warning("CE: HTML 저장 실패 (무시) -- %s", html_e)
 
             # ── NotebookLM Essay Archive 저장 ──────────────────────
             if self.nlm:
@@ -472,14 +473,14 @@ JSON만 출력."""
                         'instagram_caption': result.get('instagram_caption', ''),
                         'issue_num': result.get('issue_num', ''),
                     })
-                    print(f"CE: NotebookLM Essay Archive 저장 완료 — {result.get('essay_title', theme)}")
+                    logger.info("CE: NotebookLM Essay Archive 저장 완료 -- %s", result.get('essay_title', theme))
                 except Exception as nlm_e:
-                    print(f"CE: NotebookLM 저장 실패 (무시) — {nlm_e}")
+                    logger.warning("CE: NotebookLM 저장 실패 (무시) -- %s", nlm_e)
 
             return result
 
         except Exception as e:
-            print(f"CE: corpus 에세이 실패 — {e}")
+            logger.error("CE: corpus 에세이 실패 -- %s", e)
             return {"error": str(e), "theme": theme}
 
     def _save_essay_html(self, result: dict, theme: str):
@@ -489,7 +490,7 @@ JSON만 출력."""
         from pathlib import Path as _Path
 
         # AgentLogger: HTML 저장 시작
-        self.logger.write(f"HTML 생성 중: {theme}")
+        self.logger.write("HTML 생성 중: %s" % theme)
 
         # env_validator 경유 단일 진입점
         try:
@@ -636,20 +637,16 @@ JSON만 출력."""
 
         html_path = essay_dir / 'index.html'
         html_path.write_text(html, encoding='utf-8')
-        print(f"CE: HTML 저장 완료 — {html_path.relative_to(PROJECT_ROOT)}")
-        print(f"CE: Issue {essay_num_str} '{essay_title}' → archive/{folder_name}/")
+        logger.info("CE: HTML 저장 완료 -- %s", html_path.relative_to(PROJECT_ROOT))
+        logger.info("CE: Issue %s '%s' -> archive/%s/", essay_num_str, essay_title, folder_name)
 
         # AgentLogger: 작업 완료
-        self.logger.done(f"Issue {essay_num_str}: {essay_title}")
+        self.logger.done("Issue %s: %s" % (essay_num_str, essay_title))
 
     def start_watching(self, interval: int = 5):
         watcher = AgentWatcher(agent_type=self.agent_type, agent_id=self.agent_id)
         nlm_status = "연결됨" if self.nlm else "fallback"
-        print(f"CE: 큐 감시 시작.")
-        print(f"   LLM: Gemini 2.5 Pro")
-        print(f"   Brand Voice: NotebookLM RAG ({nlm_status})")
-        print(f"   Tasks: write_content")
-        print()
+        logger.info("CE: 큐 감시 시작. LLM=Gemini 2.5 Pro | Brand Voice=NotebookLM RAG (%s) | Tasks=write_content", nlm_status)
         watcher.watch(callback=self.process_task, interval=interval)
 
 
@@ -667,7 +664,7 @@ if __name__ == '__main__':
     agent = ChiefEditor(agent_id=args.agent_id)
 
     if args.test:
-        print("\n🧪 Test Mode: Content Writing\n" + "=" * 50)
+        logger.info("[TEST] Test Mode: Content Writing")
         test_analysis = {
             'signal_id': 'test_001',
             'themes': ['AI와 창작', '느린 삶'],
@@ -681,10 +678,8 @@ if __name__ == '__main__':
         }
 
         result = agent.write_content(test_analysis, test_visual)
-        print(f"\n✍️  콘텐츠 초안:")
-        print(f"   헤드라인: {result.get('headline', 'N/A')}")
-        print(f"   캡션: {result.get('social_caption', 'N/A')}")
-        print(f"   브랜드 보이스 출처: {result.get('brand_voice_source', 'N/A')}")
-        print("\n✅ 테스트 완료!")
+        logger.info("[TEST] 콘텐츠 초안 -- 헤드라인: %s | 캡션: %s | 브랜드 보이스 출처: %s",
+                    result.get('headline', 'N/A'), result.get('social_caption', 'N/A'), result.get('brand_voice_source', 'N/A'))
+        logger.info("[TEST] 테스트 완료")
     else:
         agent.start_watching(interval=args.interval)

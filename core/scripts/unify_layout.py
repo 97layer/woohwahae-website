@@ -1,6 +1,10 @@
+import logging
 import os
 import re
+
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 ROOT = os.path.abspath('website')
 
@@ -12,15 +16,15 @@ def get_depth_prefix(filepath):
 
 def get_unified_nav(prefix):
     # Path adjusting for root links
-    return f'''
+    return '''
   <nav class="site-nav" id="site-nav">
-    <a href="{prefix}" class="nav-brand" aria-label="WOOHWAHAE">
-      <img src="{prefix}assets/img/symbol.png" alt="WOOHWAHAE" class="nav-symbol">
+    <a href="%(prefix)s" class="nav-brand" aria-label="WOOHWAHAE">
+      <img src="%(prefix)sassets/img/symbol.png" alt="WOOHWAHAE" class="nav-symbol">
     </a>
     <ul class="nav-links" id="nav-links">
-      <li><a href="{prefix}archive/">Archive</a></li>
-      <li><a href="{prefix}practice/">Practice</a></li>
-      <li><a href="{prefix}about/">About</a></li>
+      <li><a href="%(prefix)sarchive/">Archive</a></li>
+      <li><a href="%(prefix)spractice/">Practice</a></li>
+      <li><a href="%(prefix)sabout/">About</a></li>
     </ul>
     <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
       <span></span><span></span>
@@ -28,11 +32,11 @@ def get_unified_nav(prefix):
   </nav>
 
   <div class="nav-overlay" id="nav-overlay">
-    <a href="{prefix}archive/">Archive</a>
-    <a href="{prefix}practice/">Practice</a>
-    <a href="{prefix}about/">About</a>
+    <a href="%(prefix)sarchive/">Archive</a>
+    <a href="%(prefix)spractice/">Practice</a>
+    <a href="%(prefix)sabout/">About</a>
   </div>
-'''
+''' % {"prefix": prefix}
 
 def get_unified_wave_bg():
     return '''
@@ -66,7 +70,7 @@ def get_unified_wave_bg():
 '''
 
 def get_unified_footer(prefix):
-    return f'''
+    return '''
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-contact">
@@ -78,19 +82,19 @@ def get_unified_footer(prefix):
       </div>
       <div class="footer-bottom">
         <nav class="footer-nav">
-          <a href="{prefix}archive/">Archive</a>
-          <a href="{prefix}practice/">Practice</a>
-          <a href="{prefix}about/">About</a>
+          <a href="%(prefix)sarchive/">Archive</a>
+          <a href="%(prefix)spractice/">Practice</a>
+          <a href="%(prefix)sabout/">About</a>
         </nav>
         <div class="footer-legal">
-          <a href="{prefix}privacy.html">Privacy</a>
-          <a href="{prefix}terms.html">Terms</a>
+          <a href="%(prefix)sprivacy.html">Privacy</a>
+          <a href="%(prefix)sterms.html">Terms</a>
         </div>
         <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
       </div>
     </div>
   </footer>
-'''
+''' % {"prefix": prefix}
 
 def process_file(filepath):
     try:
@@ -104,7 +108,7 @@ def process_file(filepath):
         body = soup.find('body')
 
         if not body:
-            print(f"Skipped (No body tag): {filepath}")
+            logger.warning("Skipped (No body tag): %s", filepath)
             return
 
         # 1. Remove existing nav, nav-overlay, wave-bg, and footer directly descending from body
@@ -159,11 +163,11 @@ def process_file(filepath):
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(str(soup))
             
-        print(f"Standardized: {filepath}")
+        print("Standardized: %s" % filepath)
     except PermissionError:
-        print(f"Skipped (Permission Denied): {filepath}")
+        logger.warning("Skipped (Permission Denied): %s", filepath)
     except Exception as e:
-        print(f"Error processing {filepath}: {e}")
+        logger.error("Error processing %s: %s", filepath, e)
 
 def main():
     skip_dirs = ['_templates', 'assets', 'api', '.git']

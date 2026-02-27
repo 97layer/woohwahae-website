@@ -17,6 +17,7 @@ Author: LAYER OS Technical Director
 Updated: 2026-02-16 (google.genai SDK 마이그레이션)
 """
 
+import logging
 import os
 import sys
 import json
@@ -25,6 +26,8 @@ import re
 from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # Project setup
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -69,7 +72,7 @@ class StrategyAnalyst:
         # SA 에이전트 지침 로드
         self._persona = self._load_directive()
 
-        print(f"SA: 준비됨. (Key: ...{self.api_key[-4:]})")
+        logger.info("SA: 준비됨. (Key: ...%s)", self.api_key[-4:])
 
     def analyze_signal(self, signal_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -92,7 +95,7 @@ class StrategyAnalyst:
         content = signal_data.get('content', '')
         source = signal_data.get('source', 'unknown')
 
-        print(f"SA: 신호 {signal_id} 분석 시작. [API: {self._api_url}]")
+        logger.info("SA: 신호 %s 분석 시작. [API: %s]", signal_id, self._api_url)
 
         # Construct prompt for strategic analysis
         prompt = self._build_analysis_prompt(content, source)
@@ -124,28 +127,28 @@ class StrategyAnalyst:
             score = analysis.get('strategic_score', 0)
             category = analysis.get('category', '')
             themes = ', '.join(analysis.get('themes', [])[:3])
-            print(f"SA: 완료. 점수 {score}. 카테고리: {category}. 테마: {themes}.")
+            logger.info("SA: 완료. 점수 %s. 카테고리: %s. 테마: %s.", score, category, themes)
 
             # 자가발전: SA 분석 완료 → long_term_memory 피드백
             try:
                 self._feedback_to_memory(analysis, content)
             except Exception as mem_e:
-                print(f"⚠️  Memory feedback skipped: {mem_e}")
+                logger.warning("Memory feedback skipped: %s", mem_e)
 
             # 자가발전: SA 분석 완료 → NotebookLM Signal Archive 저장
             try:
                 self._save_to_notebooklm(analysis, content, source)
             except Exception as nlm_e:
-                print(f"⚠️  NotebookLM skipped: {nlm_e}")
+                logger.warning("NotebookLM skipped: %s", nlm_e)
 
             # Corpus 누적: 신호 → 지식 풀 (군집 기반 발행을 위한 축적)
             try:
                 from core.system.corpus_manager import CorpusManager
                 corpus = CorpusManager()
                 corpus.add_entry(signal_id, analysis, signal_data)
-                print(f"SA: Corpus 누적 완료 → {signal_id}")
+                logger.info("SA: Corpus 누적 완료 → %s", signal_id)
             except Exception as corpus_e:
-                print(f"⚠️  Corpus skipped: {corpus_e}")
+                logger.warning("Corpus skipped: %s", corpus_e)
 
             # 신호 파일 status → analyzed (Orchestrator 중복 투입 방지)
             try:
@@ -159,14 +162,14 @@ class StrategyAnalyst:
                     sig_json['status'] = 'analyzed'
                     sig_json['analyzed_at'] = datetime.now().isoformat()
                     sp.write_text(json.dumps(sig_json, indent=2, ensure_ascii=False))
-                    print(f"SA: 신호 status → analyzed: {signal_id}")
+                    logger.info("SA: 신호 status -> analyzed: %s", signal_id)
             except Exception as upd_e:
-                print(f"⚠️  Signal status update skipped: {upd_e}")
+                logger.warning("Signal status update skipped: %s", upd_e)
 
             return analysis
 
         except Exception as e:
-            print(f"SA: 분석 실패. {e}")
+            logger.error("SA: 분석 실패. %s", e)
             return {
                 'signal_id': signal_id,
                 'error': str(e),
@@ -242,7 +245,7 @@ class StrategyAnalyst:
         data['metadata']['last_updated'] = datetime.now().isoformat()[:16]
 
         lm_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
-        print(f"📝 Memory updated: score={score}, themes={analysis.get('themes', [])[:3]}")
+        logger.info("Memory updated: score=%s, themes=%s", score, analysis.get('themes', [])[:3])
 
     def _save_to_notebooklm(self, analysis: Dict[str, Any], content: str, source: str):
         """
@@ -265,7 +268,7 @@ class StrategyAnalyst:
                 'source': source,
                 'analysis': analysis,
             })
-            print(f"📚 NotebookLM 저장: score={score}")
+            logger.info("NotebookLM 저장: score=%s", score)
         except ImportError:
             pass  # 브릿지 없으면 조용히 스킵
 
@@ -347,7 +350,7 @@ JSON만 출력. 설명 없이.
             return analysis
 
         except json.JSONDecodeError as e:
-            print(f"⚠️  {self.agent_id}: Failed to parse JSON, using fallback")
+            logger.warning("%s: Failed to parse JSON, using fallback", self.agent_id)
             return {
                 'strategic_score': 50,
                 'category': 'insight',
@@ -371,7 +374,7 @@ JSON만 출력. 설명 없이.
         task_type = task.task_type
         payload = task.payload
 
-        print(f"📋 {self.agent_id}: Processing task {task.task_id} ({task_type})")
+        logger.info("%s: Processing task %s (%s)", self.agent_id, task.task_id, task_type)
 
         if task_type == 'analyze_signal':
             # Analyze signal
@@ -415,7 +418,7 @@ JSON만 출력. 설명 없이.
             agent_id=self.agent_id
         )
 
-        print(f"SA: 큐 감시 시작.")
+        logger.info("SA: 큐 감시 시작.")
 
         # Start watching (blocking)
         watcher.watch(
@@ -427,6 +430,7 @@ JSON만 출력. 설명 없이.
 # ================== Standalone Execution ==================
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)s %(levelname)s %(message)s')
     import argparse
     from core.system.env_validator import validate_env
     validate_env("sa_agent")
@@ -442,14 +446,14 @@ if __name__ == '__main__':
     try:
         agent = StrategyAnalyst(agent_id=args.agent_id)
     except ValueError as e:
-        print(f"❌ Initialization failed: {e}")
-        print("💡 Set GOOGLE_API_KEY environment variable")
+        logger.error("Initialization failed: %s", e)
+        logger.info("Set GOOGLE_API_KEY environment variable")
         sys.exit(1)
 
     if args.test:
         # Test mode: Single analysis
-        print("\n🧪 Test Mode: Single Signal Analysis")
-        print("=" * 50)
+        logger.info("Test Mode: Single Signal Analysis")
+        logger.info("=" * 50)
 
         test_signal = {
             'signal_id': 'test_001',
@@ -466,19 +470,19 @@ if __name__ == '__main__':
 
         result = agent.analyze_signal(test_signal)
 
-        print(f"\n📊 Analysis Result:")
-        print(f"   Strategic Score: {result.get('strategic_score', 'N/A')}")
-        print(f"   Category: {result.get('category', 'N/A')}")
-        print(f"   Themes: {', '.join(result.get('themes', []))}")
-        print(f"   Summary: {result.get('summary', 'N/A')}")
-        print(f"\n   Key Insights:")
+        logger.info("Analysis Result:")
+        logger.info("   Strategic Score: %s", result.get('strategic_score', 'N/A'))
+        logger.info("   Category: %s", result.get('category', 'N/A'))
+        logger.info("   Themes: %s", ', '.join(result.get('themes', [])))
+        logger.info("   Summary: %s", result.get('summary', 'N/A'))
+        logger.info("   Key Insights:")
         for insight in result.get('key_insights', []):
-            print(f"   - {insight}")
+            logger.info("   - %s", insight)
 
-        print("\n✅ Test complete!")
+        logger.info("Test complete!")
 
     else:
         # Production mode: Autonomous queue watching
-        print("\n🚀 Production Mode: Autonomous Queue Watching")
-        print("=" * 50)
+        logger.info("Production Mode: Autonomous Queue Watching")
+        logger.info("=" * 50)
         agent.start_watching(interval=args.interval)

@@ -11,13 +11,17 @@ build_archive.py — WOOHWAHAE 아카이브 SSG 빌드
        website/archive/index.json  (자동 갱신)
 """
 
+import argparse
+import json
+import logging
 import os
 import re
-import json
-import argparse
-import markdown as md_lib
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import markdown as md_lib
+
+logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).parent.parent
 CONTENT_DIR = ROOT / 'website' / '_content'
@@ -171,7 +175,7 @@ def main():
     args = parser.parse_args()
 
     if not CONTENT_DIR.exists():
-        print('[error] _content/ 디렉토리 없음: %s' % CONTENT_DIR)
+        logger.error("_content/ 디렉토리 없음: %s", CONTENT_DIR)
         return
 
     template = TEMPLATE_FILE.read_text(encoding='utf-8')
@@ -179,7 +183,7 @@ def main():
     # 전체 .md 목록 (빌드 순서용 메타 미리 수집)
     md_files = sorted(CONTENT_DIR.glob('*.md'))
     if not md_files:
-        print('[warn] _content/에 .md 파일 없음')
+        logger.warning("_content/에 .md 파일 없음")
         return
 
     # 메타 미리 파싱 (prev_link 계산용)
@@ -203,7 +207,7 @@ def main():
         targets = [f for f in md_files if (f.stem == args.slug or
                    parse_frontmatter(f.read_text('utf-8'))[0].get('slug') == args.slug)]
         if not targets:
-            print('[error] slug "%s" 에 해당하는 .md 파일 없음' % args.slug)
+            logger.error('slug "%s" 에 해당하는 .md 파일 없음', args.slug)
             return
     else:
         targets = md_files
