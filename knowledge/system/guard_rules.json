@@ -41,7 +41,8 @@
   "allowed_reports_prefixes": [
     "morning_",
     "evening_",
-    "audit_"
+    "audit_",
+    "weekly_"
   ],
   "violation_patterns": {}
 }

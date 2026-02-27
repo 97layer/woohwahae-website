@@ -41,6 +41,7 @@ ALLOWED_PATTERNS = {
         r"^morning_\d{8}\.md$",
         r"^evening_\d{8}\.md$",
         r"^audit_\d{8}\.md$",
+        r"^weekly_\d{4}W\d{2}\.md$",
     ],
     "knowledge/corpus/entries/": [
         r"^entry_.*\.json$",

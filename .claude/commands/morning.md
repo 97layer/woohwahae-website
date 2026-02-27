@@ -18,6 +18,13 @@ cat knowledge/system/work_lock.json
 `knowledge/reports/morning_YYYYMMDD.md` 에 작성 (오늘 날짜 적용):
 
 ```markdown
+---
+type: morning-report
+created: YYYY-MM-DD
+status: raw
+tags: [모닝리포트]
+---
+
 # Morning Report — YYYYMMDD
 
 ## 어제의 핵심 성과
