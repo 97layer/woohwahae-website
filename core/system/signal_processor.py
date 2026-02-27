@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-LAYER OS Signal Processor
-자동으로 신호를 감지하고 Multi-Agent를 실행
+LAYER OS Signal Processor — DEPRECATED
 
-Features:
-- 신호 디렉토리 모니터링
-- 새로운 신호 감지 → Multi-Agent 자동 실행
-- 백그라운드 처리
-- 결과 알림
+⚠️ 이 모듈은 폐기됨. 사용하지 마시오.
+대체: pipeline_orchestrator.py + signal_router.py
+
+이유:
+- watchdog 기반 → 폴링 기반 (pipeline_orchestrator.run_forever)
+- cortex_edge 의존 → 큐 기반 에이전트 체인으로 전환
+- 직접 에이전트 실행 → 큐 태스크 생성 방식으로 전환
 
 Author: LAYER OS Technical Director
 Created: 2026-02-16
+Deprecated: 2026-02-28
 """
 
 import os

@@ -288,10 +288,21 @@ WOOHWAHAE 슬로우 라이프 아틀리에의 시각 아이덴티티를 기반�
         task_type = task.task_type
         payload = task.payload
 
-        print(f"📋 {self.agent_id}: Processing task {task.task_id} ({task_type})")
+        logger.info("AD: %s (%s)", task.task_id, task_type)
 
         if task_type == 'create_visual_concept':
-            analysis_data = payload.get('analysis', {})
+            # Orchestrator 경유: payload 자체에 signal_id/themes/sa_result 등이 직접 존재
+            # 레거시: payload.analysis에 감싸져 있을 수도
+            analysis_data = payload.get('analysis', None)
+            if analysis_data is None:
+                # Orchestrator 경유 — payload를 analysis_data로 직접 사용
+                sa = payload.get('sa_result', {})
+                analysis_data = {
+                    'signal_id': payload.get('signal_id', 'unknown'),
+                    'themes': payload.get('themes', sa.get('themes', [])),
+                    'key_insights': payload.get('key_insights', sa.get('key_insights', [])),
+                    'summary': sa.get('summary', payload.get('essay_preview', '')),
+                }
             result = self.create_visual_concept(analysis_data)
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
 

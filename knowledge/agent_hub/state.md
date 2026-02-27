@@ -67,12 +67,10 @@
 
 ## 🎯 다음 작업
 
-1. [CODE] **P0 보안** — 하드코딩 비밀번호/경로 제거 (admin/app.py, photo_upload.py, snapshot_daemon.py)
-2. [CODE] **P1 directive_loader.py** — 섹션 단위 문서 로더 (토큰 최적화 핵심)
-3. [CODE] **P2 로깅 정규화** — print→logger 전환, f-string→lazy % (sa/ce_agent 등 24건+)
-4. [CODE] **P3 파이프라인 와이어링** — Gardener→CE→Ralph→AD→CD 연결
-5. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
-6. [INFRA] content_publisher.py — 에세이 발행 자동화 (CF Pages 연동)
+1. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
+2. [CODE] **P4 Brand Scout 디스커버리** — 외부 신호 자동 수집 스텁
+3. [CODE] **P4 SAGE-PROVOKER / Atmospheric Scout** — 블루프린트 검토 후 구현
+4. [INFRA] **VM 배포 + 서비스 재시작** — P0-P3 코드 반영
 
 **완료됨**:
 
@@ -98,6 +96,15 @@
   - archive → components → cache bust 원커맨드
   - CSS MD5 해시 기반 자동 캐시 버스팅
 - ✅ **AI_CONSTITUTION.md** — SSOT 이동, CLAUDE.md 참조화 (다른 에이전트)
+- ✅ **P0 보안** — 하드코딩 비밀번호/경로 제거 (ce66af01)
+- ✅ **P1 directive_loader** — 섹션 단위 문서 로더, 토큰 최적화 (ce66af01)
+- ✅ **P2 로깅 정규화** — print→logger, f-string→lazy % 39건 (04ce9498)
+- ✅ **P3 파이프라인 와이어링** — CE→Ralph→AD→CD→Publisher 자동 체인 활성화
+  - pipeline_orchestrator: run_forever()에 CE/AD/CD 완료 처리 추가
+  - 흐름 수정: CE→AD(기존 CE→CD), AD→CD(기존 AD→CE)
+  - CE write_corpus_essay: 직접 Publisher 호출 제거 → 오케스트레이터 체인 경유
+  - AD process_task: 오케스트레이터 payload 호환 추가
+  - signal_processor.py 폐기 처리
 
 ---
 
@@ -234,8 +241,10 @@ work_lock: unlocked
 
 **완료한 작업**:
 - ✅ P0 보안(하드코딩 제거) + P1 directive_loader(토큰 최적화) + P2 로깅 정규화(39건 전환) 완료
+- ✅ P3 파이프라인 와이어링: CE→Ralph→AD→CD→Publisher 자동 체인 활성화
 
 **다음 단계**:
-- ⏳ council_room.md에 Gemini가 추가한 SAGE-PROVOKER/Atmospheric Scout 블루프린트 검토
+- ⏳ VM 배포 + 서비스 재시작 (P0-P3 코드 반영)
+- ⏳ 디자인 레이아웃 전 페이지 확정
 
-**업데이트 시간**: 2026-02-27T23:53:11.179425
+**업데이트 시간**: 2026-02-28T00:10:00

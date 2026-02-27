@@ -297,37 +297,11 @@ JSON만 반환.
             # 단일 신호가 아닌 군집 전체 RAG → Magazine B 스타일 롱폼
             result = self._write_corpus_essay(payload)
 
-            # ContentPublisher 호출 (홈페이지 발행)
-            if result and not result.get('error'):
-                try:
-                    from core.system.content_publisher import ContentPublisher
-                    from pathlib import Path
-                    publisher = ContentPublisher(base_path=Path(__file__).parent.parent.parent)
+            # signal_id 정규화 (Orchestrator가 후속 체인에 사용)
+            if 'signal_id' not in result:
+                result['signal_id'] = payload.get('theme', 'corpus').replace(' ', '_')
 
-                    pub_payload = {
-                        'signal_id': payload.get('theme', 'corpus').replace(' ', '_'),
-                        'ce_result': result,
-                        'mode': 'corpus_essay',
-                        'essay_title': result.get('essay_title', ''),
-                        'instagram_caption': result.get('instagram_caption', ''),
-                        'archive_essay': result.get('archive_essay', ''),
-                        'pull_quote': result.get('pull_quote', ''),
-                        'carousel_slides': result.get('carousel_slides', []),
-                        'telegram_summary': result.get('telegram_summary', ''),
-                        'sa_result': {'themes': [payload.get('theme', '')]},
-                        'ad_result': {},
-                    }
-                    pub_result = publisher.publish(pub_payload)
-                    result['published'] = pub_result.get('status') in ('success', 'published')
-                    result['website_published'] = pub_result.get('website_published', False)
-                    result['telegram_sent'] = pub_result.get('telegram_sent', False)
-                    tg = 'Y' if result['telegram_sent'] else 'N'
-                    ctype = result.get('content_type', 'essay')
-                    logger.info("CE: 홈페이지 발행 완료 -- %s [%s] | telegram=%s", result.get('essay_title', 'N/A'), ctype, tg)
-                except Exception as e:
-                    logger.warning("CE: 홈페이지 발행 실패 -- %s", e)
-                    result['published'] = False
-
+            # 발행은 Orchestrator가 CE→Ralph→AD→CD→Publisher 체인으로 처리
             return {'status': 'completed', 'task_id': task.task_id, 'result': result}
 
         else:

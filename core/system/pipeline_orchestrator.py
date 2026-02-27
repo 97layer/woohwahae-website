@@ -4,12 +4,13 @@ LAYER OS Pipeline Orchestrator
 Signal → SA → Gardener → CE → Ralph → AD → CD → Publisher 자동 파이프라인
 
 역할:
-- SA 완료 태스크 감지 → AD 태스크 생성
-- AD 완료 태스크 감지 → CE 태스크 생성
-- CE 완료 태스크 감지 → CD(review) 태스크 생성
-- CD 승인 → ContentPublisher 호출
-- CD 거절 → CE 재작업 (max 2회)
-- Ralph 품질 게이트 통합 (70+ 통과)
+- Signal 스캔 → SA 태스크 자동 생성
+- SA 완료 → Corpus 누적 (Gardener가 성숙 시 CE 트리거)
+- CE 완료 → Ralph QA(인라인) → AD 태스크 생성
+- AD 완료 → CD 최종 리뷰 태스크 생성
+- CD 승인 → ContentPublisher 호출 (웹+텔레그램)
+- CD 거절/정제 → CE 재작업 (max 2회)
+- Ralph 품질 게이트: 50 미만 CE 재작업, 50+ AD 진행
 
 중복 방지: .infra/queue/orchestrated.json
 
@@ -33,27 +34,14 @@ class PipelineOrchestrator:
     각 에이전트는 독립적으로 동작, Orchestrator만 다음 단계 태스크를 생성.
     """
 
-    PIPELINE_STAGES = {
-        "SA": {
-            "task_types": ["analyze_signal", "analyze"],
-            "next_agent": "CE",
-            "next_task_type": "write_content"
-        },
-        "CE": {
-            "task_types": ["write_content"],
-            "next_agent": "AD",
-            "next_task_type": "create_visual_concept"
-        },
-        "AD": {
-            "task_types": ["create_visual_concept"],
-            "next_agent": "CD",
-            "next_task_type": "review_content"
-        }
-    }
-    # 확정 파이프라인: Signal → SA → Gardener(군집) → CE → Ralph(STAP) → AD → CD → Publisher
-    # Gardener는 corpus 성숙도 기반 트리거 (별도 데몬)
-    # Ralph는 CE 완료 후 인라인 품질 게이트 (별도 스테이지 아님)
-    # CD 판단 기준: sage_architect.md §10
+    # 확정 파이프라인:
+    # Signal → SA → Corpus → Gardener(군집 성숙) → CE → Ralph(QA) → AD → CD → Publisher
+    #
+    # SA→Corpus: _process_sa_completed_only() (활성)
+    # Gardener→CE: gardener._trigger_essay_for_cluster() (별도 데몬)
+    # CE→Ralph→AD: _process_ce_completed() (Ralph은 인라인 QA 게이트)
+    # AD→CD: _process_ad_completed()
+    # CD→Publisher: _process_cd_completed()
 
     MAX_CE_RETRIES = 2  # CD 거절 후 CE 재작업 최대 횟수
     RALPH_PASS_SCORE = 70  # Ralph 품질 게이트
@@ -329,6 +317,69 @@ class PipelineOrchestrator:
 
         return processed_count
 
+    def _process_ce_completed(self) -> int:
+        """CE 완료 태스크 → Ralph QA → AD 태스크 생성"""
+        tasks = self._load_completed_tasks()
+        count = 0
+        for task in tasks:
+            task_id = task.get("task_id", "")
+            if self._is_orchestrated(task_id):
+                continue
+            if task.get("status") != "completed":
+                continue
+            if task.get("agent_type") != "CE":
+                continue
+            if task.get("task_type") not in ("write_content", "write_corpus_essay"):
+                continue
+
+            result = task.get("result", {}) or {}
+            next_id = self._handle_ce_completed(task, result)
+            self._mark_orchestrated(task_id, next_id)
+            count += 1
+        return count
+
+    def _process_ad_completed(self) -> int:
+        """AD 완료 태스크 → CD 리뷰 태스크 생성"""
+        tasks = self._load_completed_tasks()
+        count = 0
+        for task in tasks:
+            task_id = task.get("task_id", "")
+            if self._is_orchestrated(task_id):
+                continue
+            if task.get("status") != "completed":
+                continue
+            if task.get("agent_type") != "AD":
+                continue
+            if task.get("task_type") != "create_visual_concept":
+                continue
+
+            result = task.get("result", {}) or {}
+            next_id = self._handle_ad_completed(task, result)
+            self._mark_orchestrated(task_id, next_id)
+            count += 1
+        return count
+
+    def _process_cd_completed(self) -> int:
+        """CD 완료 태스크 → Publisher 트리거 or CE 재작업"""
+        tasks = self._load_completed_tasks()
+        count = 0
+        for task in tasks:
+            task_id = task.get("task_id", "")
+            if self._is_orchestrated(task_id):
+                continue
+            if task.get("status") != "completed":
+                continue
+            if task.get("agent_type") != "CD":
+                continue
+            if task.get("task_type") != "review_content":
+                continue
+
+            result = task.get("result", {}) or {}
+            next_id = self._handle_cd_completed(task, result)
+            self._mark_orchestrated(task_id, next_id)
+            count += 1
+        return count
+
     def process_completed_tasks(self):
         """완료된 태스크 스캔 → 다음 파이프라인 단계 생성 (레거시 — 현재 미사용)"""
         tasks = self._load_completed_tasks()
@@ -408,34 +459,39 @@ class PipelineOrchestrator:
         return self._create_task("AD", "create_visual_concept", ad_payload)
 
     def _handle_ad_completed(self, task: Dict, result: Dict) -> str:
-        """AD 완료 → CE 태스크 생성"""
+        """AD 완료 → CD 최종 리뷰 태스크 생성"""
         ad_result = result.get("result", {})
-        sa_result = task.get("payload", {}).get("sa_result", {})
-        signal_id = task.get("payload", {}).get("signal_id", "unknown")
+        payload = task.get("payload", {})
+        signal_id = payload.get("signal_id", "unknown")
+        sa_result = payload.get("sa_result", {})
+        ce_result = payload.get("ce_result", {})
+        ralph_score = payload.get("ralph_score", 0)
 
-        ce_payload = {
+        cd_payload = {
             "signal_id": signal_id,
             "sa_result": sa_result,
+            "ce_result": ce_result,
             "ad_result": ad_result,
-            "visual_concept": ad_result.get("visual_concept", {}),
-            "themes": task.get("payload", {}).get("themes", []),
+            "ralph_score": ralph_score,
+            "instagram_caption": ce_result.get("instagram_caption", ""),
+            "hashtags": ce_result.get("hashtags", ""),
+            "archive_essay": ce_result.get("archive_essay", ""),
             "source_task_id": task["task_id"]
         }
 
-        logger.info("[Orchestrator] AD→CE: signal=%s", signal_id)
-        return self._create_task("CE", "write_content", ce_payload)
+        logger.info("[Orchestrator] AD→CD: signal=%s", signal_id)
+        return self._create_task("CD", "review_content", cd_payload)
 
     def _handle_ce_completed(self, task: Dict, result: Dict) -> str:
-        """CE 완료 → Ralph 점수 검증 → CD 태스크 생성"""
+        """CE 완료 → Ralph QA 인라인 → AD 태스크 생성 (또는 CE 재작업)"""
         ralph_score = self._ralph_score(result)
         signal_id = task.get("payload", {}).get("signal_id", "unknown")
         sa_result = task.get("payload", {}).get("sa_result", {})
-        ad_result = task.get("payload", {}).get("ad_result", {})
         ce_result = result.get("result", {})
 
         logger.info("[Orchestrator] CE 완료, Ralph 점수: %s/100 (signal=%s)", ralph_score, signal_id)
 
-        # 점수 낮으면 재작업 (최대 2회)
+        # Ralph < 50 → CE 재작업 (최대 2회)
         retry_count = self._get_ce_retry_count(signal_id)
         if ralph_score < 50 and retry_count < self.MAX_CE_RETRIES:
             logger.info("[Orchestrator] Ralph %s<50 → CE 재작업 (%d/%d)", ralph_score, retry_count + 1, self.MAX_CE_RETRIES)
@@ -444,11 +500,10 @@ class PipelineOrchestrator:
                 "retry_count": retry_count + 1,
                 "ralph_score": ralph_score,
                 "previous_output": ce_result,
-                "feedback": f"품질 점수 {ralph_score}/100. 인스타 캡션(300자 이내)과 아카이브 에세이(500-800자)를 더 충실히 작성하세요."
+                "feedback": "품질 점수 %d/100. 에세이(500-800자)와 캡션(300자 이내)을 더 충실히." % ralph_score
             }
             new_task_id = self._create_task("CE", "write_content", retry_payload)
-            # 재작업 추적
-            self._orchestrated[f"retry_{signal_id}_{retry_count}"] = {
+            self._orchestrated["retry_%s_%d" % (signal_id, retry_count)] = {
                 "orchestrated_at": datetime.now().isoformat(),
                 "next_task_id": new_task_id,
                 "signal_id": signal_id,
@@ -457,21 +512,20 @@ class PipelineOrchestrator:
             self._save_orchestrated()
             return new_task_id
 
-        # CD 리뷰 태스크 생성
-        cd_payload = {
+        # Ralph 통과 → AD 시각 컨셉 태스크 생성
+        ad_payload = {
             "signal_id": signal_id,
             "sa_result": sa_result,
-            "ad_result": ad_result,
             "ce_result": ce_result,
             "ralph_score": ralph_score,
-            "instagram_caption": ce_result.get("instagram_caption", ""),
-            "hashtags": ce_result.get("hashtags", ""),
-            "archive_essay": ce_result.get("archive_essay", ""),
+            "themes": ce_result.get("themes", sa_result.get("themes", [])),
+            "key_insights": sa_result.get("key_insights", []),
+            "essay_preview": str(ce_result.get("archive_essay", ""))[:500],
             "source_task_id": task["task_id"]
         }
 
-        logger.info("[Orchestrator] CE→CD: signal=%s, ralph=%s", signal_id, ralph_score)
-        return self._create_task("CD", "review_content", cd_payload)
+        logger.info("[Orchestrator] CE→AD: signal=%s, ralph=%s", signal_id, ralph_score)
+        return self._create_task("AD", "create_visual_concept", ad_payload)
 
     def _handle_cd_completed(self, task: Dict, result: Dict) -> str:
         """CD 완료 → 승인 시 ContentPublisher, 거절 시 CE 재작업"""
@@ -537,21 +591,88 @@ class PipelineOrchestrator:
         except Exception as e:
             logger.error("[Orchestrator] ContentPublisher 오류: %s", e)
 
+    def _process_all_completed(self) -> Dict[str, int]:
+        """완료 태스크 1회 로드 → 에이전트별 dispatch. 디스크 스캔 1회."""
+        tasks = self._load_completed_tasks()
+        counts = {"SA": 0, "CE": 0, "AD": 0, "CD": 0}
+
+        for task in tasks:
+            task_id = task.get("task_id", "")
+            if self._is_orchestrated(task_id):
+                continue
+            if task.get("status") != "completed":
+                continue
+
+            agent = task.get("agent_type", "")
+            task_type = task.get("task_type", "")
+            result = task.get("result", {}) or {}
+
+            if agent == "SA" and task_type in ("analyze_signal", "analyze"):
+                self._handle_sa_corpus(task, result)
+                counts["SA"] += 1
+
+            elif agent == "CE" and task_type in ("write_content", "write_corpus_essay"):
+                next_id = self._handle_ce_completed(task, result)
+                self._mark_orchestrated(task_id, next_id)
+                counts["CE"] += 1
+
+            elif agent == "AD" and task_type == "create_visual_concept":
+                next_id = self._handle_ad_completed(task, result)
+                self._mark_orchestrated(task_id, next_id)
+                counts["AD"] += 1
+
+            elif agent == "CD" and task_type == "review_content":
+                next_id = self._handle_cd_completed(task, result)
+                self._mark_orchestrated(task_id, next_id)
+                counts["CD"] += 1
+
+        return counts
+
+    def _handle_sa_corpus(self, task: Dict, result: Dict):
+        """SA 완료 → Corpus 누적 (인라인, _process_sa_completed_only 대체)"""
+        from core.system.corpus_manager import CorpusManager
+
+        task_id = task.get("task_id", "")
+        sa_result = result.get("result", {})
+        signal_id = task.get("payload", {}).get("signal_id", "")
+        signal_path = task.get("payload", {}).get("signal_path", "")
+
+        signal_data = {}
+        if signal_path:
+            try:
+                signal_data = json.loads(Path(signal_path).read_text())
+            except Exception:
+                signal_data = task.get("payload", {})
+
+        try:
+            corpus = CorpusManager()
+            corpus.add_entry(signal_id, sa_result, signal_data)
+            logger.info("[Orchestrator] SA→Corpus: %s", signal_id)
+        except Exception as e:
+            logger.warning("[Orchestrator] Corpus 누적 실패: %s", e)
+
+        self._mark_orchestrated(task_id, "corpus_accumulated")
+
     async def run_forever(self, interval_seconds: int = 30):
-        """무한 폴링 루프 (AgentWatcher 패턴)"""
+        """무한 폴링 루프 — 전체 파이프라인 자동 체인"""
         self._running = True
         logger.info("[Orchestrator] 시작. 폴링 간격: %d초", interval_seconds)
 
         while self._running:
             try:
-                # Step 1: 신규 신호 스캔 → SA 태스크 생성 (파이프라인 진입점)
+                # Step 1: 신규 신호 스캔 → SA 태스크 생성
                 new_signals = self._scan_new_signals()
-                # Step 2: SA 완료 태스크만 처리 → Corpus 누적 (즉시발행 체인 비활성화)
-                # AD→CE→CD→Publisher 즉시발행은 비활성화.
-                # 발행 트리거는 Gardener가 Corpus 군집 성숙도를 판단해서 수행.
-                completed = self._process_sa_completed_only()
-                if new_signals + completed > 0:
-                    logger.info("[Orchestrator] 사이클: 신규신호=%d, SA완료처리=%d", new_signals, completed)
+
+                # Step 2: 완료 태스크 일괄 처리 (1회 디스크 스캔)
+                counts = self._process_all_completed()
+
+                total = new_signals + sum(counts.values())
+                if total > 0:
+                    logger.info(
+                        "[Orchestrator] 사이클: 신호=%d SA=%d CE=%d AD=%d CD=%d",
+                        new_signals, counts["SA"], counts["CE"],
+                        counts["AD"], counts["CD"]
+                    )
             except Exception as e:
                 logger.error("[Orchestrator] 오류: %s", e, exc_info=True)
 
