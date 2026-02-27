@@ -1,14 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "LAYER OS Unified Signal",
-  "description": "모든 소스(텍스트/유튜브/이미지/URL/PDF)의 통합 신호 스키마",
+  "description": "모든 소스(텍스트/유튜브/이미지/URL/PDF)의 통합 신호 스키마 (L3 Content Layer)",
+  "version": "2.0",
   "type": "object",
-  "required": ["signal_id", "type", "status", "content", "captured_at", "from_user", "source_channel"],
+  "required": ["signal_id", "type", "status", "content", "captured_at", "from_user"],
   "properties": {
     "signal_id": {
       "type": "string",
       "description": "고유 식별자. 형식: {type}_{YYYYMMDD}_{HHMMSS}",
-      "pattern": "^(text_insight|youtube_video|image|url_content|pdf_document)_\\d{8}_\\d{6}$"
+      "pattern": "^(text_insight|youtube_video|image|url_content|pdf_document|text|youtube|url|image_meta)_.*_\\d{8}_\\d{6}"
     },
     "type": {
       "type": "string",
@@ -29,6 +30,11 @@
       "format": "date-time",
       "description": "ISO 8601 캡처 시각"
     },
+    "analyzed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "SA 분석 완료 시각"
+    },
     "from_user": {
       "type": "string",
       "description": "신호 출처 사용자",
@@ -37,7 +43,8 @@
     "source_channel": {
       "type": "string",
       "enum": ["telegram", "cli", "web_dashboard", "crawler", "manual"],
-      "description": "수집 채널"
+      "description": "수집 채널",
+      "default": "manual"
     },
     "metadata": {
       "type": "object",
@@ -45,8 +52,12 @@
         "title": { "type": "string" },
         "video_id": { "type": "string", "description": "유튜브 영상 ID" },
         "source_url": { "type": "string", "format": "uri" },
-        "image_path": { "type": "string", "description": "이미지 바이너리 경로 (signals/files/)" },
-        "pdf_path": { "type": "string", "description": "PDF 바이너리 경로 (signals/files/)" },
+        "image_path": { "type": "string", "description": "이미지 바이너리 경로" },
+        "pdf_path": { "type": "string", "description": "PDF 바이너리 경로" },
+        "transcript_preview": { "type": "string", "description": "유튜브 트랜스크립트 발췌" },
+        "transcript_length": { "type": "integer", "description": "트랜스크립트 전체 길이" },
+        "crawler_source": { "type": "string", "description": "크롤러 소스명" },
+        "doc_hash": { "type": "string", "description": "문서 해시 (중복 방지)" },
         "analysis": {
           "type": "object",
           "description": "SA 분석 결과 (분석 후 채워짐)",

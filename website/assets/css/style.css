@@ -7982,3 +7982,154 @@ body.is-loaded .home-preloader__logo {
 
 /* ─── JS site.js에서 사용할 reveal 트리거 ─── */
 /* IntersectionObserver → .is-visible 추가로 동작 */
+/* ─── Long-form Essay System (V11) ─── */
+.longform {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-md);
+}
+
+.longform-header {
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.longform-title {
+  font-family: var(--font-body);
+  font-weight: var(--fw-light);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  margin-bottom: var(--space-sm);
+  letter-spacing: var(--ls-heading);
+}
+
+.longform-lead {
+  font-size: 1.1rem;
+  color: var(--text-sub);
+  max-width: 540px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.longform-content {
+  font-family: var(--font-body);
+  font-weight: var(--fw-light);
+  line-height: 2.2; /* 브랜드 고유의 느린 리듬 */
+  font-size: 1.05rem;
+}
+
+.longform-content h2,
+.longform-content h3 {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+}
+
+.longform-content p {
+  margin-bottom: 2em;
+}
+
+.longform-content blockquote {
+  margin: var(--space-xl) 0;
+  padding-left: var(--space-md);
+  border-left: 1px solid var(--navy);
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--text-sub);
+}
+
+/* Specific Component Styles */
+.prologue-callout,
+.gate-callout {
+  margin: var(--space-xl) 0;
+  padding: var(--space-lg);
+  background: var(--bg-dark);
+  border-radius: var(--radius-sm);
+}
+
+.principle-grid,
+.fossil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-lg);
+  margin: var(--space-xl) 0;
+}
+
+.layer-list p,
+.fossil-item p {
+  margin-bottom: 1em;
+}
+
+.section-divider {
+  margin: var(--space-2xl) 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: var(--ls-wide);
+  color: var(--text-faint);
+  opacity: 0.5;
+}
+
+/* Progress Bar Fix */
+.about-read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--line);
+  z-index: 1000;
+}
+
+.about-read-progress__fill {
+  width: 100%;
+  background: var(--navy);
+  height: 0;
+  transition: height 0.1s linear;
+}
+
+/* Editor Specifics */
+.editor-summary {
+  padding: var(--space-2xl) 0;
+  text-align: center;
+}
+
+.editor-summary__title {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  letter-spacing: var(--ls-label);
+  margin-bottom: var(--space-md);
+}
+
+.editor-summary__desc {
+  max-width: 480px;
+  margin: 0 auto var(--space-lg);
+  color: var(--text-sub);
+}
+
+/* ─── Brand Specific UI Helpers (V11) ─── */
+.brand-type-sample__text--accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.35rem;
+}
+
+.brand-spacing__fill--xs { width: var(--space-xs); }
+.brand-spacing__fill--sm { width: var(--space-sm); }
+.brand-spacing__fill--md { width: var(--space-md); }
+.brand-spacing__fill--lg { width: var(--space-lg); }
+.brand-spacing__fill--xl { width: var(--space-xl); }
+.brand-spacing__fill--2xl { width: var(--space-2xl); }
+
+.wave-bg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120vmax;
+  height: 120vmax;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}

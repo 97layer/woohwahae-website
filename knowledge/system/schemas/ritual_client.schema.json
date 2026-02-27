@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Ritual Module Client",
   "description": "아틀리에 고객 프로필 (L4 Service Layer)",
+  "version": "2.0",
   "type": "object",
   "required": ["client_id", "name"],
   "properties": {
@@ -11,6 +12,19 @@
     },
     "name": {
       "type": "string"
+    },
+    "phone": {
+      "type": "string",
+      "description": "연락처"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "이메일"
+    },
+    "portal_token": {
+      "type": "string",
+      "description": "클라이언트 포털 인증 토큰"
     },
     "rhythm": {
       "type": "string",
@@ -34,8 +48,12 @@
         "properties": {
           "date": { "type": "string", "format": "date" },
           "service": { "type": "string" },
-          "notes": { "type": "string" },
-          "satisfaction": { "type": "integer", "minimum": 1, "maximum": 5 }
+          "notes": { "type": "string", "description": "시술 메모 (내부)" },
+          "public_note": { "type": "string", "description": "고객 전달 메모" },
+          "satisfaction": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "color_formula": { "type": "string", "description": "컬러 포뮬러" },
+          "next_visit_weeks": { "type": "integer", "description": "다음 방문 추천 주기" },
+          "amount": { "type": "integer", "description": "시술 금액" }
         }
       }
     },

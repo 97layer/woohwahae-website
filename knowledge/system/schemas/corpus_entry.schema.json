@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Corpus Entry",
+  "description": "SA 분석 후 생성되는 지식 엔트리 (L3 Content Layer)",
+  "version": "1.0",
+  "type": "object",
+  "required": ["entry_id", "signal_id", "signal_type", "indexed_at"],
+  "properties": {
+    "entry_id": {
+      "type": "string",
+      "description": "고유 식별자. 형식: entry_{signal_id}",
+      "pattern": "^entry_.*"
+    },
+    "signal_id": {
+      "type": "string",
+      "description": "원본 신호 ID"
+    },
+    "signal_type": {
+      "type": "string",
+      "enum": ["text_insight", "youtube_video", "image", "url_content", "pdf_document"],
+      "description": "원본 신호 유형"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "원본 신호 캡처 시각"
+    },
+    "indexed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Corpus 등록 시각"
+    },
+    "category": {
+      "type": "string",
+      "description": "SA 분류 카테고리",
+      "default": "미분류"
+    },
+    "themes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "추출된 테마 태그"
+    },
+    "strategic_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "전략적 가치 점수"
+    },
+    "summary": {
+      "type": "string",
+      "description": "SA 분석 요약"
+    },
+    "key_insights": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "핵심 인사이트"
+    },
+    "raw_content_preview": {
+      "type": "string",
+      "description": "원본 내용 미리보기 (300자)"
+    },
+    "source_path": {
+      "type": "string",
+      "description": "원본 signal JSON 경로"
+    },
+    "used_in_essay": {
+      "type": ["string", "null"],
+      "description": "에세이 발행 시 issue ID"
+    }
+  }
+}
