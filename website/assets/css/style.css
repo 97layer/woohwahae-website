@@ -22,16 +22,18 @@
   /* 메인 배경 (중립 그레이) */
   --bg-dark: #DDDCDA;
   /* 보조 배경, hover 상태 */
+  --footer-bg: #DFDEDC;
+  /* 푸터 전용 배경 - 미세한 대비 */
   --text: #1a1a1a;
   /* 본문 텍스트 (잉크) */
   --text-sub: #4a4a4a;
   /* 보조 텍스트 (nav 링크) */
-  --text-faint: #7A7A74;
-  /* 희미한 텍스트 (캡션, 날짜, 저대비 허용 구역만) */
+  --text-faint: #9A9A94;
+  /* 희미한 텍스트 - 가시성 소폭 상향 조정 */
   --white: #FFFFFF;
   /* selection 텍스트, 반전 */
-  --line: #D5D4CF;
-  /* 구분선, a 태그 border */
+  --line: #EFEEED;
+  /* 더욱 희미한 구분선 - 경계 완화 */
   --text-main: var(--text);
   /* alias */
   --border: var(--line);
@@ -101,13 +103,15 @@
   --duration-slow: 1.2s;
 
   /* Wave / Frequency System — 브랜드 파동 철학 기반 */
-  /* 기준: 인간 호흡 ~0.27Hz → 주기 3.8s */
+  /* 기준: 인간 호흡 ~0.26Hz → 주기 3.8s */
   --breath: 3.8s;
   --breath-half: 1.9s;
   --breath-quarter: 0.95s;
+  /* 여백 강제: 60%+ */
+  --whitespace-void: 60vh;
   /* easing 계열 */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  /* 내쉬는 곡선 (기존 --ease와 동일) */
+  /* 내쉬는 곡선 */
   --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
   /* 들이쉬고 내쉬는 곡선 */
   --ease-wave: cubic-bezier(0.37, 0, 0.63, 1);
@@ -260,12 +264,12 @@ p:last-child {
 a {
   color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid var(--line);
-  transition: border-color var(--duration) var(--ease);
+  border-bottom: 0.5px solid rgba(26, 26, 26, 0.1);
+  transition: border-color var(--duration) var(--ease), border-width var(--duration) var(--ease);
 }
 
 a:hover {
-  border-color: var(--text);
+  border-bottom: 0.5px solid rgba(26, 26, 26, 0.4);
 }
 
 /* ─── Layout ─── */
@@ -287,22 +291,21 @@ a:hover {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 1000;
   padding: var(--space-md) var(--space-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(250, 250, 247, 0.3);
-  transition: background-color 0.3s var(--ease), padding 0.3s var(--ease), backdrop-filter 0.3s var(--ease);
+  background-color: transparent;
+  transition: background-color 0.6s var(--ease), padding 0.6s var(--ease), backdrop-filter 0.6s var(--ease);
 }
 
 .nav-main.scrolled {
-  background-color: var(--glass-surface);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
+  background-color: rgba(227, 226, 224, 0.7);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
   padding: var(--space-sm) var(--space-md);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-sm);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
 }
 
 .nav-logo {
@@ -2933,10 +2936,6 @@ footer.section--light {
   }
 }
 
-/* 구 footer-grid 호환 (점진적 교체 중) */
-.footer-grid {
-  display: none;
-}
 
 /* ─── Fade-in Animation (우화: 날개 펼침) ─── */
 .fade-in {
@@ -7417,8 +7416,13 @@ body.is-loaded .home-preloader__logo {
 }
 
 @keyframes tl-draw {
-  from { stroke-dashoffset: 300; }
-  to { stroke-dashoffset: 0; }
+  from {
+    stroke-dashoffset: 300;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .tl-axis {
@@ -7428,15 +7432,36 @@ body.is-loaded .home-preloader__logo {
 }
 
 @keyframes tl-node-in {
-  from { opacity: 0; transform: translateX(-6px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.tl-node-g { opacity: 0; }
-.tl-node-g:nth-child(1) { animation: tl-node-in 0.6s var(--ease-out) 1.2s forwards; }
-.tl-node-g:nth-child(2) { animation: tl-node-in 0.6s var(--ease-out) 1.6s forwards; }
-.tl-node-g:nth-child(3) { animation: tl-node-in 0.6s var(--ease-out) 2.0s forwards; }
-.tl-node-g:nth-child(4) { animation: tl-node-in 0.6s var(--ease-out) 2.4s forwards; }
+.tl-node-g {
+  opacity: 0;
+}
+
+.tl-node-g:nth-child(1) {
+  animation: tl-node-in 0.6s var(--ease-out) 1.2s forwards;
+}
+
+.tl-node-g:nth-child(2) {
+  animation: tl-node-in 0.6s var(--ease-out) 1.6s forwards;
+}
+
+.tl-node-g:nth-child(3) {
+  animation: tl-node-in 0.6s var(--ease-out) 2.0s forwards;
+}
+
+.tl-node-g:nth-child(4) {
+  animation: tl-node-in 0.6s var(--ease-out) 2.4s forwards;
+}
 
 .journey-body {
   padding-bottom: var(--space-lg);
@@ -7610,8 +7635,17 @@ body.is-loaded .home-preloader__logo {
 }
 
 @keyframes brand-breathe {
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(1.15); opacity: 0.8; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
 }
 
 .brand-breath__label {
@@ -7733,9 +7767,10 @@ body.is-loaded .home-preloader__logo {
 .site-footer {
   position: relative;
   z-index: 10;
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-  padding: var(--space-2xl) 0 var(--space-xl);
+  background: var(--footer-bg);
+  border-top: 0.5px solid rgba(0, 0, 0, 0.05);
+  padding: var(--space-2xl) 0 var(--space-2xl);
+  margin-top: var(--space-2xl);
 }
 
 .footer-inner {
@@ -7746,71 +7781,60 @@ body.is-loaded .home-preloader__logo {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1fr;
   gap: var(--space-xl);
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-xl);
 }
 
-.footer-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-col .footer-brand {
+.footer-brand {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: var(--fw-medium);
-  letter-spacing: var(--ls-wide);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
   color: var(--text);
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
   text-transform: uppercase;
 }
 
-.brand-col .footer-desc {
-  font-family: var(--font-body);
-  font-size: 1.1rem;
-  font-weight: var(--fw-light);
-  color: var(--text-sub);
-  line-height: 1.5;
-  letter-spacing: var(--ls-tight);
-}
-
-.link-col .footer-label {
+.footer-label {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  font-weight: var(--fw-light);
-  letter-spacing: var(--ls-label);
+  font-weight: 300;
+  letter-spacing: 0.1em;
   color: var(--text-faint);
   text-transform: uppercase;
   margin-bottom: var(--space-sm);
+  display: block;
 }
 
 .footer-nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 0.6rem;
 }
 
 .footer-nav a {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-sub);
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: color var(--duration) var(--ease-out);
+  letter-spacing: 0.08em;
+  border-bottom: none;
+  transition: color 0.4s var(--ease), letter-spacing 0.4s var(--ease);
 }
 
 .footer-nav a:hover {
   color: var(--text);
+  letter-spacing: 0.12em;
 }
 
 .footer-bottom {
+  border-top: 0.5px solid rgba(0, 0, 0, 0.05);
+  padding-top: var(--space-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--line);
-  padding-top: var(--space-lg);
   flex-wrap: wrap;
   gap: var(--space-md);
 }
@@ -7819,7 +7843,7 @@ body.is-loaded .home-preloader__logo {
   font-family: var(--font-mono);
   font-size: 0.6rem;
   color: var(--text-faint);
-  letter-spacing: var(--ls-label);
+  letter-spacing: 0.05em;
 }
 
 .footer-legal {
@@ -7832,36 +7856,14 @@ body.is-loaded .home-preloader__logo {
   font-size: 0.6rem;
   color: var(--text-faint);
   text-transform: uppercase;
-  letter-spacing: var(--ls-label);
-  text-decoration: none;
-  transition: color var(--duration) var(--ease-out);
+  border-bottom: none;
+  transition: color 0.4s var(--ease);
 }
 
 .footer-legal a:hover {
   color: var(--text-sub);
 }
-
-@media (max-width: 768px) {
-  .site-footer {
-    padding: var(--space-xl) 0 var(--space-lg);
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-xl);
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 }
-
-@supports (padding: env(safe-area-inset-bottom)) {
-  .site-footer {
-    padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
-  }
 }
 
 /* ─── woosunho 포트폴리오 ─── */
@@ -8012,7 +8014,8 @@ body.is-loaded .home-preloader__logo {
 .longform-content {
   font-family: var(--font-body);
   font-weight: var(--fw-light);
-  line-height: 2.2; /* 브랜드 고유의 느린 리듬 */
+  line-height: 2.2;
+  /* 브랜드 고유의 느린 리듬 */
   font-size: 1.05rem;
 }
 
@@ -8114,12 +8117,29 @@ body.is-loaded .home-preloader__logo {
   font-size: 1.35rem;
 }
 
-.brand-spacing__fill--xs { width: var(--space-xs); }
-.brand-spacing__fill--sm { width: var(--space-sm); }
-.brand-spacing__fill--md { width: var(--space-md); }
-.brand-spacing__fill--lg { width: var(--space-lg); }
-.brand-spacing__fill--xl { width: var(--space-xl); }
-.brand-spacing__fill--2xl { width: var(--space-2xl); }
+.brand-spacing__fill--xs {
+  width: var(--space-xs);
+}
+
+.brand-spacing__fill--sm {
+  width: var(--space-sm);
+}
+
+.brand-spacing__fill--md {
+  width: var(--space-md);
+}
+
+.brand-spacing__fill--lg {
+  width: var(--space-lg);
+}
+
+.brand-spacing__fill--xl {
+  width: var(--space-xl);
+}
+
+.brand-spacing__fill--2xl {
+  width: var(--space-2xl);
+}
 
 .wave-bg {
   position: fixed;

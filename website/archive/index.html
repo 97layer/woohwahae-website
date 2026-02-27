@@ -7,7 +7,7 @@
   <meta name="description" content="Archive — WOOHWAHAE">
   <title>Archive — WOOHWAHAE</title>
   <meta name="theme-color" content="#E3E2E0">
-  <link rel="icon" href="../assets/img/symbol.png" type="image/png">
+  <link rel="icon" href="/assets/media/brand/symbol.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -15,7 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css?v=82e25cd5">
   <script>
     (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
   </script>
@@ -68,18 +68,39 @@
   <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <p class="footer-brand">WOOHWAHAE</p>
-    <nav class="footer-nav">
-      <a href="/archive/">Archive</a>
-      <a href="/practice/">Practice</a>
-      <a href="/about/">About</a>
-      <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
-    </nav>
-    <div class="footer-legal">
-      <a href="/privacy.html">Privacy</a>
-      <a href="/terms.html">Terms</a>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <p class="footer-brand">WOOHWAHAE</p>
+        <span class="footer-label">Archive</span>
+        <nav class="footer-nav">
+          <a href="/archive/">Latest Items</a>
+          <a href="/archive/?filter=essay">Essays</a>
+          <a href="/archive/?filter=signal">Signals</a>
+        </nav>
+      </div>
+      <div class="footer-col">
+        <span class="footer-label">Explore</span>
+        <nav class="footer-nav">
+          <a href="/practice/">Practice</a>
+          <a href="/about/">About</a>
+          <a href="/">Home</a>
+        </nav>
+      </div>
+      <div class="footer-col">
+        <span class="footer-label">Connect</span>
+        <nav class="footer-nav">
+          <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+          <a href="mailto:hello@woohwahae.kr">Email</a>
+        </nav>
+      </div>
     </div>
-    <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
+    </div>
   </div>
 </footer>
 <!-- /COMPONENT:footer -->
