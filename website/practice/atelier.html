@@ -15,7 +15,7 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="../assets/css/style.css?v=dc980ff6" rel="stylesheet"/>
+<link href="../assets/css/style.css?v=0cd3033b" rel="stylesheet"/>
 <script>
 (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
 </script>
@@ -64,7 +64,8 @@
 </div>
 <!-- /COMPONENT:wave-bg --><main class="page-main" style="position:relative;z-index:1">
 <div class="service-hero container--wide">
-  <span class="section-label">PRACTICE — ATELIER</span>
+  <div class="service-back" data-reveal><a href="/practice/">← Practice</a></div>
+  <span class="section-label">ATELIER</span>
 </div>
 <div class="service-stack container--wide">
   <div class="service-item" data-reveal>
@@ -110,21 +111,21 @@
   </div>
   <div class="service-item" data-reveal>
     <div>
-      <strong class="service-item__name">운영</strong>
+      <strong class="service-item__name">예약 안내</strong>
       <span class="service-item__meta">예약제 · 1일 3명</span>
     </div>
     <div class="service-item__body">
       <p>하루 3명, 예약제로 운영합니다.</p>
-      <p>3일 전 예약 확정. 상담 30분. 시술 전 충분히 나눕니다.</p>
-      <p>예약 문의는 인스타그램 DM 또는 이메일로.</p>
+      <p>3일 전 예약 확정. 상담 30분 포함. 인스타그램 DM 또는 이메일로 문의 후 일정 조율합니다.</p>
     </div>
   </div>
 </div>
-<div class="practice-contact container--wide">
-  <a class="practice-contact-link" data-reveal href="contact.html">
-    <span>예약 문의</span>
-    <span class="practice-card__arrow">→</span>
-  </a>
+<div class="service-cta container--wide" data-reveal>
+  <div class="service-cta__row">
+    <a class="service-cta__btn" href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram DM ↗</a>
+    <a class="service-cta__btn" href="mailto:hello@woohwahae.kr">hello@woohwahae.kr →</a>
+  </div>
+  <p class="service-cta__note">예약 문의 시 희망 시술 · 희망 일자 · 연락처를 함께 보내주세요.</p>
 </div>
 </main>
 <script defer src="../assets/js/site.js"></script>
@@ -132,19 +133,29 @@
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <p class="footer-brand">WOOHWAHAE</p>
+        <span class="footer-label">Navigation</span>
+        <nav class="footer-nav">
+          <a href="/archive/">Archive</a>
+          <a href="/practice/">Practice</a>
+          <a href="/about/">About</a>
+        </nav>
+      </div>
+      <div class="footer-col">
+        <span class="footer-label">Contact</span>
+        <nav class="footer-nav">
+          <a href="mailto:hello@woohwahae.kr">Email</a>
+          <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+        </nav>
+      </div>
+      <div class="footer-col">
+        <span class="footer-label">Location</span>
+        <p class="footer-copy">ULSAN / KR</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <nav class="footer-nav">
-        <a href="/archive/">Archive</a>
-        <a href="/practice/">Practice</a>
-        <a href="/about/">About</a>
-      </nav>
       <div class="footer-legal">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
