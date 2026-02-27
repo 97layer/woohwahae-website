@@ -1177,6 +1177,35 @@ class TelegramSecretaryV6:
             logger.error("draft callback error: %s", e)
             await query.edit_message_text(f"처리 오류: {str(e)[:100]}")
 
+    async def handle_council_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Council 협의 승인/거절 인라인 버튼 처리"""
+        query = update.callback_query
+        await query.answer()
+        data = query.data  # "council_approve:proposal_id" or "council_reject:proposal_id"
+
+        try:
+            action, proposal_id = data.split(':', 1)
+            from core.system.council_manager import CouncilManager
+            council = CouncilManager()
+
+            if action == 'council_reject':
+                council.reject_proposal(proposal_id)
+                await query.edit_message_text("❌ 거절됨 (proposal=%s)" % proposal_id)
+                return
+
+            # 승인
+            task_id = council.approve_proposal(proposal_id)
+            if task_id:
+                await query.edit_message_text(
+                    "🚀 <b>발행 승인됨</b>\n\nCE 에이전트가 에세이를 작성합니다.\nCE task: <code>%s</code>" % task_id,
+                    parse_mode=constants.ParseMode.HTML,
+                )
+            else:
+                await query.edit_message_text("⚠️ CE task 생성 실패. corpus entries 확인 필요.")
+        except Exception as e:
+            logger.error("council callback error: %s", e)
+            await query.edit_message_text("처리 오류: %s" % str(e)[:100])
+
     async def send_daily_briefing(self, app):
         """매일 08:00 자동 브리핑 푸시"""
         admin_id = os.getenv('ADMIN_TELEGRAM_ID')
@@ -1252,6 +1281,7 @@ class TelegramSecretaryV6:
         application.add_handler(CommandHandler("client", self.client_command))
         application.add_handler(CommandHandler("visit", self.visit_command))
         application.add_handler(CallbackQueryHandler(self.handle_draft_callback, pattern=r'^draft_'))
+        application.add_handler(CallbackQueryHandler(self.handle_council_callback, pattern=r'^council_'))
         application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO | filters.Document.ALL, self.handle_message))
 
         # 매일 08:00 브리핑 자동 푸시

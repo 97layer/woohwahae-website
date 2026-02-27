@@ -529,32 +529,45 @@ JSON만 출력."""
 
     def _trigger_essay_for_cluster(self, cluster: Dict) -> Optional[str]:
         """
-        성숙한 군집 → CE Agent에게 에세이 작성 지시
-        Magazine B 방식: 단일 신호가 아닌 군집 전체를 RAG해서 에세이 작성
+        성숙한 군집 → Council 협의 → Telegram 승인 → CE 에세이 트리거
+        GOOGLE_API_KEY 없으면 직접 CE task 생성으로 폴백.
 
-        Returns: task_id or None
+        Returns: proposal_id (council 경로) or task_id (폴백) or None
         """
+        try:
+            from core.system.council_manager import CouncilManager
+            council = CouncilManager()
+            proposal_id = council.run_council(cluster)
+            if proposal_id:
+                logger.info("[Gardener] Council 협의 시작: %s → proposal=%s", cluster["theme"], proposal_id)
+                return proposal_id
+        except Exception as e:
+            logger.warning("[Gardener] Council 실패, 직접 CE 트리거로 폴백: %s", e)
+
+        # 폴백: 기존 직접 CE task 생성
+        return self._trigger_essay_direct(cluster)
+
+    def _trigger_essay_direct(self, cluster: Dict) -> Optional[str]:
+        """폴백: Council 없이 직접 CE task 생성."""
         from core.system.corpus_manager import CorpusManager
         from core.system.queue_manager import QueueManager
 
         corpus = CorpusManager()
         entries = corpus.get_entries_for_essay(cluster["entry_ids"])
-
         if not entries:
             return None
 
-        # 에세이 RAG 컨텍스트 구성
-        rag_context = []
-        for e in entries:
-            rag_context.append({
+        rag_context = [
+            {
                 "summary": e.get("summary", ""),
                 "key_insights": e.get("key_insights", []),
                 "themes": e.get("themes", []),
                 "captured_at": e.get("captured_at", ""),
                 "signal_type": e.get("signal_type", ""),
                 "preview": e.get("raw_content_preview", ""),
-            })
-
+            }
+            for e in entries
+        ]
         payload = {
             "mode": "corpus_essay",
             "content_type": cluster.get("content_type", "archive"),
@@ -564,25 +577,24 @@ JSON만 출력."""
             "avg_strategic_score": cluster["avg_strategic_score"],
             "time_span_hours": cluster["hours_span"],
             "instruction": (
-                f"주제 '{cluster['theme']}'에 관한 {cluster['entry_count']}개의 신호를 바탕으로 "
-                f"원소스 멀티유즈 콘텐츠를 생성하라. "
-                f"archive_essay(롱폼) / instagram_caption(150자) / "
-                f"carousel_slides(3~5장) / telegram_summary(3줄) / pull_quote(1문장) "
-                f"5개 포맷을 동시에. 모두 같은 본질에서 파생."
-            ),
+                "주제 '%s'에 관한 %d개의 신호를 바탕으로 "
+                "원소스 멀티유즈 콘텐츠를 생성하라. "
+                "archive_essay(롱폼) / instagram_caption(150자) / "
+                "carousel_slides(3~5장) / telegram_summary(3줄) / pull_quote(1문장) "
+                "5개 포맷을 동시에. 모두 같은 본질에서 파생."
+            ) % (cluster["theme"], cluster["entry_count"]),
         }
 
         try:
-            queue = QueueManager()
-            task_id = queue.create_task(
+            task_id = QueueManager().create_task(
                 agent_type="CE",
                 task_type="write_corpus_essay",
                 payload=payload,
             )
-            logger.info("🖊️  에세이 트리거: %s (%s개 entry) → CE task %s", cluster['theme'], cluster['entry_count'], task_id)
+            logger.info("[Gardener] 에세이 직접 트리거: %s → CE task %s", cluster["theme"], task_id)
             return task_id
         except Exception as e:
-            logger.error("에세이 트리거 실패: %s", e)
+            logger.error("[Gardener] 에세이 트리거 실패: %s", e)
             return None
 
     def _check_corpus_clusters(self) -> Dict:
