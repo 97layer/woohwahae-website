@@ -8,7 +8,7 @@ globs: **
 - 50자 이내 제목, 본문은 선택
 
 ## 커밋 전 체크
-- INTELLIGENCE_QUANTA.md 갱신 여부 확인 (코드 변경 시)
+- state.md 갱신 여부 확인 (코드 변경 시)
 - .env, credentials, API 키 포함 파일 커밋 금지
 - knowledge/signals/ 내 JSON 데이터 파일은 커밋 제외 (.gitignore)
 

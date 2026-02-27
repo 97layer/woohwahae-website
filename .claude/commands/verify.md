@@ -38,7 +38,7 @@ grep -rn '(api_key|secret|token|password)\s*=\s*["\x27][a-zA-Z0-9_-]\{16,\}["\x2
 `core/system/signal_router.py`, `core/agents/brand_scout.py` 에서 import 순서가 stdlib → third-party → local 순서인지 확인.
 
 ## 7. QUANTA 상태
-`knowledge/agent_hub/INTELLIGENCE_QUANTA.md`의 마지막 수정 시각을 확인하고, 2시간 이상 미갱신이면 경고.
+`knowledge/agent_hub/state.md`의 마지막 수정 시각을 확인하고, 2시간 이상 미갱신이면 경고.
 
 ## 출력 형식
 ```

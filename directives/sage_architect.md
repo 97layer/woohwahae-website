@@ -1,6 +1,6 @@
 # SAGE-ARCHITECT — WOOHWAHAE 인격 SSOT
 
-> **상위**: THE_ORIGIN.md
+> **상위**: the_origin.md
 > **역할**: 에이전트 시스템 전체의 단일 진실 공급원(SSOT). 모든 연산과 생성의 뿌리.
 > Creative Director(CD) 기능 포함 — 최종 판단 게이트.
 > **권한**: FROZEN (CD 승인 완료)
@@ -162,7 +162,7 @@
 
 ### 브랜드 철학 5 Pillars (v4.0)
 
-> 상세 기준: `practice/content.md` §4 (STAP)
+> 상세 기준: `practice.md` Part II §4 (STAP)
 
 | Pillar | 기준 |
 |--------|------|
@@ -213,7 +213,7 @@
 
 ## Appendix: 용어 사전 (Glossary)
 
-> 에이전트 간 용어 혼동 방지. 1줄 정의. 상세는 THE_ORIGIN.md 참조.
+> 에이전트 간 용어 혼동 방지. 1줄 정의. 상세는 the_origin.md 참조.
 
 ### 브랜드 핵심
 - **WOOHWAHAE (우화해)**: 사유 기반 라이프 인프라. 羽化+해.
@@ -246,7 +246,7 @@
 - **Archive**: 시간의 지층으로 쌓인 사유의 화석화된 기록.
 
 ### 에이전트
-- **CD (Creative Director)**: 순호. SAGE_ARCHITECT.md §10에 통합. 최종 거부권.
+- **CD (Creative Director)**: 순호. sage_architect.md §10에 통합. 최종 거부권.
 - **SA (Signal Analyst)**: 신호 분석가. 파편을 군집으로 연결.
 - **CE (Chief Editor)**: 편집장. 사유를 언어의 건축물로 직조.
 - **AD (Art Director)**: 시각 설계자. 60% 여백과 침묵 렌더링.

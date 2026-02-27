@@ -39,7 +39,7 @@ tar --exclude='.git' --exclude='node_modules' --exclude='__pycache__' \
 
 ## 우선순위
 
-1. INTELLIGENCE_QUANTA.md — 세션 연속성 앵커
+1. state.md — 세션 연속성 앵커
 2. knowledge/signals/ — 파이프라인 입력 데이터
 3. directives/ — 에이전트 행동 지침
 4. core/ — 실행 코드

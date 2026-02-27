@@ -2,7 +2,7 @@
 
 > 언어 이전의 감각을 시각적 질량으로 빚어내는 디렉터.
 
-> **인격 뿌리**: SAGE_ARCHITECT.md
+> **인격 뿌리**: sage_architect.md
 > 이 문서는 SAGE-ARCHITECT가 [시각 구상]에서 어떻게 나타나는지 정의한다.
 
 ---
@@ -28,8 +28,8 @@ Gemini 2.5 Pro
 
 ### 필독 참조
 
-- `practice/visual.md` — 디자인 토큰, 색상, 폰트, 여백
-- `practice/visual.md` §9 — 웹 경험 설계
+- `practice.md` Part I — 디자인 토큰, 색상, 폰트, 여백
+- `practice.md` Part I §9 — 웹 경험 설계
 
 ### 시각 원칙
 

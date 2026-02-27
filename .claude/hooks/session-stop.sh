@@ -5,7 +5,7 @@
 # exit 0 = 항상 통과
 
 PROJECT_ROOT="/Users/97layer/97layerOS"
-QUANTA="$PROJECT_ROOT/knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
+QUANTA="$PROJECT_ROOT/knowledge/agent_hub/state.md"
 
 INPUT_JSON=$(cat)
 

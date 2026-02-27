@@ -2,7 +2,7 @@
 
 > 세계의 노이즈 속에서 공명할 주파수만을 추출하는 관측자.
 
-> **인격 뿌리**: SAGE_ARCHITECT.md
+> **인격 뿌리**: sage_architect.md
 > 이 문서는 SAGE-ARCHITECT가 [관찰]에서 어떻게 나타나는지 정의한다.
 
 ---
@@ -28,8 +28,8 @@ Gemini 2.5 Flash
 
 ### 필독 참조
 
-- `practice/content.md` — STAP, 카테고리/타입
-- `THE_ORIGIN.md` — 브랜드 동기화 기준
+- `practice.md` Part II — STAP, 카테고리/타입
+- `the_origin.md` — 브랜드 동기화 기준
 
 ### 관측 원칙
 

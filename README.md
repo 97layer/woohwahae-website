@@ -17,9 +17,9 @@ website/             얼굴 — woohwahae.kr (Cloudflare Pages)
 
 | 파일 | 역할 |
 |------|------|
-| [SAGE_ARCHITECT.md](directives/SAGE_ARCHITECT.md) | 인격 SSOT. 모든 에이전트의 뿌리 |
-| [THE_ORIGIN.md](directives/THE_ORIGIN.md) | 브랜드 철학 경전 |
-| [SYSTEM.md](directives/SYSTEM.md) | 운영 매뉴얼. 아키텍처 + 배치 + 거버넌스 |
+| [sage_architect.md](directives/sage_architect.md) | 인격 SSOT. 모든 에이전트의 뿌리 |
+| [the_origin.md](directives/the_origin.md) | 브랜드 철학 경전 |
+| [system.md](directives/system.md) | 운영 매뉴얼. 아키텍처 + 배치 + 거버넌스 |
 
 ## 실행
 

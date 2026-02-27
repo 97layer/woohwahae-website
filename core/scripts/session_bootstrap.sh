@@ -81,11 +81,11 @@ fi
 
 echo ""
 
-# 4. Display INTELLIGENCE_QUANTA summary
+# 4. Display state.md summary
 echo "📖 Step 3: Intelligence Quanta Summary"
 echo "─────────────────────────────────────────"
 
-QUANTA_FILE="knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
+QUANTA_FILE="knowledge/agent_hub/state.md"
 if [ -f "$QUANTA_FILE" ]; then
     # Show last update timestamp
     LAST_MOD=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" "$QUANTA_FILE" 2>/dev/null || stat -c "%y" "$QUANTA_FILE" 2>/dev/null | cut -d'.' -f1)
@@ -105,7 +105,7 @@ if [ -f "$QUANTA_FILE" ]; then
         echo "   Previous session may not have completed handoff properly"
     fi
 else
-    echo "❌ FATAL: INTELLIGENCE_QUANTA.md not found"
+    echo "❌ FATAL: state.md not found"
     exit 1
 fi
 

@@ -25,6 +25,6 @@ alwaysApply: true
 ## 위반 시 행동
 
 1. 즉시 작업 중단
-2. `directives/SYSTEM.md` §10 재참조
+2. `directives/system.md` §10 재참조
 3. 올바른 경로에 재생성
 4. 잘못 생성된 파일 삭제

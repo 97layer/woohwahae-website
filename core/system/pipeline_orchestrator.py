@@ -53,7 +53,7 @@ class PipelineOrchestrator:
     # 확정 파이프라인: Signal → SA → Gardener(군집) → CE → Ralph(STAP) → AD → CD → Publisher
     # Gardener는 corpus 성숙도 기반 트리거 (별도 데몬)
     # Ralph는 CE 완료 후 인라인 품질 게이트 (별도 스테이지 아님)
-    # CD 판단 기준: SAGE_ARCHITECT.md §10
+    # CD 판단 기준: sage_architect.md §10
 
     MAX_CE_RETRIES = 2  # CD 거절 후 CE 재작업 최대 횟수
     RALPH_PASS_SCORE = 70  # Ralph 품질 게이트

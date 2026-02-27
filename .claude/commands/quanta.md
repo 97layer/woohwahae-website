@@ -1,16 +1,16 @@
 ---
-description: INTELLIGENCE_QUANTA.md 빠른 갱신
+description: state.md 빠른 갱신
 ---
 
 # /quanta — QUANTA 갱신
 
-현재 상태를 INTELLIGENCE_QUANTA.md에 기록한다.
+현재 상태를 state.md에 기록한다.
 
 ## 실행 순서
 
 1. **현재 QUANTA 읽기**
 ```bash
-cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+cat knowledge/agent_hub/state.md
 ```
 
 2. **📍 현재 상태 (CURRENT STATE) 섹션 갱신**

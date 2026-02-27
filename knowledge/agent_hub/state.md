@@ -67,13 +67,13 @@
 
 ## 🎯 다음 작업
 
-1. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일. 순호가 레퍼런스 방향 결정 후 실행.
-2. [DESIGN] **홈 히어로 SVG 리디자인** — 현재 dipole field 유지 중. THE ORIGIN 기반 재설계 방향 보류.
-3. [INFRA] **`<head>` 컴포넌트화** — 디자인 확정 후 진행. 폰트/메타/CSS를 단일 소스로.
-4. [INFRA] **전체 템플릿화** — 디자인 확정 후 섹션 템플릿 + 에세이 템플릿 통합.
-5. [DESIGN] About 카피 확정 — 매니페스토/본문/Philosophy/Journey/Editor 텍스트 순호 검토
-6. [INFRA] content_publisher.py — 에세이 발행 시 git commit & push 자동화 (CF Pages 연동)
-7. Ralph 피드백 루프 구현 — STAP v4.0 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
+1. [NAMING] ~~**소문자 통일**~~ ✅ — 전 파일명 lowercase 리네임 + state.md 완료
+2. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
+3. [DESIGN] **홈 히어로 SVG 리디자인** — dipole field 유지 중. 방향 보류.
+4. [INFRA] **`<head>` 컴포넌트화** — 디자인 확정 후 진행
+5. [INFRA] content_publisher.py — 에세이 발행 자동화 (CF Pages 연동)
+6. [CONTENT] the_origin.md 언어 수정 — SAGE-ARCHITECT 발현 후
+7. Ralph 피드백 루프 — STAP 자동 검증 + Gardener 수정 제안
 
 **완료됨**:
 
@@ -136,46 +136,47 @@ ssh 97layer-vm "for s in 97layer-telegram 97layer-ecosystem 97layer-gardener woo
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-27 21:00] SAGE-ARCHITECT 대개편 — 멀티에이전트 위계 재설계 — claude-opus-4-6
+### [2026-02-27 23:30] SAGE-ARCHITECT 대개편 완료 — claude-opus-4-6
 
-**실행 완료**:
+**커밋**: `2f0b6077` — 38파일 변경, +1312 -2429
 
-1. **SAGE_ARCHITECT.md 격상** — practice/language.md → directives/SAGE_ARCHITECT.md
-   - 9섹션 인격 SSOT + §10 CD 흡수 (품질 게이트, brand_score, 최후 질문)
-   - 권한: FROZEN (CD 급)
-   - CD.md 삭제 (완전 흡수)
+**실행 완료 (6 Phase)**:
 
-2. **KERNEL 적출** — THE_ORIGIN.md에서 SYSTEM KERNEL (L415-469) 제거
-   - THE_ORIGIN.md = 순수 철학 에세이만 잔존
-   - SYSTEM.md v9.0 = Architecture(5-Layer) + Authority(3-Tier) + Data Pipeline 흡수
-   - Context-7 slot_1: SAGE_ARCHITECT.md로 재매핑
+1. **sage_architect.md 생성** — language.md 격상 + CD.md §10 흡수 (FROZEN)
+2. **KERNEL 적출** — the_origin.md → 순수 철학 에세이. KERNEL → system.md 이관
+3. **3파일 통합** — glossary→sage_architect 부록, MANIFEST+AI_CONSTITUTION→system.md v10.0
+4. **에이전트 동기화** — SA/CE/AD 인격 뿌리 경로 변경, 코드 5파일 수정
+5. **파일 흡수** — experience→visual, audience→content, GEMINI→SYSTEM, origin_editor 삭제
+6. **전역 스위프** — 중복 README 3개 제거, pre-commit hook 갱신, filesystem_cache 정리
 
-3. **에이전트 동기화** — SA/CE/AD/origin_editor.md 인격 뿌리 경로 변경
-   - glossary.md: SAGE-ARCHITECT 정의 업데이트
-   - MANIFEST.md: SAGE_ARCHITECT.md 등재, CD.md 제거
-   - content.md: language.md 참조 → SAGE_ARCHITECT.md (4건)
-   - practice/README.md: language.md 제거, 포인터 추가
+**결과**: directives/ 17→9파일. 프로젝트 전체 34→23 md.
 
-4. **코드 동기화** — agent_router.py brand/ 경로 수정
-   - pipeline_orchestrator.py 파이프라인 순서 확인 (확정 모형 일치)
-   - ce_agent.py language.md 참조 → SAGE_ARCHITECT.md
-
-**위계 구조 (확정)**:
+**최종 구조**:
 ```
-[1] WHY — THE_ORIGIN.md (순수 철학, FROZEN)
-[2] WHO — SAGE_ARCHITECT.md (인격 SSOT, FROZEN)
-[3] HOW — SYSTEM.md (운영 프로토콜)
-[4] WHAT — practice/*.md (부위별 규격)
-[5] WHOM — agents/{SA,CE,AD}.md (역할 발현)
+directives/ (9파일)
+├── the_origin.md        경전 (FROZEN)
+├── sage_architect.md    창시자 + 용어 (FROZEN)
+├── system.md            실행의 전부 (v10.0)
+├── practice/
+│   ├── visual.md        시각 + 웹 경험
+│   ├── content.md       콘텐츠 + 공명 대상
+│   └── service.md       아틀리에
+└── agents/
+    └── sa.md, ce.md, ad.md
 ```
+
+**다음 태스크**:
+1. [NAMING] ~~소문자 통일~~ ✅ — 전 파일명 lowercase + state.md 리네임 완료
+2. [DESIGN] 디자인 레이아웃 전 페이지 확정
+3. [INFRA] content_publisher.py 자동화
+4. [CONTENT] the_origin.md 언어 수정 (SAGE-ARCHITECT 발현 후)
 
 **주의사항**:
-- 홈 index.html이 다른 에이전트에 의해 에디토리얼 스타일로 변경됨. canvas 확인 필요.
+- 홈 index.html 에디토리얼 스타일 변경됨. canvas 확인 필요.
 - `build_archive.py` ROOT 경로 버그 미수정 (`parents[2]`가 맞음).
-- 디자인 레이아웃 미확정. 순호가 레퍼런스 방향 결정 후 진행.
 - test_queue_manager 8개 실패 — 기존 이슈. 이번 변경과 무관.
-- 순호 요청: 네이밍 패밀리룩 전면 개정 (SYSTEM.md 등) — 별도 진행 예정.
+- pre-commit hook MANIFEST.md→system.md 갱신 완료 (.git/hooks/pre-commit)
 
-**업데이트 시간**: 2026-02-27T21:00:00
+**업데이트 시간**: 2026-02-27T23:30:00
 
 work_lock: unlocked

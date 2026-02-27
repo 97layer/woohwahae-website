@@ -410,4 +410,4 @@ WOOHWAHAE.
 
 <br><br><br>
 
-> 시스템 운영 매뉴얼은 SYSTEM.md를 참조하십시오.
+> 시스템 운영 매뉴얼은 system.md를 참조하십시오.

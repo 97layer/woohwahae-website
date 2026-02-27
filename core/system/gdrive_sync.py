@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 LAYER OS Google Drive Sync Utility
-Purpose: Sync intelligence files (INTELLIGENCE_QUANTA.md, daily reports) to Google Drive
+Purpose: Sync intelligence files (state.md, daily reports) to Google Drive
 Philosophy: Cloud-backed session continuity for model-agnostic knowledge preservation
 
 Author: LAYER OS Technical Director
@@ -32,7 +32,7 @@ class GDriveSync:
     Google Drive Sync for LAYER OS Knowledge Base
 
     Features:
-    - Upload INTELLIGENCE_QUANTA.md (session continuity)
+    - Upload state.md (session continuity)
     - Upload daily reports (morning/evening/weekly)
     - Search existing files
     - Create folder structure automatically
@@ -190,18 +190,18 @@ class GDriveSync:
 
     def sync_intelligence_quanta(self) -> bool:
         """
-        Sync INTELLIGENCE_QUANTA.md to Google Drive
+        Sync state.md to Google Drive
 
         Returns:
             True if successful
         """
-        quanta_path = PROJECT_ROOT / 'knowledge' / 'agent_hub' / 'INTELLIGENCE_QUANTA.md'
+        quanta_path = PROJECT_ROOT / 'knowledge' / 'agent_hub' / 'state.md'
 
         if not quanta_path.exists():
-            print(f"⚠️  INTELLIGENCE_QUANTA.md not found: {quanta_path}")
+            print(f"⚠️  state.md not found: {quanta_path}")
             return False
 
-        print("📤 Syncing INTELLIGENCE_QUANTA.md to Google Drive...")
+        print("📤 Syncing state.md to Google Drive...")
         file_id = self.upload_file(quanta_path, drive_folder="intelligence")
         return file_id is not None
 
@@ -310,7 +310,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description='LAYER OS Google Drive Sync')
-    parser.add_argument('--intelligence', action='store_true', help='Sync INTELLIGENCE_QUANTA.md')
+    parser.add_argument('--intelligence', action='store_true', help='Sync state.md')
     parser.add_argument('--reports', action='store_true', help='Sync daily reports')
     parser.add_argument('--all', action='store_true', help='Sync everything')
     parser.add_argument('--search', type=str, help='Search files by name')

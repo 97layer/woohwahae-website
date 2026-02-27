@@ -34,9 +34,9 @@ find . -path "*/archive/archive/*" 2>/dev/null
 find . -path "*/.agent/*" 2>/dev/null
 ```
 
-6. **SYSTEM.md §10 Filesystem Placement 기준 검증**
+6. **system.md §10 Filesystem Placement 기준 검증**
 ```bash
-cat directives/SYSTEM.md | grep -A 30 '§10'
+cat directives/system.md | grep -A 30 '§10'
 ```
 
 ## 판정

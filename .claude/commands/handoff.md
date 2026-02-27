@@ -20,7 +20,7 @@ description: 세션 종료 핸드오프 — QUANTA 업데이트 + 다음 에이�
 python core/system/handoff.py --handoff
 ```
 
-3. **INTELLIGENCE_QUANTA.md 업데이트** — 새로 생성된 자산, 변경된 상태 반영
+3. **state.md 업데이트** — 새로 생성된 자산, 변경된 상태 반영
 
 ## 핸드오프 요약 형식
 

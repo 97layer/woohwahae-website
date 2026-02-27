@@ -1,6 +1,6 @@
 ---
 name: data_curation
-description: knowledge/ 내 지식 자산 정화 + 온톨로지 태깅 + 중복 제거. INTELLIGENCE_QUANTA.md 밀도 유지.
+description: knowledge/ 내 지식 자산 정화 + 온톨로지 태깅 + 중복 제거. state.md 밀도 유지.
 argument-hint: "[target_path_or_keyword]"
 user-invocable: true
 context: fork
@@ -23,7 +23,7 @@ updated: 2026-02-23
 1. **신호 상태 정화**: knowledge/signals/ 내 analyzed/published 신호 중 30일 초과분 아카이빙
 2. **온톨로지 태깅**: 파일 상단 YAML 헤더에 context/importance/relationship 추가
 3. **중복 제거**: Grep으로 동일 signal_id 탐지 → 최신 1개만 유지
-4. **QUANTA 갱신**: knowledge/agent_hub/INTELLIGENCE_QUANTA.md 완료 항목 업데이트
+4. **QUANTA 갱신**: knowledge/agent_hub/state.md 완료 항목 업데이트
 
 ## 실행 패턴 (토큰 최적화)
 

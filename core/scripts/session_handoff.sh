@@ -55,11 +55,11 @@ else
 fi
 
 # Verify QUANTA was updated
-QUANTA_FILE="knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
+QUANTA_FILE="knowledge/agent_hub/state.md"
 QUANTA_AGE=$(( $(date +%s) - $(stat -f %m "$QUANTA_FILE" 2>/dev/null || stat -c %Y "$QUANTA_FILE") ))
 
 if [ $QUANTA_AGE -lt 60 ]; then
-    echo "✅ INTELLIGENCE_QUANTA.md updated (${QUANTA_AGE}s ago)"
+    echo "✅ state.md updated (${QUANTA_AGE}s ago)"
 else
     echo "⚠️  WARNING: QUANTA was not updated recently"
 fi

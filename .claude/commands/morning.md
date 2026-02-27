@@ -9,7 +9,7 @@ description: 모닝 리포트 생성 → knowledge/reports/morning_YYYYMMDD.md
 ## 실행 전 확인
 
 ```bash
-cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+cat knowledge/agent_hub/state.md
 cat knowledge/system/work_lock.json
 ```
 
@@ -36,4 +36,4 @@ Input → Store → Connect → Generate → Publish → Input again
 
 ## 완료 후
 
-INTELLIGENCE_QUANTA.md 업데이트 후 handoff 실행.
+state.md 업데이트 후 handoff 실행.

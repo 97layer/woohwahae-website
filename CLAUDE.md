@@ -1,6 +1,6 @@
 # LAYER OS — Claude Code Entry Point
 # Priority: 0 (MAXIMUM)
-# Source: directives/SYSTEM.md (운영 매뉴얼 SSOT)
+# Source: directives/system.md (운영 매뉴얼 SSOT)
 # Last Updated: 2026-02-27
 
 ---
@@ -8,7 +8,7 @@
 **모든 규칙의 SSOT:**
 
 ```bash
-cat directives/SYSTEM.md
+cat directives/system.md
 ```
 
 ---
@@ -18,15 +18,15 @@ cat directives/SYSTEM.md
 **첫 번째 액션 — 반드시 실행 후 시작:**
 
 ```bash
-cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+cat knowledge/agent_hub/state.md
 cat knowledge/system/work_lock.json
 ```
 
-INTELLIGENCE_QUANTA.md = 시스템 현재 상태. 읽지 않고 시작하면 CRITICAL VIOLATION.
+state.md = 시스템 현재 상태. 읽지 않고 시작하면 CRITICAL VIOLATION.
 work_lock.json = 잠금 상태면 STOP.
 
 파일 생성 전: `cat knowledge/system/filesystem_cache.json` — 이미 있으면 생성 금지.
-배치 규칙: `directives/SYSTEM.md` §10 Filesystem Placement 참조.
+배치 규칙: `directives/system.md` §10 Filesystem Placement 참조.
 생성 후: `python core/system/handoff.py --register-asset <path> <type> <source>`
 
 ---
@@ -34,7 +34,7 @@ work_lock.json = 잠금 상태면 STOP.
 ## 🚫 FORBIDDEN ACTIONS
 
 1. **❌ 중복 생성** — 캐시 확인 먼저
-2. **❌ 컨텍스트 없이 시작** — INTELLIGENCE_QUANTA.md 필수
+2. **❌ 컨텍스트 없이 시작** — state.md 필수
 3. **❌ work lock 무시** — 잠금 확인 필수
 4. **❌ 미등록 산출물** — 모든 생성물 등록 필수
 5. **❌ 과거 hallucination** — 기록된 것만 신뢰
@@ -46,7 +46,7 @@ work_lock.json = 잠금 상태면 STOP.
 
 ## 📁 FILE CREATION POLICY
 
-- 덮어쓰기: `INTELLIGENCE_QUANTA.md`, `THE_ORIGIN.md`, `SYSTEM.md`
+- 덮어쓰기: `state.md`, `the_origin.md`, `system.md`
 - Append: `council_room.md`, `feedback_loop.md`
 - 날짜별: `reports/morning_YYYYMMDD.md`, `reports/evening_YYYYMMDD.md`
 - 생성 금지: 위 외 임의 경로 .md

@@ -61,13 +61,13 @@ class BrandScout:
     4. Magazine Issue 소재 도시에 생성
     """
 
-    # WOOHWAHAE 5 Pillars (IDENTITY.md 기준)
+    # WOOHWAHAE 5 Pillars (Brand Scout 평가 기준 — STAP과 분리)
     BRAND_PILLARS = {
-        "authenticity": "진정성 — 가면 없는 대화, 취약함의 수용",
-        "practicality": "실용성 — 지속 가능한 관리, 과시 없는 실질",
-        "elegance": "우아함 — 절제된 표현, 여백의 미학",
-        "precision": "정밀함 — 구조적 사고, 기반의 견고함",
-        "innovation": "혁신 — 관습의 파괴, Anti-Uniformity"
+        "authenticity": "진정성 — 내면의 관찰에서 비롯된 고유한 목소리",
+        "practicality": "실효성 — 일상의 물성에 닿는 체감 가능한 가치",
+        "elegance": "절제 — 덜어냄으로 도달하는 밀도의 미학",
+        "precision": "밀도 — 한 문장에 담긴 질량, 과잉 없는 구조",
+        "innovation": "고유성 — 자기 리듬으로 걷는 독립된 주파수"
     }
 
     # 발굴 소스별 키워드

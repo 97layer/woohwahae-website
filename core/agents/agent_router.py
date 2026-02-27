@@ -16,29 +16,29 @@ logger = logging.getLogger(__name__)
 AGENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "directives", "agents")
 DIRECTIVES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "directives")
 AGENT_REGISTRY: Dict[str, Dict[str, str]] = {
-    # CD는 SAGE_ARCHITECT.md §10에 흡수됨
-    "AD": {"file": "AD.md", "name": "Art Director", "label": "AD"},
-    "CE": {"file": "CE.md", "name": "Chief Editor", "label": "CE"},
-    "SA": {"file": "SA.md", "name": "Strategy Analyst", "label": "SA"},
+    # CD는 sage_architect.md §10에 흡수됨
+    "AD": {"file": "ad.md", "name": "Art Director", "label": "AD"},
+    "CE": {"file": "ce.md", "name": "Chief Editor", "label": "CE"},
+    "SA": {"file": "sa.md", "name": "Strategy Analyst", "label": "SA"},
 }
 
-# 에이전트별 필독 문서 매핑 (practice/ 기반)
+# 에이전트별 필독 문서 매핑 (practice.md 통합본)
 AGENT_DIRECTIVES: Dict[str, list] = {
     "SA": [
-        "practice/content.md",
+        "practice.md",
     ],
     "CE": [
-        "practice/content.md",
-        "SAGE_ARCHITECT.md",
+        "practice.md",
+        "sage_architect.md",
     ],
     "AD": [
-        "practice/visual.md",
+        "practice.md",
     ],
 }
 
 # 메시지 키워드 → 에이전트 매핑 (1차 필터)
 KEYWORD_MAP: Dict[str, list] = {
-    # CD 키워드는 CE로 흡수 (SAGE_ARCHITECT.md 기반 판단)
+    # CD 키워드는 CE로 흡수 (sage_architect.md 기반 판단)
     "AD": ["디자인", "UI", "로고", "시각", "레이아웃", "폰트", "색상", "이미지", "비주얼"],
     "CE": ["카피", "문구", "톤", "글", "콘텐츠", "에디토리얼", "매니페스토", "슬로건", "텍스트",
            "철학", "방향", "브랜드", "비전", "미션", "승인", "가치", "본질", "정체성"],
@@ -151,7 +151,7 @@ class AgentRouter:
             if agent:
                 return agent
 
-        # 4. 기본값: CE (편집장 — CD는 SAGE_ARCHITECT.md에 흡수)
+        # 4. 기본값: CE (편집장 — CD는 sage_architect.md에 흡수)
         return "CE"
 
     def _keyword_match(self, text: str) -> Optional[str]:

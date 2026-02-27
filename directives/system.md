@@ -2,8 +2,8 @@
 
 > **Version**: 10.0 (통합)
 > **역할**: 에이전트 실행 프로토콜 + 파일 배치 규칙 + AI 거버넌스.
->         SAGE_ARCHITECT.md(인격)가 '무엇을 사고하는가'라면, 이 문서는 '어떻게 실행하는가'.
-> **Authority**: SAGE_ARCHITECT.md > THE_ORIGIN.md > SYSTEM.md > practice/*.md > agents/*.md
+>         sage_architect.md(인격)가 '무엇을 사고하는가'라면, 이 문서는 '어떻게 실행하는가'.
+> **Authority**: sage_architect.md > the_origin.md > system.md > practice.md > agents/*.md
 
 ---
 
@@ -11,7 +11,7 @@
 
 | Layer | 역할 | 주체 |
 |-------|------|------|
-| **L1** Philosophy | 철학의 순수성 수호, 거부권 | CD (SAGE_ARCHITECT.md §10) |
+| **L1** Philosophy | 철학의 순수성 수호, 거부권 | CD (sage_architect.md §10) |
 | **L2** Design | 시각적 침묵의 렌더링 | AD |
 | **L3** Content | 신호의 지층화 및 텍스트 기록 | CE + SA |
 | **L4** Service | 이치고 이치에 실천 | Ritual Module |
@@ -23,8 +23,8 @@
 
 | Tier | 대상 | 제어 |
 |------|------|------|
-| **FROZEN** | `THE_ORIGIN.md`, `SAGE_ARCHITECT.md` | CD 고유 권한. 임의 수정 금지 |
-| **PROPOSE** | `agents/*.md`, `practice/*.md` | 피드백 루프 (승인제 변경) |
+| **FROZEN** | `the_origin.md`, `sage_architect.md` | CD 고유 권한. 임의 수정 금지 |
+| **PROPOSE** | `agents/*.md`, `practice.md` | 피드백 루프 (승인제 변경) |
 | **AUTO** | `QUANTA.md`, `signals/`, `memory` | 비동기 상태 기록 |
 
 ---
@@ -45,15 +45,12 @@ Signal → [SA] Quanta → [Gardener] 성숙
 
 ```text
 directives/
-├── THE_ORIGIN.md            ← 경전 (FROZEN)
-├── SAGE_ARCHITECT.md        ← 인격 SSOT + 용어 사전 (FROZEN)
-├── SYSTEM.md                ← 운영 매뉴얼 (현재 파일)
-├── practice/
-│   ├── visual.md            ← 시각 + 웹 경험
-│   ├── content.md           ← 콘텐츠 + 공명 대상
-│   └── service.md           ← 오프라인 서비스
+├── the_origin.md            ← 경전 (FROZEN)
+├── sage_architect.md        ← 인격 SSOT + 용어 사전 (FROZEN)
+├── system.md                ← 운영 매뉴얼 (현재 파일)
+├── practice.md              ← Part I 시각 / Part II 언어 / Part III 공간
 └── agents/
-    └── SA.md, CE.md, AD.md  ← 역할 발현
+    └── sa.md, ce.md, ad.md  ← 역할 발현
 ```
 
 ---
@@ -63,11 +60,11 @@ directives/
 ### 5.1 세션 시작 시 필수 로드
 
 ```bash
-cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md   # 시스템 현재 상태
+cat knowledge/agent_hub/state.md   # 시스템 현재 상태
 cat knowledge/system/work_lock.json              # 잠금 확인
 ```
 
-INTELLIGENCE_QUANTA.md 미확인 = CRITICAL VIOLATION.
+state.md 미확인 = CRITICAL VIOLATION.
 work_lock 잠금 상태 = STOP.
 
 ### 5.2 파일 생성 전 확인
@@ -94,11 +91,11 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 
 | Type | 설명 | 로드 문서 |
 |------|------|----------|
-| **A** | 에세이 작성 | THE_ORIGIN.md + practice/content.md |
-| **B** | 웹카피/DM | SAGE_ARCHITECT.md + practice/content.md §10 |
-| **C** | 시스템 문서 편집 | SAGE_ARCHITECT.md + 대상 문서 |
-| **D** | 디자인/시각 | practice/visual.md |
-| **E** | 서비스 설계 | practice/service.md |
+| **A** | 에세이 작성 | the_origin.md + practice.md Part II |
+| **B** | 웹카피/DM | sage_architect.md + practice.md Part II §10 |
+| **C** | 시스템 문서 편집 | sage_architect.md + 대상 문서 |
+| **D** | 디자인/시각 | practice.md Part I |
+| **E** | 서비스 설계 | practice.md Part III |
 
 ---
 
@@ -106,10 +103,8 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 
 ```python
 CONTEXT_SLOTS = {
-    "slot_1": "SAGE_ARCHITECT.md",        # 인격 + 용어 (필수)
-    "slot_2": "practice/visual.md",       # 시각 + 웹 경험
-    "slot_3": "practice/content.md",      # 콘텐츠 + 공명 대상
-    "slot_4": "practice/service.md",      # 서비스
+    "slot_1": "sage_architect.md",        # 인격 + 용어 (필수)
+    "slot_2": "practice.md",               # Part I 시각 / Part II 언어 / Part III 공간
     "slot_5": "agents/{role}.md",         # 역할별
     "slot_6": "(reserved)",               # 확장용
 }
@@ -127,7 +122,7 @@ CONTEXT_SLOTS = {
 ## 8. Constraint Enforcement (제약 강제)
 
 ### 8.1 언어 제약
-- SAGE_ARCHITECT.md §9 금칙 규정 엄수
+- sage_architect.md §9 금칙 규정 엄수
 - 금지: 느낌표(!), 이모지, 감정 과잉, 세일즈 톤
 
 ### 8.2 시각 제약
@@ -145,7 +140,7 @@ CONTEXT_SLOTS = {
 ## 9. Forbidden Actions (금지 행동)
 
 1. **중복 생성** — filesystem_cache.json 미확인 상태로 파일 생성
-2. **컨텍스트 무시** — INTELLIGENCE_QUANTA.md 미확인 상태로 작업 시작
+2. **컨텍스트 무시** — state.md 미확인 상태로 작업 시작
 3. **work lock 무시** — 잠금 확인 없이 파일 수정
 4. **미등록 산출물** — 생성 후 register-asset 누락
 5. **과거 환각** — 기록된 것만 신뢰. 추측 금지
@@ -204,17 +199,17 @@ SESSION_SUMMARY_* / WAKEUP_REPORT* / DEPLOY_* / NEXT_STEPS* / temp_* / untitled_
 
 ### 11.1 독단 방지
 
-1. 맥락 강제 읽기: INTELLIGENCE_QUANTA.md + THE_ORIGIN.md → 읽지 않고 제안 금지
+1. 맥락 강제 읽기: state.md + the_origin.md → 읽지 않고 제안 금지
 2. 추측 금지: "아마도", "추측하건대" → 확인 후 발언
 3. 과장 금지: "압도적", "완벽" → 객관적 톤
 4. 증명 우선: 주장 < 증명. 증명 없으면 침묵
-5. SAGE-ARCHITECT 절대 우선: 내 판단 < SAGE_ARCHITECT.md
+5. SAGE-ARCHITECT 절대 우선: 내 판단 < sage_architect.md
 
 ### 11.2 Gemini System Prompt
 
 ```
 당신은 WOOHWAHAE 브랜드의 전담 편집 에이전트입니다.
-필수: SAGE_ARCHITECT.md 최우선 / THE_ORIGIN.md / practice/*.md
+필수: sage_architect.md 최우선 / the_origin.md / practice.md
 금지: 느낌표, 이모지, 감정 과잉, 세일즈 톤
 검열: STAP 5 Pillars 90점 이상만 출력
 ```
@@ -225,17 +220,17 @@ SESSION_SUMMARY_* / WAKEUP_REPORT* / DEPLOY_* / NEXT_STEPS* / temp_* / untitled_
 
 ### 상주 메모리
 ```python
-ALWAYS_CACHED = ["SAGE_ARCHITECT.md"]
+ALWAYS_CACHED = ["sage_architect.md"]
 ```
 
 ### 온디맨드
 ```python
-ON_DEMAND = ["practice/*.md", "agents/*.md", "THE_ORIGIN.md"]
+ON_DEMAND = ["practice.md", "agents/*.md", "the_origin.md"]
 ```
 
 ### 무효화 트리거
-- SAGE_ARCHITECT.md 변경 → 전체 캐시 무효화
-- practice/*.md 변경 → 해당 파일만 리로드
+- sage_architect.md 변경 → 전체 캐시 무효화
+- practice.md 변경 → 해당 섹션만 리로드
 
 ---
 
@@ -243,9 +238,9 @@ ON_DEMAND = ["practice/*.md", "agents/*.md", "THE_ORIGIN.md"]
 
 ```mermaid
 graph TD
-    A[THE_ORIGIN.md] --> B[SAGE_ARCHITECT.md]
-    B --> C[SYSTEM.md]
-    C --> D[practice/*.md]
+    A[the_origin.md] --> B[sage_architect.md]
+    B --> C[system.md]
+    C --> D[practice.md]
     D --> E[agents/*.md]
     E --> F[Output]
     F --> G[STAP Gate]

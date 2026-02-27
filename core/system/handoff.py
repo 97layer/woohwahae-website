@@ -35,7 +35,7 @@ class HandoffEngine:
     세션 연속성 엔진
 
     Features:
-    - Context Restoration: INTELLIGENCE_QUANTA.md 읽기/쓰기
+    - Context Restoration: state.md 읽기/쓰기
     - Work Locking: 멀티에이전트 충돌 방지
     - Filesystem Cache: 중복 생성 방지
     - Asset Registry 통합
@@ -47,7 +47,7 @@ class HandoffEngine:
         self.project_root = PROJECT_ROOT
 
         # 로컬 핵심 파일 (버전 관리)
-        self.quanta_path = self.project_root / "knowledge" / "agent_hub" / "INTELLIGENCE_QUANTA.md"
+        self.quanta_path = self.project_root / "knowledge" / "agent_hub" / "state.md"
 
         # Container 내부 파일 (작업 상태)
         self.work_lock_path = KNOWLEDGE_PATHS["system"] / "work_lock.json"
@@ -73,14 +73,14 @@ class HandoffEngine:
         print("="*70)
 
         if not self.quanta_path.exists():
-            print("⚠️  INTELLIGENCE_QUANTA.md not found. Creating initial state...")
+            print("⚠️  state.md not found. Creating initial state...")
             return self._create_initial_quanta()
 
         # Read current state
         with open(self.quanta_path, 'r', encoding='utf-8') as f:
             quanta_content = f.read()
 
-        print("\n✅ Context Restored from INTELLIGENCE_QUANTA.md")
+        print("\n✅ Context Restored from state.md")
         print(f"📍 File: {self.quanta_path}")
         print(f"📏 Size: {len(quanta_content)} characters")
 
@@ -118,7 +118,7 @@ class HandoffEngine:
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        # Update INTELLIGENCE_QUANTA.md
+        # Update state.md
         completed_items = '\n'.join(['- ✅ ' + item for item in summary.split('\n') if item.strip()])
         next_items = '\n'.join(['- ⏳ ' + step for step in next_steps])
 
@@ -146,14 +146,14 @@ class HandoffEngine:
         # Release work lock (if held)
         self.release_work_lock(agent_id)
 
-        print(f"✅ State saved to INTELLIGENCE_QUANTA.md")
+        print(f"✅ State saved to state.md")
         print(f"✅ Work lock released (if held by {agent_id})")
         print("="*70 + "\n")
 
         return True
 
     def _parse_quanta(self, content: str) -> Dict[str, Any]:
-        """INTELLIGENCE_QUANTA.md 내용 파싱"""
+        """state.md 내용 파싱"""
         # Simple extraction (나중에 고도화 가능)
         state = {
             "content": content,
@@ -170,7 +170,7 @@ class HandoffEngine:
         return state
 
     def _create_initial_quanta(self) -> Dict:
-        """초기 INTELLIGENCE_QUANTA.md 생성"""
+        """초기 state.md 생성"""
         initial_content = f"""# 🧠 INTELLIGENCE QUANTA - 지능 앵커
 
 > **생성**: {datetime.now().isoformat()}

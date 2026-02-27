@@ -2,7 +2,7 @@
 LAYER OS System Module  THE ORIGIN Enforcement
 
 Monkey Patch: All Path.write_text() calls are intercepted and validated
-against SYSTEM.md §10 placement rules before execution.
+against system.md §10 placement rules before execution.
 
 This ensures that even legacy code without explicit safe_write() calls
 cannot violate filesystem structure.
@@ -23,7 +23,7 @@ try:
 
     def _guarded_write_text(self, data, encoding=None, errors=None, newline=None):
         """
-        Monkey-patched Path.write_text() with SYSTEM.md §10 validation.
+        Monkey-patched Path.write_text() with system.md §10 validation.
 
         Raises:
             PermissionError: If file path violates MANIFEST rules
@@ -32,11 +32,11 @@ try:
         if not ok:
             raise PermissionError(
                 f"\n{'='*60}\n"
-                f"[Filesystem Guard] Write blocked by SYSTEM.md\n"
+                f"[Filesystem Guard] Write blocked by system.md\n"
                 f"{'='*60}\n"
                 f"Path: {self}\n"
                 f"Reason: {reason}\n"
-                f"\nSee: directives/SYSTEM.md §10\n"
+                f"\nSee: directives/system.md §10\n"
                 f"{'='*60}"
             )
 

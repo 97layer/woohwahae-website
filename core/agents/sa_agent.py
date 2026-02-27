@@ -177,14 +177,14 @@ class StrategyAnalyst:
         """SA.md 에이전트 지침 + content.md 공명 대상 로드"""
         parts = []
         # SA 기본 지침
-        directive_path = PROJECT_ROOT / 'directives' / 'agents' / 'SA.md'
+        directive_path = PROJECT_ROOT / 'directives' / 'agents' / 'sa.md'
         try:
             if directive_path.exists():
                 parts.append(directive_path.read_text(encoding='utf-8'))
         except Exception:
             pass
-        # 콘텐츠 + 공명 대상 기준 (구 audience.md → content.md §10으로 흡수)
-        content_path = PROJECT_ROOT / 'directives' / 'practice' / 'content.md'
+        # 콘텐츠 + 공명 대상 기준 (practice.md Part II)
+        content_path = PROJECT_ROOT / 'directives' / 'practice.md'
         try:
             if content_path.exists():
                 content = content_path.read_text(encoding='utf-8')

@@ -42,8 +42,8 @@ COST_LOG_PATH = PROJECT_ROOT / "knowledge" / "system" / "code_agent_cost.json"
 
 # 변경 불가 경로 (FROZEN)
 FROZEN_PATHS = {
-    "directives/THE_ORIGIN.md",
-    "knowledge/agent_hub/INTELLIGENCE_QUANTA.md",
+    "directives/the_origin.md",
+    "knowledge/agent_hub/state.md",
 }
 
 SYSTEM_PROMPT = """You are a surgical code editor for the LAYER OS / WOOHWAHAE project.
@@ -62,7 +62,7 @@ Rules:
     "summary": "one-line Korean summary of what changed"
   }
 - Make minimal, targeted changes. Do not refactor unrelated code.
-- Never modify files in: directives/THE_ORIGIN.md, knowledge/agent_hub/INTELLIGENCE_QUANTA.md
+- Never modify files in: directives/the_origin.md, knowledge/agent_hub/state.md
 - Use lazy logging format in Python: logger.info("msg: %s", var) not f-strings
 - Never hardcode secrets or API keys
 """

@@ -46,9 +46,9 @@
 
   /* ── 쌍극자 필드라인 파라미터 (밀도 극대화) ── */
   var isPortrait = window.innerHeight > window.innerWidth;
-  var LINE_COUNT = isMobile ? 48 : 96;   /* 방사형 밀도 3배 상향 */
-  var SEEDS = isMobile ? 18 : 36;   /* 계층 밀도 상향 */
-  var POINTS_PER = isMobile ? 320 : 500; /* 곡선 해상도 상향 */
+  var LINE_COUNT = isMobile ? 32 : 96;   /* 모바일 부하 감소 (48->32) */
+  var SEEDS = isMobile ? 12 : 36;        /* 계층 축소 (18->12) */
+  var POINTS_PER = isMobile ? 120 : 500;  /* 곡선 정밀도 대폭 하향 (320->120) */
   var MAX_R = 16.0;
   var SCALE = (isMobile && isPortrait) ? 2.8 : 3.5;
 
@@ -134,16 +134,24 @@
   var dustSystem = new THREE.Points(dustGeo, dustMat);
   fieldGroup.add(dustSystem);
 
+  var lastW = window.innerWidth;
   function onResize() {
     var W = window.innerWidth;
     var H = window.innerHeight;
+
+    /* 모바일 주소창 토글에 의한 높이 변화는 무시 (진정한 해상도 조정만 수행) */
+    if (isMobile && W === lastW && Math.abs(H - renderer.domElement.height / renderer.getPixelRatio()) < 100) {
+      return;
+    }
+
+    lastW = W;
     renderer.setSize(W, H, false);
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
     isPortrait = H > W;
   }
   onResize();
-  window.addEventListener('resize', onResize);
+  window.addEventListener('resize', onResize, { passive: true });
 
   /* ── 정교한 애니메이션 루프 ── */
   var clock = new THREE.Clock();
@@ -202,10 +210,13 @@
   var lerpRatio = 0;
 
   function updateScroll() {
-    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    /* window.innerHeight 대신 clientHeight를 사용하여 주소창 변화에 의한 튕김 방지 */
+    var viewportH = document.documentElement.clientHeight;
+    var docH = document.documentElement.scrollHeight - viewportH;
     scrollRatio = docH > 0 ? window.scrollY / docH : 0;
   }
   window.addEventListener('scroll', updateScroll, { passive: true });
+  window.addEventListener('resize', updateScroll, { passive: true });
   updateScroll();
 
   window._fieldState = {

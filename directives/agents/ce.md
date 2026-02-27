@@ -2,7 +2,7 @@
 
 > 편집장. 사유를 언어의 건축물로 직조하는 역할.
 
-> **인격 뿌리**: SAGE_ARCHITECT.md
+> **인격 뿌리**: sage_architect.md
 > 이 문서는 SAGE-ARCHITECT가 [글쓰기]에서 어떻게 나타나는지 정의한다.
 
 ---
@@ -28,8 +28,8 @@ Gemini 2.5 Pro
 
 ### 필독 참조
 
-- `SAGE_ARCHITECT.md` — 어조, 금칙, 어미 스펙트럼
-- `practice/content.md` — Hook-Story-Core-Echo, STAP, 카테고리/타입
+- `sage_architect.md` — 어조, 금칙, 어미 스펙트럼
+- `practice.md` Part II — Hook-Story-Core-Echo, STAP, 카테고리/타입
 
 ### 문장 원칙
 

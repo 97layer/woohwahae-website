@@ -6445,9 +6445,10 @@ body.home-radical::after {
   justify-content: space-between;
   padding: var(--space-lg) var(--space-xl);
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  color: var(--text-faint);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--text-sub);
   text-transform: uppercase;
   z-index: 10;
 }
@@ -6468,15 +6469,11 @@ body.home-radical::after {
 
 .home-hero-brand {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 300;
-  letter-spacing: 0.35em;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
   color: var(--text);
-  opacity: 0.5;
-  padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  opacity: 0.7;
 }
 
 /* ─── Cinematic Grain Overlay (Texture) ─── */
@@ -6550,29 +6547,82 @@ body.home-radical::after {
 }
 
 .home-preloader__logo {
-  width: 28px;
+  width: 64px;
   height: auto;
-  opacity: 0.25;
-  animation: preloader-pulse 2.4s infinite ease-in-out;
+  opacity: 0;
+  /* 타이핑 모션 (왼쪽에서 오른쪽으로 패스 드러남) */
+  clip-path: inset(0 100% 0 0);
+  filter: blur(4px);
+  animation:
+    logo-type-emerge 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    preloader-pulse 3.6s infinite ease-in-out 1.8s;
+}
+
+@keyframes logo-type-emerge {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    filter: blur(4px);
+    transform: translateX(-10px);
+  }
+
+  100% {
+    opacity: 0.45;
+    clip-path: inset(0 0 0 0);
+    filter: blur(0px);
+    transform: translateX(0);
+  }
 }
 
 @keyframes preloader-pulse {
 
   0%,
   100% {
-    opacity: 0.15;
-    transform: scale(0.98);
+    opacity: 0.35;
+    transform: scale(1);
+    filter: blur(0px);
   }
 
   50% {
-    opacity: 0.45;
+    opacity: 0.55;
     transform: scale(1.02);
+    filter: blur(0.5px);
+  }
+}
+
+@keyframes logo-dissolve {
+  0% {
+    opacity: 0.45;
+    clip-path: inset(0 0 0 0);
+    transform: scale(1) translateX(0) skewX(0deg);
+    filter: blur(0px) brightness(1);
+  }
+
+  20% {
+    opacity: 0.8;
+    transform: scale(1.05) translateX(2px) skewX(-2deg);
+    filter: blur(2px) brightness(2);
+  }
+
+  100% {
+    opacity: 0;
+    clip-path: inset(0 0 0 100%);
+    /* 오른쪽으로 타이핑하며 지워짐 */
+    transform: scale(1.2) translateX(10px) skewX(10deg);
+    filter: blur(24px) brightness(5);
   }
 }
 
 body.is-loaded .home-preloader {
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
+  transition: opacity 2.2s var(--ease-out), visibility 2.2s;
+}
+
+body.is-loaded .home-preloader__logo {
+  /* 디지털 파편화: 블러, 스켈링, 광도 폭발, 비틀림을 결합한 해체 */
+  animation: logo-dissolve 1.8s var(--ease-out) forwards;
 }
 
 /* ─── Home Scroll Space — field-bg 클로즈업 구간 ─── */
@@ -6607,14 +6657,14 @@ body.is-loaded .home-preloader {
 
 .home-entries {
   padding-top: var(--space-lg);
-  /* UI 등장 속도: 배경 텐션과 동기화 */
-  animation: entries-fade 2.4s cubic-bezier(0.4, 0, 0.2, 1) 2.5s both;
+  /* 등장 속도 최적화: 3.2s -> 2.4s (모바일 성능 고려) */
+  animation: entries-fade 2.4s var(--ease-out) 1.5s both;
 }
 
 @keyframes entries-fade {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(12px);
   }
 
   to {
@@ -6632,29 +6682,29 @@ body.is-loaded .home-preloader {
   border-bottom: 1px solid var(--line);
   text-decoration: none;
   color: inherit;
-  /* 호버 속도를 0.3s -> 1.6s 급의 물리적 질량감으로 전환 */
-  transition: opacity 1.6s cubic-bezier(0.25, 0, 0.1, 1), transform 1.6s cubic-bezier(0.25, 0, 0.1, 1);
+  /* 애니메이션 복잡도 감소 */
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
 }
 
 .home-entry:hover {
-  opacity: 0.45;
-  /* 가벼운 색상 전환이 아닌, 무게감 있는 살짝의 눌림 효과 */
-  transform: scale(0.998);
-  transition: opacity 1.2s cubic-bezier(0.25, 0, 0.1, 1), transform 1.2s cubic-bezier(0.25, 0, 0.1, 1);
+  opacity: 0.6;
+  transform: translateX(4px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
 }
 
 .home-entry__index {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--text-faint);
-  letter-spacing: 0.1em;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-sub);
+  letter-spacing: 0.05em;
 }
 
 .home-entry__label {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 300;
-  letter-spacing: 0.15em;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text);
 }

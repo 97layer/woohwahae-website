@@ -60,8 +60,8 @@ def test_cache_contains_known_paths(engine):
     cache = engine.update_filesystem_cache(force=True)
     assert len(cache["folders"]) > 0
     assert len(cache["files"]) > 0
-    assert engine.check_path_exists("directives/THE_ORIGIN.md")
-    assert engine.check_path_exists("directives/SYSTEM.md")
+    assert engine.check_path_exists("directives/the_origin.md")
+    assert engine.check_path_exists("directives/system.md")
 
 
 def test_cache_excludes_nonexistent(engine):

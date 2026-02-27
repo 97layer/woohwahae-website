@@ -4,7 +4,7 @@
 # (QUANTA가 ~65줄로 경량화되어 선택 로드 불필요)
 
 PROJECT_ROOT="/Users/97layer/97layerOS"
-QUANTA="$PROJECT_ROOT/knowledge/agent_hub/INTELLIGENCE_QUANTA.md"
+QUANTA="$PROJECT_ROOT/knowledge/agent_hub/state.md"
 WORK_LOCK="$PROJECT_ROOT/knowledge/system/work_lock.json"
 
 # 세션 시작 시각 기록 (auto_quanta_update.py가 커밋 경계로 사용)

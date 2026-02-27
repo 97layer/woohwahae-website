@@ -44,12 +44,12 @@ FROZEN = {
 
 PROPOSE = {
     # 에이전트 행동 지침 — 순호 승인 필요
-    "SA.md",
-    "AD.md",
-    "CE.md",
+    "sa.md",
+    "ad.md",
+    "ce.md",
 }
 
-# AUTO: long_term_memory.json, INTELLIGENCE_QUANTA.md → 기존 SA/CE가 이미 처리
+# AUTO: long_term_memory.json, state.md → 기존 SA/CE가 이미 처리
 # Gardener는 분석 + 제안만 담당
 
 
@@ -173,8 +173,8 @@ class Gardener:
         """
         proposals = []
 
-        # SA.md 분석 — SA 집중 테마 업데이트 제안
-        joon_content = self._load_directive('SA.md')
+        # sa.md 분석 — SA 집중 테마 업데이트 제안
+        joon_content = self._load_directive('sa.md')
         if joon_content and stats['top_themes']:
             themes_str = ', '.join(f"{t}({c}회)" for t, c in stats['top_themes'][:5])
             prompt = f"""너는 LAYER OS Gardener다.
@@ -186,10 +186,10 @@ class Gardener:
 - 상위 테마: {themes_str}
 - 상위 개념: {', '.join(k for k, _ in stats['top_concepts'][:5])}
 
-현재 SA.md 일부:
+현재 sa.md 일부:
 {joon_content[:800]}
 
-질문: 이 데이터를 보면 SA.md에서 어떤 부분을 미세조정하면 좋을까?
+질문: 이 데이터를 보면 sa.md에서 어떤 부분을 미세조정하면 좋을까?
 - 집중할 테마/카테고리 업데이트가 필요한가?
 - 분석 기준에서 놓치고 있는 패턴이 있는가?
 
@@ -216,7 +216,7 @@ JSON만 출력."""
                     if result.get('needs_update'):
                         proposals.append({
                             'id': f"joon_{datetime.now().strftime('%Y%m%d')}",
-                            'target_file': 'SA.md',
+                            'target_file': 'sa.md',
                             'section': result.get('section', '분석 집중 영역'),
                             'reason': result.get('reason', ''),
                             'proposed_addition': result.get('proposed_addition', ''),
@@ -224,15 +224,15 @@ JSON만 출력."""
                             'created_at': datetime.now().isoformat(),
                         })
             except Exception as e:
-                logger.warning("SA.md 분석 실패: %s", e)
+                logger.warning("sa.md 분석 실패: %s", e)
 
         return proposals
 
     # ── AUTO 갱신 ─────────────────────────────────
 
     def _auto_update_quanta(self, stats: Dict):
-        """INTELLIGENCE_QUANTA.md 자동 업데이트"""
-        quanta_path = self.knowledge_dir / 'agent_hub' / 'INTELLIGENCE_QUANTA.md'
+        """state.md 자동 업데이트"""
+        quanta_path = self.knowledge_dir / 'agent_hub' / 'state.md'
         if not quanta_path.exists():
             return
 
@@ -267,7 +267,7 @@ JSON만 출력."""
                 content += f"\n\n{new_section}"
 
             quanta_path.write_text(content, encoding='utf-8')
-            logger.info("✅ INTELLIGENCE_QUANTA.md 자동 업데이트")
+            logger.info("✅ state.md 자동 업데이트")
         except Exception as e:
             logger.warning("QUANTA 업데이트 실패: %s", e)
 
@@ -388,10 +388,10 @@ JSON만 출력."""
 
     def _update_quanta_with_growth(self, stats: Dict):
         """
-        INTELLIGENCE_QUANTA.md를 상태 스냅샷이 아닌 사고 성장 일지로 갱신.
+        state.md를 상태 스냅샷이 아닌 사고 성장 일지로 갱신.
         어떤 모델이 읽어도 현재 사고 수준을 즉시 파악할 수 있도록.
         """
-        quanta_path = self.knowledge_dir / 'agent_hub' / 'INTELLIGENCE_QUANTA.md'
+        quanta_path = self.knowledge_dir / 'agent_hub' / 'state.md'
         lm_path = self.knowledge_dir / 'long_term_memory.json'
 
         if not quanta_path.exists():
@@ -440,7 +440,7 @@ JSON만 출력."""
                 content += f"\n\n{new_section}"
 
             quanta_path.write_text(content, encoding='utf-8')
-            logger.info("✅ INTELLIGENCE_QUANTA.md 성장 일지 갱신")
+            logger.info("✅ state.md 성장 일지 갱신")
 
         except Exception as e:
             logger.warning("QUANTA 성장 갱신 실패: %s", e)

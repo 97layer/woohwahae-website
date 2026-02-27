@@ -22,8 +22,8 @@ cat << 'EOF'
 ━━━ CONTEXT GUARD ━━━
 코드 수정 전 필수 확인:
 
-✅ THE_ORIGIN.md 읽었나?
-✅ 관련 practice/*.md 읽었나?
+✅ the_origin.md 읽었나?
+✅ 관련 practice.md 읽었나?
 ✅ 기존 코드 Read 했나?
 ✅ Dependency Graph 확인했나?
 

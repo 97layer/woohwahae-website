@@ -43,7 +43,7 @@
     window.addEventListener('load', function () {
       setTimeout(function () {
         document.body.classList.add('is-loaded');
-      }, 600); // 600ms 동안 렌더 엔진 안정화 후 베일 벗기기
+      }, 1500); // 1.5초 동안 로고 노출 후 베일 벗기기
     });
   </script>
   <!-- /COMPONENT:preloader -->
@@ -71,17 +71,16 @@
   <!-- 홈 히어로: 100dvh — 수치와 기하학적 정보로 빈약함 해결 -->
   <section class="home-hero">
     <div class="home-metadata home-metadata--top" data-reveal>
-      <span class="mono">STUDIO — ULSAN / KR</span>
       <span class="mono">35.5384° N / 129.3114° E</span>
+      <span class="mono">ULSAN / KR</span>
     </div>
 
     <div class="home-hero-content" data-reveal>
-      <div class="home-hero-brand mono">[ WOOHWAHAE / STUDIO ]</div>
     </div>
 
     <div class="home-metadata home-metadata--bottom" data-reveal>
-      <span class="mono">소음이 걷힌 진공에 다다라서야 명징한 본질이 나선다.</span>
-      <span class="mono">EST. 2026 — 羽化 (RESONANCE)</span>
+      <span class="mono">3.8S RESONANCE CYCLE</span>
+      <span class="mono">PRIVATE ATELIER</span>
     </div>
 
     <!-- 미세 노이즈 입자 레이어 (Depth) -->
@@ -94,19 +93,19 @@
     <div class="home-below__inner container--content">
       <nav class="home-entries" data-reveal>
         <a class="home-entry" href="/archive/">
-          <span class="home-entry__index mono">[01/3]</span>
-          <span class="home-entry__label">Archive</span>
-          <span class="home-entry__sub">슬로우 라이프의 기록</span>
+          <span class="home-entry__index mono">REF_01</span>
+          <span class="home-entry__label mono">ARCHIVE</span>
+          <span class="home-entry__sub">기록과 에세이</span>
         </a>
         <a class="home-entry" href="/practice/">
-          <span class="home-entry__index mono">[02/3]</span>
-          <span class="home-entry__label">Practice</span>
-          <span class="home-entry__sub">예약제 아틀리에</span>
+          <span class="home-entry__index mono">REF_02</span>
+          <span class="home-entry__label mono">PRACTICE</span>
+          <span class="home-entry__sub">아틀리에 프로젝트</span>
         </a>
         <a class="home-entry" href="/about/">
-          <span class="home-entry__index mono">[03/3]</span>
-          <span class="home-entry__label">About</span>
-          <span class="home-entry__sub">소음을 제거하면, 본질이 남는다</span>
+          <span class="home-entry__index mono">REF_03</span>
+          <span class="home-entry__label mono">ABOUT</span>
+          <span class="home-entry__sub">브랜드 철학</span>
         </a>
       </nav>
     </div>

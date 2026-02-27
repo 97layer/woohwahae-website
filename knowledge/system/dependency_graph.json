@@ -5,14 +5,14 @@
   "description": "Dependency Graph — 파일 수정 시 영향 범위 추적 및 자동 전파",
 
   "nodes": {
-    "directives/THE_ORIGIN.md": {
+    "directives/the_origin.md": {
       "type": "doctrine",
       "tier": "FROZEN",
       "description": "시스템 최상위 SSOT. 철학적 근간 (Part 0, I).",
       "dependencies": [],
       "dependents": [
-        "directives/SYSTEM.md",
-        "directives/practice/*.md",
+        "directives/system.md",
+        "directives/practice.md",
         "directives/agents/*.md",
         "website/**/*.html",
         "CLAUDE.md"
@@ -23,19 +23,23 @@
       }
     },
 
-    "directives/practice/visual.md": {
+    "directives/practice.md": {
       "type": "practice",
       "tier": "PROPOSE",
-      "description": "시각적 무게 중심 조율 규칙",
-      "dependencies": ["directives/THE_ORIGIN.md"],
+      "description": "통합 실천 규격 (Part I 시각 / Part II 언어 / Part III 공간)",
+      "dependencies": ["directives/the_origin.md"],
       "dependents": [
         "website/assets/css/style.css",
-        "directives/agents/AD.md",
-        "website/_templates/*.html"
+        "directives/agents/ad.md",
+        "directives/agents/ce.md",
+        "directives/agents/sa.md",
+        "website/_templates/*.html",
+        "knowledge/service/items.json",
+        "knowledge/corpus/essay-001.md"
       ],
       "cascade_rules": {
         "on_change": "notify_agents",
-        "propagate": "css_update + template_review"
+        "propagate": "css_update + template_review + content_review"
       }
     },
 
@@ -43,7 +47,7 @@
       "type": "asset",
       "tier": "AUTO",
       "description": "전역 디자인 토큰 (:root)",
-      "dependencies": ["directives/practice/visual.md"],
+      "dependencies": ["directives/practice.md"],
       "dependents": [
         "website/**/*.html"
       ],
@@ -57,7 +61,7 @@
       "type": "data",
       "tier": "AUTO",
       "description": "서비스 목록 데이터 (에세이 + 서비스)",
-      "dependencies": ["directives/practice/service.md"],
+      "dependencies": ["directives/practice.md"],
       "dependents": [
         "website/archive/index.html",
         "website/practice/*.html",
@@ -73,7 +77,7 @@
       "type": "content",
       "tier": "AUTO",
       "description": "에세이 콘텐츠",
-      "dependencies": ["directives/practice/content.md"],
+      "dependencies": ["directives/practice.md"],
       "dependents": [
         "knowledge/service/items.json#essay-001",
         "website/archive/essay-001.html"

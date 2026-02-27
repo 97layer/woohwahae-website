@@ -8,9 +8,9 @@ LAYER OS 전체 상태를 진단한다.
 
 ## 실행 순서
 
-1. **INTELLIGENCE_QUANTA 상태**
+1. **state.md 상태**
 ```bash
-cat knowledge/agent_hub/INTELLIGENCE_QUANTA.md | head -40
+cat knowledge/agent_hub/state.md | head -40
 ```
 
 2. **Work Lock 상태**
