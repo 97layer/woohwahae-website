@@ -174,7 +174,7 @@ class StrategyAnalyst:
             }
 
     def _load_directive(self) -> str:
-        """SA.md 에이전트 지침 + content.md 공명 대상 로드"""
+        """sa.md 에이전트 지침 + practice.md 공명 대상 로드"""
         parts = []
         # SA 기본 지침
         directive_path = PROJECT_ROOT / 'directives' / 'agents' / 'sa.md'

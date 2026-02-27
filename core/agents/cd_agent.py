@@ -4,7 +4,7 @@ WOOHWAHAE Creative Director (CD) Agent — LAYER OS
 
 Role:
 - Final brand stewardship: approve/reject/revise content
-- WOOHWAHAE 브랜드 정렬도 판단 (philosophy.md + voice_tone.md 기준)
+- WOOHWAHAE 브랜드 정렬도 판단 (sage_architect.md §10 기준)
 - Quality gate before publish
 
 LLM: Claude Sonnet 4.5
@@ -63,19 +63,14 @@ class CreativeDirector:
         print(f"CD: 준비됨. 브랜드 기준 로드 완료.")
 
     def _load_criteria(self) -> str:
-        """WOOHWAHAE 브랜드 판단 기준 로드 — IDENTITY + philosophy + voice_tone"""
-        parts = []
-        for path in [
-            PROJECT_ROOT / 'directives' / 'IDENTITY.md',
-            PROJECT_ROOT / 'directives' / 'brand' / 'philosophy.md',
-            PROJECT_ROOT / 'directives' / 'brand' / 'voice_tone.md',
-        ]:
-            try:
-                if path.exists():
-                    parts.append(path.read_text(encoding='utf-8')[:1500])
-            except Exception:
-                pass
-        return '\n\n---\n\n'.join(parts) if parts else "본질 우선. 동작이 진실. 단순함이 답."
+        """WOOHWAHAE 브랜드 판단 기준 로드 — sage_architect.md §10 (품질 게이트)"""
+        path = PROJECT_ROOT / 'directives' / 'sage_architect.md'
+        try:
+            if path.exists():
+                return path.read_text(encoding='utf-8')[:3000]
+        except Exception:
+            pass
+        return "본질 우선. 동작이 진실. 단순함이 답."
 
     def review_content(self, content_draft: Dict[str, Any]) -> Dict[str, Any]:
         """

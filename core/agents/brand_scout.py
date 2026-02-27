@@ -654,11 +654,11 @@ Kinfolk와 Cereal의 최근 아티클들은 매끈하게 다듬어진 공간보�
 - 기술적 튜토리얼보다는 '머무름'과 '비움'에 대한 철학적 고찰.
 """
 
-        # 4. 저장 → knowledge/reports/ (FILESYSTEM_MANIFEST 규칙)
+        # 4. 저장 → knowledge/reports/ (system.md §10 배치 규칙)
         reports_dir = PROJECT_ROOT / "knowledge" / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        # MANIFEST 위반 방지: wellness_report → morning/evening/audit만 허용
+        # system.md §10 위반 방지: wellness_report → morning/evening/audit만 허용
         # 현재 wellness report는 비규격이므로 knowledge/docs/archive로 우회
         filename = "wellness_report_%s.md" % datetime.now().strftime('%Y%m%d')
         report_path = PROJECT_ROOT / "knowledge" / "docs" / "archive" / filename
@@ -671,7 +671,7 @@ Kinfolk와 Cereal의 최근 아티클들은 매끈하게 다듬어진 공간보�
             "%s\n"
         ) % (datetime.now().strftime('%Y-%m-%d'), len(files), report_content)
 
-        # 직접 쓰기 (docs/archive는 MANIFEST 검증 느슨)
+        # 직접 쓰기 (docs/archive는 배치 검증 느슨)
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(final_md, encoding="utf-8")
         print("[Scout] 리포트 생성 완료 (archive): %s" % report_path)

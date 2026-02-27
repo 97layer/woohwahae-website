@@ -42,25 +42,18 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# Brand OS 문서 로딩 (NotebookLM 연결 불가 시 primary source)
-BRAND_DIR = PROJECT_ROOT / "directives" / "brand"
-
+# 브랜드 보이스 로딩 — sage_architect.md (인격 SSOT)
 def _load_brand_directives() -> str:
-    """brand/voice_tone.md + brand/content_system.md 로드 → CE 브랜드 보이스"""
-    docs = []
-    for filename in ["voice_tone.md", "content_system.md"]:
-        filepath = BRAND_DIR / filename
-        try:
-            content = filepath.read_text(encoding="utf-8")
-            # 토큰 절약: 처음 1500자
-            docs.append(content[:1500])
-        except FileNotFoundError:
-            pass
-    if docs:
-        return "\n---\n".join(docs)
+    """sage_architect.md 로드 → CE 브랜드 보이스"""
+    filepath = PROJECT_ROOT / "directives" / "sage_architect.md"
+    try:
+        content = filepath.read_text(encoding="utf-8")
+        return content[:3000]
+    except FileNotFoundError:
+        pass
     # 최소 fallback
     return (
-        "97layer 브랜드 보이스:\n"
+        "WOOHWAHAE 브랜드 보이스:\n"
         "- 톤: 사색적, 절제된, 밀도 있는\n"
         "- 금지어: 대박, 꿀팁, 핫, 트렌디, 과장 형용사\n"
         "- 허용어: 본질, 기록, 순간, 흔적, 절제, 고요함\n"

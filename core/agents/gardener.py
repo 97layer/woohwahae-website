@@ -5,9 +5,9 @@ Gardener — LAYER OS 자가진화 에이전트
 매일 새벽 3시 실행. 데이터를 분석하고 시스템을 진화시킨다.
 
 수정 권한 3단계:
-  FROZEN  — 절대 불가 (IDENTITY.md, CD.md)
-  PROPOSE — 순호 승인 후 적용 (SA/AD/CE.md, intent 기준)
-  AUTO    — 자동 갱신 (long_term_memory, QUANTA)
+  FROZEN  — 절대 불가 (the_origin.md, sage_architect.md)
+  PROPOSE — 순호 승인 후 적용 (agents/*.md, practice.md)
+  AUTO    — 자동 갱신 (state.md, signals/, memory)
 
 Author: LAYER OS
 Updated: 2026-02-16
@@ -38,8 +38,8 @@ logger = logging.getLogger(__name__)
 # ── 권한 정의 ─────────────────────────────────────
 FROZEN = {
     # 순호의 본질 — 절대 불가
-    "IDENTITY.md",
-    "CD.md",
+    "the_origin.md",
+    "sage_architect.md",
 }
 
 PROPOSE = {

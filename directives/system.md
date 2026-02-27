@@ -25,18 +25,15 @@
 |------|------|------|
 | **FROZEN** | `the_origin.md`, `sage_architect.md` | CD 고유 권한. 임의 수정 금지 |
 | **PROPOSE** | `agents/*.md`, `practice.md` | 피드백 루프 (승인제 변경) |
-| **AUTO** | `QUANTA.md`, `signals/`, `memory` | 비동기 상태 기록 |
+| **AUTO** | `state.md`, `signals/`, `memory` | 비동기 상태 기록 |
 
 ---
 
 ## 3. Data Pipeline (증류 모형)
 
-```
-Signal → [SA] Quanta → [Gardener] 성숙
-  → [CE] Draft → [Ralph] STAP 검증
-  → [AD] 시각 검증 → [CD] Artifact → 발행
-```
+> 상세 도식: practice.md Part II §6
 
+Signal → SA → Gardener → CE → Ralph → AD → CD → 발행.
 각 단계는 독립 실패 가능. 실패 시 이전 단계로 리턴.
 
 ---
@@ -92,7 +89,7 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 | Type | 설명 | 로드 문서 |
 |------|------|----------|
 | **A** | 에세이 작성 | the_origin.md + practice.md Part II |
-| **B** | 웹카피/DM | sage_architect.md + practice.md Part II §10 |
+| **B** | 웹카피/DM | sage_architect.md §7 + practice.md Part II §8 |
 | **C** | 시스템 문서 편집 | sage_architect.md + 대상 문서 |
 | **D** | 디자인/시각 | practice.md Part I |
 | **E** | 서비스 설계 | practice.md Part III |
@@ -105,16 +102,16 @@ python core/system/handoff.py --register-asset <path> <type> <source>
 CONTEXT_SLOTS = {
     "slot_1": "sage_architect.md",        # 인격 + 용어 (필수)
     "slot_2": "practice.md",               # Part I 시각 / Part II 언어 / Part III 공간
-    "slot_5": "agents/{role}.md",         # 역할별
-    "slot_6": "(reserved)",               # 확장용
+    "slot_3": "agents/{role}.md",         # 역할별
+    "slot_4": "(reserved)",               # 확장용
 }
 ```
 
 | Agent | 필수 | 선택 |
 |-------|------|------|
-| **CE** | 1, 3 | 5 (CE.md) |
-| **SA** | 1, 3 | 5 (SA.md) |
-| **AD** | 1, 2 | 5 (AD.md) |
+| **CE** | 1, 2 | 3 (ce.md) |
+| **SA** | 1, 2 | 3 (sa.md) |
+| **AD** | 1, 2 | 3 (ad.md) |
 | **Ralph** | 1 | STAP 섹션만 |
 
 ---
@@ -122,18 +119,15 @@ CONTEXT_SLOTS = {
 ## 8. Constraint Enforcement (제약 강제)
 
 ### 8.1 언어 제약
-- sage_architect.md §9 금칙 규정 엄수
-- 금지: 느낌표(!), 이모지, 감정 과잉, 세일즈 톤
+- SSOT: sage_architect.md §9 금칙 규정
 
 ### 8.2 시각 제약
-- 색상: #E3E2E0 (bg), #1A1A1A (text), #7A7A74 (faint)
-- 폰트: IBM Plex Mono (label), Pretendard (body)
-- 여백: 최소 60% 강제
+- SSOT: practice.md Part I (Colors, Typography, Spacing, Breath)
 
 ### 8.3 STAP 게이트
-- 5 Pillars: 사유의 질량/진정성의 고립/실효적 파동/사유의 여백/고유한 주파수
-- 90점 미만 → 재작성 (최대 2회)
-- 2회 후 미달 → CD 수동 검토
+- SSOT: sage_architect.md §10 + practice.md Part II §4
+- 70점+ → 통과, 50-69 → 정제(revise), 49↓ → 거절(reject)
+- 미달 시 재작성 최대 2회. 이후 CD 수동 검토
 
 ---
 
@@ -211,7 +205,7 @@ SESSION_SUMMARY_* / WAKEUP_REPORT* / DEPLOY_* / NEXT_STEPS* / temp_* / untitled_
 당신은 WOOHWAHAE 브랜드의 전담 편집 에이전트입니다.
 필수: sage_architect.md 최우선 / the_origin.md / practice.md
 금지: 느낌표, 이모지, 감정 과잉, 세일즈 톤
-검열: STAP 5 Pillars 90점 이상만 출력
+검열: STAP 5 Pillars 70점 이상만 출력
 ```
 
 ---
@@ -261,7 +255,7 @@ Generate ← Publish (Essay) ← Generate (Essay)
 자동화 트리거:
 - 신호 20개 누적 → SA 군집 분석
 - 군집 ripe → CE 에세이 초안
-- 에세이 STAP 90점 → AD 시각화 + 발행
+- 에세이 STAP 70점+ → AD 시각화 + 발행
 
 ---
 
@@ -278,4 +272,4 @@ Generate ← Publish (Essay) ← Generate (Essay)
 ---
 
 _Last Updated: 2026-02-27_
-_Version: 10.0 (MANIFEST + AI_CONSTITUTION + glossary 통합)_
+_Version: 10.1 (통합 운영 매뉴얼)_

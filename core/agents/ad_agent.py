@@ -43,21 +43,23 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# Brand OS 디자인 토큰 로딩
-BRAND_DIR = PROJECT_ROOT / "directives" / "brand"
-
+# 디자인 토큰 로딩 — practice.md Part I
 def _load_design_tokens() -> str:
-    """brand/design_tokens.md 로드 → AD 시각 기준"""
-    filepath = BRAND_DIR / "design_tokens.md"
+    """practice.md Part I 로드 → AD 시각 기준"""
+    filepath = PROJECT_ROOT / "directives" / "practice.md"
     try:
         content = filepath.read_text(encoding="utf-8")
-        return content[:2000]  # 토큰 절약
+        # Part I 시각 섹션만 추출 (Part II 이전까지)
+        part1_end = content.find("# Part II")
+        if part1_end > 0:
+            return content[:part1_end][:2000]
+        return content[:2000]
     except FileNotFoundError:
         pass
     # 최소 fallback
     return (
         "WOOHWAHAE 시각 아이덴티티:\n"
-        "- 색상: #E4E2DC(배경), #1a1a1a(텍스트), #1B2D4F(네이비)\n"
+        "- 색상: #E3E2E0(배경), #1a1a1a(텍스트), #1B2D4F(네이비)\n"
         "- 서체: Pretendard Variable(본문), Crimson Text(세리프)\n"
         "- 여백: 60%+, max-content: 680px\n"
         "- 사진: muted, desaturated, 35mm 필름 그레인, 자연광\n"

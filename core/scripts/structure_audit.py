@@ -67,16 +67,31 @@ def check_dead_references() -> List[str]:
                         continue
                     # 무시: 일반적 파일명, 플랫폼 파일, 패턴 예시
                     IGNORE_REFS = {
-                        "README.md", "CLAUDE.md", "SKILL.md", "QUANTA.md",
+                        "README.md", "CLAUDE.md", "SKILL.md",
                         "source.md", "raw_content.md", "state.md",
                         # 에이전트 코드 내 축약 참조 (agents/ 접두사 없이)
-                        "SA.md", "CE.md", "AD.md", "sa.md", "ce.md", "ad.md",
-                        "CD.md", "cd.md", "IDENTITY.md",
+                        "sa.md", "ce.md", "ad.md",
+                        # 삭제된 파일 (코드 내 문자열 잔존 가능)
+                        "practice.md", "sage_architect.md", "the_origin.md",
+                        "system.md",
                     }
                     if ref in IGNORE_REFS or Path(ref).name in IGNORE_REFS:
                         continue
                     # 무시: 날짜/패턴 변수가 포함된 참조
                     if "YYYYMMDD" in ref or "%s" in ref or "{" in ref:
+                        continue
+                    # 무시: 코드 내 일반 패턴/예시 문자열
+                    GENERIC_PATTERNS = {
+                        "filename.md", "path/to/filename.md",
+                        "test.md", "hashlib.md", "identity.md",
+                        "nsystem.md", "philosophy.md", "voice_tone.md",
+                        "content_system.md", "design_tokens.md",
+                        "cd.md",
+                        # 금지 파일명 예시 (verify.md 등에서 참조)
+                        "WAKEUP_REPORT.md", "DEEP_WORK_PROGRESS.md",
+                        "NEXT_STEPS.md",
+                    }
+                    if ref in GENERIC_PATTERNS or Path(ref).name in GENERIC_PATTERNS:
                         continue
                     # 무시: 2글자 이하 (regex 잔해)
                     if len(ref) <= 4:
