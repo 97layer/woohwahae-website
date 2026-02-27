@@ -12,7 +12,6 @@
       "dependencies": [],
       "dependents": [
         "directives/SYSTEM.md",
-        "directives/MANIFEST.md",
         "directives/practice/*.md",
         "directives/agents/*.md",
         "website/**/*.html",

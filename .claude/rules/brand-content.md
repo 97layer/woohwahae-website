@@ -11,7 +11,7 @@ globs: directives/practice/**,knowledge/**
 - 불필요한 수식어 제거
 
 ## 파일 작성
-- 파일 생성 전 FILESYSTEM_MANIFEST.md 배치 규칙 확인
+- 파일 생성 전 SYSTEM.md §10 배치 규칙 확인
 - knowledge/ 내 신규 파일은 반드시 asset_registry.json에 등록
 - 금지 파일명: temp_, untitled_, 무제
 

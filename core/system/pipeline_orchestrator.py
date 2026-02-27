@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 LAYER OS Pipeline Orchestrator
-SA → AD → CE → CD → ContentPublisher 자동 파이프라인
+Signal → SA → Gardener → CE → Ralph → AD → CD → Publisher 자동 파이프라인
 
 역할:
 - SA 완료 태스크 감지 → AD 태스크 생성
@@ -50,8 +50,10 @@ class PipelineOrchestrator:
             "next_task_type": "review_content"
         }
     }
-    # Pipeline: SA → CE → Ralph(inline QA) → AD → CD
-    # Ralph는 CE 완료 후 인라인 품질 게이트로 동작 (별도 스테이지 아님)
+    # 확정 파이프라인: Signal → SA → Gardener(군집) → CE → Ralph(STAP) → AD → CD → Publisher
+    # Gardener는 corpus 성숙도 기반 트리거 (별도 데몬)
+    # Ralph는 CE 완료 후 인라인 품질 게이트 (별도 스테이지 아님)
+    # CD 판단 기준: SAGE_ARCHITECT.md §10
 
     MAX_CE_RETRIES = 2  # CD 거절 후 CE 재작업 최대 횟수
     RALPH_PASS_SCORE = 70  # Ralph 품질 게이트

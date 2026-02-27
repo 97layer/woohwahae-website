@@ -1,5 +1,5 @@
 ---
-description: FILESYSTEM_MANIFEST 기반 배치 규칙 조회
+description: SYSTEM.md §10 기반 배치 규칙 조회
 ---
 
 # /manifest — 서재 배치 규칙 조회
@@ -8,10 +8,10 @@ description: FILESYSTEM_MANIFEST 기반 배치 규칙 조회
 
 ## 실행 순서
 
-1. **매니페스트 읽기**
+1. **배치 규칙 읽기 (SYSTEM.md §10)**
 
 ```bash
-cat directives/MANIFEST.md
+cat directives/SYSTEM.md | grep -A 50 '§10'
 ```
 
 1. **산출물 배치 규칙 요약 출력**

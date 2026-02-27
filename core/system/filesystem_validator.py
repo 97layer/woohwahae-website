@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Filesystem Validator — MANIFEST.md 기반 파일 쓰기 사전 검증
+Filesystem Validator — SYSTEM.md §10 기반 파일 쓰기 사전 검증
 
 Purpose:
-- Python 에이전트의 모든 파일 쓰기를 MANIFEST 규칙에 따라 검증
+- Python 에이전트의 모든 파일 쓰기를 SYSTEM.md §10 규칙에 따라 검증
 - 위반 시 PermissionError 발생 → 파일 생성 차단
 - 성공 시 filesystem_cache.json 자동 갱신
 
@@ -27,10 +27,10 @@ from datetime import datetime
 from typing import Tuple, Optional, Union
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-MANIFEST = PROJECT_ROOT / "directives" / "MANIFEST.md"
+MANIFEST = PROJECT_ROOT / "directives" / "SYSTEM.md"  # §10 Filesystem Placement
 CACHE = PROJECT_ROOT / "knowledge" / "system" / "filesystem_cache.json"
 
-# MANIFEST.md 기반 명명 규칙
+# SYSTEM.md §10 기반 명명 규칙
 ALLOWED_PATTERNS = {
     "knowledge/signals/": [
         r"^(text|url|messenger|voice)_\d{8}_\d{6}\.json$",
@@ -76,7 +76,7 @@ ROOT_ALLOWED = ["CLAUDE.md", "README.md", ".gitignore", ".env", ".ai_rules"]
 
 def validate_write(path: Path) -> Tuple[bool, str]:
     """
-    파일 쓰기 전 MANIFEST 규칙 검증
+    파일 쓰기 전 SYSTEM.md §10 규칙 검증
 
     Returns:
         (허용 여부, 거부 사유 or "")
@@ -106,7 +106,7 @@ def validate_write(path: Path) -> Tuple[bool, str]:
         return True, ""
     if rel_str.startswith("website/") and path.suffix == ".md":
         if path.name != "README.md":
-            return False, "website/ 내 .md 파일 생성 금지 (MANIFEST.md:85)"
+            return False, "website/ 내 .md 파일 생성 금지 (SYSTEM.md §10)"
 
     # 4. 경로별 명명 규칙 검증
     matched_dir = None
@@ -154,7 +154,7 @@ def validate_write(path: Path) -> Tuple[bool, str]:
                 return True, ""
 
         # 위 패턴에 없는 knowledge 하위 경로는 거부
-        return False, f"MANIFEST에 정의되지 않은 knowledge 경로: {rel_str}"
+        return False, f"SYSTEM.md §10에 정의되지 않은 knowledge 경로: {rel_str}"
 
     # core/, directives/, .claude/ 등은 통과
     return True, ""
@@ -176,7 +176,7 @@ def safe_write(
         auto_register: filesystem_cache.json 자동 갱신 여부
 
     Raises:
-        PermissionError: MANIFEST 규칙 위반 시
+        PermissionError: SYSTEM.md §10 규칙 위반 시
     """
     if isinstance(path, str):
         path = Path(path)
@@ -195,7 +195,7 @@ def safe_write(
             f"에이전트: {agent_id}\n"
             f"경로: {path}\n"
             f"사유: {reason}\n"
-            f"\nMANIFEST.md 참조: {MANIFEST}\n"
+            f"\nSYSTEM.md §10 참조: {MANIFEST}\n"
             f"{'='*60}"
         )
 
@@ -278,7 +278,7 @@ def validate_existing_files(root: Optional[Path] = None) -> list[dict]:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="MANIFEST 기반 파일 검증")
+    parser = argparse.ArgumentParser(description="SYSTEM.md §10 기반 파일 검증")
     parser.add_argument("--staged", action="store_true", help="Git staged 파일만 검증 (pre-commit)")
     parser.add_argument("--all", action="store_true", help="전체 파일 검증")
     args = parser.parse_args()
@@ -300,13 +300,13 @@ if __name__ == "__main__":
                     violations.append({"path": str(path.relative_to(PROJECT_ROOT)), "reason": reason})
 
         if violations:
-            print("\n🔴 MANIFEST 위반 파일 발견 — 커밋 중단\n")
+            print("\n🔴 SYSTEM.md §10 위반 파일 발견 — 커밋 중단\n")
             for v in violations:
                 print(f"  - {v['path']}")
                 print(f"    사유: {v['reason']}\n")
             sys.exit(1)
         else:
-            print("✅ 모든 staged 파일이 MANIFEST 규칙 준수")
+            print("✅ 모든 staged 파일이 SYSTEM.md §10 규칙 준수")
             sys.exit(0)
 
     elif args.all:
@@ -314,13 +314,13 @@ if __name__ == "__main__":
         violations = validate_existing_files()
 
         if violations:
-            print(f"🔴 MANIFEST 위반 파일: {len(violations)}개\n")
+            print(f"🔴 SYSTEM.md §10 위반 파일: {len(violations)}개\n")
             for v in violations[:20]:
                 print(f"  - {v['path']}")
                 print(f"    사유: {v['reason']}\n")
             sys.exit(1)
         else:
-            print("✅ 모든 파일이 MANIFEST 규칙을 준수합니다.")
+            print("✅ 모든 파일이 SYSTEM.md §10 규칙을 준수합니다.")
             sys.exit(0)
 
     else:

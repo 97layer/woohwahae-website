@@ -15,39 +15,33 @@ logger = logging.getLogger(__name__)
 
 AGENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "directives", "agents")
 DIRECTIVES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "directives")
-BRAND_DIR = os.path.join(DIRECTIVES_DIR, "brand")
-
 AGENT_REGISTRY: Dict[str, Dict[str, str]] = {
-    "CD": {"file": "CD.md", "name": "Creative Director", "label": "CD"},
+    # CD는 SAGE_ARCHITECT.md §10에 흡수됨
     "AD": {"file": "AD.md", "name": "Art Director", "label": "AD"},
     "CE": {"file": "CE.md", "name": "Chief Editor", "label": "CE"},
     "SA": {"file": "SA.md", "name": "Strategy Analyst", "label": "SA"},
 }
 
-# Brand OS 문서 매핑 (에이전트별 필독 brand/ 문서)
+# 에이전트별 필독 문서 매핑 (practice/ 기반)
 AGENT_DIRECTIVES: Dict[str, list] = {
-    "CD": [
-        "brand/foundation.md",
-        "IDENTITY.md",
-    ],
     "SA": [
-        "brand/audience.md",
-        "brand/content_system.md",
+        "practice/content.md",
     ],
     "CE": [
-        "brand/content_system.md",
-        "brand/voice_tone.md",
+        "practice/content.md",
+        "SAGE_ARCHITECT.md",
     ],
     "AD": [
-        "brand/design_tokens.md",
+        "practice/visual.md",
     ],
 }
 
 # 메시지 키워드 → 에이전트 매핑 (1차 필터)
 KEYWORD_MAP: Dict[str, list] = {
-    "CD": ["철학", "방향", "브랜드", "비전", "미션", "승인", "전략", "가치", "본질", "정체성"],
+    # CD 키워드는 CE로 흡수 (SAGE_ARCHITECT.md 기반 판단)
     "AD": ["디자인", "UI", "로고", "시각", "레이아웃", "폰트", "색상", "이미지", "비주얼"],
-    "CE": ["카피", "문구", "톤", "글", "콘텐츠", "에디토리얼", "매니페스토", "슬로건", "텍스트"],
+    "CE": ["카피", "문구", "톤", "글", "콘텐츠", "에디토리얼", "매니페스토", "슬로건", "텍스트",
+           "철학", "방향", "브랜드", "비전", "미션", "승인", "가치", "본질", "정체성"],
     "SA": ["트렌드", "분석", "데이터", "시장", "경쟁", "리서치", "인사이트", "통계", "조사"],
 }
 
@@ -157,8 +151,8 @@ class AgentRouter:
             if agent:
                 return agent
 
-        # 4. 기본값: CD (최상위 의사결정권자)
-        return "CD"
+        # 4. 기본값: CE (편집장 — CD는 SAGE_ARCHITECT.md에 흡수)
+        return "CE"
 
     def _keyword_match(self, text: str) -> Optional[str]:
         """키워드 매칭으로 에이전트 분류"""

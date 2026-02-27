@@ -1,10 +1,22 @@
 # Design Tokens — 시각 정체성
 
-> **상위**: THE_ORIGIN.md Part III §3.1
+> **상위**: THE_ORIGIN.md 제3장 "시각의 침묵"
 > **역할**: 시각적 침묵을 구현하는 디자인 시스템(CSS SSOT) 실무 규격.
 > **권한**: PROPOSE
 > **참조 에이전트**: AD (필수), CE (이미지 선정 시)
 > **주의**: 이 문서가 SSOT. style.css 변경 시 반드시 동기화.
+
+---
+
+## 0. 시각의 침묵 (Visual Silence) — 핵심 개념
+
+사유를 담아내는 공간의 기본 컨셉은 **"낡은 종이 위에 0.5mm 연필선으로 그린 동심원의 파동"**입니다.
+
+창백하게 낡아가는 회색빛(#E3E2E0) 종이와 먹처럼 단정한 검은 잉크(#1A1A1A)만이 허용됩니다. 우리는 덧칠하는 것이 아니라 긁어내듯 그립니다.
+
+인간의 호흡에 가장 닿아 있는 **3.8초의 맥동**과 절대적으로 강제된 **60% 이상의 텅 빈 여백**. 이 속에서 화면은 화려한 캔버스가 아니라 당신이 잠시 거주하며 사유를 투기하기 위한 빈 그릇이 됩니다.
+
+가벼움과 무의미한 유행을 경계하기 위해, 우리는 구도자의 도면을 닮은 극단적인 폰트(IBM Plex Mono)만을 건축 자재로 사용합니다.
 
 ---
 
@@ -14,11 +26,11 @@
 
 | Token | 값 | 용도 | 우선순위 |
 |-------|-----|------|---------|
-| `--bg` | #E4E2DC | 메인 배경 (낡은 종이) | ★★★ PRIMARY |
-| `--bg-dark` | #E8E7E2 | 보조 배경 | ★★★ PRIMARY |
+| `--bg` | #E3E2E0 | 메인 배경 (낡은 종이) | ★★★ PRIMARY |
+| `--bg-dark` | #DDDCDA | 보조 배경 | ★★★ PRIMARY |
 | `--text` | #1a1a1a | 본문 텍스트 (잉크) | ★★★ PRIMARY |
 | `--text-sub` | #4a4a4a | 보조 텍스트 | ★★★ PRIMARY |
-| `--text-faint` | #8E8E88 | 희미한 텍스트 (캡션, 날짜) | ★★★ PRIMARY |
+| `--text-faint` | #7A7A74 | 희미한 텍스트 (WCAG AA 4.5:1 확보) | ★★★ PRIMARY |
 | `--white` | #FFFFFF | 흰색 (반전용) | ★★★ PRIMARY |
 | `--line` | #D5D4CF | 구분선 | ★★★ PRIMARY |
 
@@ -55,12 +67,12 @@
 
 ## 2. Typography
 
-| Token | 값 | 용도 |
-|-------|-----|------|
-| `--font-body` | Pretendard Variable | 본문 (한국어 가독성) |
-| `--font-mono` | IBM Plex Mono, DM Mono | 레이블, 코드 |
-| `--font-serif` | Crimson Text | 포인트 세리프 (최소 사용) |
-| `--font-serif-slab` | Bitter | 슬랩 세리프 |
+| Token | 값 | 용도 | 상태 |
+|-------|-----|------|------|
+| `--font-body` | Pretendard Variable | 본문 (한국어 가독성) | ✅ 적용 |
+| `--font-mono` | IBM Plex Mono, DM Mono | 레이블, 코드 | ✅ 적용 |
+| `--font-serif` | Crimson Text | 포인트 세리프 (최소 사용) | ⚠️ 미적용 (Pretendard 대체) |
+| `--font-serif-slab` | Bitter | 슬랩 세리프 | ⚠️ 미적용 |
 
 ### Letter-spacing
 
@@ -229,11 +241,27 @@ z-index: 1  — 콘텐츠
 z-index: 200 — 네비게이션
 ```
 
-| 페이지 유형 | z-0 배경 | 구현 |
-|------------|---------|------|
-| Home | Three.js 쌍극자 자기장 캔버스 | `bg-field.js` + `<canvas class="field-bg">` |
-| 내부 페이지 | SVG 동심원 파동 | `<div class="wave-bg">` + SMIL animate |
-| 에세이 읽기 | 없음 (텍스트에 집중) | 배경 비움 |
+| 페이지 유형 | z-0 배경 | 철학적 근거 | 구현 |
+|------------|---------|------------|------|
+| **Home** | Three.js 쌍극자 자기장 캔버스 | **공명의 물리적 은유**: 보이지 않는 파동장(Field of Resonance)을 시각화. 중심에서 퍼지는 자기력선 = THE_ORIGIN §1.2 "자발적 파동 전이". 극세선(0.5px) 대신 3D 곡선으로 깊이 렌더링. 홈은 "첫 인상 = 파동장 진입" 연출 필요. | `bg-field.js` + `<canvas class="field-bg">` |
+| 내부 페이지 | SVG 동심원 파동 | 2D 극세선 파동 (호흡 주기 3.8s). 텍스트 방해하지 않는 정적 배경. | `<div class="wave-bg">` + SMIL animate |
+| 에세이 읽기 | 없음 (텍스트 집중) | 여백 60%+ 극대화. 독서 몰입 우선. | 배경 비움 |
+
+#### Three.js Field 규격 (Home 전용)
+
+**파라미터**:
+- **색상**: `#E3E2E0` (배경 톤과 동기화)
+- **선 밀도**: 데스크톱 96개 / 모바일 32개
+- **곡선 정밀도**: 데스크톱 500 포인트 / 모바일 120 포인트
+- **안개(Fog)**: `0xE3E2E0` opacity 0.035 (깊이감)
+- **마우스 인터랙션**: 관성 추적 (고요한 반응)
+- **접근성**: prefers-reduced-motion 감지 시 비활성화
+
+**허용 근거**:
+1. 홈만 3D → 내부는 2D 동심원 (계층 분리)
+2. 쌍극자 자기장 = 공명(Resonance) 물리 법칙 시각화
+3. 모바일 최적화 (LINE_COUNT 96→32, POINTS 500→120)
+4. 배경 톤 `#E3E2E0` 동기화 → "낡은 종이" 질감 유지
 
 ### 8.3 SVG 파동 (wave-bg) 규격
 
@@ -366,6 +394,56 @@ z-index: 200 — 네비게이션
 | Apple Touch | `icon-192.png` | 192×192 |
 | OG Image | `symbol.jpg` | SNS 썸네일 |
 | Three.js 중심 | `symbol.png` (texture) | 1.2×1.2 plane |
+
+---
+
+---
+
+## 9. 웹 경험 설계 (구 experience.md 흡수)
+
+### 9.1 사이트 구조 (IA)
+
+```text
+woohwahae.kr/
+├── about/          — 브랜드 서사 (철학, 이야기, 에디터)
+├── archive/        — 매거진 (essay-NNN, magazine/, lookbook/)
+├── practice/       — 수행의 실천 (아틀리에, 디렉션, 프로젝트, 프로덕트, 연락)
+├── woosunho/       — 에디터 포트폴리오
+└── lab/            — 실험 (네비 미노출)
+```
+
+네비: `Archive | Practice | About` — 고정 상단, 드롭다운 없음, 깊이 1단계.
+
+### 9.2 섹션별 톤
+
+| 섹션 | 톤 | 참조 |
+|------|-----|------|
+| `/about/` | 단정하고 묵직한 1인칭 서술 | THE_ORIGIN Part I |
+| `/archive/` | 한다체. 깊이 있는 통찰 | content.md |
+| `/practice/` | 정확하고 정중. 수식 배제 | service.md |
+
+### 9.3 기술 스택
+
+| 영역 | 선택 | 이유 |
+| :--- | :--- | :--- |
+| 프론트엔드 | 순수 HTML/CSS/JS | 오버엔지니어링 방지, 통제권 |
+| 반응형 | 모바일 우선 | 독자 환경 대응 |
+| 배포 | Cloudflare Pages | git push = 자동 배포 |
+| 자동 발행 | content_publisher.py → git push | 파이프라인 자동화 |
+
+### 9.4 레이아웃 원칙
+
+- 화면의 60% 이상을 비워두는 여백 우선 확보
+- 콘텐츠 최대 너비: 680px (텍스트), 960px (그리드)
+- 색상/서체: 본 문서 §1-§3 디자인 시스템 참조
+
+### 9.5 금지된 경험 (Anti-Patterns)
+
+- 팝업, 모달, 강제 구독 배너
+- 좋아요 수 표기, 강압적 공유 유도
+- 조회수를 좇는 얕은 콘텐츠 배치
+- 외부 광고 삽입
+- 맥락 없이 유행을 쫓는 레이아웃 변경
 
 ---
 

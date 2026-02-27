@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). session-stop 훅이 자동 갱신.
-> **마지막 갱신**: 2026-02-26 (컴포넌트 통일 + 빌드 파이프라인)
+> **마지막 갱신**: 2026-02-27 (SAGE-ARCHITECT v4.0 전면 정렬)
 > **완료 이력**: `knowledge/agent_hub/COMPLETED_WORK.md` 참조
 
 ---
@@ -55,7 +55,7 @@
 
 ## 🏗️ 인프라 핵심
 
-- **Ver**: 11.2 — 컴포넌트 통일 + 빌드 파이프라인 구축
+- **Ver**: 12.0 — SAGE-ARCHITECT 대개편 (멀티에이전트 위계 재설계)
 - **웹**: Cloudflare Pages (`git push` = 자동 배포, woohwahae.kr)
 - **API**: `api.woohwahae.kr` → VM `136.109.201.201` (nginx reverse proxy)
 - **VM 서비스 (5개 active)**: 97layer-telegram / 97layer-ecosystem / 97layer-gardener / woohwahae-backend / cortex-admin
@@ -73,7 +73,7 @@
 4. [INFRA] **전체 템플릿화** — 디자인 확정 후 섹션 템플릿 + 에세이 템플릿 통합.
 5. [DESIGN] About 카피 확정 — 매니페스토/본문/Philosophy/Journey/Editor 텍스트 순호 검토
 6. [INFRA] content_publisher.py — 에세이 발행 시 git commit & push 자동화 (CF Pages 연동)
-7. Ralph 피드백 루프 구현 — STAP 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
+7. Ralph 피드백 루프 구현 — STAP v4.0 자동 검증 + Gardener practice/ 수정 제안 + CD 승인 사이클
 
 **완료됨**:
 
@@ -136,33 +136,46 @@ ssh 97layer-vm "for s in 97layer-telegram 97layer-ecosystem 97layer-gardener woo
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-26 23:30] 컴포넌트 통일 + 빌드 파이프라인 — claude-opus-4-6
+### [2026-02-27 21:00] SAGE-ARCHITECT 대개편 — 멀티에이전트 위계 재설계 — claude-opus-4-6
 
 **실행 완료**:
 
-1. **컴포넌트 통일 시스템 구축** (6e104a64):
-   - `website/_components/` 4개 프래그먼트
-   - `core/scripts/build_components.py` 빌드 스크립트
-   - 26개 HTML 마커 삽입 + 주입 완료
-   - 멱등성 검증 (재실행 시 변경 0건)
+1. **SAGE_ARCHITECT.md 격상** — practice/language.md → directives/SAGE_ARCHITECT.md
+   - 9섹션 인격 SSOT + §10 CD 흡수 (품질 게이트, brand_score, 최후 질문)
+   - 권한: FROZEN (CD 급)
+   - CD.md 삭제 (완전 흡수)
 
-2. **통합 빌드 파이프라인** (3c8c020c):
-   - `core/scripts/build.py` — archive → components → cache bust
-   - CSS MD5 해시 기반 자동 캐시 버스팅
+2. **KERNEL 적출** — THE_ORIGIN.md에서 SYSTEM KERNEL (L415-469) 제거
+   - THE_ORIGIN.md = 순수 철학 에세이만 잔존
+   - SYSTEM.md v9.0 = Architecture(5-Layer) + Authority(3-Tier) + Data Pipeline 흡수
+   - Context-7 slot_1: SAGE_ARCHITECT.md로 재매핑
 
-3. **홈 리디자인** (다른 에이전트가 에디토리얼 타이포 스타일로 교체):
-   - WOOHWAHAE 텍스트 제거, hero-graphic 제거
-   - 에디토리얼 타이포 히어로 + 디렉토리 리스트 구조
+3. **에이전트 동기화** — SA/CE/AD/origin_editor.md 인격 뿌리 경로 변경
+   - glossary.md: SAGE-ARCHITECT 정의 업데이트
+   - MANIFEST.md: SAGE_ARCHITECT.md 등재, CD.md 제거
+   - content.md: language.md 참조 → SAGE_ARCHITECT.md (4건)
+   - practice/README.md: language.md 제거, 포인터 추가
 
-4. **pre-commit hook 수정** (8f6107e9):
-   - `filesystem_validator.py`: archive/index.html 명명규칙 예외 추가
+4. **코드 동기화** — agent_router.py brand/ 경로 수정
+   - pipeline_orchestrator.py 파이프라인 순서 확인 (확정 모형 일치)
+   - ce_agent.py language.md 참조 → SAGE_ARCHITECT.md
+
+**위계 구조 (확정)**:
+```
+[1] WHY — THE_ORIGIN.md (순수 철학, FROZEN)
+[2] WHO — SAGE_ARCHITECT.md (인격 SSOT, FROZEN)
+[3] HOW — SYSTEM.md (운영 프로토콜)
+[4] WHAT — practice/*.md (부위별 규격)
+[5] WHOM — agents/{SA,CE,AD}.md (역할 발현)
+```
 
 **주의사항**:
-- 홈 index.html이 다른 에이전트에 의해 에디토리얼 스타일로 변경됨. field-bg(Three.js dipole) 스크립트는 유지되지만 canvas 엘리먼트가 있는지 확인 필요.
-- `build_archive.py`의 ROOT 경로가 `Path(__file__).parent.parent` = `core/`를 가리킴. `parents[2]`가 맞음. 기존 버그 미수정.
+- 홈 index.html이 다른 에이전트에 의해 에디토리얼 스타일로 변경됨. canvas 확인 필요.
+- `build_archive.py` ROOT 경로 버그 미수정 (`parents[2]`가 맞음).
 - 디자인 레이아웃 미확정. 순호가 레퍼런스 방향 결정 후 진행.
-- 로컬 서버: `python3 -m http.server 8000` (website/ 디렉토리)
+- test_queue_manager 8개 실패 — 기존 이슈. 이번 변경과 무관.
+- 순호 요청: 네이밍 패밀리룩 전면 개정 (SYSTEM.md 등) — 별도 진행 예정.
 
-**업데이트 시간**: 2026-02-26T23:30:00
+**업데이트 시간**: 2026-02-27T21:00:00
 
 work_lock: unlocked

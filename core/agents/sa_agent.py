@@ -174,7 +174,7 @@ class StrategyAnalyst:
             }
 
     def _load_directive(self) -> str:
-        """SA.md 에이전트 지침 + brand/audience.md 로드"""
+        """SA.md 에이전트 지침 + content.md 공명 대상 로드"""
         parts = []
         # SA 기본 지침
         directive_path = PROJECT_ROOT / 'directives' / 'agents' / 'SA.md'
@@ -183,11 +183,11 @@ class StrategyAnalyst:
                 parts.append(directive_path.read_text(encoding='utf-8'))
         except Exception:
             pass
-        # Brand OS 타겟 독자 기준
-        audience_path = PROJECT_ROOT / 'directives' / 'brand' / 'audience.md'
+        # 콘텐츠 + 공명 대상 기준 (구 audience.md → content.md §10으로 흡수)
+        content_path = PROJECT_ROOT / 'directives' / 'practice' / 'content.md'
         try:
-            if audience_path.exists():
-                content = audience_path.read_text(encoding='utf-8')
+            if content_path.exists():
+                content = content_path.read_text(encoding='utf-8')
                 parts.append(content[:1500])
         except Exception:
             pass
