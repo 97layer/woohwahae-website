@@ -259,7 +259,58 @@ Generate ← Publish (Essay) ← Generate (Essay)
 
 ---
 
-## 15. Enforcement Layers
+## 15. Web Consistency Lock
+
+### 웹 작업 일관성 문제 방지
+```bash
+# 작업 전 반드시 실행
+python core/system/web_consistency_lock.py --acquire [AGENT_ID] --task "작업내용"
+python core/system/web_consistency_lock.py --validate [AGENT_ID]
+python core/system/web_consistency_lock.py --release [AGENT_ID]
+```
+
+### 권한 매트릭스
+| Agent | 권한 범위 |
+|-------|----------|
+| AD | style.css, 레이아웃, 컴포넌트, 비주얼 전담 |
+| CE | 텍스트 콘텐츠만 |
+| SA | 웹 직접 수정 금지 |
+
+### 어조 규칙 강제
+| 섹션 | 어조 |
+|------|------|
+| archive/* | 한다체 (에세이, 독백) |
+| practice/* | 합니다체 (서비스, 고객) |
+| about/* | 합니다체 (공식 소개) |
+| home | 한다체 (에세이 스타일) |
+
+**원칙**: 여러 에이전트가 동시 웹 수정 금지. AD가 비주얼 전담.
+
+---
+
+## 16. Session Hygiene
+
+### 세션 시작 필수 체크
+```bash
+# .claude/hooks/session-start 자동 실행
+# 1. Uncommitted 파일 경고
+# 2. Web Lock 상태 확인
+# 3. 미완성 Todo 알림
+```
+
+### 커밋 정책
+- **즉시 커밋**: 의미 있는 변경은 즉시 커밋
+- **즉시 되돌림**: 실험/테스트는 즉시 `git checkout --`
+- **방치 금지**: Modified 상태로 세션 종료 금지
+
+### TodoWrite 사용 기준
+- ✅ 사용: 5단계 이상 복잡한 작업
+- ❌ 금지: 단순 파일 읽기/수정
+- ❌ 금지: 1-2단계 작업
+
+---
+
+## 17. Enforcement Layers
 
 | Layer | 메커니즘 | 위치 |
 |-------|---------|------|
@@ -268,8 +319,10 @@ Generate ← Publish (Essay) ← Generate (Essay)
 | 3 | Claude Code Rules | `.claude/rules/` |
 | 4 | Git Pre-Commit Hook | `.git/hooks/pre-commit` |
 | 5 | Bootstrap Script | `core/scripts/session_bootstrap.sh` |
+| 6 | Web Lock System | `core/system/web_consistency_lock.py` |
+| 7 | Session Start Hook | `.claude/hooks/session-start` |
 
 ---
 
-_Last Updated: 2026-02-27_
-_Version: 10.1 (통합 운영 매뉴얼)_
+_Last Updated: 2026-02-28_
+_Version: 10.3 (Session Hygiene 추가)_

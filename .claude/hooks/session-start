@@ -1,0 +1,29 @@
+#!/bin/bash
+# session-start hook — 세션 시작 시 uncommitted 파일 경고
+
+echo "━━━ SESSION START CHECK ━━━"
+
+# Uncommitted 파일 체크
+UNCOMMITTED=$(git status --porcelain | wc -l | xargs)
+if [ "$UNCOMMITTED" -gt 0 ]; then
+    echo "⚠️  WARNING: $UNCOMMITTED uncommitted files found!"
+    echo "주요 변경사항:"
+    git status --porcelain | head -5
+    echo ""
+    echo "조치 필요:"
+    echo "1. 의미 있으면: git add . && git commit"
+    echo "2. 쓰레기면: git checkout -- ."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━"
+fi
+
+# Web Lock 상태 체크
+if [ -f "knowledge/system/web_work_lock.json" ]; then
+    echo "🔒 웹 작업 잠금 상태:"
+    cat knowledge/system/web_work_lock.json | grep -E '"agent"|"task"'
+    echo "━━━━━━━━━━━━━━━━━━━━━━━"
+fi
+
+# 미완성 Todo 체크 (있으면)
+# TODO: TodoWrite 시스템과 연동 필요
+
+exit 0
