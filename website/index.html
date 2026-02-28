@@ -21,7 +21,7 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="assets/css/style.css?v=20260228181637" rel="stylesheet" />
+  <link href="assets/css/style.css?v=8a9bafa6" rel="stylesheet" />
   <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
     (function () {
@@ -48,26 +48,25 @@
   </script>
   <!-- /COMPONENT:preloader -->
   <!-- COMPONENT:nav -->
-  <nav class="site-nav" id="site-nav">
-    <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
-      <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/archive/">Archive</a></li>
-      <li><a href="/practice/">Practice</a></li>
-      <li><a href="/lab/">Lab</a></li>
-      <li><a href="/about/">About</a></li>
-    </ul>
-    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
-      <span></span><span></span>
-    </button>
-  </nav>
-  <div class="nav-overlay" id="nav-overlay">
-    <a href="/archive/">Archive</a>
-    <a href="/practice/">Practice</a>
-    <a href="/about/">About</a>
-  </div>
-  <!-- /COMPONENT:nav -->
+<nav class="site-nav" id="site-nav">
+  <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+    <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="/archive/">Archive</a></li>
+    <li><a href="/practice/">Practice</a></li>
+    <li><a href="/about/">About</a></li>
+  </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+    <span></span><span></span>
+  </button>
+</nav>
+<div class="nav-overlay" id="nav-overlay">
+  <a href="/archive/">Archive</a>
+  <a href="/practice/">Practice</a>
+  <a href="/about/">About</a>
+</div>
+<!-- /COMPONENT:nav -->
   <canvas class="field-bg" id="field-bg"></canvas>
   <!-- 홈 히어로: 100dvh — 수치와 기하학적 정보로 빈약함 해결 -->
   <section class="home-hero">
@@ -89,68 +88,82 @@
   </section>
   <!-- 스크롤 여백: field-bg 클로즈업 구간 -->
   <div class="home-scroll-space"></div>
-  <!-- 홈 하단: 섹션 목록 -->
+  <!-- 홈 하단 -->
   <section class="home-below">
     <div class="home-below__inner container--content">
-      <nav class="home-nav-list" data-reveal>
-        <a class="home-nav-item" href="/archive/">
-          <span class="home-nav-item__name">Archive</span>
-          <span class="home-nav-item__desc">기록과 에세이</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-        <a class="home-nav-item" href="/practice/">
-          <span class="home-nav-item__name">Practice</span>
-          <span class="home-nav-item__desc">제공하는 서비스</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-        <a class="home-nav-item" href="/about/">
-          <span class="home-nav-item__name">About</span>
-          <span class="home-nav-item__desc">브랜드와 시작 이야기</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-      </nav>
+
+      <!-- 최신 에세이 -->
+      <a class="home-latest" href="/archive/essay-010-work-and-essence/" data-reveal>
+        <div class="home-latest__head">
+          <span class="mono">LATEST</span>
+          <span class="mono">Essay — 2026.02.20</span>
+        </div>
+        <h2 class="home-latest__title">일과 본질</h2>
+        <p class="home-latest__excerpt">이 일을 하면서 돈이 우선이었던 적은 없었다. 나를 알아가는 것이 원동력이다.</p>
+        <span class="mono home-latest__cta">Archive →</span>
+      </a>
+
+      <div class="home-rule"></div>
+
+      <!-- Practice -->
+      <div class="home-practice" data-reveal>
+        <span class="mono home-practice__label">PRACTICE</span>
+        <nav class="home-practice__grid">
+          <a class="home-practice__item" href="/practice/atelier.html">
+            <span>Atelier</span><span class="mono">→</span>
+          </a>
+          <a class="home-practice__item" href="/practice/direction.html">
+            <span>Direction</span><span class="mono">→</span>
+          </a>
+          <a class="home-practice__item" href="/practice/project.html">
+            <span>Project</span><span class="mono">→</span>
+          </a>
+          <a class="home-practice__item" href="/practice/product.html">
+            <span>Product</span><span class="mono">→</span>
+          </a>
+        </nav>
+      </div>
+
     </div>
   </section>
   <script defer="" src="assets/js/bg-field.js"></script>
   <script defer="" src="assets/js/site.js"></script>
 
   <!-- COMPONENT:footer -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <p class="footer-brand">WOOHWAHAE</p>
-          <span class="footer-label">Navigation</span>
-          <nav class="footer-nav">
-            <a href="/archive/">Archive</a>
-            <a href="/practice/">Practice</a>
-            <a href="/lab/">Lab</a>
-            <a href="/playlist.html">Atmosphere</a>
-            <a href="/about/">About</a>
-          </nav>
-        </div>
-        <div class="footer-col">
-          <span class="footer-label">Contact</span>
-          <nav class="footer-nav">
-            <a href="mailto:hello@woohwahae.kr">Email</a>
-            <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
-          </nav>
-        </div>
-        <div class="footer-col">
-          <span class="footer-label">Location</span>
-          <p class="footer-copy">ULSAN / KR</p>
-        </div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <p class="footer-brand">WOOHWAHAE</p>
+        <span class="footer-label">Navigation</span>
+        <nav class="footer-nav">
+          <a href="/archive/">Archive</a>
+          <a href="/practice/">Practice</a>
+          <a href="/about/">About</a>
+        </nav>
       </div>
-      <div class="footer-bottom">
-        <div class="footer-legal">
-          <a href="/privacy.html">Privacy</a>
-          <a href="/terms.html">Terms</a>
-        </div>
-        <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
+      <div class="footer-col">
+        <span class="footer-label">Contact</span>
+        <nav class="footer-nav">
+          <a href="mailto:hello@woohwahae.kr">Email</a>
+          <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+        </nav>
+      </div>
+      <div class="footer-col">
+        <span class="footer-label">Location</span>
+        <p class="footer-copy">ULSAN / KR</p>
       </div>
     </div>
-  </footer>
-  <!-- /COMPONENT:footer -->
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
+    </div>
+  </div>
+</footer>
+<!-- /COMPONENT:footer -->
 </body>
 
 </html>
