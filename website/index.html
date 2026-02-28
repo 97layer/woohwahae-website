@@ -21,8 +21,9 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="assets/css/style.css?v=20260228211443" rel="stylesheet" />
+  <link href="assets/css/style.css?v=2433a7f4" rel="stylesheet" />
   <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
   <script>
     (function () {
       var h = new Date().getHours();
@@ -43,8 +44,17 @@
     window.addEventListener('load', function () {
       setTimeout(function () {
         document.body.classList.add('is-loaded');
-      }, 1500); // 1.5초 동안 로고 노출 후 베일 벗기기
+      }, 1500);
     });
+    /* 실시간 타임스탬프 업데이트 */
+    function updateTimestamp() {
+      const el = document.getElementById('live-timestamp');
+      if (el) {
+        const now = new Date();
+        el.textContent = now.toISOString().replace('T', ' ').substring(0, 19);
+      }
+    }
+    setInterval(updateTimestamp, 1000);
   </script>
   <!-- /COMPONENT:preloader -->
   <!-- COMPONENT:nav -->
@@ -53,61 +63,68 @@
     <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
   </a>
   <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
+    <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+    <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+    <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
   </ul>
   <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
     <span></span><span></span>
   </button>
 </nav>
 <div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive<span class="nav-overlay__tip">사유의 지층을 읽습니다.</span></a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice<span class="nav-overlay__tip">의식의 공간으로 안내합니다.</span></a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About<span class="nav-overlay__tip">영점의 좌표를 확인합니다.</span></a>
 </div>
 <!-- /COMPONENT:nav -->
   <canvas class="field-bg" id="field-bg"></canvas>
-  <!-- 홈 히어로: 100dvh — 수치와 기하학적 정보로 빈약함 해결 -->
-  <section class="home-hero">
-    <div class="home-hero-content" data-reveal>
-      <!-- 모든 텍스트 제거: 오직 그래픽과 파동만 존재 -->
-      <svg class="home-wave" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.12;">
-        <circle cx="400" cy="400" r="120" stroke="currentColor" stroke-width="0.3" opacity="0.2" />
-        <circle cx="400" cy="400" r="280" stroke="currentColor" stroke-width="0.3" opacity="0.1" />
-      </svg>
-    </div>
 
-    <div class="home-metadata home-metadata--bottom" data-reveal style="opacity: 0.3;">
-      <span class="mono">35.5384° N // 129.3114° E</span>
-    </div>
+  <div class="film-edge-numbers">KODAK 5219 // <span id="live-timestamp">2026-03-01 00:41:00</span></div>
 
-    <div class="home-grain"></div>
+  <!-- 홈 히어로: 100dvh — 필드라인이 곧 비주얼 -->
+  <section class="home-hero" style="position: relative; z-index: 10;">
+    <div class="home-metadata home-metadata--bottom" data-reveal style="opacity: 0.4; z-index: 10;">
+      <span class="mono">RESONANCE // 2026</span>
+    </div>
   </section>
 
   <div class="home-scroll-space" style="height: 40vh;"></div>
 
-  <!-- 홈 하단: 유일한 인터페이스 진입점 -->
+  <!-- 홈 하단: 디지털 도큐먼트 규격의 인터페이스 -->
   <section class="home-below">
-    <div class="home-below__inner container--content">
-      <nav class="home-nav-list" data-reveal>
-        <a class="home-nav-item" href="/archive/">
-          <span class="home-nav-item__name">Archive</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-        <a class="home-nav-item" href="/practice/">
-          <span class="home-nav-item__name">Practice</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-        <a class="home-nav-item" href="/about/">
-          <span class="home-nav-item__name">About</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-      </nav>
+    <div class="home-below__inner container--wide">
+      <div class="home-doc-grid">
+        <div class="home-doc-header" data-reveal>
+          <span class="mono label-stamp">DOC // 001-INDEX</span>
+          <h2 class="doc-title">사유의 파동을 기록한 문서.</h2>
+        </div>
+        <nav class="home-nav-list" data-reveal>
+          <a class="home-nav-item" href="/archive/">
+            <span class="home-nav-item__num">01.</span>
+            <span class="home-nav-item__name">Archive</span>
+            <span class="home-nav-item__desc">사유의 지층을 읽습니다.</span>
+            <span class="mono home-nav-item__arrow">→</span>
+          </a>
+          <a class="home-nav-item" href="/practice/">
+            <span class="home-nav-item__num">02.</span>
+            <span class="home-nav-item__name">Practice</span>
+            <span class="home-nav-item__desc">의식의 공간으로 안내합니다.</span>
+            <span class="mono home-nav-item__arrow">→</span>
+          </a>
+          <a class="home-nav-item" href="/about/">
+            <span class="home-nav-item__num">03.</span>
+            <span class="home-nav-item__name">About</span>
+            <span class="home-nav-item__desc">영점의 좌표를 확인합니다.</span>
+            <span class="mono home-nav-item__arrow">→</span>
+          </a>
+        </nav>
+      </div>
     </div>
   </section>
+
   <script defer="" src="assets/js/bg-field.js"></script>
   <script defer="" src="assets/js/site.js"></script>
+
 
   <!-- COMPONENT:footer -->
 <footer class="site-footer">
