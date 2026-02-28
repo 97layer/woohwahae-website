@@ -15,59 +15,127 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="../assets/css/style.css?v=20260228211443" rel="stylesheet"/>
+<link href="../assets/css/style.css?v=ee2ecf86" rel="stylesheet"/>
 <script>
 (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
 </script>
 </head>
-<body class="page-service"><!-- COMPONENT:nav -->
+<body class="page-service page-practice-sub"><!-- COMPONENT:nav -->
 <nav class="site-nav" id="site-nav">
   <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
     <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
   </a>
   <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
+    <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+    <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+    <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
   </ul>
   <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
     <span></span><span></span>
   </button>
 </nav>
 <div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
 </div>
-<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1">
-<div class="service-hero container--wide">
-  <div class="service-back" data-reveal><a href="/practice/">← Practice</a></div>
-  <span class="section-label">ATELIER</span>
-  <p class="service-lead" data-reveal>하루 세 명. 트렌드가 아닌 일상 리듬에서 출발합니다.</p>
-</div>
-<div class="atelier-price container--wide" data-reveal>
-  <div class="atelier-price-item">
-    <span class="atelier-price-item__name">커트</span>
-    <span class="atelier-price-item__fill"></span>
-    <span class="atelier-price-item__price">₩45,000</span>
+<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1;padding-top:120px">
+<div class="container--wide">
+
+  <!-- Practice 내부 탭 -->
+  <nav class="practice-tabs" aria-label="Practice sections">
+    <a href="/practice/#atelier" class="practice-tab active">Atelier</a>
+    <a href="/practice/#directing" class="practice-tab">Directing</a>
+    <a href="/practice/#project" class="practice-tab">Project</a>
+    <a href="/practice/#product" class="practice-tab">Product</a>
+  </nav>
+
+  <header class="service-hero" style="padding-top:var(--space-md);padding-bottom:var(--space-md)">
+    <span class="section-label">ATELIER</span>
+    <p class="service-lead">하루 세 명. 기장과 컨디션을 읽어 흐름을 제안한다.</p>
+    <p style="margin-top:0.8rem;font-family:var(--font-mono);font-size:0.68rem;color:var(--text-sub)">
+      울산 남구 수암로 28번길 10, 2층 —
+      <a href="https://map.naver.com/p/entry/place/1017153611" target="_blank" rel="noopener" style="color:var(--text-sub);text-decoration:underline;text-underline-offset:3px">지도 보기</a>
+    </p>
+  </header>
+
+  <div class="atelier-price-list">
+
+    <div class="atelier-price-item--enhanced">
+      <div class="atelier-price-item__body">
+        <span class="atelier-price-item__name-label">Cut</span>
+      </div>
+      <div class="atelier-price-item__right">
+        <span class="atelier-price-item__amount">₩45,000</span>
+        <span class="atelier-price-item__duration">~70min</span>
+      </div>
+    </div>
+
+    <div class="atelier-price-item--enhanced" style="display:flex;flex-direction:column;align-items:flex-start;gap:1.2rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%">
+        <div class="atelier-price-item__body">
+          <span class="atelier-price-item__name-label">Design 00</span>
+          <span class="atelier-price-item__note" style="margin-top:0.3rem;display:block">간소화 디자인워크</span>
+        </div>
+        <div class="atelier-price-item__right" style="text-align:right">
+          <span class="atelier-price-item__amount">₩110,000</span>
+          <span class="atelier-price-item__duration">~120min</span>
+          <span style="display:block;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-sub);margin-top:0.2rem;white-space:nowrap">60일 이내 재방문 커트 포함</span>
+        </div>
+      </div>
+      <div style="width:100%;padding-top:0.8rem;border-top:1px solid var(--border)">
+        <p style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.08em;color:var(--text-sub);margin-bottom:0.8rem;line-height:1.7">기장과 컨디션에 따라 2시간 내 효율적 프로세스를 구상 후 디자인 또는 집중 케어를 유연하게 제안합니다.</p>
+        <p style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--border);margin-bottom:0.5rem;text-transform:uppercase">Ex Guide</p>
+        <p style="font-size:0.78rem;font-weight:300;color:var(--text-sub);line-height:1.9">
+          턱선 위 (Short / Bob) — 퍼머, 스트레이트 등 전체적 흐름 위주 디자이닝<br>
+          그 외 (All Length) — 부분적 흐름, 단순 톤업/다운 염색, 모근부 곱슬/모류 교정, 모발·두피 집중 영양케어
+        </p>
+      </div>
+    </div>
+
+    <div class="atelier-price-item--enhanced" style="display:flex;flex-direction:column;align-items:flex-start;gap:1.2rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%">
+        <div class="atelier-price-item__body">
+          <span class="atelier-price-item__name-label">Design 01</span>
+          <span class="atelier-price-item__note" style="margin-top:0.3rem;display:block">복합적 디자인워크</span>
+        </div>
+        <div class="atelier-price-item__right" style="text-align:right">
+          <span class="atelier-price-item__amount">₩220,000</span>
+          <span class="atelier-price-item__duration">~180min</span>
+          <span style="display:block;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-sub);margin-top:0.2rem;white-space:nowrap">3시간↑ 복합 시술 시 상담 후 확정</span>
+        </div>
+      </div>
+      <div style="width:100%;padding-top:0.8rem;border-top:1px solid var(--border)">
+        <p style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--border);margin-bottom:0.5rem;text-transform:uppercase">Ex Guide</p>
+        <p style="font-size:0.78rem;font-weight:300;color:var(--text-sub);line-height:1.9">
+          턱선 위 (Short / Bob) — 퍼머+스트레이트 등 복합적 디자이닝<br>
+          그 외 (All Length) — 전체적 디테일 디자이닝, 입체적 하이라이트/블리치 염색
+        </p>
+      </div>
+    </div>
+
   </div>
-  <div class="atelier-price-item">
-    <span class="atelier-price-item__name">디자인00</span>
-    <span class="atelier-price-item__fill"></span>
-    <span class="atelier-price-item__price">₩110,000</span>
+
+  <div style="margin-top:var(--space-xl);padding-top:var(--space-lg);border-top:1px solid var(--border)">
+    <p style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;color:var(--text-sub);text-transform:uppercase;margin-bottom:1rem">Essential</p>
+    <p style="font-size:0.82rem;font-weight:300;color:var(--text-sub);line-height:1.9;margin-bottom:1.4rem">
+      모든 화학적 시술에 단백질, CMC 기반 전·후 케어가 기본 포함됩니다.<br>
+      제품 및 도구는 10년 이상 연혁을 가졌거나 직접 3년 이상 사용감을 검증한 것만 사용합니다.
+    </p>
+    <div style="display:grid;gap:0.5rem">
+      <p style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-sub);line-height:1.8">
+        시저스 — 히카리 (Japan. Est. 1967)<br>
+        약제 — 시세이도 (Japan. Est. 1872) · 밀본 (Japan. Est. 1960) · ATS (Korea. Est. 1991)<br>
+        케어&amp;바스 — ATS (Korea. Est. 1991) · Davines
+      </p>
+      <p style="font-family:var(--font-mono);font-size:0.6rem;color:var(--border);margin-top:0.4rem">* 25년 11월 기준</p>
+    </div>
   </div>
-  <div class="atelier-price-item">
-    <span class="atelier-price-item__name">디자인01</span>
-    <span class="atelier-price-item__fill"></span>
-    <span class="atelier-price-item__price">₩220,000</span>
+
+  <div style="margin-top:var(--space-xl)">
+    <a href="https://booking.naver.com/booking/13/bizes/1037484" target="_blank" rel="noopener" class="form-submit">네이버 예약 →</a>
   </div>
-</div>
-<div class="service-cta container--wide" data-reveal>
-  <div class="service-cta__row">
-    <a class="service-cta__btn" href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram DM ↗</a>
-    <a class="service-cta__btn" href="mailto:hello@woohwahae.kr">hello@woohwahae.kr →</a>
-  </div>
-  <p class="service-cta__note">예약제 · 3일 전 확정 · 상담 30분 포함. 희망 시술 · 일자 · 연락처를 함께 보내 주시면 일정을 조율합니다.</p>
+
 </div>
 </main>
 <script defer src="../assets/js/site.js"></script>
@@ -75,24 +143,24 @@
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
+    <div class="footer-row footer-row--contact">
+      <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+      <span class="footer-sep">·</span>
+      <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-row footer-row--bottom">
       <nav class="footer-nav">
         <a href="/archive/">Archive</a>
+        <span class="footer-sep">·</span>
         <a href="/practice/">Practice</a>
+        <span class="footer-sep">·</span>
         <a href="/about/">About</a>
       </nav>
-      <div class="footer-legal">
+      <div class="footer-meta">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
+        <span>&copy; 2026 WOOHWAHAE</span>
       </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </div>
 </footer>

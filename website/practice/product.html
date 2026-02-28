@@ -15,51 +15,78 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="../assets/css/style.css?v=20260228211443" rel="stylesheet"/>
+<link href="../assets/css/style.css?v=ee2ecf86" rel="stylesheet"/>
 <script>
 (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
 </script>
 </head>
-<body class="page-service"><!-- COMPONENT:nav -->
+<body class="page-service page-practice-sub"><!-- COMPONENT:nav -->
 <nav class="site-nav" id="site-nav">
   <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
     <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
   </a>
   <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
+    <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+    <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+    <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
   </ul>
   <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
     <span></span><span></span>
   </button>
 </nav>
 <div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
 </div>
-<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1">
-<div class="service-hero container--wide">
-  <div class="service-back" data-reveal><a href="/practice/">← Practice</a></div>
-  <span class="section-label">PRODUCT</span>
-</div>
-<div class="service-stack container--wide">
-  <div class="service-item" data-reveal>
-    <div>
-      <strong class="service-item__name">Coming Soon</strong>
-      <span class="service-item__meta">준비 중</span>
+<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1;padding-top:120px">
+<div class="container--wide">
+
+  <!-- Practice 내부 탭 -->
+  <nav class="practice-tabs" aria-label="Practice sections">
+    <a href="/practice/#atelier" class="practice-tab">Atelier</a>
+    <a href="/practice/#directing" class="practice-tab">Directing</a>
+    <a href="/practice/#project" class="practice-tab">Project</a>
+    <a href="/practice/#product" class="practice-tab active">Product</a>
+  </nav>
+
+  <header class="service-hero" style="padding-top:var(--space-md);padding-bottom:var(--space-md)">
+    <span class="section-label">PRODUCT</span>
+    <p class="service-lead">슬로우 라이프를 물성으로 옮기는 작업들.</p>
+  </header>
+
+  <div class="shop-grid">
+    <div class="shop-item shop-item--coming">
+      <div class="shop-item__body">
+        <span class="shop-item__name">Slow Life Essay — 전자책</span>
+        <p class="shop-item__desc">아카이브에 쌓인 에세이를 엮은 PDF 전자책. 슬로우 라이프의 관점으로 읽는 일상과 사유.</p>
+      </div>
+      <div class="shop-item__meta">
+        <span class="shop-item__price">준비 중</span>
+      </div>
     </div>
-    <div class="service-item__body">
-      <p>상품 라인업을 준비하고 있습니다.</p>
-      <p>업데이트 소식은 인스타그램에서 먼저 공개됩니다.</p>
+
+    <div class="shop-item shop-item--coming">
+      <div class="shop-item__body">
+        <span class="shop-item__name">Atelier OS</span>
+        <p class="shop-item__desc">소규모 아틀리에를 위한 운영 시스템. 예약·고객 관리·콘텐츠 발행을 하나의 흐름으로.</p>
+      </div>
+      <div class="shop-item__meta">
+        <span class="shop-item__price">준비 중</span>
+      </div>
+    </div>
+
+    <div class="shop-item shop-item--coming">
+      <div class="shop-item__body">
+        <span class="shop-item__name">Brand Starter Kit</span>
+        <p class="shop-item__desc">독립 브랜드 초기 세팅을 위한 템플릿 묶음. 로고·컬러·어조 기준을 빠르게 정립하는 도구.</p>
+      </div>
+      <div class="shop-item__meta">
+        <span class="shop-item__price">준비 중</span>
+      </div>
     </div>
   </div>
-</div>
-<div class="service-cta container--wide" data-reveal>
-  <div class="service-cta__row">
-    <a class="service-cta__btn" href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram ↗</a>
-  </div>
+
 </div>
 </main>
 <script defer src="../assets/js/site.js"></script>
@@ -67,24 +94,24 @@
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
+    <div class="footer-row footer-row--contact">
+      <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+      <span class="footer-sep">·</span>
+      <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-row footer-row--bottom">
       <nav class="footer-nav">
         <a href="/archive/">Archive</a>
+        <span class="footer-sep">·</span>
         <a href="/practice/">Practice</a>
+        <span class="footer-sep">·</span>
         <a href="/about/">About</a>
       </nav>
-      <div class="footer-legal">
+      <div class="footer-meta">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
+        <span>&copy; 2026 WOOHWAHAE</span>
       </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </div>
 </footer>

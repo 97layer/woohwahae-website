@@ -59,11 +59,13 @@
         }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
 
         revealEls.forEach(function (el, i) {
-            /* stagger: 카드류만 60ms 간격 */
+            /* stagger: 문서 넘기는 느낌 — 80ms 간격 */
             if (el.classList.contains('archive-card') ||
                 el.classList.contains('practice-card') ||
-                el.classList.contains('ws-item')) {
-                el.style.transitionDelay = (i % 9 * 0.06) + 's';
+                el.classList.contains('ws-item') ||
+                el.classList.contains('archive-list-item') ||
+                el.classList.contains('home-nav-item')) {
+                el.style.transitionDelay = (i % 9 * 0.08) + 's';
             }
             observer.observe(el);
         });
@@ -93,5 +95,27 @@
             deconTitle.style.opacity = '1';
         }, 100);
     }
+
+    /* ─── Document Number Sequential Fade-in ─── */
+    var numTags = document.querySelectorAll('.home-nav-item__num, .nav-overlay__num');
+    numTags.forEach(function(tag, i) {
+        tag.style.opacity = '0';
+        tag.style.transition = 'opacity 0.6s var(--ease-out)';
+        setTimeout(function() {
+            tag.style.opacity = '';
+        }, 800 + i * 120);
+    });
+
+    /* ─── Nav Overlay 툴팁 터치 호환 ─── */
+    var overlayLinks = document.querySelectorAll('.nav-overlay a');
+    overlayLinks.forEach(function(link) {
+        link.addEventListener('touchstart', function() {
+            var tip = link.querySelector('.nav-overlay__tip');
+            if (tip) {
+                tip.style.opacity = '0.7';
+                tip.style.transform = 'translateY(0)';
+            }
+        }, { passive: true });
+    });
 
 })();

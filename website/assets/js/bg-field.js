@@ -89,8 +89,8 @@
       var r0 = seeds[si2];
       var frac = (si2 + 1) / SEEDS;
 
-      /* 투명도 상향: 가시성 확보 (0.26 -> 0.50) */
-      var baseOp = isMobile ? (0.28 - frac * 0.10) : (0.50 - frac * 0.20);
+      /* 모바일 우선 투명도 */
+      var baseOp = isMobile ? (0.12 - frac * 0.05) : (0.22 - frac * 0.10);
       var col = 0x000000; /* 완전한 잉크 블랙으로 대비 강화 */
 
       var mat = new THREE.LineBasicMaterial({

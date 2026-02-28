@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="Direction — WOOHWAHAE Practice" name="description"/>
-<meta content="Direction — WOOHWAHAE" property="og:title"/>
+<meta content="Directing — WOOHWAHAE Practice" name="description"/>
+<meta content="Directing — WOOHWAHAE" property="og:title"/>
 <meta content="website" property="og:type"/>
 <meta content="https://woohwahae.kr/practice/direction.html" property="og:url"/>
-<title>Direction — WOOHWAHAE</title>
+<title>Directing — WOOHWAHAE</title>
 <meta content="#E3E2E0" name="theme-color"/>
 <link href="../assets/media/brand/symbol.png" rel="icon" type="image/png"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -15,130 +15,106 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="../assets/css/style.css?v=20260228211443" rel="stylesheet"/>
+<link href="../assets/css/style.css?v=ee2ecf86" rel="stylesheet"/>
 <script>
 (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
 </script>
 </head>
-<body class="page-service"><!-- COMPONENT:nav -->
+<body class="page-service page-practice-sub"><!-- COMPONENT:nav -->
 <nav class="site-nav" id="site-nav">
   <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
     <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
   </a>
   <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
+    <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+    <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+    <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
   </ul>
   <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
     <span></span><span></span>
   </button>
 </nav>
 <div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
 </div>
-<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1">
-  <div class="service-hero container--wide">
-    <div class="service-back" data-reveal><a href="/practice/">← Practice</a></div>
-    <span class="section-label">DIRECTION</span>
-    <p class="service-lead" data-reveal>브랜드의 고유한 하이엔드 질감을 설계합니다.</p>
+<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1;padding-top:120px">
+<div class="container--wide">
+
+  <!-- Practice 내부 탭 -->
+  <nav class="practice-tabs" aria-label="Practice sections">
+    <a href="/practice/#atelier" class="practice-tab">Atelier</a>
+    <a href="/practice/#directing" class="practice-tab active">Directing</a>
+    <a href="/practice/#project" class="practice-tab">Project</a>
+    <a href="/practice/#product" class="practice-tab">Product</a>
+  </nav>
+
+  <header class="service-hero" style="padding-bottom:var(--space-md)">
+    <span class="section-label">DIRECTING</span>
+  </header>
+
+  <div class="shop-grid">
+    <div class="shop-item">
+      <div class="shop-item__body">
+        <span class="shop-item__name">Photo Directing</span>
+        <p class="shop-item__desc">브랜드 또는 개인의 아우라를 시각 언어로 번역합니다. 컨셉 기획부터 현장 디렉팅까지.</p>
+      </div>
+      <div class="shop-item__meta">
+        <span class="shop-item__price">문의</span>
+      </div>
+    </div>
+
+    <div class="shop-item">
+      <div class="shop-item__body">
+        <span class="shop-item__name">Brand Consulting</span>
+        <p class="shop-item__desc">소규모 비즈니스의 정체성을 다듬습니다. 네이밍, 톤앤매너, 공간 언어.</p>
+      </div>
+      <div class="shop-item__meta">
+        <span class="shop-item__price">문의</span>
+      </div>
+    </div>
+
+    <div class="shop-item">
+      <div class="shop-item__body">
+        <span class="shop-item__name">Editorial</span>
+        <p class="shop-item__desc">매거진, 룩북, 캠페인. 방향성이 맞는 프로젝트에 한합니다.</p>
+      </div>
+      <div class="shop-item__meta">
+        <span class="shop-item__price">문의</span>
+      </div>
+    </div>
   </div>
 
-  <div class="shop-grid container--wide">
-    <!-- Visual Direction -->
-    <a href="mailto:hello@woohwahae.kr?subject=[Direction] Visual Identity 문의" class="product-card" data-reveal>
-      <span class="product-card__meta">Consulting Product / 01</span>
-      <div class="product-card__head">
-        <h2 class="product-card__name">Visual Identity</h2>
-        <span class="product-card__price">From ₩2,500,000</span>
-      </div>
-      <p class="product-card__body">
-        색과 서체, 여백의 밀도를 통해 브랜드가 눈에 보이는 방식을 결정합니다. 
-        로고가 없어도 알아볼 수 있는 일관된 시각적 질감을 만듭니다.
-      </p>
-      <div class="product-card__footer">
-        <span class="product-cta">Inquiry →</span>
-      </div>
-    </a>
-
-    <!-- Space Direction -->
-    <a href="mailto:hello@woohwahae.kr?subject=[Direction] Space Concept 문의" class="product-card" data-reveal>
-      <span class="product-card__meta">Consulting Product / 02</span>
-      <div class="product-card__head">
-        <h2 class="product-card__name">Space Concept</h2>
-        <span class="product-card__price">From ₩1,800,000</span>
-      </div>
-      <p class="product-card__body">
-        방문하는 사람을 조용히 교육하는 공간을 설계합니다. 
-        재료, 조명, 동선의 순서가 하나의 유기적인 경험이 되도록 구성합니다.
-      </p>
-      <div class="product-card__footer">
-        <span class="product-cta">Inquiry →</span>
-      </div>
-    </a>
-
-    <!-- Language Strategy -->
-    <a href="mailto:hello@woohwahae.kr?subject=[Direction] Language Strategy 문의" class="product-card" data-reveal>
-      <span class="product-card__meta">Consulting Product / 03</span>
-      <div class="product-card__head">
-        <h2 class="product-card__name">Language Strategy</h2>
-        <span class="product-card__price">From ₩1,200,000</span>
-      </div>
-      <p class="product-card__body">
-        브랜드가 사용하는 단어의 질감을 결정합니다. 
-        홈페이지 카피, SNS 어조 등 커뮤니케이션 전반에 걸쳐 일관된 목소리를 만듭니다.
-      </p>
-      <div class="product-card__footer">
-        <span class="product-cta">Inquiry →</span>
-      </div>
-    </a>
-
-    <!-- Total Direction Package -->
-    <a href="mailto:hello@woohwahae.kr?subject=[Direction] Total Package 문의" class="product-card" data-reveal>
-      <span class="product-card__meta">Consulting Product / 04</span>
-      <div class="product-card__head">
-        <h2 class="product-card__name">Total Direction</h2>
-        <span class="product-card__price">Price on Request</span>
-      </div>
-      <p class="product-card__body">
-        비주얼, 공간, 언어를 아우르는 통합 브랜드 디렉션 패키지입니다. 
-        초기 기획부터 런칭까지 브랜드의 총체적 본물을 감각적으로 조율합니다.
-      </p>
-      <div class="product-card__footer">
-        <span class="product-cta">Inquiry →</span>
-      </div>
-    </a>
+  <div style="margin-top:var(--space-lg)">
+    <a href="mailto:hello@woohwahae.kr?subject=[Directing] 문의" class="form-submit">문의하기 →</a>
   </div>
 
-  <div class="service-cta container--wide" data-reveal>
-    <p class="service-cta__note">모든 상품은 첫 미팅(상담 비용 별도) 이후 진행 여부가 결정됩니다. 하이엔드 감도를 유지하기 위해 월별 진행 프로젝트 수를 제한하고 있습니다.</p>
-  </div>
+</div>
 </main>
 <script defer src="../assets/js/site.js"></script>
 
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
+    <div class="footer-row footer-row--contact">
+      <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+      <span class="footer-sep">·</span>
+      <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-row footer-row--bottom">
       <nav class="footer-nav">
         <a href="/archive/">Archive</a>
+        <span class="footer-sep">·</span>
         <a href="/practice/">Practice</a>
+        <span class="footer-sep">·</span>
         <a href="/about/">About</a>
       </nav>
-      <div class="footer-legal">
+      <div class="footer-meta">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
+        <span>&copy; 2026 WOOHWAHAE</span>
       </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </div>
 </footer>

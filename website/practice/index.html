@@ -20,7 +20,7 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="../assets/css/style.css?v=20260228211443" rel="stylesheet" />
+  <link href="../assets/css/style.css?v=ee2ecf86" rel="stylesheet" />
   <script>
     (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
   </script>
@@ -32,74 +32,258 @@
     <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
   </a>
   <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
+    <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+    <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+    <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
   </ul>
   <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
     <span></span><span></span>
   </button>
 </nav>
 <div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
 </div>
 <!-- /COMPONENT:nav --><!-- COMPONENT:wave-bg -->
 <!-- Background Removed by User Request: Filter Only -->
 <!-- /COMPONENT:wave-bg -->
-  <main class="page-main" style="position:relative;z-index:1">
-    <header class="practice-hero container--wide">
-      <span class="section-label">PRACTICE</span>
-    </header>
+  <main class="page-main" style="position:relative;z-index:1;padding-top:120px">
     <div class="container--wide">
-      <nav class="home-nav-list" data-reveal>
-        <a class="home-nav-item" href="atelier.html">
-          <span class="home-nav-item__name">Atelier</span>
-          <span class="home-nav-item__desc">헤어 아틀리에</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-        <a class="home-nav-item" href="direction.html">
-          <span class="home-nav-item__name">Direction</span>
-          <span class="home-nav-item__desc">브랜드 방향 설계</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-        <a class="home-nav-item" href="project.html">
-          <span class="home-nav-item__name">Project</span>
-          <span class="home-nav-item__desc">외부 협업</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
-        <a class="home-nav-item" href="product.html">
-          <span class="home-nav-item__name">Product</span>
-          <span class="home-nav-item__desc">Coming Soon</span>
-          <span class="mono home-nav-item__arrow">→</span>
-        </a>
+      <!-- Practice 내부 탭 -->
+      <nav class="practice-tabs" aria-label="Practice sections" id="practice-tabs">
+        <a href="#atelier" class="practice-tab active" data-tab="atelier">Atelier</a>
+        <a href="#directing" class="practice-tab" data-tab="directing">Directing</a>
+        <a href="#project" class="practice-tab" data-tab="project">Project</a>
+        <a href="#product" class="practice-tab" data-tab="product">Product</a>
       </nav>
+
+      <!-- ─── ATELIER ─── -->
+      <section id="atelier" class="practice-section">
+        <header class="service-hero" style="padding-bottom:var(--space-md)">
+          <span class="section-label">ATELIER</span>
+          <p class="service-lead">하루 세 명. 트렌드가 아닌 일상 리듬에서 출발합니다.</p>
+        </header>
+
+        <div class="atelier-price-list">
+          <div class="atelier-price-item--enhanced">
+            <div class="atelier-price-item__body">
+              <span class="atelier-price-item__name-label">커트</span>
+              <span class="atelier-price-item__note">불필요한 무게를 덜어냅니다.</span>
+            </div>
+            <div class="atelier-price-item__right">
+              <span class="atelier-price-item__amount">₩45,000</span>
+              <span class="atelier-price-item__duration">70min</span>
+            </div>
+          </div>
+
+          <div class="atelier-price-item--enhanced">
+            <div class="atelier-price-item__body">
+              <span class="atelier-price-item__name-label">디자인 00</span>
+              <span class="atelier-price-item__note">간소화 디자인. 기장과 컨디션에 따라 흐름을 읽습니다.<br>60일 이내 재방문 시 커트 포함.</span>
+            </div>
+            <div class="atelier-price-item__right">
+              <span class="atelier-price-item__amount">₩110,000</span>
+              <span class="atelier-price-item__duration">120min</span>
+            </div>
+          </div>
+
+          <div class="atelier-price-item--enhanced">
+            <div class="atelier-price-item__body">
+              <span class="atelier-price-item__name-label">디자인 01</span>
+              <span class="atelier-price-item__note">복합적 디자인. 여러 기술을 겹쳐 입체적인 형태를 만듭니다.</span>
+            </div>
+            <div class="atelier-price-item__right">
+              <span class="atelier-price-item__amount">₩220,000</span>
+              <span class="atelier-price-item__duration">180min</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:var(--space-lg)">
+          <p style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--text-sub);margin-bottom:0.8rem;text-transform:uppercase">사용 제품</p>
+          <p style="font-size:0.85rem;font-weight:300;color:var(--text-sub);line-height:1.9">Milbon, Olaplex, Schwarzkopf, Aestura</p>
+        </div>
+
+        <div style="margin-top:var(--space-lg)">
+          <a href="https://booking.naver.com/booking/13/bizes/1037484" target="_blank" rel="noopener" class="form-submit">예약하기 →</a>
+        </div>
+      </section>
+
+      <!-- ─── DIRECTING ─── -->
+      <section id="directing" class="practice-section" style="display:none">
+        <header class="service-hero" style="padding-bottom:var(--space-md)">
+          <span class="section-label">DIRECTING</span>
+        </header>
+
+        <div class="shop-grid">
+          <div class="shop-item">
+            <div class="shop-item__body">
+              <span class="shop-item__name">Photo Directing</span>
+              <p class="shop-item__desc">브랜드 또는 개인의 아우라를 시각 언어로 번역합니다. 컨셉 기획부터 현장 디렉팅까지.</p>
+            </div>
+            <div class="shop-item__meta">
+              <span class="shop-item__price">문의</span>
+            </div>
+          </div>
+
+          <div class="shop-item">
+            <div class="shop-item__body">
+              <span class="shop-item__name">Brand Consulting</span>
+              <p class="shop-item__desc">소규모 비즈니스의 정체성을 다듬습니다. 네이밍, 톤앤매너, 공간 언어.</p>
+            </div>
+            <div class="shop-item__meta">
+              <span class="shop-item__price">문의</span>
+            </div>
+          </div>
+
+          <div class="shop-item">
+            <div class="shop-item__body">
+              <span class="shop-item__name">Editorial</span>
+              <p class="shop-item__desc">매거진, 룩북, 캠페인. 방향성이 맞는 프로젝트에 한합니다.</p>
+            </div>
+            <div class="shop-item__meta">
+              <span class="shop-item__price">문의</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:var(--space-lg)">
+          <a href="mailto:hello@woohwahae.kr?subject=[Directing] 문의" class="form-submit">문의하기 →</a>
+        </div>
+      </section>
+
+      <!-- ─── PROJECT ─── -->
+      <section id="project" class="practice-section" style="display:none">
+        <header class="service-hero" style="padding-bottom:var(--space-md)">
+          <span class="section-label">PROJECT</span>
+          <p class="service-lead">정형화된 디자인이 아닌, 고유한 아우라를 찾는 작업을 함께할 사람을 찾습니다.</p>
+        </header>
+
+        <form class="project-form" action="#" method="POST">
+          <div class="form-field">
+            <label class="form-label" for="proj-instagram">Instagram</label>
+            <input class="form-input" id="proj-instagram" type="text" name="instagram" placeholder="@username" required>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="proj-contact">연락처</label>
+            <input class="form-input" id="proj-contact" type="text" name="contact" placeholder="카카오톡 ID 또는 이메일">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="proj-hair">현재 머리 길이 (선택)</label>
+            <input class="form-input" id="proj-hair" type="text" name="hair_length" placeholder="숏 / 미디엄 / 롱">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="proj-message">지원 동기</label>
+            <textarea class="form-textarea" id="proj-message" name="message" placeholder="어떤 작업을 함께하고 싶으신가요?" rows="5"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">촬영 동의</label>
+            <div class="form-radio-group">
+              <label class="form-radio-label">
+                <input type="radio" name="photo_consent" value="yes"> <span class="form-radio-box"></span> 동의
+              </label>
+              <label class="form-radio-label">
+                <input type="radio" name="photo_consent" value="no"> <span class="form-radio-box"></span> 비동의
+              </label>
+            </div>
+          </div>
+          <button class="form-submit" type="submit">신청하기 →</button>
+        </form>
+      </section>
+
+      <!-- ─── PRODUCT ─── -->
+      <section id="product" class="practice-section" style="display:none">
+        <header class="service-hero" style="padding-bottom:var(--space-md)">
+          <span class="section-label">PRODUCT</span>
+        </header>
+
+        <div class="shop-grid">
+          <div class="shop-item shop-item--coming">
+            <div class="shop-item__body">
+              <span class="shop-item__name">Slow Life Essay</span>
+              <p class="shop-item__desc">슬로우 라이프에 관한 글 모음집. 사유를 물성으로 옮기는 작업 중입니다.</p>
+            </div>
+            <div class="shop-item__meta">
+              <span class="shop-item__price">준비 중</span>
+            </div>
+          </div>
+
+          <div class="shop-item shop-item--coming">
+            <div class="shop-item__body">
+              <span class="shop-item__name">Object</span>
+              <p class="shop-item__desc">공간에 놓이는 물건. 이름 없이도 맥락을 가지는 것들.</p>
+            </div>
+            <div class="shop-item__meta">
+              <span class="shop-item__price">준비 중</span>
+            </div>
+          </div>
+        </div>
+
+        <p style="margin-top:4rem;font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.15em;color:var(--text-sub)">사유를 물성으로 옮기는 작업 중입니다.</p>
+      </section>
     </div>
   </main>
+
   <script defer="" src="../assets/js/site.js"></script>
+  <script>
+    // Hash-based tab switching
+    (function () {
+      var tabs = document.querySelectorAll('.practice-tab');
+      var sections = document.querySelectorAll('.practice-section');
+
+      function activate(tabId) {
+        tabs.forEach(function (t) {
+          t.classList.toggle('active', t.dataset.tab === tabId);
+        });
+        sections.forEach(function (s) {
+          s.style.display = s.id === tabId ? '' : 'none';
+        });
+      }
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function (e) {
+          e.preventDefault();
+          var id = this.dataset.tab;
+          history.replaceState(null, '', '#' + id);
+          activate(id);
+          // scroll tabs into view on mobile
+          this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        });
+      });
+
+      // on load: check hash
+      var hash = location.hash.replace('#', '');
+      var valid = ['atelier', 'directing', 'project', 'product'];
+      if (hash && valid.indexOf(hash) !== -1) {
+        activate(hash);
+      } else {
+        activate('atelier');
+      }
+    })();
+  </script>
 
   <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
+    <div class="footer-row footer-row--contact">
+      <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+      <span class="footer-sep">·</span>
+      <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-row footer-row--bottom">
       <nav class="footer-nav">
         <a href="/archive/">Archive</a>
+        <span class="footer-sep">·</span>
         <a href="/practice/">Practice</a>
+        <span class="footer-sep">·</span>
         <a href="/about/">About</a>
       </nav>
-      <div class="footer-legal">
+      <div class="footer-meta">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
+        <span>&copy; 2026 WOOHWAHAE</span>
       </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </div>
 </footer>

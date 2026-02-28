@@ -21,7 +21,7 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="assets/css/style.css?v=2433a7f4" rel="stylesheet" />
+  <link href="assets/css/style.css?v=ee2ecf86" rel="stylesheet" />
   <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
   <script>
@@ -72,9 +72,9 @@
   </button>
 </nav>
 <div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive<span class="nav-overlay__tip">사유의 지층을 읽습니다.</span></a>
-  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice<span class="nav-overlay__tip">의식의 공간으로 안내합니다.</span></a>
-  <a href="/about/"><span class="nav-overlay__num">03.</span>About<span class="nav-overlay__tip">영점의 좌표를 확인합니다.</span></a>
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
 </div>
 <!-- /COMPONENT:nav -->
   <canvas class="field-bg" id="field-bg"></canvas>
@@ -87,35 +87,26 @@
 
   <div class="home-scroll-space" style="height: 40vh;"></div>
 
-  <!-- 홈 하단: 디지털 도큐먼트 규격의 인터페이스 -->
+  <!-- 홈 하단: 풀 와이드 에디토리얼 네비 -->
   <section class="home-below">
     <div class="home-below__inner container--wide">
-      <div class="home-doc-grid">
-        <div class="home-doc-header" data-reveal>
-          <span class="mono label-stamp">DOC // 001-INDEX</span>
-          <h2 class="doc-title">사유의 파동을 기록한 문서.</h2>
-        </div>
-        <nav class="home-nav-list" data-reveal>
-          <a class="home-nav-item" href="/archive/">
-            <span class="home-nav-item__num">01.</span>
-            <span class="home-nav-item__name">Archive</span>
-            <span class="home-nav-item__desc">사유의 지층을 읽습니다.</span>
-            <span class="mono home-nav-item__arrow">→</span>
-          </a>
-          <a class="home-nav-item" href="/practice/">
-            <span class="home-nav-item__num">02.</span>
-            <span class="home-nav-item__name">Practice</span>
-            <span class="home-nav-item__desc">의식의 공간으로 안내합니다.</span>
-            <span class="mono home-nav-item__arrow">→</span>
-          </a>
-          <a class="home-nav-item" href="/about/">
-            <span class="home-nav-item__num">03.</span>
-            <span class="home-nav-item__name">About</span>
-            <span class="home-nav-item__desc">영점의 좌표를 확인합니다.</span>
-            <span class="mono home-nav-item__arrow">→</span>
-          </a>
-        </nav>
-      </div>
+      <nav class="home-nav-list" data-reveal>
+        <a class="home-nav-item" href="/archive/">
+          <span class="home-nav-item__num">01.</span>
+          <span class="home-nav-item__name">Archive</span>
+          <span class="mono home-nav-item__arrow">→</span>
+        </a>
+        <a class="home-nav-item" href="/practice/">
+          <span class="home-nav-item__num">02.</span>
+          <span class="home-nav-item__name">Practice</span>
+          <span class="mono home-nav-item__arrow">→</span>
+        </a>
+        <a class="home-nav-item" href="/about/">
+          <span class="home-nav-item__num">03.</span>
+          <span class="home-nav-item__name">About</span>
+          <span class="mono home-nav-item__arrow">→</span>
+        </a>
+      </nav>
     </div>
   </section>
 
@@ -126,24 +117,24 @@
   <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
+    <div class="footer-row footer-row--contact">
+      <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+      <span class="footer-sep">·</span>
+      <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-row footer-row--bottom">
       <nav class="footer-nav">
         <a href="/archive/">Archive</a>
+        <span class="footer-sep">·</span>
         <a href="/practice/">Practice</a>
+        <span class="footer-sep">·</span>
         <a href="/about/">About</a>
       </nav>
-      <div class="footer-legal">
+      <div class="footer-meta">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
+        <span>&copy; 2026 WOOHWAHAE</span>
       </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </div>
 </footer>

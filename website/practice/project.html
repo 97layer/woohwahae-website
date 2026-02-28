@@ -15,114 +15,124 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="../assets/css/style.css?v=20260228211443" rel="stylesheet"/>
+<link href="../assets/css/style.css?v=ee2ecf86" rel="stylesheet"/>
 <script>
 (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
 </script>
 </head>
-<body class="page-service"><!-- COMPONENT:nav -->
+<body class="page-service page-practice-sub"><!-- COMPONENT:nav -->
 <nav class="site-nav" id="site-nav">
   <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
     <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
   </a>
   <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
+    <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+    <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+    <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
   </ul>
   <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
     <span></span><span></span>
   </button>
 </nav>
 <div class="nav-overlay" id="nav-overlay">
-  <a href="/archive/">Archive</a>
-  <a href="/practice/">Practice</a>
-  <a href="/about/">About</a>
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
 </div>
-<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1">
-  <div class="service-hero container--wide">
-    <div class="service-back" data-reveal><a href="/practice/">← Practice</a></div>
+<!-- /COMPONENT:nav --><main class="page-main" style="position:relative;z-index:1;padding-top:120px">
+<div class="container--wide">
+
+  <!-- Practice 내부 탭 -->
+  <nav class="practice-tabs" aria-label="Practice sections">
+    <a href="/practice/#atelier" class="practice-tab">Atelier</a>
+    <a href="/practice/#directing" class="practice-tab">Directing</a>
+    <a href="/practice/#project" class="practice-tab active">Project</a>
+    <a href="/practice/#product" class="practice-tab">Product</a>
+  </nav>
+
+  <header class="service-hero" style="padding-top:var(--space-md);padding-bottom:var(--space-md)">
     <span class="section-label">PROJECT</span>
-    <p class="service-lead" data-reveal>감각의 연대를 통해 새로운 가치를 창출합니다.</p>
-  </div>
+    <p class="service-lead">정형화된 디자인이 아닌, 그 사람 고유의 아우라를 찾는 작업이다.</p>
+  </header>
 
-  <div class="shop-grid container--wide">
-    <!-- Branding Package -->
-    <a href="mailto:hello@woohwahae.kr?subject=[Project] Brand Strategy Package 문의" class="product-card" data-reveal>
-      <span class="product-card__meta">Collaborative Project / 01</span>
-      <div class="product-card__head">
-        <h2 class="product-card__name">Brand Strategy</h2>
-        <span class="product-card__price">From ₩4,000,000</span>
-      </div>
-      <p class="product-card__body">
-        시장 분석부터 브랜드 내러티브 구축까지. 
-        단순한 로고 디자인을 넘어 시스템 전반의 전략적 정체성을 설계하는 프로젝트 패키지입니다.
-      </p>
-      <div class="product-card__footer">
-        <span class="product-cta">Inquiry →</span>
-      </div>
-    </a>
+  <p style="font-size:0.85rem;font-weight:300;color:var(--text-sub);line-height:1.9;max-width:560px;margin-bottom:var(--space-xl)">
+    얼굴형, 두상, 퍼스널컬러 같은 단편적 기준이 아닌 — 언어, 태도, 분위기를 읽어 헤어를 디자인한다.
+    헤어는 정리를 위한 것이 아닌, 아우라를 구성하는 하나의 요소다.
+    미용실 정착을 못했거나, 자신에게 맞는 스타일을 찾지 못했다면 신청서를 남겨주세요.
+    적합한 분을 선정해 개별 연락드립니다.
+  </p>
 
-    <!-- Narrative Design -->
-    <a href="mailto:hello@woohwahae.kr?subject=[Project] Content Narrative 문의" class="product-card" data-reveal>
-      <span class="product-card__meta">Collaborative Project / 02</span>
-      <div class="product-card__head">
-        <h2 class="product-card__name">Content Narrative</h2>
-        <span class="product-card__price">From ₩1,500,000</span>
+  <form class="project-form" action="#" method="POST">
+    <div class="form-field">
+      <label class="form-label" for="proj-instagram">Instagram <span style="color:var(--text-sub)">(필수)</span></label>
+      <input class="form-input" id="proj-instagram" type="text" name="instagram" placeholder="@username" required>
+      <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-sub);margin-top:0.3rem;display:block">비공개 계정은 확인이 어렵습니다</span>
+    </div>
+    <div class="form-field">
+      <label class="form-label" for="proj-contact">연락처</label>
+      <input class="form-input" id="proj-contact" type="text" name="contact" placeholder="카카오톡 ID 또는 이메일">
+    </div>
+    <div class="form-field">
+      <label class="form-label">현재 머리 길이</label>
+      <div class="form-radio-group" style="flex-wrap:wrap;gap:0.6rem 1.2rem">
+        <label class="form-radio-label">
+          <input type="radio" name="hair_length" value="short"> <span class="form-radio-box"></span> 쇼트
+        </label>
+        <label class="form-radio-label">
+          <input type="radio" name="hair_length" value="bob"> <span class="form-radio-box"></span> 단발
+        </label>
+        <label class="form-radio-label">
+          <input type="radio" name="hair_length" value="medium"> <span class="form-radio-box"></span> 미디엄 (쇄골)
+        </label>
+        <label class="form-radio-label">
+          <input type="radio" name="hair_length" value="long"> <span class="form-radio-box"></span> 롱 (바스트)
+        </label>
       </div>
-      <p class="product-card__body">
-        브랜드의 고유한 서사를 발굴하고 이를 콘텐츠 시스템으로 구축합니다. 
-        오가닉한 도메인 성장을 위한 지속 가능한 언어적 자산을 만듭니다.
-      </p>
-      <div class="product-card__footer">
-        <span class="product-cta">Inquiry →</span>
+    </div>
+    <div class="form-field">
+      <label class="form-label" for="proj-message">헤어 고민 또는 신청 동기 <span style="color:var(--text-sub)">(선택)</span></label>
+      <textarea class="form-textarea" id="proj-message" name="message" placeholder="하고 싶은 헤어, 고민, 또는 신청하게 된 이유를 자유롭게 남겨주세요." rows="5"></textarea>
+    </div>
+    <div class="form-field">
+      <label class="form-label">촬영 동의</label>
+      <p style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-sub);margin-bottom:0.8rem;line-height:1.7">촬영된 콘텐츠는 추후 유튜브·인스타그램 게시물에 활용될 수 있습니다.</p>
+      <div class="form-radio-group">
+        <label class="form-radio-label">
+          <input type="radio" name="photo_consent" value="yes"> <span class="form-radio-box"></span> 동의
+        </label>
+        <label class="form-radio-label">
+          <input type="radio" name="photo_consent" value="no"> <span class="form-radio-box"></span> 비동의
+        </label>
       </div>
-    </a>
+    </div>
+    <button class="form-submit" type="submit">신청하기 →</button>
+  </form>
 
-    <!-- Creative Collab -->
-    <a href="mailto:hello@woohwahae.kr?subject=[Project] Creative Collaboration 문의" class="product-card" data-reveal>
-      <span class="product-card__meta">Collaborative Project / 03</span>
-      <div class="product-card__head">
-        <h2 class="product-card__name">Creative Collab</h2>
-        <span class="product-card__price">Negotiable</span>
-      </div>
-      <p class="product-card__body">
-        아티스트 협업, 팝업 공간 디렉션, 한정판 굿즈 기획 등 영역의 경계가 없는 프로젝트입니다. 
-        WOOHWAHAE의 감도와 결이 맞는 파트너와 함께합니다.
-      </p>
-      <div class="product-card__footer">
-        <span class="product-cta">Inquiry →</span>
-      </div>
-    </a>
-  </div>
-
-  <div class="service-cta container--wide" data-reveal>
-    <p class="service-cta__note">협업의 본질을 지키기 위해 첫 대화에서 프로젝트의 지향점을 심도 있게 논의합니다. 진행 일정 및 예산 범위를 함께 제안해 주시면 감사하겠습니다.</p>
-  </div>
+</div>
 </main>
 <script defer src="../assets/js/site.js"></script>
 
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-contact">
-      <span class="footer-contact__label">Contact</span>
-      <div class="footer-contact__grid">
-        <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
-        <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-      </div>
+    <div class="footer-row footer-row--contact">
+      <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+      <span class="footer-sep">·</span>
+      <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-row footer-row--bottom">
       <nav class="footer-nav">
         <a href="/archive/">Archive</a>
+        <span class="footer-sep">·</span>
         <a href="/practice/">Practice</a>
+        <span class="footer-sep">·</span>
         <a href="/about/">About</a>
       </nav>
-      <div class="footer-legal">
+      <div class="footer-meta">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
+        <span>&copy; 2026 WOOHWAHAE</span>
       </div>
-      <p class="footer-copy">&copy; 2026 WOOHWAHAE</p>
     </div>
   </div>
 </footer>
