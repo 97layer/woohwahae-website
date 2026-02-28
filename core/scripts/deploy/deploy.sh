@@ -62,9 +62,11 @@ for name, info in d['inactive'].items():
     ;;
 
   all)
-    echo "[1/2] git pull..."
+    echo "[1/3] git pull..."
     ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main"
-    echo "[2/2] active 서비스 전체 재시작 (${SERVICES_ACTIVE})..."
+    echo "[2/3] corpus 군집 마이그레이션..."
+    ssh ${VM_HOST} "cd ${VM_PATH} && python3 core/scripts/migrate_corpus_clusters.py"
+    echo "[3/3] active 서비스 전체 재시작 (${SERVICES_ACTIVE})..."
     ssh ${VM_HOST} "sudo systemctl restart ${SERVICES_ACTIVE}"
     sleep 3
     ssh ${VM_HOST} "for s in ${SERVICES_ACTIVE}; do printf '%-25s %s\n' \$s \$(systemctl is-active \$s); done"
