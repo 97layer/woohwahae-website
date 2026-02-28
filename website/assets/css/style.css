@@ -6993,6 +6993,15 @@ body.is-loaded .home-preloader__logo {
   margin-bottom: var(--space-sm);
 }
 
+.service-lead {
+  margin-top: var(--space-md);
+  font-size: 0.95rem;
+  font-weight: var(--fw-light);
+  color: var(--text-sub);
+  line-height: 1.7;
+  max-width: 480px;
+}
+
 .service-back a {
   font-family: var(--font-mono);
   font-size: 0.62rem;
