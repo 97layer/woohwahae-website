@@ -124,7 +124,8 @@ class CorpusManager:
         """테마별 군집 인덱스에 entry 추가"""
         index = self._load_index()
 
-        for theme in entry.get("themes", [entry.get("category", "미분류")]):
+        themes = entry.get("themes", [entry.get("category", "미분류")])[:2]  # 군집 과분화 방지: entry당 최대 2개
+        for theme in themes:
             if theme not in index["clusters"]:
                 index["clusters"][theme] = {
                     "theme": theme,
