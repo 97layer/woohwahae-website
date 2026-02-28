@@ -15,7 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@1,400&display=swap">
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="stylesheet" href="../assets/css/style.css?v=8a9bafa6">
+  <link rel="stylesheet" href="../assets/css/style.css?v=544f021c">
   <script>
     (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
   </script>
@@ -58,8 +58,8 @@
       <button class="filter-btn" data-filter="lookbook" role="tab" aria-selected="false">LOOKBOOK</button>
     </div>
 
-    <!-- 카드 그리드 -->
-    <div class="archive-grid container--wide" id="archive-grid">
+    <!-- 리스트 -->
+    <div class="archive-list container--wide" id="archive-list">
       <!-- JS로 index.json 기반 렌더링 -->
     </div>
 
@@ -107,25 +107,24 @@
 
   <script src="../assets/js/site.js" defer></script>
   <script>
-    /* Archive 카드 렌더링 */
+    /* Archive 리스트 렌더링 */
     fetch('index.json')
       .then(function (r) { return r.json(); })
       .then(function (posts) {
-        var grid = document.getElementById('archive-grid');
-        if (!grid || !posts.length) return;
-        posts.forEach(function (p, i) {
-          var card = document.createElement('a');
-          card.href = p.slug + '/';
-          card.className = 'archive-card';
-          card.dataset.category = (p.type || 'Essay').toLowerCase();
-          card.style.animationDelay = (i * 0.06) + 's';
-          card.setAttribute('data-reveal', '');
-          card.innerHTML =
-            '<span class="archive-card__label">' + (p.type || 'Essay') + '</span>' +
-            '<strong class="archive-card__title">' + p.title + '</strong>' +
-            '<span class="archive-card__date">' + p.date + '</span>' +
-            (p.preview ? '<span class="archive-card__preview">' + p.preview + '</span>' : '');
-          grid.appendChild(card);
+        var list = document.getElementById('archive-list');
+        if (!list || !posts.length) return;
+        posts.forEach(function (p) {
+          var item = document.createElement('a');
+          item.href = p.slug + '/';
+          item.className = 'archive-list-item';
+          item.dataset.category = (p.type || 'essay').toLowerCase();
+          item.setAttribute('data-reveal', '');
+          item.innerHTML =
+            '<span class="archive-list-item__date">' + p.date + '</span>' +
+            '<span class="archive-list-item__type">' + (p.type || 'Essay') + '</span>' +
+            '<span class="archive-list-item__title">' + p.title + '</span>' +
+            '<span class="archive-list-item__arrow">→</span>';
+          list.appendChild(item);
         });
 
         /* 필터 */
@@ -138,7 +137,7 @@
             });
             this.classList.add('active');
             this.setAttribute('aria-selected', 'true');
-            document.querySelectorAll('.archive-card').forEach(function (c) {
+            document.querySelectorAll('.archive-list-item').forEach(function (c) {
               c.hidden = (f !== 'all' && c.dataset.category !== f);
             });
           });
@@ -149,7 +148,7 @@
           entries.forEach(function (e) {
             if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); }
           });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.05 });
         document.querySelectorAll('[data-reveal]').forEach(function (el) { obs.observe(el); });
       })
       .catch(function () { console.warn('archive: index.json 없음'); });
