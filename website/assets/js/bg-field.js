@@ -13,8 +13,12 @@
     return;
   }
 
-  /* ── 모바일 감지 — 렌더 품질 조절 ── */
+  /* ── 모바일 감지 — Three.js 완전 비활성화 (성능 최적화) ── */
   var isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    canvas.style.display = 'none'; /* 모바일에서 Three.js 렌더링 비활성화 */
+    return;
+  }
 
   /* ── Renderer ── */
   var renderer = new THREE.WebGLRenderer({
@@ -46,9 +50,9 @@
 
   /* ── 쌍극자 필드라인 파라미터 (밀도 극대화) ── */
   var isPortrait = window.innerHeight > window.innerWidth;
-  var LINE_COUNT = isMobile ? 48 : 128;   /* 밀도 상향 조정 */
-  var SEEDS = isMobile ? 18 : 48;        /* 계층 깊이 복구 */
-  var POINTS_PER = isMobile ? 240 : 600;  /* 곡선 정밀도 복구 */
+  var LINE_COUNT = isMobile ? 32 : 96;   /* 모바일 부하 감소 (48->32) */
+  var SEEDS = isMobile ? 12 : 36;        /* 계층 축소 (18->12) */
+  var POINTS_PER = isMobile ? 120 : 500;  /* 곡선 정밀도 대폭 하향 (320->120) */
   var MAX_R = 16.0;
   var SCALE = (isMobile && isPortrait) ? 2.8 : 3.5;
 
@@ -84,8 +88,8 @@
     for (var si2 = 0; si2 < SEEDS; si2++) {
       var r0 = seeds[si2];
       var frac = (si2 + 1) / SEEDS;
-      var baseOp = 0.28 - frac * 0.16;   /* 기본 농도 강화 */
-      var col = frac < 0.35 ? 0x000000 : (frac < 0.75 ? 0x1a1a1a : 0x333333);
+      var baseOp = 0.22 - frac * 0.14;
+      var col = frac < 0.35 ? 0x000000 : (frac < 0.75 ? 0x222222 : 0x555555);
 
       var mat = new THREE.LineBasicMaterial({
         color: col,

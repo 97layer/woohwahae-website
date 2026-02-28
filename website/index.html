@@ -21,7 +21,7 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="assets/css/style.css?v=7b638c00" rel="stylesheet" />
+  <link href="assets/css/style.css?v=9f8df99a" rel="stylesheet" />
   <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
     (function () {
@@ -88,42 +88,23 @@
   </section>
   <!-- 스크롤 여백: field-bg 클로즈업 구간 -->
   <div class="home-scroll-space"></div>
-  <!-- 홈 하단 -->
+  <!-- 홈 하단: 섹션 목록 -->
   <section class="home-below">
     <div class="home-below__inner container--content">
-
-      <!-- 최신 에세이 -->
-      <a class="home-latest" href="/archive/essay-010-work-and-essence/" data-reveal>
-        <div class="home-latest__head">
-          <span class="mono">LATEST</span>
-          <span class="mono">Essay — 2026.02.20</span>
-        </div>
-        <h2 class="home-latest__title">일과 본질</h2>
-        <p class="home-latest__excerpt">이 일을 하면서 돈이 우선이었던 적은 없었다. 나를 알아가는 것이 원동력이다.</p>
-        <span class="mono home-latest__cta">Archive →</span>
-      </a>
-
-      <div class="home-rule"></div>
-
-      <!-- Practice -->
-      <div class="home-practice" data-reveal>
-        <span class="mono home-practice__label">PRACTICE</span>
-        <nav class="home-practice__grid">
-          <a class="home-practice__item" href="/practice/atelier.html">
-            <span>Atelier</span><span class="mono">→</span>
-          </a>
-          <a class="home-practice__item" href="/practice/direction.html">
-            <span>Direction</span><span class="mono">→</span>
-          </a>
-          <a class="home-practice__item" href="/practice/project.html">
-            <span>Project</span><span class="mono">→</span>
-          </a>
-          <a class="home-practice__item" href="/practice/product.html">
-            <span>Product</span><span class="mono">→</span>
-          </a>
-        </nav>
-      </div>
-
+      <nav class="home-nav-list" data-reveal>
+        <a class="home-nav-item" href="/archive/">
+          <span class="home-nav-item__name">Archive</span>
+          <span class="mono home-nav-item__arrow">→</span>
+        </a>
+        <a class="home-nav-item" href="/practice/">
+          <span class="home-nav-item__name">Practice</span>
+          <span class="mono home-nav-item__arrow">→</span>
+        </a>
+        <a class="home-nav-item" href="/about/">
+          <span class="home-nav-item__name">About</span>
+          <span class="mono home-nav-item__arrow">→</span>
+        </a>
+      </nav>
     </div>
   </section>
   <script defer="" src="assets/js/bg-field.js"></script>
