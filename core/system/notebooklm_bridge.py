@@ -22,10 +22,15 @@ logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-# 97layer 전용 노트북 타이틀
+# 97layer 전용 노트북 타이틀 (환경변수 ID 없을 때 fallback용)
 NB_SIGNAL_ARCHIVE = "LAYER OS: Signal Archive"
 NB_ESSAY_ARCHIVE  = "LAYER OS: Essay Archive"
 NB_BRAND_GUIDE    = "LAYER OS: Identity Framework and System Implementation Guide"
+
+# 환경변수로 고정된 노트북 ID (타이틀 기반 get_or_create보다 우선)
+_NB_ID_ESSAY   = os.getenv("NOTEBOOKLM_ESSAY_ARCHIVE_ID", "")
+_NB_ID_SIGNAL  = os.getenv("NOTEBOOKLM_SIGNAL_ARCHIVE_ID", "")
+_NB_ID_BRAND   = os.getenv("NOTEBOOKLM_BRAND_GUIDE_ID", "")
 
 
 def _get_storage_path() -> Optional[Path]:
@@ -188,12 +193,25 @@ class NotebookLMBridge:
         return _run(self._async_query(notebook_id, query))
 
     async def _async_query(self, notebook_id: str, query: str) -> str:
-        client = await _get_client()
-        async with client:
-            result = await client.chat.ask(notebook_id, query)
-            answer = getattr(result, "answer", str(result))
-            logger.info("✅ 쿼리 완료 (%s자)", len(answer))
-            return answer
+        # notebooklm-py chat.ask가 Python 3.14에서 RPC 버그 있음 → CLI 경유
+        import subprocess
+        result = subprocess.run(
+            ["notebooklm", "use", notebook_id[:8]],
+            capture_output=True, text=True, timeout=30
+        )
+        result = subprocess.run(
+            ["notebooklm", "ask", query],
+            capture_output=True, text=True, timeout=60
+        )
+        answer = result.stdout.strip()
+        # "Answer:\n..." 형식에서 답변 부분만 추출
+        if "Answer:" in answer:
+            answer = answer.split("Answer:", 1)[1].strip()
+        # "Conversation: ..." 꼬리 제거
+        if "\nConversation:" in answer:
+            answer = answer.rsplit("\nConversation:", 1)[0].strip()
+        logger.info("✅ CLI 쿼리 완료 (%s자)", len(answer))
+        return answer
 
     # ── 고수준 워크플로우 ────────────────────────
 
@@ -210,8 +228,8 @@ class NotebookLMBridge:
         source    = signal_data.get("source", "unknown")
         analysis  = signal_data.get("analysis", {})
 
-        # 노트북 ID 확보
-        nb_id = await self._async_get_or_create(NB_SIGNAL_ARCHIVE)
+        # 노트북 ID 확보 (환경변수 우선)
+        nb_id = _NB_ID_SIGNAL or await self._async_get_or_create(NB_SIGNAL_ARCHIVE)
 
         # 소스 텍스트 구성
         score    = analysis.get("strategic_score", "?")
@@ -254,12 +272,9 @@ SA 점수: {score}
         return _run(self._async_query_brand(question))
 
     async def _async_query_brand(self, question: str) -> str:
-        # 브랜드 가이드 노트북 (기존 것 사용)
-        nb_id = await self._async_get_or_create(NB_BRAND_GUIDE)
-        client = await _get_client()
-        async with client:
-            result = await client.chat.ask(nb_id, question)
-            return getattr(result, "answer", str(result))
+        # 브랜드 가이드 노트북 (환경변수 우선)
+        nb_id = _NB_ID_BRAND or await self._async_get_or_create(NB_BRAND_GUIDE)
+        return await self._async_query(nb_id, question)
 
     def query_knowledge_base(self, question: str) -> str:
         """
@@ -283,8 +298,8 @@ SA 점수: {score}
         issue_num    = essay_data.get("issue_num", "")
         today        = datetime.now().strftime("%Y-%m-%d")
 
-        # Essay Archive 노트북 확보
-        nb_id = await self._async_get_or_create(NB_ESSAY_ARCHIVE)
+        # Essay Archive 노트북 확보 (환경변수 우선)
+        nb_id = _NB_ID_ESSAY or await self._async_get_or_create(NB_ESSAY_ARCHIVE)
 
         # 소스 텍스트 구성 — 에세이 전문 + 멀티포맷 메타
         text = f"""# {essay_title}
