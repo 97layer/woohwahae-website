@@ -67,10 +67,17 @@ def acquire_lock(agent_id: str, task: str) -> bool:
     current = check_lock()
 
     if current.get("locked"):
-        logger.error(f"❌ 잠금 실패: {current['agent']}가 작업 중")
-        logger.error(f"   진행 중: {current['task']}")
-        logger.error(f"   시작: {current['started_at']}")
-        return False
+        # 2시간 이상 방치된 Lock은 자동 해제
+        from datetime import timedelta
+        started = datetime.fromisoformat(current["started_at"])
+        if datetime.now() - started > timedelta(hours=2):
+            logger.warning(f"⚠️  2시간 이상 방치된 Lock 자동 해제: {current['agent']}")
+            LOCK_FILE.unlink()
+        else:
+            logger.error(f"❌ 잠금 실패: {current['agent']}가 작업 중")
+            logger.error(f"   진행 중: {current['task']}")
+            logger.error(f"   시작: {current['started_at']}")
+            return False
 
     # 현재 상태 스냅샷
     lock_data = {

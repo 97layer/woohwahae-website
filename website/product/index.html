@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Product — WOOHWAHAE">
+  <title>Product — WOOHWAHAE</title>
+  <meta name="theme-color" content="#E3E2E0">
+  <link rel="icon" href="/assets/media/brand/symbol.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+  <style>
+    /* 그라더스 스타일 E-commerce */
+    :root {
+      --bg: #E3E2E0;
+      --bg-white: rgba(255, 255, 255, 0.5);
+      --text: #1a1a1a;
+      --text-sub: #4a4a4a;
+      --text-faint: #7A7A74;
+      --line: #D5D4CF;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --font-body: 'Pretendard Variable', sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    /* 미니멀 네비게이션 */
+    .nav-minimal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+    }
+
+    .nav-logo {
+      width: 32px;
+      height: 32px;
+      opacity: 0.7;
+    }
+
+    .nav-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-menu a {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+      text-decoration: none;
+      transition: color 0.3s var(--ease);
+    }
+
+    .nav-menu a:hover,
+    .nav-menu a.active {
+      color: var(--text);
+    }
+
+    /* 장바구니 아이콘 */
+    .nav-cart {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .nav-cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--text);
+      color: var(--bg);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 메인 컨테이너 */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 10rem 2rem 6rem;
+    }
+
+    /* 섹션 헤더 */
+    .section-header {
+      margin-bottom: 4rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+    }
+
+    /* 상품 그리드 (그라더스 스타일) */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3rem;
+      margin-bottom: 6rem;
+    }
+
+    .product-card {
+      cursor: pointer;
+      transition: transform 0.6s var(--ease);
+      opacity: 0;
+      animation: fadeIn 0.8s var(--ease) forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .product-card:nth-child(1) { animation-delay: 0.1s; }
+    .product-card:nth-child(2) { animation-delay: 0.2s; }
+    .product-card:nth-child(3) { animation-delay: 0.3s; }
+    .product-card:nth-child(4) { animation-delay: 0.4s; }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-image {
+      aspect-ratio: 4/5;
+      background: var(--bg-white);
+      border: 1px solid var(--line);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s var(--ease);
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
+    }
+
+    /* 재고 상태 뱃지 */
+    .product-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.6rem;
+      background: var(--bg);
+      border: 1px solid var(--line);
+    }
+
+    .product-badge.sold-out {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .product-info {
+      padding: 0 0.5rem;
+    }
+
+    .product-name {
+      font-size: 0.95rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .product-description {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .product-price {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    .price-current {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .price-original {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-faint);
+      text-decoration: line-through;
+    }
+
+    /* 상품 상세 모달 */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--bg);
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      width: 30px;
+      height: 30px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .modal-close::before,
+    .modal-close::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 20px;
+      height: 1px;
+      background: var(--text);
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .modal-close::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      padding: 3rem;
+    }
+
+    .modal-image {
+      aspect-ratio: 3/4;
+      background: var(--bg-white);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .modal-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-info {
+      padding: 2rem 0;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .modal-description {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--text-sub);
+      margin-bottom: 2rem;
+    }
+
+    .modal-price {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px dotted var(--line);
+    }
+
+    /* 수량 선택기 */
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .quantity-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-sub);
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+    }
+
+    .quantity-btn {
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      color: var(--text);
+      transition: background 0.3s var(--ease);
+    }
+
+    .quantity-btn:hover {
+      background: var(--bg-white);
+    }
+
+    .quantity-value {
+      width: 50px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 0.5rem;
+    }
+
+    /* 구매 버튼 (그라더스 스타일) */
+    .purchase-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: none;
+      border: 1px solid var(--text);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+
+    .btn:hover {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .btn.primary {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .btn.primary:hover {
+      background: var(--text-sub);
+      border-color: var(--text-sub);
+    }
+
+    /* Coming Soon 상태 */
+    .coming-soon {
+      text-align: center;
+      padding: 8rem 2rem;
+    }
+
+    .coming-soon-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+      margin-bottom: 2rem;
+    }
+
+    .coming-soon-desc {
+      font-size: 1rem;
+      line-height: 2;
+      color: var(--text);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* 장바구니 사이드바 */
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100%;
+      background: var(--bg);
+      border-left: 1px solid var(--text);
+      z-index: 200;
+      transition: right 0.6s var(--ease);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-sidebar.active {
+      right: 0;
+    }
+
+    .cart-header {
+      padding: 2rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px dotted var(--line);
+    }
+
+    .cart-item-image {
+      width: 60px;
+      height: 75px;
+      background: var(--bg-white);
+      border: 1px solid var(--line);
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-name {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cart-item-price {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-sub);
+    }
+
+    .cart-footer {
+      padding: 2rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      font-family: var(--font-mono);
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+      .nav-minimal {
+        padding: 1.5rem;
+      }
+
+      .nav-menu {
+        display: none;
+      }
+
+      .container {
+        padding: 8rem 1.5rem 4rem;
+      }
+
+      .product-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .modal-grid {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+      }
+
+      .modal-image {
+        aspect-ratio: 1;
+      }
+
+      .cart-sidebar {
+        width: 100%;
+        right: -100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 미니멀 네비게이션 -->
+  <nav class="nav-minimal">
+    <a href="/" class="nav-logo">
+      <img src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+    </a>
+    <div class="nav-menu">
+      <a href="/archive/">Archive</a>
+      <a href="/practice/">Practice</a>
+      <a href="/project/">Project</a>
+      <a href="/product/" class="active">Product</a>
+      <a href="/about/">About</a>
+    </div>
+    <div class="nav-cart" onclick="toggleCart()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M3 3h14l-1 10H4L3 3zm0 0L2 1m4 15a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2z"
+              stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-cart-count" id="cartCount" style="display: none;">0</span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- 섹션 헤더 -->
+    <header class="section-header">
+      <h1 class="section-title">Product</h1>
+    </header>
+
+    <!-- 상품 그리드 -->
+    <div class="product-grid" id="productGrid">
+      <!-- 상품 1 -->
+      <div class="product-card" data-product-id="1">
+        <div class="product-image">
+          <img src="/assets/media/products/hair-oil.jpg" alt="헤어 오일" loading="lazy">
+          <!-- <div class="product-badge">Limited</div> -->
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">헤어 오일 30ml</h3>
+          <p class="product-description">건조한 끝머리를 위한 영양 오일</p>
+          <div class="product-price">
+            <span class="price-current">₩28,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 상품 2 -->
+      <div class="product-card" data-product-id="2">
+        <div class="product-image">
+          <img src="/assets/media/products/hair-balm.jpg" alt="헤어 밤" loading="lazy">
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">헤어 밤 50ml</h3>
+          <p class="product-description">부드러운 질감을 위한 스타일링 밤</p>
+          <div class="product-price">
+            <span class="price-current">₩32,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 상품 3 -->
+      <div class="product-card" data-product-id="3">
+        <div class="product-image">
+          <img src="/assets/media/products/hair-set.jpg" alt="헤어 케어 세트" loading="lazy">
+          <div class="product-badge">Set</div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">헤어 케어 세트</h3>
+          <p class="product-description">오일과 밤이 함께 구성된 세트</p>
+          <div class="product-price">
+            <span class="price-current">₩54,000</span>
+            <span class="price-original">₩60,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 상품 4 - Coming Soon -->
+      <div class="product-card" data-product-id="4">
+        <div class="product-image" style="display: flex; align-items: center; justify-content: center;">
+          <span style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--text-faint);">COMING SOON</span>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">전자책: 슬로우 라이프</h3>
+          <p class="product-description">에세이 모음집 (준비 중)</p>
+          <div class="product-price">
+            <span class="price-current">TBD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coming Soon 메시지 -->
+    <div class="coming-soon">
+      <h2 class="coming-soon-title">연마 중</h2>
+      <p class="coming-soon-desc">
+        천천히 준비하고 있습니다.<br>
+        충분한 시간을 들여 만든 것들을<br>
+        곧 선보일 예정입니다.
+      </p>
+    </div>
+  </main>
+
+  <!-- 상품 상세 모달 -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()"></button>
+      <div class="modal-grid">
+        <div class="modal-image">
+          <img src="" alt="" id="modalImage">
+        </div>
+        <div class="modal-info">
+          <h2 class="modal-title" id="modalTitle"></h2>
+          <p class="modal-description" id="modalDescription"></p>
+          <div class="modal-price" id="modalPrice"></div>
+
+          <div class="quantity-selector">
+            <span class="quantity-label">Quantity</span>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="updateQuantity(-1)">−</button>
+              <div class="quantity-value" id="quantity">1</div>
+              <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+            </div>
+          </div>
+
+          <div class="purchase-buttons">
+            <button class="btn" onclick="addToCart()">Add to Cart</button>
+            <button class="btn primary" onclick="buyNow()">Buy Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 장바구니 사이드바 -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3 class="cart-title">Cart</h3>
+      <button class="modal-close" onclick="toggleCart()" style="position: static;"></button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <!-- 장바구니 아이템 동적 렌더링 -->
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotal">₩0</span>
+      </div>
+      <button class="btn primary" style="width: 100%;" onclick="checkout()">Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    // 상품 데이터
+    const products = {
+      1: {
+        name: '헤어 오일 30ml',
+        description: '아르간 오일과 동백 오일을 블렌딩한 고농축 헤어 오일. 건조하고 손상된 모발 끝을 집중적으로 케어합니다. 사용 후 끈적임 없이 자연스러운 윤기를 제공합니다.',
+        price: 28000,
+        image: '/assets/media/products/hair-oil.jpg'
+      },
+      2: {
+        name: '헤어 밤 50ml',
+        description: '시어버터와 밀랍을 베이스로 한 스타일링 밤. 적당한 홀드력으로 자연스러운 질감을 연출합니다. 건조한 날씨에도 머리카락을 보호합니다.',
+        price: 32000,
+        image: '/assets/media/products/hair-balm.jpg'
+      },
+      3: {
+        name: '헤어 케어 세트',
+        description: '헤어 오일과 헤어 밤이 함께 구성된 세트 상품. 데일리 케어부터 스타일링까지 완벽한 솔루션을 제공합니다. 선물용으로도 적합합니다.',
+        price: 54000,
+        originalPrice: 60000,
+        image: '/assets/media/products/hair-set.jpg'
+      }
+    };
+
+    // 장바구니 데이터
+    let cart = [];
+    let currentProduct = null;
+    let quantity = 1;
+
+    // 세션 ID 생성 (실제로는 서버에서 관리)
+    function getSessionId() {
+      let sessionId = localStorage.getItem('session_id');
+      if (!sessionId) {
+        sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('session_id', sessionId);
+      }
+      return sessionId;
+    }
+
+    // 상품 카드 클릭 이벤트
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        if (productId && products[productId]) {
+          openModal(productId);
+        }
+      });
+    });
+
+    // 모달 열기
+    function openModal(productId) {
+      currentProduct = products[productId];
+      if (!currentProduct) return;
+
+      document.getElementById('modalTitle').textContent = currentProduct.name;
+      document.getElementById('modalDescription').textContent = currentProduct.description;
+      document.getElementById('modalPrice').textContent = '₩' + currentProduct.price.toLocaleString();
+      document.getElementById('modalImage').src = currentProduct.image;
+      document.getElementById('modalImage').alt = currentProduct.name;
+      document.getElementById('quantity').textContent = '1';
+      quantity = 1;
+
+      document.getElementById('productModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // 모달 닫기
+    function closeModal() {
+      document.getElementById('productModal').classList.remove('active');
+      document.body.style.overflow = '';
+      currentProduct = null;
+      quantity = 1;
+    }
+
+    // 수량 업데이트
+    function updateQuantity(delta) {
+      quantity = Math.max(1, Math.min(10, quantity + delta));
+      document.getElementById('quantity').textContent = quantity;
+    }
+
+    // 장바구니에 추가
+    function addToCart() {
+      if (!currentProduct) return;
+
+      // 장바구니에 이미 있는지 확인
+      const existingItem = cart.find(item => item.name === currentProduct.name);
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.push({
+          ...currentProduct,
+          quantity: quantity
+        });
+      }
+
+      updateCartUI();
+      closeModal();
+
+      // 장바구니 사이드바 열기
+      document.getElementById('cartSidebar').classList.add('active');
+    }
+
+    // 바로 구매
+    function buyNow() {
+      addToCart();
+      checkout();
+    }
+
+    // 장바구니 UI 업데이트
+    function updateCartUI() {
+      const cartItems = document.getElementById('cartItems');
+      const cartCount = document.getElementById('cartCount');
+      const cartTotal = document.getElementById('cartTotal');
+
+      // 장바구니 아이템 렌더링
+      if (cart.length === 0) {
+        cartItems.innerHTML = '<p style="text-align: center; color: var(--text-faint); padding: 2rem;">장바구니가 비어 있습니다.</p>';
+        cartCount.style.display = 'none';
+      } else {
+        cartItems.innerHTML = cart.map((item, index) => `
+          <div class="cart-item">
+            <div class="cart-item-image">
+              <img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-price">₩${item.price.toLocaleString()} × ${item.quantity}</div>
+            </div>
+          </div>
+        `).join('');
+
+        // 장바구니 카운트
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+        cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+      }
+
+      // 총액 계산
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      cartTotal.textContent = '₩' + total.toLocaleString();
+    }
+
+    // 장바구니 토글
+    function toggleCart() {
+      document.getElementById('cartSidebar').classList.toggle('active');
+    }
+
+    // 체크아웃
+    async function checkout() {
+      if (cart.length === 0) {
+        alert('장바구니가 비어 있습니다.');
+        return;
+      }
+
+      // API 호출 (실제 구현 시)
+      /*
+      const sessionId = getSessionId();
+      try {
+        const response = await fetch('https://api.woohwahae.kr/api/v1/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-ID': sessionId
+          },
+          body: JSON.stringify({
+            items: cart.map(item => ({
+              product_id: item.id,
+              quantity: item.quantity
+            }))
+          })
+        });
+
+        const order = await response.json();
+        window.location.href = `/checkout/${order.order_number}`;
+      } catch (error) {
+        console.error('Checkout error:', error);
+      }
+      */
+
+      // 임시 알림
+      alert('결제 시스템 준비 중입니다.\n문의: hello@woohwahae.kr');
+    }
+
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('productModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+        document.getElementById('cartSidebar').classList.remove('active');
+      }
+    });
+
+    // 페이지 로드 시 장바구니 복원 (localStorage 사용)
+    window.addEventListener('load', () => {
+      const savedCart = localStorage.getItem('woohwahae_cart');
+      if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCartUI();
+      }
+    });
+
+    // 장바구니 변경 시 저장
+    window.addEventListener('beforeunload', () => {
+      localStorage.setItem('woohwahae_cart', JSON.stringify(cart));
+    });
+  </script>
+</body>
+</html>

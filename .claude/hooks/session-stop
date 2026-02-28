@@ -1,0 +1,23 @@
+#!/bin/bash
+# session-stop hook — 세션 종료 시 자동 정리
+
+echo "━━━ SESSION CLEANUP ━━━"
+
+# Web Lock 자동 해제
+if [ -f "knowledge/system/web_work_lock.json" ]; then
+    AGENT=$(cat knowledge/system/web_work_lock.json | grep '"agent"' | cut -d'"' -f4)
+    if [ ! -z "$AGENT" ]; then
+        echo "🔓 Web Lock 자동 해제: $AGENT"
+        python3 core/system/web_consistency_lock.py --release "$AGENT" 2>/dev/null
+    fi
+fi
+
+# Uncommitted 파일 경고
+UNCOMMITTED=$(git status --porcelain | wc -l | xargs)
+if [ "$UNCOMMITTED" -gt 0 ]; then
+    echo "⚠️  WARNING: $UNCOMMITTED 파일을 커밋하지 않고 종료!"
+    echo "다음 세션이 혼란스러울 수 있음"
+fi
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━"
+exit 0
