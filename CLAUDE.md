@@ -1,7 +1,7 @@
 # LAYER OS — Claude Code Entry Point
 # Priority: 0 (MAXIMUM)
 # Source: directives/system.md (운영 매뉴얼 SSOT)
-# Last Updated: 2026-02-27
+# Last Updated: 2026-03-01
 
 ---
 
@@ -102,25 +102,17 @@ Direct & Factual | Zero Noise (인사/사과 제거) | Evidence-Based | Slow Lif
 | 하려는 작업 | 커맨드 |
 |------------|--------|
 | VM 배포 / 서비스 재시작 | `/deploy [대상]` |
-| URL/텍스트/유튜브 신호 저장 | `/signal <입력>` |
-| knowledge/ 정화 / 중복 제거 | `/data-curation` |
-| GDrive 백업 / 스냅샷 | `/intelligence-backup` |
-| VM 서비스 상태 확인 | `/infrastructure-sentinel` |
+| 시스템 전체 상태 진단 | `/doctor` |
+| 파이프라인 현황 (신호/Corpus/VM) | `/status` |
+| state.md 빠른 갱신 | `/quanta` |
+| Brand OS 핵심 규칙 참조 | `/brand` |
+| 코드 품질 전체 검증 | `/verify` |
+| 폴더 구조 감사 (중복/orphan) | `/audit` |
+| 배치 규칙 조회 | `/manifest` |
+| 모닝 리포트 생성 | `/morning` |
+| 세션 종료 핸드오프 | `/handoff` |
 
 스킬 매핑에 해당하면 **스킬 없이 직접 실행 금지**.
-
----
-
-## 🏗️ DEPENDENCY GRAPH
-
-- 파일 변경 → 의존성 그래프 BFS → 영향권 계산 → Tier별 처리
-- FROZEN → CD 승인 필수
-- PROPOSE → 에이전트 재프롬프트 큐잉
-- AUTO → 캐시 무효화만
-
-```bash
-cat knowledge/system/dependency_graph.json
-```
 
 ---
 
