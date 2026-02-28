@@ -63,7 +63,7 @@ for name, info in d['inactive'].items():
 
   all)
     echo "[1/3] git pull..."
-    ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main"
+    ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main && git prune && rm -f .git/gc.log"
     echo "[2/3] corpus 군집 마이그레이션..."
     ssh ${VM_HOST} "cd ${VM_PATH} && python3 core/scripts/migrate_corpus_clusters.py"
     echo "[3/3] active 서비스 전체 재시작 (${SERVICES_ACTIVE})..."
