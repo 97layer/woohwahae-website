@@ -2739,6 +2739,29 @@ main.container--wide {
   color: var(--text-faint);
 }
 
+.archive-hero .section-label {
+  position: fixed;
+  top: 18rem;
+  left: 3rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--text-faint);
+  opacity: 0.5;
+  z-index: 5;
+}
+
+@media (max-width: 1024px) {
+  .archive-hero .section-label {
+    position: static;
+    writing-mode: horizontal-tb;
+    transform: none;
+    margin-bottom: var(--space-md);
+  }
+}
+
 /* ─── 우화(羽化) Dictionary Entry ─── */
 .about-hero {
   text-align: left;
@@ -3751,47 +3774,15 @@ footer.section--light {
   border-bottom-color: var(--text);
 }
 
-/* ── Time-Aware Atmosphere ── */
-:root.time-dawn {
-  --bg: #EAEAE8;
-  --bg-dark: #E2E2E0;
-  --text-faint: #777;
-  --duration-slow: 1.8s;
-  --breath: 4.8s;
-  /* 새벽 — 가장 긴 호흡 */
-}
+/* ── REMOVED: Time-Aware Atmosphere ──
+   색상 일관성을 위해 시간대별 변경 제거.
+   단일 색상 체계 유지 (practice.md 준수) */
 
-:root.time-evening {
-  --bg: #E6E5E3;
-  --bg-dark: #DEDDD9;
-  --text-faint: #9A8F85;
-  --duration-slow: 1.5s;
-  --breath: 4.2s;
-  /* 저녁 — 약간 느려짐 */
-}
-
-:root.time-night {
-  --bg: #DCDCDA;
-  --bg-dark: #D5D5D3;
-  --text-faint: #777;
-  --duration-slow: 2s;
-  --breath: 5.2s;
-  /* 밤 — 가장 긴 호흡 */
-}
-
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    HOME — 편집된 첫 페이지
-   ═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════════ */
 
-.home-hero {
-  position: relative;
-  min-height: 80svh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 120px var(--space-md) 80px;
-  overflow: hidden;
-}
+/* REMOVED: 첫 번째 중복 .home-hero 정의 */
 
 .home-hero-canvas {
   position: absolute;
@@ -4645,12 +4636,7 @@ body.home-radical .contact-section {
 }
 
 /* ─── About 페이지 전용 시각 조정 ─── */
-/* 서늘한 무채색 온도 (크림 #F0EFEB → 중립 회백색) */
-body.home-radical {
-  --bg: #E3E2E0;
-  --bg-dark: #DDDCDA;
-  --line: #CCCCC9;
-}
+/* REMOVED: 중복 색상 정의. :root의 전역 값 사용 */
 
 body.home-radical .mag-row--intro {
   padding-top: var(--space-xl);
@@ -4980,16 +4966,7 @@ body.home-radical::after {
    ═══════════════════════════════════════════ */
 
 /* ── Hero: full-viewport, transparent (field-bg 노출) ── */
-.home-hero {
-  position: relative;
-  z-index: 1;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: var(--space-xl) var(--space-lg);
-  pointer-events: none;
-}
+/* REMOVED: 두 번째 중복 .home-hero 정의 */
 
 .home-hero__inner {
   display: flex;
@@ -5215,59 +5192,44 @@ body.home-radical::after {
   padding: calc(60px + var(--space-xl)) 0 var(--space-lg);
 }
 
-.arc-filter-bar {
+.archive-filter {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs) var(--space-md);
-  padding-bottom: var(--space-lg);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--space-xs);
 }
 
-.arc-filter {
+.filter-btn {
   background: none;
   border: none;
-  cursor: pointer;
+  padding: 0.4rem 0;
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  font-weight: 400;
-  letter-spacing: var(--ls-label);
-  text-transform: uppercase;
   color: var(--text-faint);
-  padding: 0.5rem 0;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  transition: color var(--duration) var(--ease);
-}
-
-.arc-filter:hover {
-  color: var(--text-sub);
-}
-
-.arc-filter.active {
-  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: color 0.3s var(--ease);
   position: relative;
 }
 
-.arc-filter.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: var(--text);
-  transform-origin: left center;
-  animation: arc-filter-draw 0.3s var(--ease) forwards;
+.filter-btn:hover {
+  color: var(--text);
 }
 
-@keyframes arc-filter-draw {
-  from {
-    transform: scaleX(0);
-  }
+.filter-btn.active {
+  color: var(--text);
+}
 
-  to {
-    transform: scaleX(1);
-  }
+.filter-btn.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--text);
 }
 
 .arc-divider {
@@ -7109,57 +7071,59 @@ body.is-loaded .home-preloader__logo {
   white-space: nowrap;
 }
 
-/* ─── Archive List ─── */
-.archive-list {
-  margin-top: var(--space-lg);
-}
-
 .archive-list-item {
   display: grid;
-  grid-template-columns: 5.5rem 4.5rem 1fr 1.5rem;
-  gap: var(--space-sm);
-  align-items: baseline;
-  padding: var(--space-xs) 0;
-  border-bottom: 1px solid var(--line);
+  grid-template-columns: 8.5rem 6.5rem 1fr 1.5rem;
+  gap: var(--space-md);
+  align-items: center;
+  padding: 1.6rem 0;
+  border-bottom: 0.5px solid var(--line);
   text-decoration: none;
   color: var(--text);
-  transition: opacity 0.2s var(--ease);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
 }
 
 .archive-list-item:first-child {
-  border-top: 1px solid var(--line);
+  border-top: 0.5px solid var(--line);
 }
 
 .archive-list-item:hover {
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
 .archive-list-item__date {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--text-faint);
-  white-space: nowrap;
+  letter-spacing: 0.05em;
 }
 
 .archive-list-item__type {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.08em;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
   color: var(--text-faint);
   text-transform: uppercase;
 }
 
 .archive-list-item__title {
-  font-size: 0.88rem;
-  font-weight: var(--fw-light);
-  line-height: 1.5;
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text);
 }
 
 .archive-list-item__arrow {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--text-faint);
   text-align: right;
+  transition: transform 0.3s var(--ease);
+}
+
+.archive-list-item:hover .archive-list-item__arrow {
+  transform: translateX(4px);
+  color: var(--text);
 }
 
 @media (max-width: 640px) {

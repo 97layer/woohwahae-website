@@ -20,7 +20,7 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="assets/css/style.css?v=dc980ff6" rel="stylesheet" />
+  <link href="assets/css/style.css?v=20260228181637" rel="stylesheet" />
   <script>
     (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
   </script>
@@ -34,17 +34,19 @@
     <ul class="nav-links" id="nav-links">
       <li><a href="/archive/">Archive</a></li>
       <li><a href="/practice/">Practice</a></li>
-      <li><a href="/about/">About</a></li>
+      <li><a href="/lab/">Lab</a></li>
+      <li><a href="/about/" class="is-active">About</a></li>
     </ul>
     <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
       <span></span><span></span>
     </button>
   </nav>
-  <div class="nav-overlay" id="nav-overlay">
+  <nav class="nav-overlay__content" id="nav-overlay">
     <a href="/archive/">Archive</a>
     <a href="/practice/">Practice</a>
+    <a href="/lab/">Lab</a>
     <a href="/about/">About</a>
-  </div>
+  </nav>
   <!-- /COMPONENT:nav --><!-- COMPONENT:wave-bg -->
   <div class="wave-bg" aria-hidden="true">
     <svg viewBox="0 0 800 800" width="100%" height="100%">
@@ -328,6 +330,25 @@
       </div>
     </section>
 
+    <!-- ━━━ NAVIGATION FLOW ━━━ -->
+    <section class="about-links" data-reveal>
+      <a class="about-link" href="/archive/">
+        <span class="about-link__label">Archive</span>
+        <span class="about-link__desc">기록과 사유의 지층, 에세이 아카이브</span>
+        <span class="about-link__arrow">→</span>
+      </a>
+      <a class="about-link" href="/practice/">
+        <span class="about-link__label">Practice</span>
+        <span class="about-link__desc">제공하는 전문적인 서비스와 실천적 미학</span>
+        <span class="about-link__arrow">→</span>
+      </a>
+      <a class="about-link" href="/lab/">
+        <span class="about-link__label">Lab</span>
+        <span class="about-link__desc">데이터와 기술의 실험적 변용, 프로토타입</span>
+        <span class="about-link__arrow">→</span>
+      </a>
+    </section>
+
   </main>
 
   <script defer src="assets/js/site.js"></script>
@@ -361,6 +382,8 @@
         <nav class="footer-nav">
           <a href="/archive/">Archive</a>
           <a href="/practice/">Practice</a>
+          <a href="/lab/">Lab</a>
+          <a href="/playlist.html">Atmosphere</a>
           <a href="/about/">About</a>
         </nav>
         <div class="footer-legal">
