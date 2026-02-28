@@ -77,6 +77,11 @@ for name, info in d['inactive'].items():
     ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main"
     ;;
 
+  gardener-run)
+    echo "Gardener 즉시 실행 (--run-now)..."
+    ssh ${VM_HOST} "cd ${VM_PATH} && python3 core/agents/gardener.py --run-now 2>&1"
+    ;;
+
   *)
     # 서비스명 검증
     if ! is_active_service "$1"; then
