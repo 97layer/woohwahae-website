@@ -33,6 +33,18 @@ globs: **
 
 **사용 전**: list_notebooks로 관련 노트북 존재 확인
 
+### context_snippet (서브에이전트 컨텍스트 최소화)
+
+**반드시 사용**:
+- Task 도구로 서브에이전트 스폰 전 — state.md 전체를 프롬프트에 붙이지 말 것
+- `python3 core/scripts/context_snippet.py [keys...]` → 관련 섹션만 추출해 전달
+- 키 목록: `infra` / `pipeline` / `web` / `content` / `design` / `agent` / `state`
+
+```bash
+# 예시: 파이프라인 + 인프라 컨텍스트만 워커에게 전달
+python3 core/scripts/context_snippet.py pipeline infra
+```
+
 ### claude-mem (과거 세션 기억)
 
 **반드시 사용**:
