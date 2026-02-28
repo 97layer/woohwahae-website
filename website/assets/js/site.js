@@ -72,27 +72,26 @@
         revealEls.forEach(function (el) { el.classList.add('is-visible'); });
     }
 
-    /* ─── 현재 섹션 Nav active ─── */
-    var section = location.pathname.split('/').filter(Boolean)[0] || 'home';
+    /* ─── 내비게이션 숫자 태그 인터랙션 ─── */
     document.querySelectorAll('.nav-links a, .nav-overlay a').forEach(function (a) {
-        if (section !== 'home' && a.href.indexOf('/' + section + '/') > -1) {
-            a.classList.add('active');
+        var tag = a.querySelector('.numeric-tag');
+        if (tag) {
+            a.addEventListener('mouseenter', function () { tag.classList.add('numeric-tag--active'); });
+            a.addEventListener('mouseleave', function () { 
+                if (!a.classList.contains('active')) {
+                    tag.classList.remove('numeric-tag--active');
+                }
+            });
         }
     });
 
-    /* ─── 홈 브랜드 breath (home-brand) ─── */
-    var brand = document.querySelector('.home-brand[data-breath]');
-    if (brand) {
-        var breathMs = {
-            'time-dawn': 4800,
-            'time-day': 3800,
-            'time-evening': 4200,
-            'time-night': 5200
-        };
-        var dur = breathMs[cls] || 3800;
-        brand.style.animation =
-            'hb-fade 1.2s cubic-bezier(0.16,1,0.3,1) 0.1s both,' +
-            'home-breathe ' + dur + 'ms ease-in-out 1.4s infinite';
+    /* ─── Deconstructed Title Shuffle ─── */
+    var deconTitle = document.querySelector('.decon-title');
+    if (deconTitle) {
+        setTimeout(function() {
+            deconTitle.style.transition = 'opacity 1s var(--ease)';
+            deconTitle.style.opacity = '1';
+        }, 100);
     }
 
 })();

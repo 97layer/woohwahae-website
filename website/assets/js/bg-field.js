@@ -13,54 +13,50 @@
     return;
   }
 
-  /* ── 모바일 감지 — Three.js 완전 비활성화 (성능 최적화) ── */
+  /* ── 모바일 감지 — 부하 경량화 모드 전환용 ── */
   var isMobile = window.innerWidth < 768;
-  if (isMobile) {
-    canvas.style.display = 'none'; /* 모바일에서 Three.js 렌더링 비활성화 */
-    return;
-  }
-
+  
   /* ── Renderer ── */
   var renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     alpha: true,
     antialias: true
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); /* 성능을 위해 max 2 고정 */
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
-
+ 
   /* ── Scene & Camera ── */
   var scene = new THREE.Scene();
-  /* 공간의 깊이감을 위한 섬세한 안개 (E3E2E0 - 종이 질감 색상과 동기화) */
-  scene.fog = new THREE.FogExp2(0xE3E2E0, 0.035);
-
+  /* 안개 밀도 대폭 감소 (가시성 확보 - 0.035 -> 0.02) */
+  scene.fog = new THREE.FogExp2(0xE3E2E0, 0.02);
+ 
   var fieldGroup = new THREE.Group();
   scene.add(fieldGroup);
-
+ 
   var camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 1.2, 22);
   camera.lookAt(0, 0, 0);
-
+ 
   /* ── 마우스 추적 (관성 적용) ── */
   var mouse = { x: 0, y: 0 };
   document.addEventListener('mousemove', function (e) {
     mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
     mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
   });
-
-  /* ── 쌍극자 필드라인 파라미터 (밀도 극대화) ── */
+ 
+  /* ── 쌍극자 필드라인 파라미터 (V25 리밸런싱: 선명한 밀도 + 고속 렌더링) ── */
   var isPortrait = window.innerHeight > window.innerWidth;
-  var LINE_COUNT = isMobile ? 32 : 96;   /* 모바일 부하 감소 (48->32) */
-  var SEEDS = isMobile ? 12 : 36;        /* 계층 축소 (18->12) */
-  var POINTS_PER = isMobile ? 120 : 500;  /* 곡선 정밀도 대폭 하향 (320->120) */
-  var MAX_R = 16.0;
-  var SCALE = (isMobile && isPortrait) ? 2.8 : 3.5;
-
+  var LINE_COUNT = isMobile ? 60 : 180;    /* 선명한 밀도 (160 -> 180) */
+  var SEEDS = isMobile ? 12 : 42;         /* 선명한 결 (36 -> 42) */
+  var POINTS_PER = isMobile ? 120 : 360;   /* 연산 경량화 (400 -> 360) */
+  var MAX_R = 18.0;
+  var SCALE = (isMobile && isPortrait) ? 2.8 : 3.6;
+ 
   function buildFieldLine(r0, phi) {
     var pts = new Float32Array(POINTS_PER * 3);
     var baseZ = new Float32Array(POINTS_PER);
-    var tMin = 0.02;
-    var tMax = Math.PI - 0.02;
+    var tMin = 0.01;
+    var tMax = Math.PI - 0.01;
     for (var i = 0; i < POINTS_PER; i++) {
       var theta = tMin + (i / (POINTS_PER - 1)) * (tMax - tMin);
       var sinT = Math.sin(theta);
@@ -74,35 +70,38 @@
     }
     return { pts: pts, baseZ: baseZ };
   }
-
+ 
   var fieldLines = [];
-
+ 
   /* 지수적 분포 씨앗 */
   var seeds = [];
   for (var si = 0; si < SEEDS; si++) {
-    seeds.push(0.4 + Math.pow((si + 1) / SEEDS, 2.4) * 12.0);
+    seeds.push(0.3 + Math.pow((si + 1) / SEEDS, 2.6) * 14.0);
   }
-
+ 
   for (var li = 0; li < LINE_COUNT; li++) {
     var phi = (li / LINE_COUNT) * Math.PI * 2;
     for (var si2 = 0; si2 < SEEDS; si2++) {
       var r0 = seeds[si2];
       var frac = (si2 + 1) / SEEDS;
-      var baseOp = 0.22 - frac * 0.14;
-      var col = frac < 0.35 ? 0x000000 : (frac < 0.75 ? 0x222222 : 0x555555);
-
+      
+      /* 선의 가시성 확보를 위해 투명도 범위를 살짝 상향 (0.28 ~ 0.12) */
+      var baseOp = 0.28 - frac * 0.16;
+      var col = frac < 0.4 ? 0x000000 : (frac < 0.8 ? 0x111111 : 0x333333);
+ 
       var mat = new THREE.LineBasicMaterial({
         color: col,
         opacity: baseOp,
         transparent: true,
-        depthWrite: false
+        depthWrite: false,
+        linewidth: 1
       });
-
+ 
       var built = buildFieldLine(r0, phi);
       var geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(built.pts, 3));
       fieldGroup.add(new THREE.Line(geo, mat));
-
+ 
       fieldLines.push({
         mat: mat,
         baseOp: baseOp,
@@ -114,9 +113,9 @@
       });
     }
   }
-
-  /* ── 분진 레이어 (Particle Dust) — 진정한 밀도감 형성 ── */
-  var dustCount = isMobile ? 3000 : 8000;
+ 
+  /* ── 분진 레이어 (Particle Dust) — 경량 질감 ── */
+  var dustCount = isMobile ? 1200 : 3000;
   var dustGeo = new THREE.BufferGeometry();
   var dustPos = new Float32Array(dustCount * 3);
   for (var di = 0; di < dustCount; di++) {

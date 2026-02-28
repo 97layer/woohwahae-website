@@ -19,23 +19,20 @@
      "낡은 종이 위의 잉크"
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   --bg: #E3E2E0;
-  /* 메인 배경 (중립 그레이) */
+  /* 메인 배경 (중립 그레이) - 본질적 온기 복구 */
   --bg-dark: #DDDCDA;
   /* 보조 배경, hover 상태 */
   --footer-bg: #DFDEDC;
-  /* 푸터 전용 배경 - 미세한 대비 */
-  --text: #1a1a1a;
-  /* 본문 텍스트 (잉크) */
-  --text-sub: #4a4a4a;
-  /* 보조 텍스트 (nav 링크) */
+  /* 푸터 전용 배경 */
+  --text: #1A1A1A;
+  /* 잉크 블랙 */
+  --text-sub: #4A4A4A;
+  /* 보조 텍스트 */
   --text-faint: #9A9A94;
-  /* 희미한 텍스트 - 가시성 소폭 상향 조정 */
+  /* 희미한 텍스트 */
   --white: #FFFFFF;
-  /* selection 텍스트, 반전 */
   --line: #EFEEED;
-  /* 더욱 희미한 구분선 - 경계 완화 */
-  --text-main: var(--text);
-  /* alias */
+  /* 미세한 구분선 */
   --border: var(--line);
   /* alias */
 
@@ -113,15 +110,15 @@
   --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.06);
   /* hover 상태, 카드 */
 
-  /* Radius tokens — 최소한의 둥근 모서리 */
+  /* Radius tokens — 해체주의적 각진 형태 고수 */
   --radius-none: 0;
-  /* 기본값 (각진 형태 유지) */
-  --radius-sm: 2px;
-  /* 미세한 부드러움 */
-  --radius-md: 4px;
-  /* 버튼, 입력 필드 */
+  --radius-sm: 0;
+  --radius-md: 0;
   --radius-full: 50%;
-  /* 원형 (아바타, 아이콘) */
+
+  /* Margiela Stitch Specifics */
+  --stitch-size: 8px;
+  --stitch-thickness: 1px;
 }
 
 /* 시간대별 호흡 주기 변조 */
@@ -191,6 +188,50 @@ body::after {
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
   mix-blend-mode: multiply;
+}
+
+/* ─── Storytelling Utilities ─── */
+.journey-text {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  line-height: 2.2;
+  color: var(--text-sub);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.journey-text strong {
+  color: var(--text);
+  font-weight: 400;
+}
+
+.intro-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+/* ─── Margiela Systems (Deprecated/Minimized for Journey) ─── */
+.stitch-border { border: none !important; }
+.stitch-border::before, .stitch-border::after { display: none; }
+.numeric-tag { display: none !important; }
+
+.decon-title {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(1.8rem, 6vw, 3rem); /* 크기 소폭 축소하여 서사성 강화 */
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  font-weight: 300;
+  text-align: center;
 }
 
 /* ─── Brand Highlight (Sensory) ─── */
@@ -3772,75 +3813,8 @@ footer.section--light {
    HOME — 편집된 첫 페이지
    ═══════════════════════════════════════════ */
 
-.home-hero {
-  position: relative;
-  min-height: 80svh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 120px var(--space-md) 80px;
-  overflow: hidden;
-}
+/* Home Hero Consistently Purged - Linked to Canonical Version below */
 
-.home-hero-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.home-hero-inner {
-  position: absolute;
-  z-index: 1;
-  bottom: var(--space-xl);
-  left: var(--space-lg);
-  text-align: left;
-  opacity: 0;
-  transform: translateY(12px);
-  animation: home-fade-up 1.2s var(--ease) 0.3s forwards;
-}
-
-.home-hero-statement {
-  font-family: var(--font-mono);
-  font-size: clamp(0.75rem, 1.2vw, 0.95rem);
-  font-weight: 300;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
-  color: var(--text);
-}
-
-.home-hero-brand {
-  margin-top: var(--space-md);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 300;
-  letter-spacing: var(--ls-wide);
-  color: var(--text-faint);
-  text-transform: uppercase;
-}
-
-@keyframes home-fade-up {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 브랜드 텍스트 환경 호흡 — 거의 안 보이는 미세한 파동 */
-@keyframes home-breathe {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.82;
-  }
-}
 
 /* ─── Featured Article ─── */
 .home-featured {
@@ -4269,48 +4243,8 @@ footer.section--light {
 }
 
 /* ─── Home Mobile ─── */
-@media (max-width: 640px) {
-  .home-hero {
-    min-height: 70svh;
-    padding: 100px var(--space-sm) 60px;
-  }
+/* Home Mobile Block 1 Consistently Purged */
 
-  .home-chapter {
-    padding: var(--space-xl) 0;
-  }
-
-  .home-chapter-split {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-
-  .home-chapter-split-label {
-    font-size: clamp(2rem, 10vw, 3rem);
-  }
-
-  .home-practice-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .home-practice-item {
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-    padding: var(--space-md) 0;
-  }
-
-  .home-practice-item:last-child {
-    border-bottom: none;
-  }
-
-  .home-featured-meta {
-    gap: var(--space-md);
-    flex-wrap: wrap;
-  }
-
-  .home-bottom-links {
-    gap: var(--space-lg);
-  }
-}
 
 /* ═══════════════════════════════════════════
    HOME RADICAL — 전체 페이지 필드 배경 + 부유 텍스트
@@ -4969,57 +4903,8 @@ body.home-radical::after {
    ═══════════════════════════════════════════ */
 
 /* ── Hero: full-viewport, transparent (field-bg 노출) ── */
-.home-hero {
-  position: relative;
-  z-index: 1;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: var(--space-xl) var(--space-lg);
-  pointer-events: none;
-}
+/* Home Hero v2 Consistently Purged */
 
-.home-hero__inner {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.home-hero__brand {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: var(--ls-wide);
-  color: var(--text-faint);
-  text-transform: uppercase;
-  opacity: 0;
-  transform: translateY(6px);
-  animation: home-fade-up 1.2s var(--ease) 0.3s forwards;
-}
-
-.home-hero__statement {
-  font-family: var(--font-mono);
-  font-size: clamp(0.76rem, 1.15vw, 0.92rem);
-  font-weight: 300;
-  letter-spacing: 0.01em;
-  color: var(--text);
-  line-height: 1.4;
-  opacity: 0;
-  transform: translateY(6px);
-  animation: home-fade-up 1.2s var(--ease) 0.5s forwards,
-    home-breathe var(--breath) var(--ease-in-out) 1.8s infinite;
-}
-
-.home-hero__scroll {
-  margin-top: var(--space-lg);
-  font-family: var(--font-mono);
-  font-size: 0.56rem;
-  color: var(--text-faint);
-  letter-spacing: var(--ls-wide);
-  text-transform: uppercase;
-  opacity: 0;
-  animation: home-fade-up 1.0s var(--ease) 1.4s forwards;
-}
 
 /* ── Content: solid bg — field-bg를 덮음 ── */
 .home-content {
@@ -6372,19 +6257,8 @@ body.home-radical::after {
 }
 
 /* ─── Wave BG SVG (Practice, About) ─── */
-.wave-bg {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120vmax;
-  height: 120vmax;
-  max-width: none;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.6;
-  overflow: visible;
-}
+/* Wave BG Removed */
+
 
 /* ─── Field BG canvas ─── */
 .field-bg {
@@ -6454,6 +6328,31 @@ body.home-radical::after {
 .home-hero-content {
   text-align: center;
   pointer-events: none;
+}
+
+.home-wave {
+  width: clamp(260px, 42vw, 480px);
+  height: clamp(260px, 42vw, 480px);
+  margin: 0 auto;
+  color: var(--text);
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+}
+
+.home-coord-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2em;
+  margin-top: 2.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  user-select: none;
 }
 
 .home-hero-brand {
@@ -8338,17 +8237,8 @@ body.is-loaded .home-preloader__logo {
   width: var(--space-2xl);
 }
 
-.wave-bg {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120vmax;
-  height: 120vmax;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.6;
-}
+/* Wave BG Duplicate Removed */
+
 
 /* ─── Home Triptych System (V12) ─── */
 .home-triptych {
@@ -8492,52 +8382,8 @@ body.is-loaded .home-preloader__logo {
    ═══════════════════════════════════════════ */
 
 /* ── Mobile: 320px-767px ── */
-@media (max-width: 767px) {
-  /* 홈 히어로: 60vh, 메타데이터 중앙 스택 */
-  .home-hero {
-    min-height: 60vh !important;
-    padding: 80px 1.25rem 2rem !important;
-    justify-content: flex-start !important;
-  }
+/* Home Mobile Overrides Purged */
 
-  .home-metadata {
-    position: static !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.5rem !important;
-    padding: 0 !important;
-    margin-bottom: 2rem !important;
-  }
-
-  .home-metadata--top,
-  .home-metadata--bottom {
-    position: static !important;
-  }
-
-  /* 네비 아이템: 절제 — 설명 제거 */
-  .home-nav-item {
-    grid-template-columns: 1fr auto !important;
-    padding: 1.25rem 0 !important;
-  }
-
-  .home-nav-item__name {
-    font-size: 1rem !important;
-    letter-spacing: 0 !important;
-  }
-
-  .home-nav-item__desc {
-    display: none !important;
-  }
-
-  /* 스크롤 여백 축소 */
-  .home-scroll-space {
-    height: 60vh !important;
-  }
-
-  .home-below {
-    padding: calc(var(--space-xl) * 1.5) 0 var(--space-lg) !important;
-  }
-}
 
 /* ── Mobile Small: 320px-414px ── */
 @media (max-width: 414px) {

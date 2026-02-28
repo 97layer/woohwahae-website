@@ -21,7 +21,7 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="assets/css/style.css?v=9f8df99a" rel="stylesheet" />
+  <link href="assets/css/style.css?v=20260228211443" rel="stylesheet" />
   <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
     (function () {
@@ -70,25 +70,24 @@
   <canvas class="field-bg" id="field-bg"></canvas>
   <!-- 홈 히어로: 100dvh — 수치와 기하학적 정보로 빈약함 해결 -->
   <section class="home-hero">
-    <div class="home-metadata home-metadata--top" data-reveal>
-      <span class="mono">35.5384° N / 129.3114° E</span>
-      <span class="mono">ULSAN / KR</span>
-    </div>
-
     <div class="home-hero-content" data-reveal>
+      <!-- 모든 텍스트 제거: 오직 그래픽과 파동만 존재 -->
+      <svg class="home-wave" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.12;">
+        <circle cx="400" cy="400" r="120" stroke="currentColor" stroke-width="0.3" opacity="0.2" />
+        <circle cx="400" cy="400" r="280" stroke="currentColor" stroke-width="0.3" opacity="0.1" />
+      </svg>
     </div>
 
-    <div class="home-metadata home-metadata--bottom" data-reveal>
-      <span class="mono">3.8S RESONANCE CYCLE</span>
-      <span class="mono">PRIVATE ATELIER</span>
+    <div class="home-metadata home-metadata--bottom" data-reveal style="opacity: 0.3;">
+      <span class="mono">35.5384° N // 129.3114° E</span>
     </div>
 
-    <!-- 미세 노이즈 입자 레이어 (Depth) -->
     <div class="home-grain"></div>
   </section>
-  <!-- 스크롤 여백: field-bg 클로즈업 구간 -->
-  <div class="home-scroll-space"></div>
-  <!-- 홈 하단: 섹션 목록 -->
+
+  <div class="home-scroll-space" style="height: 40vh;"></div>
+
+  <!-- 홈 하단: 유일한 인터페이스 진입점 -->
   <section class="home-below">
     <div class="home-below__inner container--content">
       <nav class="home-nav-list" data-reveal>
