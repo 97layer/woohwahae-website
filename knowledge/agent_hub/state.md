@@ -2,8 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). session-stop 훅이 자동 갱신.
-> **마지막 갱신**: 2026-02-27 (SAGE-ARCHITECT v4.0 전면 정렬)
-> **완료 이력**: `knowledge/agent_hub/COMPLETED_WORK.md` 참조
+> **마지막 갱신**: 2026-03-01
 
 ---
 
@@ -82,9 +81,9 @@
 - ⏳ **모바일 전체** — 640px 이하 레이아웃 검증
 
 ### [CODE / INFRA]
-2. [CODE] **P4 Brand Scout 디스커버리** — 외부 신호 자동 수집 스텁
-3. [CODE] **P4 SAGE-PROVOKER / Atmospheric Scout** — 블루프린트 검토 후 구현
-4. [INFRA] **VM 배포 + 서비스 재시작** — P0-P3 코드 반영
+- ⏳ **GITHUB_TOKEN .env 설정** — 파이프라인 끝단 막힌 것 (에세이 생성돼도 git push 불가)
+- ⏳ **P4 Brand Scout** — 외부 신호 자동 수집
+- ⏳ **VM 배포** — notebooklm_bridge + 이전 코드 반영 (notebooklm_bridge fix 178576d6 미반영)
 
 **완료됨**:
 
@@ -126,7 +125,7 @@
 
 - **단일 렌즈**: WOOHWAHAE = "슬로우라이프"라는 렌즈로 세상을 읽는다
 - **어조 분기**: archive(한다체, 사색적) / magazine(합니다체, 독자 지향) — 사람이 명시 지정
-- **현재 상태**: 에세이 13개, 신호 38개, 군집 20개 (ripe 1개)
+- **현재 상태**: 에세이 13개, 신호 38개+, corpus entries 19개, ripe 클러스터 2개 (슬로우라이프/본질)
 - **수익화**: 전자책 PDF → 구독화 (에세이 50개 이후)
 - **디자인 검수 지침**: 행동 유도 버튼(CTA, 링크 등)이나 주요 설명 텍스트에 `--text-faint` 등 극단적 저대비 색상 사용 금지. (최소 대비 `--text-sub` 사용 유지)
 
@@ -156,145 +155,38 @@ ssh 97layer-vm "for s in 97layer-telegram 97layer-ecosystem 97layer-gardener woo
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-02-28 02:00] 전수조사 완료 (md+py) — claude-opus-4-6
+### [2026-03-01] claude-sonnet-4-6
 
-**커밋**: `1a70fa4b` + `09e1bd7a`
+**완료 (누적)**:
+- ✅ SAGE-ARCHITECT 대개편 (directives 34→23 md, Ver 12.0)
+- ✅ P0 보안 + P1 directive_loader + P2 로깅 정규화(39건) + P3 파이프라인 와이어링
+- ✅ 홈 Three.js 필드라인 인터랙션 (카메라 버그, 마우스 틸트, 스크롤 줌)
+- ✅ 전 페이지 디자인 + CF Pages 배포됨 (863ebe24)
+- ✅ MCP 중복 제거 3개 (filesystem/fetch/sequential-thinking)
+- ✅ NotebookLM bridge 활성화 (CLI 경유 쿼리, 노트북 ID 환경변수)
+- ✅ CLAUDE.md 119→43줄 압축
 
-**실행 완료**:
+**파이프라인 현황**:
+- corpus ripe 클러스터 2개 (슬로우라이프/본질) — 에세이 트리거 대기
+- **GITHUB_TOKEN 미설정** → 에세이 생성돼도 git push 불가 (파이프라인 끝단 막힘)
 
-1. **THE_ORIGIN v5.0** — 합니다체 통일, 인용 20→10명 압축, "영점의 회귀" 용어 통일
-2. **전역 레거시 청산** — 구조 감사 38건→0건
-3. **STAP 수치 통일** — 70점 기준 단일화
-4. **system.md 중복 제거** — 참조 포인터 전환
-5. **.md 21파일 전수조사 완료** — SAGE-ARCHITECT 적합성 확인
-6. **.py 65파일 전수조사 완료** — 44건 발견 (CRITICAL 11, HIGH 10, MEDIUM 18, LOW 5)
+**다음**:
+- ⏳ GITHUB_TOKEN .env에 추가 (순호가 직접)
+- ⏳ VM 배포 (178576d6 notebooklm_bridge fix 미반영)
+- ⏳ archive/about 디자인 압축
 
-**py 전수조사 주요 발견**:
-- 보안: admin/app.py 하드코딩 비밀번호, photo_upload/snapshot_daemon 절대경로
-- 로깅: sa_agent(9건), ce_agent(15건) print+f-string 위반
-- 아키텍처: signal_processor/cascade_manager TODO 스텁, CD 에이전트 풀 구현 잔존
-- 토큰: 에이전트 5개가 문서 전체 로드 후 truncate → 섹션 단위 로더 필요
-- 파이프라인: 70% 준비 (SA→Corpus 작동, Gardener→발행 미연결)
-
-**이전 커밋 체인**:
-- `7c0da4ea` 선제 구조 감사 + 능동 도구 활용 규칙
-- `6eec0f35` practice/ 통합 + 소문자 통일 + state.md 리네임
-- `2f0b6077` SAGE-ARCHITECT 대개편 (34→23 md)
-4. **에이전트 동기화** — SA/CE/AD 인격 뿌리 경로 변경, 코드 5파일 수정
-5. **파일 흡수** — experience→visual, audience→content, GEMINI→SYSTEM, origin_editor 삭제
-6. **전역 스위프** — 중복 README 3개 제거, pre-commit hook 갱신, filesystem_cache 정리
-
-**결과**: directives/ 17→9파일. 프로젝트 전체 34→23 md.
-
-**최종 구조**:
-```
-directives/ (9파일)
-├── the_origin.md        경전 (FROZEN)
-├── sage_architect.md    창시자 + 용어 (FROZEN)
-├── system.md            실행의 전부 (v10.0)
-├── practice/
-│   ├── visual.md        시각 + 웹 경험
-│   ├── content.md       콘텐츠 + 공명 대상
-│   └── service.md       아틀리에
-└── agents/
-    └── sa.md, ce.md, ad.md
-```
-
-**다음 태스크**:
-1. [NAMING] ~~소문자 통일~~ ✅ — 전 파일명 lowercase + state.md 리네임 완료
-2. [DESIGN] 디자인 레이아웃 전 페이지 확정
-3. [INFRA] content_publisher.py 자동화
-4. [CONTENT] the_origin.md 언어 수정 (SAGE-ARCHITECT 발현 후)
-
-**주의사항**:
-- 홈 index.html 에디토리얼 스타일 변경됨. canvas 확인 필요.
-- `build_archive.py` ROOT 경로 버그 미수정 (`parents[2]`가 맞음).
-- test_queue_manager 8개 실패 — 기존 이슈. 이번 변경과 무관.
-- pre-commit hook MANIFEST.md→system.md 갱신 완료 (.git/hooks/pre-commit)
-
-**업데이트 시간**: 2026-02-27T23:30:00
+**업데이트 시간**: 2026-03-01T10:30:00
 
 work_lock: unlocked
 
 
----
+## 🌱 Gardener 자동 업데이트
+최종 실행: 2026-03-01 09:50
 
-## 📍 현재 상태 (CURRENT STATE)
+**수집 현황** | 신호: 3개 / SA분석: 1개 / 평균점수: 0
 
-### [2026-02-27 23:21] Session Update - claude-opus-20260228
+**부상 테마** | 없음
 
-**완료한 작업**:
-- ✅ THE_ORIGIN v5.0 리뉴얼 + 전역 md/py 레거시 청산 + STAP 수치 통일 + system.md 중복 제거
+**개념 사고 수준** (세션 간 연속성 앵커)
+- (아직 충분한 신호 미축적)
 
-**다음 단계**:
-- ⏳ content_publisher.py 자동화 + 디자인 레이아웃 확정
-
-**업데이트 시간**: 2026-02-27T23:21:50.181387
-
-
----
-
-## 📍 현재 상태 (CURRENT STATE)
-
-### [2026-02-27 23:31] Session Update - claude-opus-20260228-b
-
-**완료한 작업**:
-- ✅ md 전수조사 완료 + py 65개 전수조사 완료 (44건 발견). THE_ORIGIN v5.0 + 레거시 청산 + STAP 통일 커밋됨
-
-**다음 단계**:
-- ⏳ P3 파이프라인 와이어링: Gardener→CE→Ralph→AD→CD 연결
-
-**업데이트 시간**: 2026-02-27T23:31:07.950326
-
-
----
-
-## 📍 현재 상태 (CURRENT STATE)
-
-### [2026-02-27 23:53] Session Update - claude-opus-20260228-c
-
-**완료한 작업**:
-- ✅ P0 보안(하드코딩 제거) + P1 directive_loader(토큰 최적화) + P2 로깅 정규화(39건 전환) 완료
-- ✅ P3 파이프라인 와이어링: CE→Ralph→AD→CD→Publisher 자동 체인 활성화
-
-**다음 단계**:
-- ⏳ VM 배포 + 서비스 재시작 (P0-P3 코드 반영)
-- ⏳ 디자인 레이아웃 전 페이지 확정
-
-**업데이트 시간**: 2026-02-28T00:10:00
-
-
----
-
-## 📍 현재 상태 (CURRENT STATE)
-
-### [2026-03-01 01:40] Session Update - claude-sonnet-20260301
-
-**완료한 작업**:
-- ✅ Three.js bg-field.js 카메라 버그 수정 + 회전/마우스틸트/스크롤줌 구현
-- ✅ 홈 hero: glass-pane + SVG 히어로 제거, 필드라인 직노출
-- ✅ home-below 에디토리얼 재설계 — doc-header 제거, clamp(2.4rem,6.5vw,5rem) 대형 타이포 nav
-- ✅ context_snippet.py + /team 스킬 경량화
-- ✅ 능동 이슈 → state.md 자동 기록 패턴 확립
-
-**작업 중 발견한 UX 이슈 (다음 에이전트가 착수해야 함)**:
-- archive 필터탭 MAGAZINE/LOOKBOOK: 실제 데이터 없는 가짜 UI — 제거 필요
-- about 섹션 과다: 7개 → 3개 압축 (Declaration / Practice / Connection)
-- film-edge-numbers `position: fixed; z-index: 100`: 모바일에서 콘텐츠 겹침 가능성
-
-**다음 단계**:
-- ⏳ git push (홈 디자인 확정 후)
-- ⏳ archive/about/practice 순차 재설계
-- ⏳ VM 배포 (P0-P3 코드 반영)
-
-**업데이트 시간**: 2026-03-01T01:40:00
-
-### [2026-02-28 02:34] Session Update - claude-sonnet-20260228
-
-**완료한 작업**:
-- ✅ about/index.html THE ORIGIN 원문 반영 + 합니다체 적용. 서비스 페이지(atelier/direction/project) 콘텐츠 확장. .practice-card min-height 제거 + padding 축소. HEAD 표준화 캐시버스트.
-
-**다음 단계**:
-- ⏳ VM 배포 (P0-P3 코드 반영)
-
-**업데이트 시간**: 2026-02-28T02:34:02.057656

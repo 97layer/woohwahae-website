@@ -71,12 +71,12 @@ def acquire_lock(agent_id: str, task: str) -> bool:
         from datetime import timedelta
         started = datetime.fromisoformat(current["started_at"])
         if datetime.now() - started > timedelta(hours=2):
-            logger.warning(f"⚠️  2시간 이상 방치된 Lock 자동 해제: {current['agent']}")
+            logger.warning("⚠️  2시간 이상 방치된 Lock 자동 해제: %s", current['agent'])
             LOCK_FILE.unlink()
         else:
-            logger.error(f"❌ 잠금 실패: {current['agent']}가 작업 중")
-            logger.error(f"   진행 중: {current['task']}")
-            logger.error(f"   시작: {current['started_at']}")
+            logger.error("❌ 잠금 실패: %s가 작업 중", current['agent'])
+            logger.error("   진행 중: %s", current['task'])
+            logger.error("   시작: %s", current['started_at'])
             return False
 
     # 현재 상태 스냅샷
@@ -96,8 +96,8 @@ def acquire_lock(agent_id: str, task: str) -> bool:
     with open(LOCK_FILE, "w") as f:
         json.dump(lock_data, f, indent=2, default=str)
 
-    logger.info(f"✅ 잠금 획득: {agent_id}")
-    logger.info(f"   작업: {task}")
+    logger.info("✅ 잠금 획득: %s", agent_id)
+    logger.info("   작업: %s", task)
     return True
 
 
@@ -110,7 +110,7 @@ def release_lock(agent_id: str) -> bool:
         return True
 
     if current["agent"] != agent_id:
-        logger.error(f"❌ 해제 권한 없음: {current['agent']}의 잠금")
+        logger.error("❌ 해제 권한 없음: %s의 잠금", current['agent'])
         return False
 
     # 변경사항 기록
@@ -131,7 +131,7 @@ def release_lock(agent_id: str) -> bool:
 
     # 잠금 해제
     LOCK_FILE.unlink()
-    logger.info(f"✅ 잠금 해제: {agent_id}")
+    logger.info("✅ 잠금 해제: %s", agent_id)
     return True
 
 
@@ -144,7 +144,7 @@ def validate_changes(agent_id: str) -> bool:
         return False
 
     if current["agent"] != agent_id:
-        logger.error(f"❌ 검증 실패: 다른 에이전트({current['agent']})의 작업")
+        logger.error("❌ 검증 실패: 다른 에이전트(%s)의 작업", current['agent'])
         return False
 
     # 스타일 변경 검증
@@ -153,26 +153,25 @@ def validate_changes(agent_id: str) -> bool:
 
     if initial_hash != current_hash:
         if agent_id not in ["AD", "HUMAN"]:
-            logger.error(f"❌ 권한 위반: {agent_id}는 style.css 수정 불가")
+            logger.error("❌ 권한 위반: %s는 style.css 수정 불가", agent_id)
             return False
-        logger.info(f"✓ style.css 변경됨 (권한 있음)")
+        logger.info("✓ style.css 변경됨 (권한 있음)")
 
     # 어조 일관성 검증
     for section, expected_tone in TONE_RULES.items():
-        section_files = list(WEBSITE_DIR.glob(f"{section}/**/*.html"))
+        section_files = list(WEBSITE_DIR.glob("%s/**/*.html" % section))
         if not section_files:
-            section_files = [WEBSITE_DIR / f"{section}.html"]
+            section_files = [WEBSITE_DIR / ("%s.html" % section)]
 
         for file in section_files:
             if not file.exists():
                 continue
             content = file.read_text(encoding="utf-8")
 
-            # 간단한 어조 검사 (실제로는 더 정교해야 함)
             if expected_tone == "한다체" and "합니다" in content:
-                logger.warning(f"⚠️  어조 불일치: {file.name}에 합니다체 발견 (기대: 한다체)")
+                logger.warning("⚠️  어조 불일치: %s에 합니다체 발견 (기대: 한다체)", file.name)
             elif expected_tone == "합니다체" and "한다." in content:
-                logger.warning(f"⚠️  어조 불일치: {file.name}에 한다체 발견 (기대: 합니다체)")
+                logger.warning("⚠️  어조 불일치: %s에 한다체 발견 (기대: 합니다체)", file.name)
 
     logger.info("✅ 검증 완료")
     return True
@@ -194,9 +193,9 @@ def main():
     if args.check:
         status = check_lock()
         if status.get("locked"):
-            logger.info(f"🔒 잠금 중: {status['agent']}")
-            logger.info(f"   작업: {status['task']}")
-            logger.info(f"   시작: {status['started_at']}")
+            logger.info("🔒 잠금 중: %s", status['agent'])
+            logger.info("   작업: %s", status['task'])
+            logger.info("   시작: %s", status['started_at'])
         else:
             logger.info("🔓 잠금 없음 (작업 가능)")
 

@@ -39,7 +39,7 @@ try:
     import google.genai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
-    print("⚠️  google-genai not installed (mock mode)")
+    pass  # mock mode — logger not yet initialized
 
 logger = logging.getLogger(__name__)
 
@@ -85,12 +85,12 @@ class ArtDirector:
                 self.client = genai.Client(api_key=api_key)
                 self._model_name = 'gemini-2.5-pro'
                 self.mock_mode = False
-                print(f"AD: 준비됨.")
+                logger.info("AD: 준비됨.")
             else:
-                print(f"⚠️  {self.agent_id}: No API key, running in mock mode")
+                logger.warning("AD %s: API key 없음, mock mode", self.agent_id)
                 self.mock_mode = True
         else:
-            print(f"⚠️  {self.agent_id}: Gemini not available, running in mock mode")
+            logger.warning("AD %s: Gemini 미설치, mock mode", self.agent_id)
 
         # NotebookLM 브릿지 (선택적 — 없어도 동작)
         self.nlm = None
@@ -144,7 +144,7 @@ class ArtDirector:
         insights = analysis_data.get('key_insights', [])
         summary = analysis_data.get('summary', '')
 
-        print(f"AD: {signal_id} 비주얼 컨셉 작업.")
+        logger.info("AD: %s 비주얼 컨셉 작업", signal_id)
 
         if self.mock_mode:
             return self._mock_visual_concept(signal_id, themes, insights)

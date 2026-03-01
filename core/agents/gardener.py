@@ -678,7 +678,7 @@ JSON만 출력."""
     def _evolve_guard_rules(self) -> None:
         """quarantine 패턴 분석 → 빈도 5회 이상이면 guard_rules.json에 자동 추가."""
         import tempfile
-        rules_path = self.project_root / "knowledge/system/guard_rules.json"
+        rules_path = PROJECT_ROOT / "knowledge/system/guard_rules.json"
         try:
             data = json.loads(rules_path.read_text(encoding="utf-8"))
         except Exception as exc:
@@ -707,7 +707,7 @@ JSON만 출력."""
         tmp.replace(rules_path)
 
         # council_room 기록
-        council = self.project_root / "knowledge/agent_hub/council_room.md"
+        council = PROJECT_ROOT / "knowledge/agent_hub/council_room.md"
         lines = ["\n\n---\n", "## [Gardener] Guard 룰 자동 진화\n"]
         lines.append("**일시**: %s\n\n" % datetime.now().strftime("%Y-%m-%d %H:%M"))
         for pat, cnt in evolved:
