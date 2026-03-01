@@ -1,15 +1,14 @@
 /* =============================================
-   WOOHWAHAE — Design System v7.0
+   WOOHWAHAE — Design System v7.1
    "절제된 편집자 — 날것의 질감"
    IBM Plex Mono (label) + Pretendard Variable (body)
-   Crimson Text (accent serif, minimal)
+   폰트 규칙: Pretendard + IBM Plex Mono만. serif/italic/색상 금지.
    ============================================= */
 
 /* ─── Fonts ─── */
-/* 레이블/헤딩: IBM Plex Mono 300 1순위 (DM Mono는 fallback — 작고 정밀한 uppercase)
-   본문 보조: IBM Plex Mono 300 (밀도감 있는 보조 본문)
-   메인 본문: Pretendard (한국어 가독성)
-   포인트 세리프: Crimson Text (최소 사용) */
+/* 레이블/헤딩: IBM Plex Mono 300
+   본문: Pretendard Variable (한국어 가독성)
+   규칙: serif 사용 금지, italic 사용 금지 */
 /* fonts: HTML <head>로 이전 — @import 직렬 블로킹 제거 */
 
 /* ─── CSS Variables ─── */
@@ -304,8 +303,6 @@ a:hover .numeric-tag {
   background: var(--text);
   color: var(--white);
   text-shadow: none;
-  font-family: var(--font-serif);
-  font-style: italic;
 }
 
 /* ─── View Transitions (MPA) — 1.2s+ cinematic fade ─── */
@@ -366,10 +363,10 @@ h3 {
   font-size: 1.2rem;
 }
 
-/* 세리프 이탤릭 — 영문 포인트 강조용 (최소 사용) */
 .en {
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  letter-spacing: 0.04em;
 }
 
 p {
@@ -1040,7 +1037,6 @@ section+section {
   font-size: 0.85rem;
   color: var(--text-sub);
   /* Warm Gray for numbers */
-  font-style: italic;
   opacity: 0.5;
   transition: opacity var(--duration) var(--ease);
 }
@@ -1753,7 +1749,6 @@ main.container--wide {
 }
 
 .mag-body .accent {
-  font-style: italic;
   color: var(--text-faint);
   border-left: 2px solid var(--text);
   padding-left: 1em;
@@ -1910,7 +1905,6 @@ main.container--wide {
 
 .about-quote-accent {
   font-family: var(--font-body);
-  font-style: italic;
   border-left: 2px solid var(--text);
   padding-left: 1em;
   color: var(--text-sub);
@@ -1953,7 +1947,6 @@ main.container--wide {
 .mag-body .accent {
   border-left: 3px solid rgba(26, 26, 26, 0.15);
   padding-left: 1rem;
-  font-style: italic;
   color: var(--text-faint);
   margin-top: var(--space-sm);
 }
@@ -2521,7 +2514,6 @@ main.container--wide {
   font-family: var(--font-serif);
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 400;
-  font-style: italic;
   letter-spacing: -0.01em;
   line-height: 1.2;
   margin-bottom: var(--space-sm);
@@ -2557,7 +2549,6 @@ main.container--wide {
   padding: var(--space-sm) 0 var(--space-sm) var(--space-md);
   border-left: 1.5px solid var(--text-main);
   font-family: var(--font-serif);
-  font-style: italic;
   font-size: 1.1rem;
   line-height: 1.8;
   color: var(--text-sub);
@@ -2574,7 +2565,6 @@ main.container--wide {
   font-size: 1rem;
   line-height: 1.8;
   color: var(--text-sub);
-  font-style: italic;
   padding-top: var(--space-sm);
   border-top: 1px solid var(--line);
 }
@@ -2618,7 +2608,6 @@ main.container--wide {
   border-left: 2px solid var(--text);
   padding-left: 1.2em;
   color: var(--text-sub);
-  font-style: italic;
   margin: var(--space-md) 0;
 }
 
@@ -2905,7 +2894,7 @@ main.container--wide {
 
 .woohwa-hanja .en {
   font-family: var(--font-body);
-  /* Changed from Crimson Text — 세리프 제거 */
+
   font-style: normal;
   /* Changed from italic — 과도한 장식 제거 */
   font-weight: var(--fw-regular);
@@ -4169,7 +4158,6 @@ footer {
   font-family: var(--font-body);
   font-size: clamp(0.78rem, 1.1vw, 0.9rem);
   font-weight: var(--fw-light);
-  font-style: italic;
   color: var(--text-faint);
   line-height: 1.6;
   margin: 0;
@@ -4232,7 +4220,6 @@ footer {
   font-family: var(--font-body);
   font-size: clamp(0.78rem, 1.1vw, 0.88rem);
   font-weight: var(--fw-light);
-  font-style: italic;
   color: var(--text-faint);
   border-left: 2px solid rgba(26, 26, 26, 0.15);
   padding-left: var(--space-md);
@@ -4927,7 +4914,6 @@ body.home-radical::after {
   font-family: var(--font-body);
   font-size: 0.78rem;
   font-weight: var(--fw-light);
-  font-style: italic;
   color: var(--text-faint);
   margin-top: var(--space-sm);
   margin-bottom: 0;
@@ -5409,7 +5395,6 @@ body.home-radical::after {
   font-family: var(--font-serif);
   font-size: clamp(2.2rem, 5vw, 4rem);
   font-weight: 400;
-  font-style: italic;
   line-height: 1.15;
   margin: 0 0 var(--space-sm) 0;
   transition: color var(--duration) var(--ease);
@@ -5621,7 +5606,6 @@ body.home-radical::after {
   font-family: var(--font-body);
   font-size: clamp(2rem, 5.5vw, 3.2rem);
   font-weight: var(--fw-light);
-  font-style: italic;
   letter-spacing: -0.03em;
   line-height: 1.05;
   color: var(--text);
@@ -5706,7 +5690,6 @@ body.home-radical::after {
   margin: var(--space-md) 0;
   font-family: var(--font-serif);
   font-size: 1.1rem;
-  font-style: italic;
   color: var(--text-sub);
   line-height: 1.8;
   word-break: keep-all;
@@ -7091,8 +7074,7 @@ body.is-loaded .home-preloader__logo {
 
 .archive-card__preview {
   display: block;
-  font-family: 'Crimson Text', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-sans);
   font-size: 0.85rem;
   color: var(--text-sub);
   line-height: 1.5;
@@ -7212,8 +7194,7 @@ body.is-loaded .home-preloader__logo {
 }
 
 .service-lead {
-  font-family: 'Crimson Text', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-sans);
   font-size: clamp(1.1rem, 2.2vw, 1.3rem);
   font-weight: 400;
   line-height: 1.6;
@@ -7671,7 +7652,6 @@ body.is-loaded .home-preloader__logo {
   font-family: var(--font-body);
   font-size: clamp(1.5rem, 3.5vw, 2.2rem);
   font-weight: 200;
-  font-style: italic;
   letter-spacing: -0.03em;
   line-height: 1.2;
   color: var(--text);
@@ -7769,8 +7749,7 @@ body.is-loaded .home-preloader__logo {
   border-left: 1px solid var(--text);
   padding: 0.4rem 0 0.4rem 1.8rem;
   margin: var(--space-lg) 0;
-  font-family: 'Crimson Text', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-sans);
   font-size: 1.35rem;
   line-height: 1.55;
   color: var(--text);
@@ -7801,7 +7780,6 @@ body.is-loaded .home-preloader__logo {
   margin-top: var(--space-sm);
   font-size: 0.92rem;
   color: var(--text-faint);
-  font-style: italic;
   line-height: 1.8;
 }
 
@@ -8014,8 +7992,7 @@ body.is-loaded .home-preloader__logo {
 }
 
 .art-content blockquote {
-  font-family: 'Crimson Text', Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-sans);
   font-size: 1.3rem;
   color: var(--text);
   border-left: 2px solid var(--text);
@@ -8279,7 +8256,6 @@ body.is-loaded .home-preloader__logo {
   border-left: 1px solid var(--text);
   font-family: var(--font-body);
   font-size: 1.25rem;
-  font-style: italic;
   color: var(--text-sub);
 }
 
@@ -8355,7 +8331,6 @@ body.is-loaded .home-preloader__logo {
 /* ─── Brand Specific UI Helpers (V11) ─── */
 .brand-type-sample__text--accent {
   font-family: var(--font-serif);
-  font-style: italic;
   font-size: 1.35rem;
 }
 
