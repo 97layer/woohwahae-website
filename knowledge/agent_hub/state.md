@@ -67,7 +67,21 @@
 
 ## 🎯 다음 작업
 
-1. [DESIGN] **디자인 레이아웃 전 페이지 확정** — 홈/archive/practice/about + 모바일
+### [DESIGN] 홈 — 완료 체크리스트
+- ✅ field-bg Three.js 카메라 버그 수정 (z=NaN → 22)
+- ✅ glass-pane + SVG 히어로 제거 → 필드라인 직노출
+- ✅ Y축 회전 + 마우스 틸트 + 스크롤 줌인 구현
+- ✅ 모바일 우선 투명도 (0.22→0.12)
+- ✅ home-below 에디토리얼 재설계 (doc-header 제거, 대형 타이포 nav)
+- ⏳ **git push → CF Pages 반영 확인**
+
+### [DESIGN] 페이지별 다음 작업 (에이전트 없어도 착수 가능)
+- ⏳ **archive/index.html** — 가짜 필터탭(MAGAZINE/LOOKBOOK) 제거, 타이포그래피 리스트
+- ⏳ **about/index.html** — 7섹션 → 3섹션 압축 (Declaration/Practice/Connection), 브랜드 팔레트 섹션 제거
+- ⏳ **practice/ 전체** — direction/project/contact 감사 및 재설계
+- ⏳ **모바일 전체** — 640px 이하 레이아웃 검증
+
+### [CODE / INFRA]
 2. [CODE] **P4 Brand Scout 디스커버리** — 외부 신호 자동 수집 스텁
 3. [CODE] **P4 SAGE-PROVOKER / Atmospheric Scout** — 블루프린트 검토 후 구현
 4. [INFRA] **VM 배포 + 서비스 재시작** — P0-P3 코드 반영
@@ -253,6 +267,27 @@ work_lock: unlocked
 ---
 
 ## 📍 현재 상태 (CURRENT STATE)
+
+### [2026-03-01 01:40] Session Update - claude-sonnet-20260301
+
+**완료한 작업**:
+- ✅ Three.js bg-field.js 카메라 버그 수정 + 회전/마우스틸트/스크롤줌 구현
+- ✅ 홈 hero: glass-pane + SVG 히어로 제거, 필드라인 직노출
+- ✅ home-below 에디토리얼 재설계 — doc-header 제거, clamp(2.4rem,6.5vw,5rem) 대형 타이포 nav
+- ✅ context_snippet.py + /team 스킬 경량화
+- ✅ 능동 이슈 → state.md 자동 기록 패턴 확립
+
+**작업 중 발견한 UX 이슈 (다음 에이전트가 착수해야 함)**:
+- archive 필터탭 MAGAZINE/LOOKBOOK: 실제 데이터 없는 가짜 UI — 제거 필요
+- about 섹션 과다: 7개 → 3개 압축 (Declaration / Practice / Connection)
+- film-edge-numbers `position: fixed; z-index: 100`: 모바일에서 콘텐츠 겹침 가능성
+
+**다음 단계**:
+- ⏳ git push (홈 디자인 확정 후)
+- ⏳ archive/about/practice 순차 재설계
+- ⏳ VM 배포 (P0-P3 코드 반영)
+
+**업데이트 시간**: 2026-03-01T01:40:00
 
 ### [2026-02-28 02:34] Session Update - claude-sonnet-20260228
 
