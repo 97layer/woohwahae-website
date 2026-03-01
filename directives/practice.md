@@ -64,8 +64,9 @@
 | Token | 값 | 용도 |
 |-------|-----|------|
 | `--font-body` | Pretendard Variable | 본문 (한국어 가독성) |
-| `--font-mono` | IBM Plex Mono, DM Mono | 레이블, 코드 |
-| `--font-serif` | Crimson Text | 포인트 세리프 (최소 사용) |
+| `--font-mono` | IBM Plex Mono | 레이블, 코드, 보조 텍스트 |
+
+> **폰트 규칙**: Pretendard + IBM Plex Mono만 사용. Crimson Text 사용 금지. italic 사용 금지. 텍스트에 색상 없음 (--text / --text-sub / --text-faint만 허용).
 
 | Token | 값 | 용도 |
 |-------|-----|------|
