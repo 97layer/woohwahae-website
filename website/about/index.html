@@ -20,7 +20,6 @@
 (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
 </script>
 <style>
-/* ─── About: hero (title + symbol side by side) ─── */
 .about-hero {
   display: flex;
   align-items: flex-start;
@@ -37,10 +36,7 @@
   flex-shrink: 0;
   padding-top: 0.5rem;
 }
-.about-hero__right svg {
-  opacity: 0.28;
-  transition: opacity 1.2s ease;
-}
+.about-hero__right svg { opacity: 0.28; transition: opacity 1.2s ease; }
 .about-hero__right:hover svg { opacity: 0.55; }
 .about-zero-label {
   font-family: var(--font-mono);
@@ -49,20 +45,47 @@
   color: var(--text-faint);
   text-transform: uppercase;
 }
-
-/* ─── Title override ─── */
 .page-about .journey-title {
   font-size: clamp(2.4rem, 5.5vw, 4.8rem);
   line-height: 1.05;
 }
-
-/* ─── Etymology chars ─── */
-.page-about .etymology-char {
-  font-size: 3.6rem;
-  line-height: 1;
+.page-about .etymology-char { font-size: 3.6rem; line-height: 1; }
+.about-slow-accent { font-family: 'Crimson Text', serif; font-style: italic; font-size: 1.05em; }
+.about-chapter {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--line);
 }
-
-/* ─── Strata ─── */
+.about-chapter__label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: var(--space-md);
+}
+.about-chapter__title {
+  font-size: 0.92rem;
+  font-weight: 300;
+  color: var(--text-sub);
+  margin-bottom: var(--space-md);
+  line-height: 1.6;
+}
+.about-layers {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 0.6rem var(--space-md);
+  margin-top: var(--space-lg);
+}
+.about-layers__num {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-faint);
+  padding-top: 0.25rem;
+}
+.about-layers__text { font-size: 0.88rem; font-weight: 300; color: var(--text-sub); line-height: 1.8; }
+.about-layers__text strong { color: var(--text); font-weight: 400; }
 .about-strata {
   display: flex;
   flex-direction: column;
@@ -82,8 +105,6 @@
   letter-spacing: 0.1em;
   margin-top: 6px;
 }
-
-/* ─── Fossil grid ─── */
 .fossil-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -92,11 +113,7 @@
   padding-top: var(--space-md);
   border-top: 1px solid var(--line);
 }
-.fossil-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
+.fossil-item { display: flex; flex-direction: column; gap: 0.6rem; }
 .fossil-item__icon { width: 32px; height: 32px; }
 .fossil-item__label {
   font-family: var(--font-mono);
@@ -105,26 +122,29 @@
   color: var(--text-sub);
   text-transform: uppercase;
 }
-.fossil-item__desc {
-  font-size: 0.8rem;
-  font-weight: 300;
+.fossil-item__desc { font-size: 0.8rem; font-weight: 300; color: var(--text-sub); line-height: 1.75; }
+.about-editor-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: var(--space-xl);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
   color: var(--text-sub);
-  line-height: 1.75;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
-
-/* ─── Accent ─── */
-.about-slow-accent {
-  font-family: 'Crimson Text', serif;
-  font-style: italic;
-  font-size: 1.05em;
-}
-
+.about-editor-link:hover { color: var(--text); border-color: var(--text); }
 @media (max-width: 640px) {
   .about-hero { flex-direction: column-reverse; gap: var(--space-md); }
   .about-hero__right { flex-direction: row; align-items: center; }
-  .fossil-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .fossil-grid { grid-template-columns: 1fr; }
   .about-strata { max-width: 160px; }
   .page-about .etymology-char { font-size: 2.8rem; }
+  .about-layers { grid-template-columns: 1.8rem 1fr; }
 }
 </style>
 </head>
@@ -153,9 +173,10 @@
 
 <main class="page-main">
 
-  <!-- ━━━ Declaration ━━━ -->
+  <!-- ━━━ DECLARATION ━━━ -->
   <section class="about-section container--wide" data-reveal>
     <span class="about-section__label">DECLARATION</span>
+
     <div class="about-hero">
       <div class="about-hero__left">
         <header class="journey-header" style="padding-top:0.5rem">
@@ -180,14 +201,20 @@
       </div>
     </div>
 
-    <div class="journey-body about-body-text" data-reveal>
+    <div class="about-body-text" data-reveal>
       <p>도달점만을 향해 달리는 시대를 횡단하고 있습니다. 더 빠르게, 더 많이, 더 크게를 외치는 세계의 함성 속에서 인간의 고유한 박동은 점차 희미해집니다. 외부의 규격화된 기준과 끊임없는 가속은 존재 고유의 주파수를 교란합니다. 모든 것이 효율의 이름으로 획일화될 때, 인간이 잃어버리는 것은 자신만의 영점(Zero Point)입니다.</p>
-      <p>타인의 시선을 기준점으로 삼는 순간, 내면의 나침반은 이미 사라집니다. 외부의 즉각적인 인정이 자존감의 척도가 되고, 타인에게 전시된 일상이 결핍을 증명하는 거울이 됩니다.</p>
-      <p>이 관성을 멈추기 위해, 동양의 가장 내밀한 통찰인 <span class="about-slow-accent">우화(羽化)</span>로 시선을 돌립니다. 우화는 단순한 변화가 아닙니다. 고치 속 유충이 날개를 얻기까지의 철저한 해체와 재구성입니다.</p>
+      <p>타인의 시선을 기준점으로 삼는 순간, 내면의 나침반은 이미 사라집니다. 외부의 즉각적인 인정이 자존감의 척도가 되고, 타인에게 전시된 일상이 결핍을 증명하는 거울이 됩니다. 매일 갱신되는 트렌드의 홍수 속에서 어제의 나는 오늘 이미 구식이 됩니다.</p>
+      <p>이 관성을 멈추기 위해, 동양의 가장 내밀한 통찰인 <span class="about-slow-accent">우화(羽化)</span>로 시선을 돌립니다. 우화는 단순한 변화가 아닙니다. 고치 속 유충이 날개를 얻기까지의 철저한 해체와 재구성입니다. 장자는 『소요유』에서 붕새의 비상을 이야기했습니다. 타인에게 내어주었던 궤도를 고유한 구심점으로 회수하는 내면의 순환입니다.</p>
+      <p>우화해(WOOHWAHAE)의 존재 이유는 명확합니다. 인간의 불완전함과 생의 굴곡을 긍정하고, 타인의 평가에서 독립된 내면의 질서를 세우는 것. 삶의 주도권은 거대한 외부 시스템이 아니라, 감각이 깨어 있는 영점에서 뻗어 나갑니다. 이는 도피가 아닙니다. 획일화된 속도에서 이탈하는 조용한 선택입니다.</p>
     </div>
+  </section>
 
-    <!-- 어원의 궤적 -->
-    <div class="about-etymology" data-reveal style="margin-top:var(--space-xl)">
+  <!-- ━━━ 어원의 궤적 ━━━ -->
+  <section class="about-section container--wide" data-reveal>
+    <span class="about-section__label">어원의 궤적</span>
+    <p class="about-chapter__title">'우화해'는 '우화(羽化)'에 긍정의 명령형 어미가 결합된 형태입니다. 판단의 잣대가 흔들릴 때 회귀해야 할 3음절의 절대 기준선입니다.</p>
+
+    <div class="about-etymology" data-reveal>
       <div class="etymology-item">
         <span class="etymology-char">羽</span>
         <div class="etymology-body">
@@ -210,14 +237,59 @@
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="about-body-text" data-reveal style="margin-top:var(--space-xl)">
-      <p>이 통찰을 일상으로 번역하는 수행적 태도를 <span class="about-slow-accent">슬로우(Slow)</span>라 부릅니다. 다도에서 차를 우려내는 시간, 서예에서 먹을 가는 시간처럼 — 목적지가 아닌 행위 궤적 자체에 완결성을 부여합니다. 타인의 속도를 추종하던 관성을 버리고, 각자가 지닌 고유한 시차(時差)를 온전히 긍정하는 과정입니다.</p>
-      <p>밀도는 덧셈이 아닌 소거(Subtraction)로 증명됩니다. 더하는 것이 아니라 덜어내는 것이 창조입니다. 비어있음은 무(無)가 아니라 무한한 가능성의 공간입니다.</p>
-      <p>우화해(WOOHWAHAE)의 존재 이유는 명확합니다. 인간의 불완전함과 생의 굴곡을 긍정하고, 타인의 평가에서 독립된 내면의 질서를 세우는 것. 획일화된 속도에서 이탈하는 조용한 선택입니다.</p>
+  <!-- ━━━ PHILOSOPHY ━━━ -->
+  <section class="about-section container--wide" data-reveal>
+    <span class="about-section__label">PHILOSOPHY</span>
+
+    <div class="about-chapter about-body-text" data-reveal>
+      <span class="about-chapter__label">슬로우의 철학</span>
+      <p>이 통찰을 일상으로 번역하는 수행적 태도를 <span class="about-slow-accent">슬로우(Slow)</span>라 부릅니다. 다도에서 차를 우려내는 시간, 서예에서 먹을 가는 시간, 선의 좌선에서 호흡에 집중하는 시간. 공통점은 목적지가 아닌 행위 궤적 자체에 완결성을 부여한다는 점입니다. 센노리큐는 "차를 대접하는 것은 단지 물을 끓이고 차를 우려 마시는 것뿐"이라 했습니다. 형식이 아닌 본질에 집중할 때 진정한 아름다움이 드러납니다.</p>
+      <p>슬로우는 물리적 속도의 문제가 아닙니다. 타인의 속도를 추종하던 관성을 버리고, 각자가 지닌 고유한 시차(時差)를 온전히 긍정하는 과정입니다.</p>
     </div>
 
-    <!-- 시간의 지층 시각화 -->
+    <div class="about-chapter about-body-text" data-reveal>
+      <span class="about-chapter__label">실용적 미학</span>
+      <p>여기서 말하는 미(美)란 시각적 팽창이 아닙니다. 야나기 무네요시가 말한 "용(用)의 미" — 사용되는 과정에서 자연스럽게 드러나는 아름다움입니다. 백자 달항아리의 비대칭적인 곡선, 오래 사용한 목가구의 윤기, 낡은 가죽 지갑의 주름. 완벽하지 않기에 아름다운 것들입니다.</p>
+      <p>삶의 맥락을 침해하지 않는 간결함. 디터 람스의 "Less, but better". 불필요한 장식을 덜어내고 본질만 남겼을 때 드러나는 명료함입니다. 과잉된 언어와 피상적인 텍스트는 비웁니다. 기호의 한계를 넘어 감각으로 직조되는 맑은 공명(Resonance)만을 깊은 소통으로 수용합니다.</p>
+    </div>
+
+    <div class="about-chapter about-body-text" data-reveal>
+      <span class="about-chapter__label">불완전함의 미학</span>
+      <p>일본의 와비사비(侘び寂び) 미학은 불완전함 속에서 아름다움을 발견합니다. 금이 간 다완을 금가루로 메우는 긴쓰기(金継ぎ)는 상처를 숨기지 않고 오히려 드러냅니다. 깨진 흔적이 새로운 무늬가 되고, 상처가 개성이 됩니다.</p>
+      <p>밀도는 덧셈이 아닌 소거(Subtraction)로 증명됩니다. 더하는 것이 아니라 덜어내는 것이 창조입니다. 비어있음은 무(無)가 아니라 무한한 가능성의 공간입니다.</p>
+    </div>
+
+    <div class="about-chapter about-body-text" data-reveal>
+      <span class="about-chapter__label">동방의 지평</span>
+      <p>일생에서 단 한 번 마주치는 찰나를 다루는 다도의 통찰, <span class="about-slow-accent">이치고 이치에(一期一會)</span>. 같은 사람과 같은 장소에서 차를 마셔도, 그 순간은 다시 오지 않습니다. 낡아가는 유한함마저 수용하는 와비사비의 미학. 청빈하되 초라하지 않고, 낡았되 누추하지 않은 품격입니다.</p>
+      <p>60% 이상의 절대 영역을 비워두는 유백(留白)의 힘. 동양 산수화의 여백은 빈 공간이 아닙니다. 그리지 않음으로써 더 많은 것을 그리는 역설의 미학입니다. 한국의 달항아리가 품은 겸허한 비대칭. 완벽한 원이 아니기에 더 인간적이고, 비어있기에 더 풍요롭습니다.</p>
+    </div>
+  </section>
+
+  <!-- ━━━ ARCHITECTURE ━━━ -->
+  <section class="about-section container--wide" data-reveal>
+    <span class="about-section__label">ARCHITECTURE</span>
+    <p class="about-chapter__title" style="margin-top:var(--space-md)">이 세계는 철학을 물성으로 구현하는 다층적인 순환으로 작동합니다. 각각의 층위는 기능적 부품이 아니라 고유의 소명을 수행합니다.</p>
+
+    <div class="about-layers" data-reveal>
+      <span class="about-layers__num">01.</span>
+      <p class="about-layers__text"><strong>방향(Philosophy) — 영점</strong><br>모든 것의 기준이 되는 철학의 층. 북극성처럼 변하지 않는 방향성. "왜?"라는 질문만이 유효한 곳입니다.</p>
+
+      <span class="about-layers__num">02.</span>
+      <p class="about-layers__text"><strong>여백(Design) — 성소</strong><br>미니멀리즘을 넘어선 시각적 침묵을 깎아내는 공간. 디자인은 더하는 것이 아니라 빼는 것입니다.</p>
+
+      <span class="about-layers__num">03.</span>
+      <p class="about-layers__text"><strong>서사(Content) — 기록자들</strong><br>파편화된 신호를 화석화합니다. 순간의 통찰을 영원의 기록으로 변환하는 연금술입니다.</p>
+
+      <span class="about-layers__num">04.</span>
+      <p class="about-layers__text"><strong>제의적 공간(Service)</strong><br>방문자의 행위가 고요한 의례로 승화되는 공간. 머리를 매만지는 행위는 치장이 아니라 낡은 것을 잘라내고 새로운 것을 맞이하는 통과의례입니다.</p>
+
+      <span class="about-layers__num">05.</span>
+      <p class="about-layers__text"><strong>궤적(Business) — 관조자</strong><br>자본이 아닌 유산의 시간을 측정합니다. 매장 100개가 아닌 공명자 100명. 매출 100억이 아닌 100년 지속하는 것입니다.</p>
+    </div>
+
     <div class="about-strata" data-reveal aria-hidden="true">
       <div class="about-strata__line"></div>
       <div class="about-strata__line"></div>
@@ -228,20 +300,14 @@
     </div>
   </section>
 
-  <!-- ━━━ Practice ━━━ -->
+  <!-- ━━━ EPILOGUE ━━━ -->
   <section class="about-section container--wide" data-reveal>
-    <span class="about-section__label">PRACTICE</span>
-    <header class="journey-header">
-      <h2 class="journey-title" style="font-size:clamp(1.4rem,3vw,1.8rem)">WOOSUNHO</h2>
-    </header>
-    <div class="journey-body about-body-text" data-reveal>
-      <p>Hair Artisan &amp; Editor. 울산 기반. 나의 궤적은 결핍이라는 영점에서 발아했습니다.</p>
-      <p>비교적 이른 나이에 디자이너가 되었으나, 마주한 것은 기술의 연마가 아니었습니다. 인간의 자의식을 마모시키는 기계적 관성이었습니다. 관성을 멈추기 위해 선택한 서울, 신대방 8평 반지하. 좁고 습한 공간이었으나 그곳엔 정적과 사유가 공존했습니다. 팬데믹의 고독이 나를 인문학적 질문의 장으로 강제 이송했습니다. "나는 누구인가", "혼자 있는 나는 무엇으로 정의되는가."</p>
-      <p>헤어라는 매개로 슬로우 라이프의 철학을 실천합니다. 트렌드가 아닌 그 사람의 아우라를 읽어 디자인합니다. 월매출 인증이 아닌, 숫자로 치환할 수 없는 본질의 가치를 위해 숫자의 유혹을 거부했습니다. 상권조차 없는 한적한 동네에 자리를 잡은 행보가 그 진정성을 입증합니다.</p>
-      <p>뜬구름 잡는 몽상가일지라도, 나는 오늘도 나를 믿기로 합니다. 기록되지 않은 사유는 휘발된 삶이며, 오늘도 삶의 지층을 아카이빙하며 우화를 준비합니다.</p>
+    <span class="about-section__label">EPILOGUE — 10년 뒤의 기록</span>
+    <div class="about-body-text" data-reveal>
+      <p>"하나의 결핍이 증폭하며 도달해 낸 보편성."</p>
+      <p>양적 팽창이라는 관성에서 벗어났습니다. 가장 내밀한 영점에서 출발한 세계입니다. 목적지는 인프라 팽창이 아닙니다. 1년짜리 트렌드나 알고리즘에 오르려는 얄팍한 호흡을 경계합니다. 팽팽한 활시위가 버텨낼 향후 10년의 궤적입니다.</p>
     </div>
 
-    <!-- 세 개의 화석 -->
     <div class="fossil-grid" data-reveal>
       <div class="fossil-item">
         <svg class="fossil-item__icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -251,7 +317,7 @@
           <line x1="4" y1="24" x2="32" y2="24" stroke="#1A1A1A" stroke-width="0.6"/>
         </svg>
         <span class="fossil-item__label">Archive</span>
-        <p class="fossil-item__desc">매일 쌓이는 일지. 매주 깊어지는 에세이. 데이터베이스가 아니라 도서관입니다.</p>
+        <p class="fossil-item__desc">속도의 통증을 함께 인내했던 공명자들의 고요한 사유 지층. 매일 쌓이는 일지. 매주 깊어지는 에세이. 데이터베이스가 아니라 도서관입니다.</p>
       </div>
       <div class="fossil-item">
         <svg class="fossil-item__icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -262,7 +328,7 @@
           <line x1="15" y1="18" x2="22" y2="18" stroke="#1A1A1A" stroke-width="0.5"/>
         </svg>
         <span class="fossil-item__label">Book</span>
-        <p class="fossil-item__desc">일회성 트렌드에 굴복하지 않고 빚어낸 변개 불가능한 물성 덩어리입니다.</p>
+        <p class="fossil-item__desc">일회성 트렌드에 굴복하지 않고 빚어낸 변개 불가능한 물성 덩어리. 종이의 무게, 잉크의 냄새, 제본의 실. 한 권의 책은 한 세계의 응축입니다.</p>
       </div>
       <div class="fossil-item">
         <svg class="fossil-item__icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -274,12 +340,12 @@
           <line x1="4" y1="18" x2="32" y2="18" stroke="#1A1A1A" stroke-width="0.3" stroke-dasharray="2 3"/>
         </svg>
         <span class="fossil-item__label">Perspective</span>
-        <p class="fossil-item__desc">방법론이 아니라 세계관. 속도에 저항하고 깊이를 추구한 사유의 증명입니다.</p>
+        <p class="fossil-item__desc">방법론이 아니라 세계관. 2020년대에도 속도에 저항하고 깊이를 추구한 사유의 증명입니다.</p>
       </div>
     </div>
   </section>
 
-  <!-- ━━━ Connection ━━━ -->
+  <!-- ━━━ CONNECTION ━━━ -->
   <section class="about-section container--wide" data-reveal>
     <span class="about-section__label">CONNECTION</span>
     <div class="editor-links" data-reveal>
@@ -290,6 +356,9 @@
         <span>@woohwahae</span><span>↗</span>
       </a>
     </div>
+    <a class="about-editor-link" href="/about/editor/" data-reveal>
+      편집자의 궤적 →
+    </a>
   </section>
 
 </main>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="편집자의 궤적 — WOOHWAHAE" name="description"/>
+<meta content="편집자의 궤적 — WOOHWAHAE" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://woohwahae.kr/about/editor/" property="og:url"/>
+<title>편집자의 궤적 — WOOHWAHAE</title>
+<meta content="#E3E2E0" name="theme-color"/>
+<link href="/assets/media/brand/symbol.png" rel="icon" type="image/png"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&amp;family=Crimson+Text:ital,wght@1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
+<link href="../../assets/css/style.css?v=dc469562" rel="stylesheet"/>
+<script>
+(function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
+</script>
+<style>
+.editor-hero {
+  padding: var(--space-lg) 0 var(--space-xl);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-xl);
+}
+.editor-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: var(--space-md);
+}
+.editor-title {
+  font-family: var(--font-body);
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
+  font-weight: 200;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.editor-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+}
+.editor-body {
+  max-width: 600px;
+}
+.editor-body p {
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 2;
+  color: var(--text-sub);
+  margin-bottom: 1.4rem;
+}
+.editor-body p:last-child { margin-bottom: 0; }
+.editor-chapter {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--line);
+}
+.editor-chapter__label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: var(--space-md);
+}
+.editor-nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  text-decoration: none;
+  margin-bottom: var(--space-xl);
+  transition: color 0.3s ease;
+}
+.editor-nav-back:hover { color: var(--text-sub); }
+.editor-principles {
+  margin-top: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.editor-principle {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr;
+  gap: 0 var(--space-md);
+  align-items: start;
+}
+.editor-principle__num {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  padding-top: 0.25rem;
+}
+.editor-principle__text {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--text-sub);
+  line-height: 1.8;
+}
+.editor-principle__text strong { color: var(--text); font-weight: 400; }
+</style>
+</head>
+<body class="page-about">
+
+<!-- COMPONENT:nav -->
+<nav class="site-nav" id="site-nav">
+  <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+    <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+    <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+    <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
+  </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+    <span></span><span></span>
+  </button>
+</nav>
+<div class="nav-overlay" id="nav-overlay">
+  <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+  <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+  <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
+</div>
+<!-- /COMPONENT:nav -->
+
+<main class="page-main">
+  <div class="container--wide">
+
+    <a class="editor-nav-back" href="/about/">← About</a>
+
+    <div class="editor-hero" data-reveal>
+      <span class="editor-eyebrow">제4장 · 편집자의 궤적</span>
+      <h1 class="editor-title">하나의 결핍에서<br>발아한 사유</h1>
+      <p class="editor-subtitle">WOOSUNHO — Hair Artisan &amp; Editor</p>
+    </div>
+
+    <!-- 생각 대로 살지 않으면 -->
+    <div class="editor-body" data-reveal>
+      <p>생각 대로 살지 않으면 사는 대로 생각하게 된다.</p>
+      <p>나의 궤적은 결핍이라는 영점에서 발아했다.</p>
+    </div>
+
+    <!-- 최초의 목격 -->
+    <div class="editor-chapter" data-reveal>
+      <span class="editor-chapter__label">최초의 목격 — 객기라는 이름의 이탈</span>
+      <div class="editor-body">
+        <p>미용의 세계에 첫발을 뗀 것은 중학교 3학년, 저조한 성적과 어머니의 권유가 빚어낸 우연이었다. 학교 공부에는 흥미를 잃었으나, 손끝에서 스타일이 빚어지는 유희에 몰입했다. 고등학교 1년, 나는 본격적으로 미용사의 길을 걷기로 선언했다.</p>
+        <p>당시의 나에겐 거창한 사명감 따위는 없었다. 그저 타인이 가지 않는 길을 걷는 소수의 '객기'가 멋져 보였을 뿐이다. 그 허영 어린 이질감이야말로 기성 세대의 궤도를 벗어나려는 이탈의 시작이었다.</p>
+      </div>
+    </div>
+
+    <!-- 기술의 관성과 마모 -->
+    <div class="editor-chapter" data-reveal>
+      <span class="editor-chapter__label">기술의 관성과 마모 — 기계적 유폐</span>
+      <div class="editor-body">
+        <p>비교적 이른 나이에 디자이너가 되었으나, 마주한 것은 기술의 연마가 아니었다. 인간의 자의식을 마모시키는 기계적 관성이었다. 2년여의 시간 동안 반복되는 스타일링 속에서 나는 직업적 본질의 풍화를 목격했다. 부족한 결핍을 채우기 위해 학원 강사 일을 해보기도 했으나, 내면의 주파수는 여전히 공허했다. 관성에 젖은 손놀림은 존재의 공백을 확인했을 뿐이다.</p>
+      </div>
+    </div>
+
+    <!-- 영점 -->
+    <div class="editor-chapter" data-reveal>
+      <span class="editor-chapter__label">영점(Zero Point) — 8평 반지하의 정적과 사유</span>
+      <div class="editor-body">
+        <p>관성을 멈추기 위해 나는 무작정 서울을 택했다. 울산에는 보이지 않던 '다른 공기'를 탐색하며 지원서를 마구 던졌다. 붉게 탈색한 머리에 페이즐리 셔츠를 입고, 선글라스를 어설프게 꽂은 채 면접장에 나타났던 그 치기 어린 모습은, 이탈을 위한 수행이었다.</p>
+        <p>신대방 8평 반지하. 좁고 습한 공간이었으나 그곳엔 정적과 사유가 공존했다. 특히 상경 초반 조우한 팬데믹의 정적은 나를 인문학적 질문의 장으로 강제 이송했다. "나는 누구인가", "혼자 있는 나는 무엇으로 정의되는가". 책과 영상을 탐닉하며 나의 직업적 철학이 비로소 영점에서 발아하기 시작했다. 정체(Stagnation)는 유배가 아닌, 내면의 성장을 위한 필연적인 고립이었다. 내면의 성장은 필연적으로 고독과 사유에서 시작됨을 나는 믿는다.</p>
+      </div>
+    </div>
+
+    <!-- 통증과의 대면 -->
+    <div class="editor-chapter" data-reveal>
+      <span class="editor-chapter__label">통증과의 대면 — 수익성을 배제한 사고실험</span>
+      <div class="editor-body">
+        <p>서울의 치열한 현장을 거치며 나의 손끝엔 다시 고집이 서렸다. 남들이 매출 숫자에 매달릴 때 나는 글을 쓰고, 취향을 수집하며, 음악의 조화를 고민했다. 자본의 논리로 보면 나는 상품성이 떨어지는 디자이너였을 것이다. 하지만 월매출 인증을 '못' 한 것이 아니라, 숫자로 치환할 수 없는 본질의 가치를 위해 숫자의 유혹을 '거부'한 것이다.</p>
+        <p>생계가 본질을 압도하는 순간, 모든 시술은 권유가 되고 책임은 할인 경쟁으로 전락한다. 나는 미용을 단순한 생계수단으로 전락시키지 않기 위해, 적자가 나더라도 투잡을 해서라도 나의 신념을 지키기로 선언했다.</p>
+      </div>
+      <div class="editor-principles" data-reveal>
+        <div class="editor-principle">
+          <span class="editor-principle__num">1.</span>
+          <p class="editor-principle__text"><strong>본질의 나침반</strong> — 억지스럽지 않게 사람을 돋보이게 하는 책임감.</p>
+        </div>
+        <div class="editor-principle">
+          <span class="editor-principle__num">2.</span>
+          <p class="editor-principle__text"><strong>이상적 연구</strong> — 미용의 본질을 연구하는 일종의 사고실험 연구실(Lab)로서의 공간.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결핍의 연금술 -->
+    <div class="editor-chapter" data-reveal>
+      <span class="editor-chapter__label">결핍의 연금술 — 몽상가의 증명</span>
+      <div class="editor-body">
+        <p>상권조차 없는 한적한 동네에 자리를 잡은 나의 행보는 그 진정성을 입증한다. 뜬구름 잡는 몽상가일지라도, 나는 오늘도 나를 믿기로 한다. 십여 년의 궤적이 증명하듯, 기록되지 않은 사유는 휘발된 삶이며, 나는 오늘도 삶의 지층을 아카이빙하며 우화를 준비한다.</p>
+      </div>
+    </div>
+
+    <!-- Connection -->
+    <div class="editor-chapter" data-reveal>
+      <span class="editor-chapter__label">CONNECTION</span>
+      <div class="editor-links" style="margin-top:var(--space-md)">
+        <a class="editor-link" href="mailto:hello@woohwahae.kr">
+          <span>hello@woohwahae.kr</span><span>→</span>
+        </a>
+        <a class="editor-link" href="https://instagram.com/woohwahae" target="_blank" rel="noopener">
+          <span>@woohwahae</span><span>↗</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- COMPONENT:footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-row footer-row--contact">
+      <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+      <span class="footer-sep">·</span>
+      <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
+    </div>
+    <div class="footer-row footer-row--bottom">
+      <nav class="footer-nav">
+        <a href="/archive/">Archive</a>
+        <span class="footer-sep">·</span>
+        <a href="/practice/">Practice</a>
+        <span class="footer-sep">·</span>
+        <a href="/about/">About</a>
+      </nav>
+      <div class="footer-meta">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <span>&copy; 2026 WOOHWAHAE</span>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- /COMPONENT:footer -->
+
+<script defer src="../../assets/js/site.js"></script>
+</body>
+</html>
