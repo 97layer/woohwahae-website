@@ -446,7 +446,7 @@ a:hover {
 }
 
 .nav-links {
-  display: none !important;
+  display: none;
   gap: var(--space-md);
   list-style: none;
 }
@@ -488,7 +488,7 @@ a:hover {
 
 /* ─── Mobile Navigation ─── */
 .nav-toggle {
-  display: flex !important; /* 상시 노출 — 공식 도메인 감성 */
+  display: none;
   background: transparent !important;
   border: none;
   cursor: pointer;
@@ -8916,9 +8916,8 @@ body.is-loaded .home-preloader__logo {
 /* ─── Practice Sub-Nav Tabs ─── */
 .practice-tabs {
   display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: var(--space-xl);
+  gap: 0.4rem;
+  margin-bottom: 2rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -8927,22 +8926,25 @@ body.is-loaded .home-preloader__logo {
 
 .practice-tab {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-sub);
   text-decoration: none;
-  padding: 1rem 1.5rem 1rem 0;
+  padding: 0.4rem 0.85rem;
   white-space: nowrap;
-  border-bottom: 1px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.3s ease, border-color 0.3s ease;
+  border: 1px solid var(--border);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 .practice-tab.active {
   color: var(--text);
-  border-bottom-color: var(--text);
+  border-color: var(--text);
+  background: transparent;
 }
-.practice-tab:hover { color: var(--text); }
+.practice-tab:hover {
+  color: var(--text);
+  border-color: var(--text-sub);
+}
 
 /* ─── Practice Shop Items (Directing / Product) ─── */
 .shop-grid {
