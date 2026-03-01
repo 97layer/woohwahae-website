@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="영점의 발견 — 슬로우 브랜드를 위한 질문집 | WOOHWAHAE" />
+  <meta property="og:title" content="영점의 발견 — 슬로우 브랜드를 위한 질문집" />
+  <meta property="og:type" content="product" />
+  <meta property="og:url" content="https://woohwahae.kr/product/workbook.html" />
+  <title>영점의 발견 — WOOHWAHAE Workbook</title>
+  <meta name="theme-color" content="#E3E2E0" />
+  <link rel="icon" href="/assets/media/brand/symbol.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #E3E2E0;
+      --text: #1a1a1a;
+      --text-sub: #6b6b6b;
+      --text-faint: #adadad;
+      --border: #d0cfcd;
+      --navy: #1B2D4F;
+      --font-sans: 'Pretendard Variable', Pretendard, sans-serif;
+      --font-serif: 'Crimson Text', serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 2rem;
+      --space-lg: 3.5rem;
+      --space-xl: 5rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      line-height: 1.8;
+    }
+
+    /* ── 커버 ── */
+    .wb-cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3rem 2.5rem 2.5rem;
+      max-width: 720px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+    }
+
+    .wb-cover__brand {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+    }
+
+    .wb-cover__title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-top: 3rem;
+    }
+
+    .wb-cover__subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      color: var(--text-sub);
+      margin-top: 1.2rem;
+    }
+
+    .wb-cover__quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--text-sub);
+      line-height: 1.7;
+      max-width: 480px;
+      padding-top: var(--space-lg);
+      border-top: 1px solid rgba(26,26,26,0.12);
+      margin-top: var(--space-lg);
+    }
+
+    .wb-cover__meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+
+    /* ── 사용법 ── */
+    .wb-intro {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-xl) 2.5rem;
+      border-bottom: 1px solid rgba(26,26,26,0.1);
+    }
+
+    .wb-intro__label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: var(--space-md);
+    }
+
+    .wb-intro__body {
+      font-size: 0.9rem;
+      line-height: 2;
+      color: var(--text-sub);
+      max-width: 520px;
+    }
+
+    .wb-intro__body p + p { margin-top: 1.2em; }
+
+    /* ── 섹션 ── */
+    .wb-section {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-xl) 2.5rem;
+      border-bottom: 1px solid rgba(26,26,26,0.1);
+    }
+
+    .wb-section__header {
+      display: flex;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-bottom: var(--space-lg);
+    }
+
+    .wb-section__num {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      padding-top: 0.35rem;
+      min-width: 2rem;
+    }
+
+    .wb-section__title-group { flex: 1; }
+
+    .wb-section__title {
+      font-family: var(--font-serif);
+      font-size: 1.9rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .wb-section__desc {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      letter-spacing: 0.06em;
+      margin-top: 0.6rem;
+      line-height: 1.6;
+    }
+
+    /* ── 질문 ── */
+    .wb-question { margin-bottom: var(--space-lg); }
+
+    .wb-question__label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.6rem;
+    }
+
+    .wb-question__text {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.65;
+      color: var(--text);
+      margin-bottom: 1.2rem;
+      max-width: 540px;
+    }
+
+    .wb-question__hint {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--text-faint);
+      margin-bottom: 1rem;
+    }
+
+    .wb-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .wb-line {
+      border: none;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+      background: transparent;
+      width: 100%;
+      padding: 0.6rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+
+    .wb-line:focus { border-bottom-color: var(--text); }
+
+    /* 단어 입력 (짧은 답) */
+    .wb-word-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .wb-word {
+      flex: 1;
+      border: none;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+      background: transparent;
+      padding: 0.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text);
+      outline: none;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .wb-word:focus { border-bottom-color: var(--text); }
+
+    .wb-word::placeholder {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+    }
+
+    /* 영점 체크 */
+    .wb-synthesis {
+      margin-top: var(--space-lg);
+      padding: var(--space-md);
+      border: 1px solid rgba(26,26,26,0.12);
+      background: rgba(255,255,255,0.3);
+    }
+
+    .wb-synthesis__label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.8rem;
+    }
+
+    .wb-synthesis__prompt {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--text-sub);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    /* ── 아웃트로 ── */
+    .wb-outro {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-xl) 2.5rem;
+    }
+
+    .wb-outro__title {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: var(--space-md);
+    }
+
+    .wb-outro__body {
+      font-size: 0.88rem;
+      line-height: 2;
+      color: var(--text-sub);
+      max-width: 500px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .wb-outro__body p + p { margin-top: 1.2em; }
+
+    .wb-outro__contact {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      letter-spacing: 0.1em;
+    }
+
+    .wb-outro__contact a {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .wb-outro__brand {
+      margin-top: var(--space-xl);
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+
+    /* ── 인쇄 최적화 ── */
+    @media print {
+      body { background: white; font-size: 14px; }
+
+      .wb-cover { min-height: auto; page-break-after: always; }
+      .wb-intro { page-break-after: always; }
+      .wb-section { page-break-inside: avoid; }
+
+      .wb-line, .wb-word {
+        border-bottom: 1px solid #ccc;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .wb-synthesis {
+        border: 1px solid #ccc;
+        background: #f9f9f9;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      @page {
+        margin: 2cm 2.5cm;
+        size: A4;
+      }
+    }
+
+    /* ── 모바일 ── */
+    @media (max-width: 640px) {
+      .wb-cover,
+      .wb-intro,
+      .wb-section,
+      .wb-outro { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+      .wb-cover__title { font-size: 2rem; }
+      .wb-section__header { flex-direction: column; gap: 0.5rem; }
+      .wb-word-row { flex-direction: column; gap: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ 커버 ══ -->
+  <div class="wb-cover">
+    <div class="wb-cover__brand">WOOHWAHAE · Workbook No.1</div>
+
+    <div>
+      <h1 class="wb-cover__title">영점의<br>발견</h1>
+      <p class="wb-cover__subtitle">슬로우 브랜드를 위한 질문집</p>
+
+      <p class="wb-cover__quote">
+        "타인의 시선을 기준점으로 삼는 순간,<br>
+        내면의 나침반은 이미 사라집니다."
+      </p>
+    </div>
+
+    <div class="wb-cover__meta">
+      <span>ZERO POINT WORKBOOK</span>
+      <span>WOOHWAHAE · 2026</span>
+    </div>
+  </div>
+
+  <!-- ══ 사용법 ══ -->
+  <div class="wb-intro">
+    <p class="wb-intro__label">이 워크북에 대해</p>
+    <div class="wb-intro__body">
+      <p>이 질문집은 브랜드를 만드는 방법을 알려주지 않습니다. 브랜드가 이미 어디에 있는지를 찾는 과정입니다.</p>
+      <p>빠르게 채우지 마세요. 답이 떠오르지 않으면 그 침묵도 정보입니다. 한 섹션을 끝내고 나면 하루 이상 간격을 두고 다음으로 넘어가기를 권합니다.</p>
+      <p>정답은 없습니다. 가장 솔직한 첫 번째 언어가 가장 가깝습니다.</p>
+    </div>
+  </div>
+
+  <!-- ══ Section 1: 해체 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">01</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">해체</h2>
+        <p class="wb-section__desc">지금의 브랜드를 있는 그대로 본다. 비우는 것이 먼저다.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 01 — 01</p>
+      <p class="wb-question__text">지금 내 브랜드의 어떤 모습이 가장 낯설게 느껴지는가?</p>
+      <p class="wb-question__hint">좋고 나쁨이 아닌, 단지 "이게 나인가?" 싶은 것.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 01 — 02</p>
+      <p class="wb-question__text">절대 되고 싶지 않은 브랜드는 어떤 브랜드인가? 구체적으로.</p>
+      <p class="wb-question__hint">추상적인 형용사("싸구려", "촌스러운")보다 실제 브랜드명이나 구체적인 장면이 더 정확하다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 01 — 03</p>
+      <p class="wb-question__text">지금까지 브랜드에서 시도했다가 결국 버린 것들은 무엇인가?</p>
+      <p class="wb-question__hint">버린 이유가 "맞지 않아서"라면, 그 불일치가 단서다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위 세 가지 답변에서 반복되는 감각이나 단어가 있는가?<br>
+        그것이 내 브랜드가 피하고 싶은 것의 윤곽이다.
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="한 문장으로 정리하면:"></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 2: 영점 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">02</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">영점</h2>
+        <p class="wb-section__desc">제거하고 남은 것. 그것이 본질이다.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 02 — 01</p>
+      <p class="wb-question__text">내 브랜드가 존재하지 않는다면 세상에서 무엇이 사라지는가?</p>
+      <p class="wb-question__hint">"아무것도"가 떠오른다면, 아직 답을 찾지 못한 것이다. 더 구체적으로.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 02 — 02</p>
+      <p class="wb-question__text">내 브랜드의 핵심을 단 하나의 동사로 표현한다면?</p>
+      <p class="wb-question__hint">명사("커피", "헤어")가 아닌 동사. 브랜드가 하는 행위.</p>
+      <div class="wb-lines">
+        <input class="wb-line" type="text" placeholder="동사 하나:" />
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 02 — 03</p>
+      <p class="wb-question__text">모든 것을 내려놓고 가장 작은 버전의 내 브랜드만 남긴다면, 그 핵심은 무엇인가?</p>
+      <p class="wb-question__hint">예산도, SNS도, 공간도 없다면. 남는 것이 본질이다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위에서 찾은 동사와 "가장 작은 버전"을 합쳐 한 문장을 만들어본다.<br>
+        "나의 브랜드는 ___을/를 위해 ___한다."
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="나의 브랜드는 ___을/를 위해 ___한다."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 3: 언어 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">03</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">언어</h2>
+        <p class="wb-section__desc">브랜드가 세상에 말하는 방식. 목소리도 아이덴티티다.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 03 — 01</p>
+      <p class="wb-question__text">내 브랜드가 처음 말을 건넨다면, 어떤 문장으로 시작하는가?</p>
+      <p class="wb-question__hint">광고 카피가 아닌, 처음 만난 사람에게 건네는 첫 마디처럼.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="2" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 03 — 02</p>
+      <p class="wb-question__text">내 브랜드가 절대 사용하지 않을 단어 3개는?</p>
+      <p class="wb-question__hint">금지어가 브랜드 경계를 만든다.</p>
+      <div class="wb-word-row">
+        <input class="wb-word" type="text" placeholder="단어 1" />
+        <input class="wb-word" type="text" placeholder="단어 2" />
+        <input class="wb-word" type="text" placeholder="단어 3" />
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 03 — 03</p>
+      <p class="wb-question__text">내 고객이 우리 브랜드를 다른 사람에게 소개할 때 어떤 말을 써주길 바라는가?</p>
+      <p class="wb-question__hint">내가 쓰고 싶은 말이 아닌, 그들이 자연스럽게 쓸 말.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        지금 내 브랜드의 실제 언어(SNS, 메뉴판, 안내문)와 위 답변 사이의 거리는 얼마나 되는가?<br>
+        그 거리가 현재 브랜드의 언어적 부채다.
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="거리: "></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 4: 감각 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">04</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">감각</h2>
+        <p class="wb-section__desc">브랜드는 논리보다 감각으로 기억된다. 시각, 촉각, 분위기.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 04 — 01</p>
+      <p class="wb-question__text">내 브랜드 공간에 처음 들어선 사람이 느끼길 바라는 첫 감각은?</p>
+      <p class="wb-question__hint">시각보다 체온, 공기, 소리 같은 감각이 더 정확할 수 있다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 04 — 02</p>
+      <p class="wb-question__text">내 브랜드를 색 하나로 표현한다면? 그 이유는?</p>
+      <p class="wb-question__hint">팔레트 이름이 아닌 장면 묘사. "11월 오후 4시 빛의 색" 같은 방식으로.</p>
+      <div class="wb-lines">
+        <input class="wb-line" type="text" placeholder="색: " />
+        <textarea class="wb-line" rows="2" placeholder="이유: "></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 04 — 03</p>
+      <p class="wb-question__text">내 브랜드와 가장 어울리는 시간대와 계절은?</p>
+      <p class="wb-question__hint">에너지 레벨의 문제가 아니라, 빛과 공기의 문제다.</p>
+      <div class="wb-word-row">
+        <input class="wb-word" type="text" placeholder="시간대" />
+        <input class="wb-word" type="text" placeholder="계절" />
+        <input class="wb-word" type="text" placeholder="날씨" />
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위 답변들을 종합해 내 브랜드의 "감각 문장" 하나를 만든다.<br>
+        실제로 사용할 수 있는 브랜드 분위기 기준문.
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="감각 문장: "></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 5: 리듬 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">05</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">리듬</h2>
+        <p class="wb-section__desc">속도는 선택이다. 내 브랜드가 따르는 시간의 단위.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 05 — 01</p>
+      <p class="wb-question__text">하루 중 가장 내 브랜드다운 순간은 언제인가?</p>
+      <p class="wb-question__hint">가장 잘 된 날, 가장 나다웠던 그 장면.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 05 — 02</p>
+      <p class="wb-question__text">"빠르게 해야 한다"고 느낄 때, 그 압박은 어디서 오는가?</p>
+      <p class="wb-question__hint">내부에서 오는 기준인가, 외부 비교에서 오는 기준인가.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 05 — 03</p>
+      <p class="wb-question__text">1년 후 내 브랜드가 지금보다 더 느려져도 괜찮은 이유는?</p>
+      <p class="wb-question__hint">빠름에 대한 반론이 아니라, 느림의 근거를 직접 써보는 것.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위 세 답변을 읽고 — 지금 내 브랜드의 속도는 내가 원하는 속도인가,<br>
+        아니면 외부에서 부과된 속도인가?
+      </p>
+      <div class="wb-word-row" style="max-width:360px">
+        <input class="wb-word" type="text" placeholder="내가 원하는 속도" />
+        <input class="wb-word" type="text" placeholder="지금 실제 속도" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 아웃트로 ══ -->
+  <div class="wb-outro">
+    <h2 class="wb-outro__title">영점을 찾은 후</h2>
+    <div class="wb-outro__body">
+      <p>이 워크북은 끝이 아닙니다. 지금 적은 답변들은 6개월 후 다시 읽어야 합니다. 그 간격이 브랜드가 어디서 어디로 이동했는지를 보여줍니다.</p>
+      <p>워크북을 마친 후 브랜드 방향에 대해 이야기 나누고 싶다면 연락 주세요. 모든 문의에 답하지는 못하지만, 방향이 맞는 분들과는 대화합니다.</p>
+    </div>
+    <p class="wb-outro__contact">
+      hello@woohwahae.kr &nbsp;·&nbsp;
+      <a href="https://woohwahae.kr/practice/#directing">woohwahae.kr</a>
+    </p>
+    <p class="wb-outro__brand">WOOHWAHAE · Zero Point Workbook No.1 · 2026</p>
+  </div>
+
+</body>
+</html>
