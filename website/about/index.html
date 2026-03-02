@@ -131,29 +131,63 @@
 }
 .about-editor-link:hover { color: var(--text); border-color: var(--text); }
 /* Appendix */
-.about-appendix details { width: 100%; }
+.about-appendix__header { margin-bottom: var(--space-md); }
+.about-appendix__block {
+  border-top: 1px solid var(--line);
+  padding-top: 0;
+}
+.about-appendix__block + .about-appendix__block { margin-top: 0; }
 .about-appendix__toggle {
   cursor: pointer;
   list-style: none;
-  padding-top: 2rem;
-  border-top: 1px solid var(--line);
-  margin-bottom: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: var(--ls-label);
+  color: var(--text-sub);
+  text-transform: uppercase;
+  padding: 1.2rem 0;
   display: flex;
-  align-items: baseline;
-  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
 }
 .about-appendix__toggle::-webkit-details-marker { display: none; }
 .about-appendix__toggle::after {
   content: '+';
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: var(--text-faint);
-  margin-left: auto;
-  transition: transform 0.25s ease;
+  font-weight: 300;
 }
-details[open] .about-appendix__toggle::after { content: '−'; }
-.about-appendix__body { padding-top: var(--space-md); }
-.about-appendix .about-chapter { margin-top: var(--space-lg); }
+.about-appendix__block[open] .about-appendix__toggle { color: var(--text); }
+.about-appendix__block[open] .about-appendix__toggle::after { content: '−'; }
+.about-appendix__body { padding-bottom: var(--space-lg); }
+.about-appendix__term {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+/* Brand Palette swatches */
+.appendix-palette {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-top: var(--space-sm);
+}
+.appendix-swatch { display: flex; flex-direction: column; gap: 0.4rem; }
+.appendix-swatch__color {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+.appendix-swatch__label {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
 @media (max-width: 640px) {
   .about-hero { flex-direction: column-reverse; gap: var(--space-md); }
   .about-hero__right { flex-direction: row; align-items: center; }
@@ -364,38 +398,94 @@ details[open] .about-appendix__toggle::after { content: '−'; }
 
   <!-- ━━━ APPENDIX ━━━ -->
   <section class="about-section container--wide about-appendix" data-reveal>
-    <details>
-      <summary class="about-section__label about-appendix__toggle">부록. 철학적 배경<span class="about-section__sub">사유의 뿌리</span></summary>
+    <span class="about-section__label about-appendix__header">부록<span class="about-section__sub">열람 선택</span></span>
 
-      <div class="about-body-text about-appendix__body" data-reveal>
+    <details class="about-appendix__block">
+      <summary class="about-appendix__toggle">A. 철학적 배경</summary>
+      <div class="about-body-text about-appendix__body">
 
         <div class="about-chapter">
-          <span class="about-section__label">返本還原 — 반본환원</span>
+          <span class="about-appendix__term">返本還原 — 반본환원</span>
           <p>되돌아간다는 것은 퇴행이 아닙니다. 도교의 이 개념은 본래 상태로의 귀환을 말합니다. 더하는 것이 아니라 덮인 것을 걷어낼 때 드러나는 것. 소거의 철학적 뿌리가 여기 있습니다. 외부가 입힌 것들을 제거하면, 본래 있던 것이 보입니다.</p>
         </div>
 
         <div class="about-chapter">
-          <span class="about-section__label">本來面目 — 본래면목</span>
+          <span class="about-appendix__term">本來面目 — 본래면목</span>
           <p>선불교의 물음입니다. 부모에게 태어나기 이전의 얼굴은 무엇인가. 역할과 기대와 습관이 덧씌워지기 전의 것. 영점(零點)은 이 물음의 다른 이름입니다. 어디서 출발해야 하는가가 아니라, 본래 어디에 있었는가.</p>
         </div>
 
         <div class="about-chapter">
-          <span class="about-section__label">羽化登仙 — 우화등선</span>
-          <p>장자(莊子)의 언어. 고치가 깨지고 나방이 되는 것. 우화해(羽化解)라는 이름은 여기서 왔습니다. 등선(登仙)이 아닌 해(解)를 택한 것은 의도적입니다. 도달이 아닙니다. 풀림입니다. 덧씌워진 것이 해소되는 과정. 그것이 이 이름이 말하는 것입니다.</p>
+          <span class="about-appendix__term">羽化解 — 우화해</span>
+          <p>장자(莊子)의 우화등선(羽化登仙)에서 왔습니다. 고치가 깨지고 나방이 되는 것. 우리는 등선(登仙)이 아닌 해(解)를 택했습니다. 도달이 아닙니다. 풀림입니다. 덧씌워진 것이 해소되는 과정. 이름이 매일 그 물음을 묻습니다.</p>
         </div>
 
         <div class="about-chapter">
-          <span class="about-section__label">逍遙遊 + 無爲而無不爲</span>
-          <p>소요유(逍遙遊)는 쓸모 없음의 쓸모입니다. 아무 목적 없이 유영하는 것 — 거기서 오는 것들. 무위이무불위(無爲而無不爲)는 그 역설의 완성입니다. 억지로 하지 않으면, 이루어지지 않는 것이 없다. 슬로우라이프가 게으름이 아닌 이유. 서두르지 않는 것이 판별의 기준입니다.</p>
+          <span class="about-appendix__term">逍遙遊 — 소요유</span>
+          <p>쓸모 없음의 쓸모입니다. 아무 목적 없이 유영하는 것에서 오는 것들. 무위이무불위(無爲而無不爲) — 억지로 하지 않으면, 이루어지지 않는 것이 없다. 슬로우라이프가 게으름이 아닌 이유. 서두르지 않는 것이 판별의 기준입니다.</p>
         </div>
 
         <div class="about-chapter">
-          <span class="about-section__label">東道西器 — 동도서기</span>
-          <p>사유를 뿌리로, 물성을 도구로. 동방 사유의 원리를 중심에 두고, 필요한 기술과 형식을 취합니다. 도구가 사유를 지배하지 않습니다. 디지털이든 아날로그든, 어떤 형식이든 — 방향은 안에서 옵니다. 우화해가 공간, 언어, 기록을 동시에 다루는 이유가 여기 있습니다.</p>
+          <span class="about-appendix__term">東道西器 — 동도서기</span>
+          <p>사유를 뿌리로, 물성을 도구로. 동방 사유의 원리를 중심에 두고, 필요한 기술과 형식을 취합니다. 도구가 사유를 지배하지 않습니다. 방향은 안에서 옵니다. 우화해가 공간, 언어, 기록을 동시에 다루는 이유가 여기 있습니다.</p>
         </div>
 
       </div>
     </details>
+
+    <details class="about-appendix__block">
+      <summary class="about-appendix__toggle">B. 브랜드 팔레트</summary>
+      <div class="about-appendix__body">
+
+        <div class="about-chapter">
+          <span class="about-appendix__term">색채</span>
+          <div class="appendix-palette">
+            <div class="appendix-swatch">
+              <div class="appendix-swatch__color" style="background:#E3E2E0; border: 1px solid var(--line);"></div>
+              <span class="appendix-swatch__label">배경 — #E3E2E0</span>
+            </div>
+            <div class="appendix-swatch">
+              <div class="appendix-swatch__color" style="background:#1A1A1A;"></div>
+              <span class="appendix-swatch__label">본문 — #1A1A1A</span>
+            </div>
+            <div class="appendix-swatch">
+              <div class="appendix-swatch__color" style="background:#4A4A4A;"></div>
+              <span class="appendix-swatch__label">보조 — #4A4A4A</span>
+            </div>
+            <div class="appendix-swatch">
+              <div class="appendix-swatch__color" style="background:#9A9A94;"></div>
+              <span class="appendix-swatch__label">희미 — #9A9A94</span>
+            </div>
+            <div class="appendix-swatch">
+              <div class="appendix-swatch__color" style="background:#EFEEED; border: 1px solid var(--line);"></div>
+              <span class="appendix-swatch__label">선 — #EFEEED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-chapter">
+          <span class="about-appendix__term">서체</span>
+          <p style="font-family: var(--font-body); font-weight: 300; margin-bottom: 0.8rem;">Pretendard Variable — 본문, 제목. 300·400 웨이트. 한국어 중심.</p>
+          <p style="font-family: var(--font-mono); font-size: 0.85em; color: var(--text-sub);">IBM Plex Mono — 라벨, 번호, 코드. 300·400 웨이트.</p>
+        </div>
+
+        <div class="about-chapter">
+          <span class="about-appendix__term">원칙</span>
+          <p>색을 쓰지 않습니다. 채도 0의 팔레트. 명도 차이만으로 위계를 만듭니다. 디자인 결정은 더하는 것이 아니라 제거하는 것에서 옵니다. 시각 언어도 소거의 원리를 따릅니다.</p>
+        </div>
+
+      </div>
+    </details>
+
+    <details class="about-appendix__block">
+      <summary class="about-appendix__toggle">C. 편집자의 궤적</summary>
+      <div class="about-appendix__body">
+        <div class="about-chapter">
+          <p>이 기록이 어떻게 만들어졌는지를 추적합니다. 어떤 판단으로, 어떤 순서로, 무엇을 버리고 무엇을 남겼는지.</p>
+          <a class="about-editor-link" href="/about/editor/" style="margin-top: var(--space-md);">편집자의 궤적 전문 →</a>
+        </div>
+      </div>
+    </details>
+
   </section>
 
   <!-- ━━━ CONNECTION ━━━ -->
