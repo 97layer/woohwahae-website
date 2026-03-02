@@ -33,7 +33,7 @@
     <p class="daily-card-label">LAYER 3 — 콘텐츠</p>
     <p class="daily-card-num" id="pipeline-count">{{ pipeline_count }}</p>
     <p class="daily-card-desc">파이프라인 대기</p>
-    <p class="daily-card-sub">Archive {{ post_count }}편</p>
+    <p class="daily-card-sub">신호 {{ signal_count }}개 / Archive {{ post_count }}편</p>
     <a href="{{ url_for('pipeline') }}" class="daily-card-link">파이프라인 →</a>
   </div>
 
@@ -55,9 +55,11 @@
 <div class="admin-section" style="margin-top:2.5rem;">
   <p class="admin-label">SYSTEM STATUS</p>
   <div class="system-status-bar" id="system-status">
-    <span class="svc-badge svc-loading" id="svc-telegram">97layer-telegram ···</span>
-    <span class="svc-badge svc-loading" id="svc-ecosystem">97layer-ecosystem ···</span>
-    <span class="svc-badge svc-loading" id="svc-gardener">97layer-gardener ···</span>
+    <span class="svc-badge svc-loading" id="svc-telegram">telegram ···</span>
+    <span class="svc-badge svc-loading" id="svc-ecosystem">ecosystem ···</span>
+    <span class="svc-badge svc-loading" id="svc-gardener">gardener ···</span>
+    <span class="svc-badge svc-loading" id="svc-backend">backend ···</span>
+    <span class="svc-badge svc-loading" id="svc-cortex-admin">cortex ···</span>
     <span class="svc-ts" id="svc-last-update"></span>
   </div>
 </div>
@@ -69,6 +71,7 @@
     <button class="cmd-btn" onclick="runCommand('trigger_gardener', {})">Gardener 실행</button>
     <button class="cmd-btn" onclick="restartSvc('97layer-ecosystem')">ecosystem 재시작</button>
     <button class="cmd-btn" onclick="restartSvc('97layer-telegram')">telegram 재시작</button>
+    <button class="cmd-btn" onclick="restartSvc('woohwahae-backend')">backend 재시작</button>
     <a href="{{ url_for('archive_new') }}" class="cmd-btn cmd-btn--link">새 글 작성</a>
   </div>
 </div>
@@ -233,9 +236,11 @@ function handleSSE(data) {
     }
   }
   if (data.type === 'service') {
-    const el = document.getElementById('svc-' + data.name.replace('97layer-', ''));
+    const svcId = data.name.replace('97layer-', '').replace('woohwahae-', '');
+    const el = document.getElementById('svc-' + svcId);
     if (el) {
-      el.textContent = data.name + ' ' + data.status;
+      const label = data.name.replace('97layer-', '').replace('woohwahae-', '');
+      el.textContent = label + ' ' + data.status;
       el.className = 'svc-badge svc-' + (data.status === 'active' ? 'active' : data.status === 'unknown' ? 'unknown' : 'inactive');
     }
   }

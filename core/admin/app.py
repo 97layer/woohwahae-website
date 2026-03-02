@@ -52,7 +52,7 @@ MEMORY_FILE = BASE_DIR / 'knowledge' / 'long_term_memory.json'
 AUDIT_LOG_FILE = BASE_DIR / 'knowledge' / 'reports' / 'audit.log'
 SERVICE_FILE = BASE_DIR / 'knowledge' / 'service' / 'items.json'
 TELEGRAM_LOG_FILE = BASE_DIR / 'logs' / 'telegram.log'
-SYSTEMD_SERVICES = ['97layer-telegram', '97layer-ecosystem', '97layer-gardener']
+SYSTEMD_SERVICES = ['97layer-telegram', '97layer-ecosystem', '97layer-gardener', 'woohwahae-backend', 'cortex-admin']
 
 # ─── App ───
 app = Flask(
@@ -266,9 +266,12 @@ def dashboard():
         except Exception as e:
             logger.error("dashboard growth_snapshot error: %s", e)
 
+    signal_count = len(list(SIGNALS_DIR.glob('*.json'))) if SIGNALS_DIR.exists() else 0
+
     return render_template('dashboard.html',
                            post_count=len(posts),
                            pipeline_count=pipeline_count,
+                           signal_count=signal_count,
                            due_clients=due_clients,
                            growth_snapshot=growth_snapshot,
                            today=today,
