@@ -461,6 +461,17 @@ JSON만 출력."""
                 pass
         return []
 
+    def _append_decision_log(self, record: Dict) -> None:
+        log_path = self.knowledge_dir / 'system' / 'decision_log.jsonl'
+        try:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            if 'ts' not in record:
+                record['ts'] = datetime.now().isoformat()
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(record, ensure_ascii=False) + '\n')
+        except Exception as e:
+            logger.warning("decision_log append 실패: %s", e)
+
     def _save_pending(self):
         self.pending_file.parent.mkdir(parents=True, exist_ok=True)
         self.pending_file.write_text(
@@ -512,6 +523,12 @@ JSON만 출력."""
             # pending에서 제거
             self.pending = [p for p in self.pending if p['id'] != proposal_id]
             self._save_pending()
+            self._append_decision_log({
+                'type': 'gardener_approve', 'actor': 'telegram', 'id': proposal_id,
+                'title': '%s — %s 승인' % (proposal.get('target_file', ''), proposal.get('section', '')),
+                'meta': {'target_file': proposal.get('target_file'),
+                         'proposed_addition': proposal.get('proposed_addition', '')[:200]},
+            })
 
             logger.info("✅ 승인 적용: %s / %s", filename, section)
             return True, f"✅ {filename} — {section} 업데이트 완료"
@@ -521,8 +538,14 @@ JSON만 출력."""
 
     def reject_proposal(self, proposal_id: str) -> bool:
         """순호 거절 → pending에서 제거"""
+        proposal = next((p for p in self.pending if p['id'] == proposal_id), None)
         self.pending = [p for p in self.pending if p['id'] != proposal_id]
         self._save_pending()
+        self._append_decision_log({
+            'type': 'gardener_reject', 'actor': 'telegram', 'id': proposal_id,
+            'title': '%s 거절' % (proposal.get('target_file', proposal_id) if proposal else proposal_id),
+            'meta': {'target_file': proposal.get('target_file') if proposal else None},
+        })
         return True
 
     # ── 메인 사이클 ───────────────────────────────
@@ -966,6 +989,53 @@ JSON만 출력."""
 
         logger.info("Guard 룰 진화: %d개 패턴 추가 %s", len(evolved), [p for p, _ in evolved])
 
+    def _retrospective_analysis(self) -> Dict:
+        """decision_log 최근 30일 → 패턴 분석 → long_term_memory.retrospective 갱신"""
+        log_path = self.knowledge_dir / 'system' / 'decision_log.jsonl'
+        if not log_path.exists():
+            return {}
+        cutoff = datetime.now() - timedelta(days=30)
+        records = []
+        for line in log_path.read_text(encoding='utf-8').splitlines():
+            try:
+                r = json.loads(line.strip())
+                ts_str = r.get('ts', '')
+                if ts_str and datetime.fromisoformat(ts_str[:19]) < cutoff:
+                    continue
+                records.append(r)
+            except Exception:
+                pass
+        if not records:
+            return {}
+        type_counts: Dict[str, int] = {}
+        reject_targets: Dict[str, int] = {}
+        published_clusters: list = []
+        for r in records:
+            rtype = r.get('type', '')
+            type_counts[rtype] = type_counts.get(rtype, 0) + 1
+            if rtype == 'gardener_reject':
+                t = r.get('meta', {}).get('target_file', 'unknown')
+                reject_targets[t] = reject_targets.get(t, 0) + 1
+            if rtype == 'essay_publish':
+                cluster = r.get('meta', {}).get('source_cluster', '')
+                if cluster:
+                    published_clusters.append(cluster)
+        lm_path = self.knowledge_dir / 'long_term_memory.json'
+        try:
+            memory = json.loads(lm_path.read_text(encoding='utf-8')) if lm_path.exists() else {}
+            memory['retrospective'] = {
+                'last_run': datetime.now().isoformat(),
+                'period_days': 30,
+                'decision_counts': type_counts,
+                'frequent_rejects': reject_targets,
+                'published_clusters': published_clusters[-10:],
+            }
+            lm_path.write_text(json.dumps(memory, indent=2, ensure_ascii=False), encoding='utf-8')
+        except Exception as e:
+            logger.warning("retrospective 저장 실패: %s", e)
+        return {'decision_counts': type_counts, 'reject_targets': reject_targets,
+                'published_clusters': published_clusters}
+
     def run_cycle(self, days: int = 7) -> Dict:
         """
         Gardener 메인 사이클
@@ -1019,12 +1089,20 @@ JSON만 출력."""
         if mechanical_actions:
             logger.info("🔧 기계적 수정 제안: %d건", len(mechanical_actions))
 
+        # 11. 회고 분석 (decision_log → 패턴 → memory 반영)
+        retro = self._retrospective_analysis()
+        if retro:
+            logger.info("회고: 총 결정 %d건, 거절 패턴 %s",
+                        sum(retro.get('decision_counts', {}).values()),
+                        list(retro.get('reject_targets', {}).keys()))
+
         return {
             'stats': stats,
             'new_proposals': new_proposals,
             'pending_count': len(self.pending),
             'corpus': corpus_result,
             'deferred_triggered': deferred_triggered,
+            'retrospective': retro,
         }
 
     def format_telegram_report(self, result: Dict) -> str:

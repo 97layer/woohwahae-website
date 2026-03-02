@@ -60,6 +60,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _append_decision_log_direct(record: Dict) -> None:
+    log_path = PROJECT_ROOT / 'knowledge' / 'system' / 'decision_log.jsonl'
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        if 'ts' not in record:
+            record['ts'] = datetime.now().isoformat()
+        with open(log_path, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(record, ensure_ascii=False) + '\n')
+    except Exception as e:
+        logger.warning("decision_log append 실패: %s", e)
+
+
 def _escape_html(text: str) -> str:
     """Telegram HTML 모드용 이스케이프"""
     return (text
@@ -1202,6 +1214,8 @@ class TelegramSecretaryV6:
                 action['status'] = 'skipped'
                 action['skipped_at'] = datetime.now().isoformat()
                 actions_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding='utf-8')
+                _append_decision_log_direct({'type': 'action_skip', 'actor': 'telegram', 'id': action_id,
+                    'title': action.get('title', action_id), 'meta': {'action_type': action.get('type', '')}})
                 await query.edit_message_text("⏭ 건너뜀: %s" % action['title'])
                 return
 
@@ -1212,6 +1226,9 @@ class TelegramSecretaryV6:
             action['applied_at'] = datetime.now().isoformat()
             action['result'] = msg
             actions_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding='utf-8')
+            _append_decision_log_direct({'type': 'action_apply', 'actor': 'telegram', 'id': action_id,
+                'title': action.get('title', action_id),
+                'meta': {'action_type': action.get('type', ''), 'result': msg, 'success': success}})
 
             icon = "✅" if success else "❌"
             await query.edit_message_text(
@@ -1235,12 +1252,16 @@ class TelegramSecretaryV6:
 
             if action == 'council_reject':
                 council.reject_proposal(proposal_id)
+                _append_decision_log_direct({'type': 'council_reject', 'actor': 'telegram', 'id': proposal_id,
+                    'title': '에세이 거절', 'meta': {}})
                 await query.edit_message_text("❌ 거절됨 (proposal=%s)" % proposal_id)
                 return
 
             # 승인
             task_id = council.approve_proposal(proposal_id)
             if task_id:
+                _append_decision_log_direct({'type': 'council_approve', 'actor': 'telegram', 'id': proposal_id,
+                    'title': 'Council 에세이 승인', 'meta': {'task_id': task_id}})
                 await query.edit_message_text(
                     "🚀 <b>발행 승인됨</b>\n\nCE 에이전트가 에세이를 작성합니다.\nCE task: <code>%s</code>" % task_id,
                     parse_mode=constants.ParseMode.HTML,

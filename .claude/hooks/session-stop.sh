@@ -71,4 +71,27 @@ except:
   python3 "$PROJECT_ROOT/core/system/auto_quanta_update.py" --agent-id "$AGENT_ID" 2>&1
 fi
 
+# ─── decision_log 세션 요약 ───────────────────────
+DECISION_LOG="$PROJECT_ROOT/knowledge/system/decision_log.jsonl"
+SESSION_TS=$(date -u +"%Y-%m-%dT%H:%M:%S")
+TODAY=$(date +%Y-%m-%d)
+SESSION_DECISIONS=0
+if [ -f "$DECISION_LOG" ]; then
+    SESSION_DECISIONS=$(grep -c "\"$TODAY" "$DECISION_LOG" 2>/dev/null || echo 0)
+fi
+python3 - <<PYEOF
+import json
+from pathlib import Path
+log_path = Path("$DECISION_LOG")
+record = {
+    "ts": "$SESSION_TS", "type": "session_summary",
+    "actor": "session-stop", "id": "auto-session",
+    "title": "세션 종료",
+    "meta": {"session_decisions_today": $SESSION_DECISIONS, "uncommitted": $UNCOMMITTED}
+}
+log_path.parent.mkdir(parents=True, exist_ok=True)
+with open(log_path, 'a', encoding='utf-8') as f:
+    f.write(json.dumps(record, ensure_ascii=False) + '\n')
+PYEOF
+
 exit 0

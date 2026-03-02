@@ -71,6 +71,8 @@ class ContentPublisher:
             {status, published_path, telegram_sent}
         """
         signal_id = payload.get("signal_id", "unknown")
+        source_cluster = payload.get("source_cluster", payload.get("theme", ""))
+        source_entry_ids = payload.get("entry_ids", [])
         today = datetime.now().strftime("%Y-%m-%d")
         timestamp = datetime.now().strftime("%H%M%S")
         publish_dir = self.published_root / today / f"{signal_id}_{timestamp}"
@@ -142,7 +144,9 @@ class ContentPublisher:
             "sa_strategic_score": sa_result.get("strategic_score", 0),
             "themes": sa_result.get("themes", []),
             "image_source": image_path.get("source", "none") if image_path else "none",
-            "image_path": str(image_path.get("path", "")) if image_path else ""
+            "image_path": str(image_path.get("path", "")) if image_path else "",
+            "source_cluster": source_cluster,
+            "source_entry_ids": source_entry_ids,
         }
         (publish_dir / "meta.json").write_text(
             json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8"
@@ -640,6 +644,7 @@ class ContentPublisher:
                 "published_at": meta.get("published_at"),
                 "themes": meta.get("themes", []),
                 "cd_brand_score": meta.get("cd_brand_score", 0),
+                "source_cluster": meta.get("source_cluster", ""),
                 "instagram_caption_preview": instagram_caption[:100],
                 "archive_essay_preview": str(archive_essay)[:200]
             })
@@ -651,6 +656,27 @@ class ContentPublisher:
             memory_path.parent.mkdir(parents=True, exist_ok=True)
             memory_path.write_text(json.dumps(memory, indent=2, ensure_ascii=False), encoding="utf-8")
             logger.info("[Publisher] memory 업데이트 완료")
+
+            # decision_log 기록
+            try:
+                log_path = self.base_path / 'knowledge' / 'system' / 'decision_log.jsonl'
+                record = {
+                    'ts': meta.get('published_at', datetime.now().isoformat()),
+                    'type': 'essay_publish', 'actor': 'publisher',
+                    'id': meta.get('signal_id', 'unknown'),
+                    'title': meta.get('essay_title', meta.get('themes', ['기록'])[0] if meta.get('themes') else '기록'),
+                    'meta': {
+                        'source_cluster': meta.get('source_cluster', ''),
+                        'source_entry_ids': meta.get('source_entry_ids', []),
+                        'themes': meta.get('themes', []),
+                        'cd_brand_score': meta.get('cd_brand_score', 0),
+                    },
+                }
+                log_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(log_path, 'a', encoding='utf-8') as f:
+                    f.write(json.dumps(record, ensure_ascii=False) + '\n')
+            except Exception as log_e:
+                logger.warning("[Publisher] decision_log append 실패: %s", log_e)
 
         except Exception as e:
             logger.warning("[Publisher] memory 업데이트 실패: %s", e)
