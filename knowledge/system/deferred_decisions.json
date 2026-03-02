@@ -1,0 +1,81 @@
+{
+  "_doc": "조건부 지연 결정 레지스트리. Gardener가 매 사이클에 조건 평가 → 충족 시 텔레그램 제안 발송.",
+  "_updated": "2026-03-02",
+  "decisions": [
+    {
+      "id": "mcp_tools",
+      "title": "MCP 툴 서버 추가",
+      "description": "세션 내 파이프라인 인터랙션을 MCP 툴로 래핑. signal_inject, corpus_query, ce_trigger 등 4-5개 툴, ~200줄.",
+      "reason_deferred": "신호량 부족 시 ROI 낮음. 세션 내 인터랙션 개선 효과 15-25%.",
+      "condition": {
+        "type": "signal_weekly",
+        "operator": ">=",
+        "value": 50
+      },
+      "status": "pending",
+      "added_at": "2026-03-02",
+      "triggered_at": null,
+      "trigger_count": 0
+    },
+    {
+      "id": "sqlite_queue",
+      "title": "파일 큐 → SQLite 전환",
+      "description": "현재 파일 기반 큐(.infra/queue/tasks/)를 SQLite로 교체. 폴링 O(n) → 인덱스 쿼리. 오케스트레이터 스캔 효율화.",
+      "reason_deferred": "현재 신호량에서 파일 큐 성능 문제 없음.",
+      "condition": {
+        "type": "signal_weekly",
+        "operator": ">=",
+        "value": 100
+      },
+      "status": "pending",
+      "added_at": "2026-03-02",
+      "triggered_at": null,
+      "trigger_count": 0
+    },
+    {
+      "id": "essay_subscription",
+      "title": "에세이 구독 시스템 (이메일)",
+      "description": "에세이 발행 시 구독자에게 자동 이메일. Mailgun 또는 Resend 연동. 수익화 전단계.",
+      "reason_deferred": "에세이 50개 이후 구독 가치 형성됨.",
+      "condition": {
+        "type": "essay_total",
+        "operator": ">=",
+        "value": 30
+      },
+      "status": "pending",
+      "added_at": "2026-03-02",
+      "triggered_at": null,
+      "trigger_count": 0
+    },
+    {
+      "id": "toss_payment_workbook",
+      "title": "워크북 Toss Payments 연동",
+      "description": "product/workbook.html → 결제 → PDF 다운로드. Toss Payments 위젯 방식. 백엔드 최소화.",
+      "reason_deferred": "에세이 아카이브 콘텐츠 충분히 쌓인 후 제품 신뢰도 확보.",
+      "condition": {
+        "type": "essay_total",
+        "operator": ">=",
+        "value": 20
+      },
+      "status": "pending",
+      "added_at": "2026-03-02",
+      "triggered_at": null,
+      "trigger_count": 0
+    },
+    {
+      "id": "brand_scout_rss_fix",
+      "title": "Brand Scout RSS 소스 교체",
+      "description": "scout_sources.json의 Kinfolk/Monocle/It's Nice That/Brunch URL이 비표준. 실제 동작하는 대체 소스 4개 교체 필요.",
+      "reason_deferred": "현재 Dezeen 1개만 동작. 단기 운영 가능.",
+      "condition": {
+        "type": "days_since_added",
+        "operator": ">=",
+        "value": 14
+      },
+      "status": "pending",
+      "added_at": "2026-03-02",
+      "triggered_at": null,
+      "trigger_count": 0
+    }
+  ]
+}

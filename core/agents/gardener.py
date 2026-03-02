@@ -675,6 +675,107 @@ JSON만 출력."""
         except Exception as e:
             logger.warning("Growth snapshot 실패: %s", e)
 
+    def _check_deferred_decisions(self, stats: Dict) -> List[Dict]:
+        """
+        deferred_decisions.json 조건 평가 → 충족 시 텔레그램 제안 발송.
+        Returns: 이번 사이클에 새로 트리거된 결정 목록.
+        """
+        registry_path = self.knowledge_dir / 'system' / 'deferred_decisions.json'
+        if not registry_path.exists():
+            return []
+
+        try:
+            registry = json.loads(registry_path.read_text(encoding='utf-8'))
+        except Exception as e:
+            logger.warning("deferred_decisions.json 읽기 실패: %s", e)
+            return []
+
+        # 현재 에세이 수 (website/archive/essay-* 디렉토리 수)
+        archive_dir = PROJECT_ROOT / 'website' / 'archive'
+        essay_count = len(list(archive_dir.glob('essay-*'))) if archive_dir.exists() else 0
+
+        triggered = []
+        changed = False
+
+        for decision in registry.get('decisions', []):
+            if decision.get('status') != 'pending':
+                continue
+
+            cond = decision.get('condition', {})
+            ctype = cond.get('type', '')
+            op = cond.get('operator', '>=')
+            threshold = cond.get('value', 0)
+
+            # 조건 값 해석
+            if ctype == 'signal_weekly':
+                current = stats.get('signal_count', 0)
+            elif ctype == 'essay_total':
+                current = essay_count
+            elif ctype == 'days_since_added':
+                try:
+                    added = datetime.fromisoformat(decision.get('added_at', ''))
+                    current = (datetime.now() - added).days
+                except Exception:
+                    current = 0
+            else:
+                continue
+
+            # 조건 평가
+            met = (op == '>=' and current >= threshold) or \
+                  (op == '>' and current > threshold) or \
+                  (op == '==' and current == threshold)
+
+            if not met:
+                continue
+
+            # 트리거
+            decision['status'] = 'triggered'
+            decision['triggered_at'] = datetime.now().isoformat()
+            decision['trigger_count'] = decision.get('trigger_count', 0) + 1
+            triggered.append(decision)
+            changed = True
+            logger.info("⏰ 지연 결정 조건 충족: %s (현재값: %d / 기준: %s %d)",
+                        decision['id'], current, op, threshold)
+
+        if changed:
+            try:
+                registry_path.write_text(
+                    json.dumps(registry, indent=2, ensure_ascii=False), encoding='utf-8'
+                )
+            except Exception as e:
+                logger.warning("deferred_decisions.json 저장 실패: %s", e)
+
+        # 텔레그램 발송
+        if triggered:
+            self._send_deferred_alert(triggered)
+
+        return triggered
+
+    def _send_deferred_alert(self, decisions: List[Dict]) -> None:
+        """트리거된 지연 결정을 텔레그램으로 알림"""
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+        if not (admin_id and bot_token):
+            logger.warning("Telegram 미설정 — 지연 결정 알림 생략")
+            return
+
+        lines = ["⏰ <b>조건 충족 — 지연 결정 활성화</b>\n"]
+        for d in decisions:
+            lines.append(f"▸ <b>{d['title']}</b>")
+            lines.append(f"  {d['description']}")
+            lines.append("")
+
+        try:
+            import httpx
+            httpx.post(
+                f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                json={"chat_id": admin_id, "text": "\n".join(lines), "parse_mode": "HTML"},
+                timeout=10,
+            )
+            logger.info("지연 결정 텔레그램 알림 전송: %d건", len(decisions))
+        except Exception as e:
+            logger.warning("지연 결정 알림 전송 실패: %s", e)
+
     def _evolve_guard_rules(self) -> None:
         """quarantine 패턴 분석 → 빈도 5회 이상이면 guard_rules.json에 자동 추가."""
         import tempfile
@@ -760,11 +861,17 @@ JSON만 출력."""
         else:
             logger.info("⏭️  신호 부족 (%d개) — 제안 생략", stats['signal_count'])
 
+        # 9. 지연 결정 조건 평가 → 충족 시 텔레그램 제안
+        deferred_triggered = self._check_deferred_decisions(stats)
+        if deferred_triggered:
+            logger.info("⏰ 지연 결정 트리거: %d건", len(deferred_triggered))
+
         return {
             'stats': stats,
             'new_proposals': new_proposals,
             'pending_count': len(self.pending),
             'corpus': corpus_result,
+            'deferred_triggered': deferred_triggered,
         }
 
     def format_telegram_report(self, result: Dict) -> str:
