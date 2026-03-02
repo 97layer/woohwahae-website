@@ -130,6 +130,30 @@
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 .about-editor-link:hover { color: var(--text); border-color: var(--text); }
+/* Appendix */
+.about-appendix details { width: 100%; }
+.about-appendix__toggle {
+  cursor: pointer;
+  list-style: none;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  margin-bottom: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+.about-appendix__toggle::-webkit-details-marker { display: none; }
+.about-appendix__toggle::after {
+  content: '+';
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  margin-left: auto;
+  transition: transform 0.25s ease;
+}
+details[open] .about-appendix__toggle::after { content: '−'; }
+.about-appendix__body { padding-top: var(--space-md); }
+.about-appendix .about-chapter { margin-top: var(--space-lg); }
 @media (max-width: 640px) {
   .about-hero { flex-direction: column-reverse; gap: var(--space-md); }
   .about-hero__right { flex-direction: row; align-items: center; }
@@ -336,6 +360,42 @@
       <p>풍요는 채워서 증명됩니다. 우리가 지키는 것은 반대 방향입니다. 남기고 싶은 것은 기억이 아닙니다. 방향입니다.</p>
       <p class="about-declaration">걷어내면 드러납니다.</p>
     </div>
+  </section>
+
+  <!-- ━━━ APPENDIX ━━━ -->
+  <section class="about-section container--wide about-appendix" data-reveal>
+    <details>
+      <summary class="about-section__label about-appendix__toggle">부록. 철학적 배경<span class="about-section__sub">사유의 뿌리</span></summary>
+
+      <div class="about-body-text about-appendix__body" data-reveal>
+
+        <div class="about-chapter">
+          <span class="about-section__label">返本還原 — 반본환원</span>
+          <p>되돌아간다는 것은 퇴행이 아닙니다. 도교의 이 개념은 본래 상태로의 귀환을 말합니다. 더하는 것이 아니라 덮인 것을 걷어낼 때 드러나는 것. 소거의 철학적 뿌리가 여기 있습니다. 외부가 입힌 것들을 제거하면, 본래 있던 것이 보입니다.</p>
+        </div>
+
+        <div class="about-chapter">
+          <span class="about-section__label">本來面目 — 본래면목</span>
+          <p>선불교의 물음입니다. 부모에게 태어나기 이전의 얼굴은 무엇인가. 역할과 기대와 습관이 덧씌워지기 전의 것. 영점(零點)은 이 물음의 다른 이름입니다. 어디서 출발해야 하는가가 아니라, 본래 어디에 있었는가.</p>
+        </div>
+
+        <div class="about-chapter">
+          <span class="about-section__label">羽化登仙 — 우화등선</span>
+          <p>장자(莊子)의 언어. 고치가 깨지고 나방이 되는 것. 우화해(羽化解)라는 이름은 여기서 왔습니다. 등선(登仙)이 아닌 해(解)를 택한 것은 의도적입니다. 도달이 아닙니다. 풀림입니다. 덧씌워진 것이 해소되는 과정. 그것이 이 이름이 말하는 것입니다.</p>
+        </div>
+
+        <div class="about-chapter">
+          <span class="about-section__label">逍遙遊 + 無爲而無不爲</span>
+          <p>소요유(逍遙遊)는 쓸모 없음의 쓸모입니다. 아무 목적 없이 유영하는 것 — 거기서 오는 것들. 무위이무불위(無爲而無不爲)는 그 역설의 완성입니다. 억지로 하지 않으면, 이루어지지 않는 것이 없다. 슬로우라이프가 게으름이 아닌 이유. 서두르지 않는 것이 판별의 기준입니다.</p>
+        </div>
+
+        <div class="about-chapter">
+          <span class="about-section__label">東道西器 — 동도서기</span>
+          <p>사유를 뿌리로, 물성을 도구로. 동방 사유의 원리를 중심에 두고, 필요한 기술과 형식을 취합니다. 도구가 사유를 지배하지 않습니다. 디지털이든 아날로그든, 어떤 형식이든 — 방향은 안에서 옵니다. 우화해가 공간, 언어, 기록을 동시에 다루는 이유가 여기 있습니다.</p>
+        </div>
+
+      </div>
+    </details>
   </section>
 
   <!-- ━━━ CONNECTION ━━━ -->
