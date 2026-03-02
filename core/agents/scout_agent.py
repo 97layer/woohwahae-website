@@ -123,6 +123,35 @@ def fetch_feed(source: dict, max_items: int = 5) -> list:
     return items
 
 
+# sage_architect.md §9 금지 어휘 — Scout 1차 소거 필터
+# 제목/요약에 금지어가 1개 이상 있으면 수집하지 않는다.
+_DENIED_PATTERNS = (
+    "트렌드", "유행", "핫한",
+    "최고", "최상", "베스트",
+    "성공", "성취", "정복",
+    "레벨업", "업그레이드",
+    "효율", "생산성", "roi",
+    "꿀팁", "노하우", "공략",
+    "힐링", "치유",
+    "행복", "만족", "기쁨",
+    "특별한", "특별함",
+)
+
+
+def has_resonance(item: dict) -> bool:
+    """
+    sage_architect.md §9 금지어 기반 1차 소거 필터.
+
+    제목+요약에 금지어가 포함되면 공명 불일치로 판단.
+    SA가 받기 전에 걷어낸다.
+    """
+    text = (item.get("title", "") + " " + item.get("summary", "")).lower()
+    for pattern in _DENIED_PATTERNS:
+        if pattern in text:
+            return False
+    return True
+
+
 def inject_item(item: dict, source: dict) -> Optional[str]:
     """
     단일 피드 항목을 signal pipeline에 inject.
@@ -132,12 +161,16 @@ def inject_item(item: dict, source: dict) -> Optional[str]:
         source: 소스 설정 dict
 
     Returns:
-        주입된 signal_id, 또는 중복/실패 시 None.
+        주입된 signal_id, 또는 중복/실패/공명불일치 시 None.
     """
     url = item["link"]
 
     if is_duplicate(url):
         logger.debug("중복 URL 건너뜀: %s", url)
+        return None
+
+    if not has_resonance(item):
+        logger.debug("공명 불일치 — 소거: %s", item["title"][:60])
         return None
 
     content = "%s\n\n%s" % (item["title"], item.get("summary", ""))

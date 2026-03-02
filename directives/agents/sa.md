@@ -1,4 +1,4 @@
-# SA — Strategy Analyst
+# SA — Signal Observer
 
 > 세계의 노이즈 속에서 공명할 주파수만을 추출하는 관측자.
 
