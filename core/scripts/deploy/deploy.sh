@@ -82,6 +82,107 @@ for name, info in d['inactive'].items():
     ssh ${VM_HOST} "cd ${VM_PATH} && python3 core/agents/gardener.py --run-now 2>&1"
     ;;
 
+  ssl)
+    echo "SSL 인증서 갱신 (api.woohwahae.kr SAN 추가)..."
+    ssh ${VM_HOST} "sudo certbot --nginx -d woohwahae.kr -d www.woohwahae.kr -d api.woohwahae.kr --non-interactive --agree-tos --expand 2>&1"
+    echo "nginx 재시작..."
+    ssh ${VM_HOST} "sudo systemctl reload nginx"
+    echo "인증서 확인..."
+    ssh ${VM_HOST} "sudo certbot certificates"
+    ;;
+
+  ssl-check)
+    echo "=== nginx api.woohwahae.kr 설정 확인 ==="
+    ssh ${VM_HOST} "sudo ls /etc/nginx/sites-enabled/ && sudo cat /etc/nginx/sites-enabled/api.woohwahae.kr 2>/dev/null || sudo grep -rl 'api.woohwahae' /etc/nginx/ 2>/dev/null | head -5 | xargs sudo cat"
+    ;;
+
+  ssl-fix)
+    echo "[1/4] ACME webroot 생성..."
+    ssh ${VM_HOST} "sudo mkdir -p /var/www/letsencrypt/.well-known/acme-challenge && sudo chmod -R 755 /var/www/letsencrypt"
+
+    echo "[2/4] nginx HTTP block에 ACME challenge location 추가..."
+    ssh ${VM_HOST} "
+      NGINX_CONF=/etc/nginx/nginx.conf
+      # HTTP 서버 블록의 'return 301' 앞에 ACME location 삽입 (idempotent)
+      if ! sudo grep -q 'well-known/acme-challenge' \$NGINX_CONF; then
+        sudo sed -i 's|server_name api.woohwahae.kr;\n.*return 301|server_name api.woohwahae.kr;\n        location /.well-known/acme-challenge/ { root /var/www/letsencrypt; }\n        return 301|' \$NGINX_CONF
+        # sed multiline 미지원 fallback: python3 사용
+        sudo python3 -c \"
+import re, sys
+with open('\$NGINX_CONF', 'r') as f:
+    content = f.read()
+old = '''    server {
+        listen 80;
+        server_name api.woohwahae.kr;
+        return 301 https://\\\$host\\\$request_uri;
+    }'''
+new = '''    server {
+        listen 80;
+        server_name api.woohwahae.kr;
+        location /.well-known/acme-challenge/ {
+            root /var/www/letsencrypt;
+        }
+        location / {
+            return 301 https://\\\$host\\\$request_uri;
+        }
+    }'''
+if old in content:
+    content = content.replace(old, new)
+    with open('\$NGINX_CONF', 'w') as f:
+        f.write(content)
+    print('nginx config 패치 완료')
+else:
+    print('패치 대상 없음 또는 이미 패치됨')
+\"
+      else
+        echo 'ACME location 이미 존재, 스킵'
+      fi
+    "
+    echo "nginx 설정 검증..."
+    ssh ${VM_HOST} "sudo nginx -t 2>&1"
+    echo "nginx 리로드..."
+    ssh ${VM_HOST} "sudo systemctl reload nginx"
+
+    echo "[3/4] certbot webroot로 api.woohwahae.kr 인증서 발급..."
+    ssh ${VM_HOST} "sudo certbot certonly --webroot -w /var/www/letsencrypt -d api.woohwahae.kr --non-interactive --agree-tos 2>&1"
+
+    echo "[4/4] nginx api.woohwahae.kr SSL cert 경로 업데이트..."
+    ssh ${VM_HOST} "
+      NGINX_CONF=/etc/nginx/nginx.conf
+      sudo python3 -c \"
+with open('\$NGINX_CONF', 'r') as f:
+    content = f.read()
+# api 서버 블록의 cert를 api.woohwahae.kr cert로 교체
+old_cert = '    server_name api.woohwahae.kr;'
+# api 블록에서만 cert 경로 교체
+import re
+def replace_api_cert(m):
+    block = m.group(0)
+    block = block.replace(
+        '/etc/letsencrypt/live/woohwahae.kr/fullchain.pem',
+        '/etc/letsencrypt/live/api.woohwahae.kr/fullchain.pem'
+    )
+    block = block.replace(
+        '/etc/letsencrypt/live/woohwahae.kr/privkey.pem',
+        '/etc/letsencrypt/live/api.woohwahae.kr/privkey.pem'
+    )
+    return block
+# api.woohwahae.kr HTTPS 블록 패턴
+pattern = r'(server \{[^}]*?server_name api\.woohwahae\.kr;.*?^\})'
+new_content = re.sub(pattern, replace_api_cert, content, flags=re.MULTILINE | re.DOTALL)
+if new_content != content:
+    with open('\$NGINX_CONF', 'w') as f:
+        f.write(new_content)
+    print('cert 경로 업데이트 완료')
+else:
+    print('변경 없음')
+\"
+      sudo nginx -t 2>&1 && sudo systemctl reload nginx
+    "
+    echo "=== 최종 인증서 확인 ==="
+    ssh ${VM_HOST} "sudo certbot certificates"
+    ;;
+
   *)
     # 서비스명 검증
     if ! is_active_service "$1"; then
