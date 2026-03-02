@@ -776,6 +776,154 @@ JSON만 출력."""
         except Exception as e:
             logger.warning("지연 결정 알림 전송 실패: %s", e)
 
+    # ── 기계적 수정 제안 ──────────────────────────────
+
+    def _check_mechanical_issues(self) -> List[Dict]:
+        """
+        반복적 파일 비대화/큐 적체 등 기계적 수정이 가능한 이슈 감지.
+        발견 시 pending_actions.json에 저장 + 텔레그램 인라인 버튼 발송.
+        """
+        actions = []
+        actions_path = PROJECT_ROOT / '.infra' / 'queue' / 'pending_actions.json'
+
+        # 기존 pending 액션 로드 (중복 방지)
+        existing_ids = set()
+        if actions_path.exists():
+            try:
+                existing = json.loads(actions_path.read_text(encoding='utf-8'))
+                existing_ids = {a['id'] for a in existing.get('actions', []) if a.get('status') == 'pending'}
+            except Exception:
+                pass
+
+        # ── 이슈 1: orchestrated.json 비대화 (500개+)
+        orch_path = PROJECT_ROOT / '.infra' / 'queue' / 'orchestrated.json'
+        if orch_path.exists():
+            try:
+                orch = json.loads(orch_path.read_text(encoding='utf-8'))
+                count = len(orch) if isinstance(orch, dict) else 0
+                action_id = 'truncate_orchestrated'
+                if count > 500 and action_id not in existing_ids:
+                    actions.append({
+                        'id': action_id,
+                        'type': 'truncate_orchestrated',
+                        'title': 'orchestrated.json 정리',
+                        'description': '%d개 → 최근 200개 유지. 오케스트레이터 중복 방지 파일.' % count,
+                        'params': {'keep_recent': 200},
+                        'status': 'pending',
+                        'created_at': datetime.now().isoformat(),
+                    })
+            except Exception:
+                pass
+
+        # ── 이슈 2: completed/ 폴더 적체 (200파일+)
+        completed_path = PROJECT_ROOT / '.infra' / 'queue' / 'tasks' / 'completed'
+        if completed_path.exists():
+            completed_files = list(completed_path.glob('*.json'))
+            action_id = 'archive_completed_tasks'
+            if len(completed_files) > 200 and action_id not in existing_ids:
+                actions.append({
+                    'id': action_id,
+                    'type': 'archive_completed_tasks',
+                    'title': 'completed 태스크 아카이브',
+                    'description': '%d개 완료 태스크 → archived/ 이동. 폴더 스캔 속도 개선.' % len(completed_files),
+                    'params': {'keep_recent': 50},
+                    'status': 'pending',
+                    'created_at': datetime.now().isoformat(),
+                })
+
+        if not actions:
+            return []
+
+        # pending_actions.json 저장
+        try:
+            actions_path.parent.mkdir(parents=True, exist_ok=True)
+            existing_data = {'actions': []}
+            if actions_path.exists():
+                try:
+                    existing_data = json.loads(actions_path.read_text(encoding='utf-8'))
+                except Exception:
+                    pass
+            existing_data['actions'].extend(actions)
+            actions_path.write_text(json.dumps(existing_data, indent=2, ensure_ascii=False), encoding='utf-8')
+        except Exception as e:
+            logger.warning("pending_actions.json 저장 실패: %s", e)
+
+        # 텔레그램 인라인 버튼 발송
+        self._send_action_proposals(actions)
+        return actions
+
+    def _send_action_proposals(self, actions: List[Dict]) -> None:
+        """기계적 수정 제안을 텔레그램 인라인 버튼으로 발송"""
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+        if not (admin_id and bot_token):
+            return
+
+        try:
+            import httpx
+            for action in actions:
+                text = (
+                    "🔧 <b>시스템 수정 제안</b>\n\n"
+                    "<b>%s</b>\n%s" % (action['title'], action['description'])
+                )
+                keyboard = {
+                    'inline_keyboard': [[
+                        {'text': '✅ 적용', 'callback_data': 'action_apply:%s' % action['id']},
+                        {'text': '⏭ 건너뜀', 'callback_data': 'action_skip:%s' % action['id']},
+                    ]]
+                }
+                httpx.post(
+                    "https://api.telegram.org/bot%s/sendMessage" % bot_token,
+                    json={
+                        'chat_id': admin_id,
+                        'text': text,
+                        'parse_mode': 'HTML',
+                        'reply_markup': keyboard,
+                    },
+                    timeout=10,
+                )
+        except Exception as e:
+            logger.warning("액션 제안 텔레그램 발송 실패: %s", e)
+
+    @staticmethod
+    def execute_action(action: Dict) -> tuple:
+        """
+        기계적 수정 실행. 텔레그램 봇이 승인 시 호출.
+        Returns (success: bool, message: str)
+        """
+        action_type = action.get('type', '')
+        params = action.get('params', {})
+
+        try:
+            if action_type == 'truncate_orchestrated':
+                orch_path = PROJECT_ROOT / '.infra' / 'queue' / 'orchestrated.json'
+                if not orch_path.exists():
+                    return False, 'orchestrated.json 없음'
+                orch = json.loads(orch_path.read_text(encoding='utf-8'))
+                keep = params.get('keep_recent', 200)
+                if isinstance(orch, dict):
+                    items = list(orch.items())
+                    trimmed = dict(items[-keep:])
+                    orch_path.write_text(json.dumps(trimmed, indent=2, ensure_ascii=False), encoding='utf-8')
+                    return True, 'orchestrated.json: %d → %d개' % (len(items), len(trimmed))
+                return False, '포맷 오류'
+
+            elif action_type == 'archive_completed_tasks':
+                completed_path = PROJECT_ROOT / '.infra' / 'queue' / 'tasks' / 'completed'
+                archived_path = PROJECT_ROOT / '.infra' / 'queue' / 'tasks' / 'archived'
+                archived_path.mkdir(parents=True, exist_ok=True)
+                files = sorted(completed_path.glob('*.json'))
+                keep = params.get('keep_recent', 50)
+                to_move = files[:-keep] if len(files) > keep else []
+                for f in to_move:
+                    f.rename(archived_path / f.name)
+                return True, '완료 태스크 %d개 아카이브' % len(to_move)
+
+            return False, '알 수 없는 액션 타입: %s' % action_type
+
+        except Exception as e:
+            return False, '실행 오류: %s' % str(e)
+
     def _evolve_guard_rules(self) -> None:
         """quarantine 패턴 분석 → 빈도 5회 이상이면 guard_rules.json에 자동 추가."""
         import tempfile
@@ -865,6 +1013,11 @@ JSON만 출력."""
         deferred_triggered = self._check_deferred_decisions(stats)
         if deferred_triggered:
             logger.info("⏰ 지연 결정 트리거: %d건", len(deferred_triggered))
+
+        # 10. 기계적 수정 이슈 감지 → 텔레그램 인라인 버튼 발송
+        mechanical_actions = self._check_mechanical_issues()
+        if mechanical_actions:
+            logger.info("🔧 기계적 수정 제안: %d건", len(mechanical_actions))
 
         return {
             'stats': stats,

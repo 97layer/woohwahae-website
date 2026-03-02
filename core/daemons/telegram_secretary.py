@@ -1177,6 +1177,51 @@ class TelegramSecretaryV6:
             logger.error("draft callback error: %s", e)
             await query.edit_message_text(f"처리 오류: {str(e)[:100]}")
 
+    async def handle_action_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Gardener 기계적 수정 제안 승인/건너뜀 처리 — action_apply:id / action_skip:id"""
+        query = update.callback_query
+        await query.answer()
+        data = query.data  # "action_apply:id" or "action_skip:id"
+
+        try:
+            verb, action_id = data.split(':', 1)
+            actions_path = PROJECT_ROOT / '.infra' / 'queue' / 'pending_actions.json'
+
+            if not actions_path.exists():
+                await query.edit_message_text("액션 파일을 찾을 수 없습니다.")
+                return
+
+            registry = json.loads(actions_path.read_text(encoding='utf-8'))
+            action = next((a for a in registry.get('actions', []) if a['id'] == action_id), None)
+
+            if not action:
+                await query.edit_message_text("액션을 찾을 수 없습니다: %s" % action_id)
+                return
+
+            if verb == 'action_skip':
+                action['status'] = 'skipped'
+                action['skipped_at'] = datetime.now().isoformat()
+                actions_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding='utf-8')
+                await query.edit_message_text("⏭ 건너뜀: %s" % action['title'])
+                return
+
+            # 적용
+            from core.agents.gardener import Gardener
+            success, msg = Gardener.execute_action(action)
+            action['status'] = 'applied' if success else 'failed'
+            action['applied_at'] = datetime.now().isoformat()
+            action['result'] = msg
+            actions_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding='utf-8')
+
+            icon = "✅" if success else "❌"
+            await query.edit_message_text(
+                "%s <b>%s</b>\n\n%s" % (icon, action['title'], msg),
+                parse_mode=constants.ParseMode.HTML,
+            )
+        except Exception as e:
+            logger.error("action callback error: %s", e)
+            await query.edit_message_text("처리 오류: %s" % str(e)[:100])
+
     async def handle_council_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Council 협의 승인/거절 인라인 버튼 처리"""
         query = update.callback_query
@@ -1282,6 +1327,7 @@ class TelegramSecretaryV6:
         application.add_handler(CommandHandler("visit", self.visit_command))
         application.add_handler(CallbackQueryHandler(self.handle_draft_callback, pattern=r'^draft_'))
         application.add_handler(CallbackQueryHandler(self.handle_council_callback, pattern=r'^council_'))
+        application.add_handler(CallbackQueryHandler(self.handle_action_callback, pattern=r'^action_'))
         application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO | filters.Document.ALL, self.handle_message))
 
         # 매일 08:00 브리핑 자동 푸시
