@@ -405,11 +405,13 @@ JSON만 출력."""
             return
 
         try:
-            # concept_evolution 로드
+            # concept_evolution + conversation_patterns 로드
             concept_evolution = {}
+            conv_patterns: Dict = {}
             if lm_path.exists():
                 lm = json.loads(lm_path.read_text(encoding='utf-8'))
                 concept_evolution = lm.get("concept_evolution", {})
+                conv_patterns = lm.get("conversation_patterns", {})
 
             content = quanta_path.read_text(encoding='utf-8')
             now = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -420,19 +422,35 @@ JSON만 출력."""
             for concept, data in list(concept_evolution.items())[:4]:
                 depth = data.get("current_depth", "")
                 if depth:
-                    evolution_lines += f"- **{concept}**: {depth}\n"
+                    evolution_lines += "- **%s**: %s\n" % (concept, depth)
 
             if not evolution_lines:
                 evolution_lines = "- (아직 충분한 신호 미축적)\n"
 
+            # 대화 패턴 요약 (현재 관심사 → 세션 간 연속성 강화)
+            conv_line = ""
+            active_concerns = conv_patterns.get("active_concerns", [])
+            brand_ctx = conv_patterns.get("brand_context", "")
+            if active_concerns:
+                conv_line = "\n**현재 관심** (대화 패턴) | %s\n" % ", ".join(active_concerns[:3])
+            if brand_ctx:
+                conv_line += "**브랜드 맥락** | %s\n" % brand_ctx
+
             marker = "## 🌱 Gardener 자동 업데이트"
             new_section = (
-                f"{marker}\n"
-                f"최종 실행: {now}\n\n"
-                f"**수집 현황** | 신호: {stats['signal_count']}개 / SA분석: {stats['sa_analyzed']}개 / 평균점수: {stats['avg_score']}\n\n"
-                f"**부상 테마** | {themes_str}\n\n"
-                f"**개념 사고 수준** (세션 간 연속성 앵커)\n"
-                f"{evolution_lines}\n"
+                "%s\n"
+                "최종 실행: %s\n\n"
+                "**수집 현황** | 신호: %d개 / SA분석: %d개 / 평균점수: %s\n\n"
+                "**부상 테마** | %s\n"
+                "%s\n"
+                "**개념 사고 수준** (세션 간 연속성 앵커)\n"
+                "%s\n"
+            ) % (
+                marker, now,
+                stats['signal_count'], stats['sa_analyzed'], stats['avg_score'],
+                themes_str,
+                conv_line,
+                evolution_lines,
             )
 
             import re as re_module
@@ -1002,6 +1020,108 @@ JSON만 출력."""
 
         logger.info("Guard 룰 진화: %d개 패턴 추가 %s", len(evolved), [p for p, _ in evolved])
 
+    def _analyze_conversation_patterns(self) -> Dict:
+        """
+        대화 컨텍스트 분석 → 순호의 관심 패턴 학습.
+
+        conversation_contexts.json (대화 히스토리) +
+        long_term_memory.json (initiated_topics) 를 읽어
+        Gemini가 반복 주제·현재 관심사·브랜드 맥락을 추출.
+        결과는 long_term_memory.json['conversation_patterns']에 AUTO 저장.
+        """
+        contexts_path = PROJECT_ROOT / 'knowledge' / 'system' / 'conversation_contexts.json'
+        lm_path = self.knowledge_dir / 'long_term_memory.json'
+
+        if not contexts_path.exists():
+            return {}
+
+        try:
+            contexts = json.loads(contexts_path.read_text(encoding='utf-8'))
+        except Exception as e:
+            logger.warning("conversation_contexts.json 로드 실패: %s", e)
+            return {}
+
+        # 전체 유저 메시지 수집
+        all_user_messages = []
+        for ctx in contexts.values():
+            for h in ctx.get('history', []):
+                msg = h.get('user', '').strip()
+                if msg:
+                    all_user_messages.append(msg)
+
+        if len(all_user_messages) < 5:
+            logger.info("대화 데이터 부족 (%d개) — 패턴 분석 생략", len(all_user_messages))
+            return {}
+
+        # initiated_topics 카운트 (ConversationEngine이 추출한 자발적 주제)
+        initiated_topics: Dict = {}
+        if lm_path.exists():
+            try:
+                lm = json.loads(lm_path.read_text(encoding='utf-8'))
+                initiated_topics = lm.get('initiated_topics', {})
+            except Exception:
+                pass
+
+        # 최근 30개 메시지만 사용
+        recent_messages = all_user_messages[-30:]
+        messages_text = '\n'.join('- %s' % m[:120] for m in recent_messages)
+
+        top_initiated = sorted(initiated_topics.items(), key=lambda x: x[1], reverse=True)[:5]
+        initiated_str = ', '.join('%s(%d회)' % (k, v) for k, v in top_initiated) or '없음'
+
+        prompt = """너는 LAYER OS Gardener다.
+아래는 순호(WOOHWAHAE 브랜드 운영자)의 최근 대화 메시지 목록이다.
+
+%s
+
+자발적으로 꺼낸 주제 (누적): %s
+
+이 패턴을 분석하라:
+1. 순호가 반복적으로 꺼내는 주제 (스스로 이니셔티브를 잡는 것)
+2. 현재 가장 자주 떠올리는 고민/관심사
+3. 브랜드 운영에서 현재 집중하는 방향
+
+응답 형식 (JSON):
+{"recurring_topics": ["주제1", "주제2"], "active_concerns": ["고민1", "고민2"], "conversation_tone": "짧고 직관적/탐색적/실행 중심 중 하나", "brand_context": "WOOHWAHAE 운영에서 현재 집중하고 있는 방향 한 문장"}
+
+JSON만 출력.""" % (messages_text, initiated_str)
+
+        try:
+            import re as _re
+            resp = self.client.models.generate_content(model=self._model, contents=[prompt])
+            m = _re.search(r'\{.*\}', resp.text, _re.DOTALL)
+            if not m:
+                return {}
+            patterns = json.loads(m.group())
+        except Exception as e:
+            logger.warning("대화 패턴 분석 실패: %s", e)
+            return {}
+
+        # long_term_memory.json에 conversation_patterns AUTO 갱신
+        try:
+            lm = {}
+            if lm_path.exists():
+                lm = json.loads(lm_path.read_text(encoding='utf-8'))
+            lm.setdefault('metadata', {})
+            lm['conversation_patterns'] = {
+                'last_analyzed': datetime.now().isoformat()[:16],
+                'sample_size': len(recent_messages),
+                'recurring_topics': patterns.get('recurring_topics', []),
+                'active_concerns': patterns.get('active_concerns', []),
+                'conversation_tone': patterns.get('conversation_tone', ''),
+                'brand_context': patterns.get('brand_context', ''),
+            }
+            lm_path.write_text(json.dumps(lm, ensure_ascii=False, indent=2), encoding='utf-8')
+            logger.info(
+                "💬 대화 패턴 분석 완료: 반복 주제 %d개 / 관심사: %s",
+                len(patterns.get('recurring_topics', [])),
+                patterns.get('active_concerns', []),
+            )
+        except Exception as e:
+            logger.warning("대화 패턴 저장 실패: %s", e)
+
+        return patterns
+
     def _retrospective_analysis(self) -> Dict:
         """decision_log 최근 30일 → 패턴 분석 → long_term_memory.retrospective 갱신"""
         log_path = self.knowledge_dir / 'system' / 'decision_log.jsonl'
@@ -1065,6 +1185,11 @@ JSON만 출력."""
 
         # 2. 개념 진화 기록 (핵심: 대화가 쌓일수록 사고가 깊어지는 구조)
         self._evolve_concept_memory(stats)
+
+        # 2.5. 대화 패턴 학습 (텔레그램 대화 히스토리 → MEMORY 자동 갱신)
+        conv_patterns = self._analyze_conversation_patterns()
+        if conv_patterns.get('active_concerns'):
+            logger.info("💬 현재 관심사: %s", conv_patterns['active_concerns'])
 
         # 3. QUANTA 성장 일지 갱신 (상태 스냅샷 → 사고 수준 앵커로)
         self._update_quanta_with_growth(stats)

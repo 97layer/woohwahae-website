@@ -356,7 +356,7 @@ LAYER OS:"""
 응답: {assistant_answer[:250]}
 
 JSON만 출력:
-{{"concepts": ["개념1", "개념2"], "summary": "한 문장 요약", "category": "브랜드/개인/기술/비즈니스/라이프스타일"}}"""
+{{"concepts": ["개념1", "개념2"], "summary": "한 문장 요약", "category": "브랜드/개인/기술/비즈니스/라이프스타일", "initiated_topic": "사용자가 직접 꺼낸 핵심 주제 1개 (없으면 빈 문자열)"}}"""
 
         try:
             import re
@@ -373,9 +373,17 @@ JSON만 출력:
             if c:
                 data['concepts'][c] = data['concepts'].get(c, 0) + 1
 
+        # initiated_topics: 순호가 직접 꺼낸 주제 누적 (Gardener 패턴 분석 소스)
+        initiated = extracted.get('initiated_topic', '').strip()
+        if initiated:
+            if 'initiated_topics' not in data:
+                data['initiated_topics'] = {}
+            data['initiated_topics'][initiated] = data['initiated_topics'].get(initiated, 0) + 1
+
         data['experiences'].append({
             'summary': extracted.get('summary', '')[:100],
             'category': extracted.get('category', 'unknown'),
+            'initiated_topic': initiated,
             'timestamp': datetime.now().isoformat()[:16],
         })
         if len(data['experiences']) > 100:
