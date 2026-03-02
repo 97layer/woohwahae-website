@@ -60,6 +60,22 @@
   display: block;
   margin-top: 0.4rem;
 }
+.about-toc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-sm) 0;
+}
+.about-toc a {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.about-toc a:hover { color: var(--text-sub); }
 .about-preamble {
   font-size: 0.88rem;
   font-weight: 300;
@@ -145,7 +161,7 @@
 <main class="page-main">
 
   <!-- ━━━ I. 서(序) — 시선 ━━━ -->
-  <section class="about-section container--wide" data-reveal>
+  <section id="ch-1" class="about-section container--wide" data-reveal>
     <span class="about-section__label">I. 서(序)<span class="about-section__sub">시선</span></span>
 
     <div class="about-hero">
@@ -172,7 +188,16 @@
       </div>
     </div>
 
-    <p class="about-preamble" data-reveal>소거라는 렌즈로 세상을 읽습니다. 그 읽기의 기록입니다.</p>
+    <p class="about-preamble" data-reveal>덧씌워진 것들을 걷어내면 본래의 것이 드러납니다. 소거라는 렌즈로 세상을 읽습니다. 이 기록은 그 방식과 태도, 이름과 실천에 대한 것입니다.</p>
+
+    <nav class="about-toc" data-reveal>
+      <a href="#ch-1">I. 서(序) — 시선</a>
+      <a href="#ch-2">II. 소거(消去) — 방식</a>
+      <a href="#ch-3">III. 슬로우라이프 — 태도</a>
+      <a href="#ch-4">IV. 우화해(羽化解) — 이름</a>
+      <a href="#ch-5">V. 우리가 지키는 것들 — 공간 · 언어 · 기록</a>
+      <a href="#ch-6">VI. 발(跋) — 방향</a>
+    </nav>
 
     <div class="about-body-text" data-reveal>
       <p>이 시대는 인간에게 어느 때보다 많은 것을 주었습니다. 선택지는 전례 없이 넓고, 원하는 것은 손에 닿습니다. 한 끼의 식사를 고르는 일에도, 무언가를 배우는 일에도, 쉬는 방법을 찾는 일에도 수십 개의 선택지가 놓입니다. 부정할 수 없는 풍요입니다. 그러나 더 많이 가질수록 자기 자신이 누구인지 대답하기는 오히려 어려워집니다.</p>
@@ -181,13 +206,12 @@
       <p>덧씌워진 것들은 처음엔 작습니다. 어떤 음식이 좋다는 말을 자주 들으면 그것이 먹고 싶어집니다. 어떤 공간이 좋다는 분위기에 오래 있으면 그것을 원하게 됩니다. 단번에 바뀌지 않습니다. 매일 조금씩 쌓입니다. 그래서 언제부터 가려졌는지 알 수 없습니다. 타인의 기준이 자신의 기준처럼 자리잡기까지는 시간이 걸리는 만큼, 외부에서 왔다는 것도 점점 보이지 않습니다.</p>
       <p>나는 무엇을 좋아하는가. 어떤 시간에 가장 나다운가. 무엇을 하고 있을 때 가장 고요한가. 어렵지 않은 질문들입니다. 그런데 대답이 잘 나오지 않습니다. 이 질문들이 어렵게 느껴지는 것은 선택지가 많기 때문만은 아닙니다. 질문 자체가 외부를 향하고 있기 때문입니다. 좋은 것이 무엇인지 밖에서 찾으면, 밖이 답합니다. 그 답은 자기 것이 아닙니다.</p>
       <p>오랫동안 자신의 것이라 여겼던 기준들이 어느 순간 낯설게 느껴질 때가 있습니다. 좋아한다고 생각했던 것을 실제로 좋아하는지 모르겠다는 것. 이 낯섦을 놓치지 않아야 합니다. 불안의 신호가 아닙니다. 덧씌워진 것이 흔들리기 시작할 때 나타나는 첫 번째 신호입니다.</p>
-      <p>사람의 주권과 리듬을 기준으로 살아갈 수 있는가. 철학적 질문이 아닙니다. 매달 수지를 맞추면서 동시에 지켜야 하는 것입니다. 수익성이 답이 되는 곳에서, 수익성을 답으로 두지 않겠다는 선택은 매달 비용을 치릅니다. 그 비용을 치르면서도 방향을 바꾸지 않는 것. 신념은 선언이 아닙니다. 청구서 앞에서 흔들리지 않는 것입니다.</p>
       <p>그러나 영점은 사라지지 않습니다. 덧씌워질 뿐입니다. 처음부터 있던 것들은 없어진 것이 아닙니다. 덮인 것입니다. 우리가 세상을 읽는 방식의 출발점입니다. 문제는 덧씌워진 것들을 걷어내는 것 — <span class="about-slow-accent">소거(消去)</span>입니다.</p>
     </div>
   </section>
 
   <!-- ━━━ II. 소거(消去) — 방식 ━━━ -->
-  <section class="about-section container--wide" data-reveal>
+  <section id="ch-2" class="about-section container--wide" data-reveal>
     <span class="about-section__label">II. 소거(消去)<span class="about-section__sub">방식</span></span>
 
     <div class="about-body-text" data-reveal>
@@ -207,7 +231,7 @@
   </section>
 
   <!-- ━━━ III. 슬로우라이프 — 태도 ━━━ -->
-  <section class="about-section container--wide" data-reveal>
+  <section id="ch-3" class="about-section container--wide" data-reveal>
     <span class="about-section__label">III. 슬로우라이프(Slow Life)<span class="about-section__sub">태도</span></span>
 
     <div class="about-body-text" data-reveal>
@@ -223,7 +247,7 @@
   </section>
 
   <!-- ━━━ IV. 우화해(羽化解) — 이름 ━━━ -->
-  <section class="about-section container--wide" data-reveal>
+  <section id="ch-4" class="about-section container--wide" data-reveal>
     <span class="about-section__label">IV. 우화해(羽化解)<span class="about-section__sub">이름</span></span>
     <p class="about-chapter__title">羽化해. 세 글자입니다.</p>
 
@@ -260,12 +284,12 @@
   </section>
 
   <!-- ━━━ V. 우리가 지키는 것들 — 공간·언어·기록 ━━━ -->
-  <section class="about-section container--wide" data-reveal>
+  <section id="ch-5" class="about-section container--wide" data-reveal>
     <span class="about-section__label">V. 우리가 지키는 것들<span class="about-section__sub">공간 · 언어 · 기록</span></span>
     <p class="about-chapter__title">사유를 뿌리로, 형식을 도구로. 소거의 렌즈로 세상을 바라볼 때, 보이는 것들이 있습니다.</p>
 
     <div class="about-chapter about-body-text" data-reveal>
-      <span class="about-chapter__label">실용적 미학 (Practical Aesthetics)</span>
+      <span class="about-chapter__label">공간 — 실용적 미학</span>
       <p>어떤 공간에 들어서는 순간 알 수 있습니다. 과잉이 없다는 것을. 결여도 아니라는 것을. 무언가가 정확히 제자리에 있다는 인상. 설명하기 어렵지만 느낄 수 있습니다.</p>
       <p>밀도는 채워서 만들어지지 않습니다. 음악에서 침묵이 소리를 더 선명하게 만드는 것처럼. 문장에서 여백이 남은 단어들을 더 무겁게 만드는 것처럼. 불필요한 것들이 걷히고 난 뒤, 남은 것들이 서로 가까워지며 생기는 것. 밀도라 부르는 것입니다. 소거를 오래 실천한 자리에서 나오는 것 — 과잉도 결여도 없는, 딱 필요한 만큼의 농도입니다.</p>
       <p>무엇을 만들 때, 먼저 묻는 것은 무엇을 더할 것인가가 아닙니다. 무엇이 없어도 되는가입니다. 처음에는 불편한 질문입니다. 더하는 것보다 빼는 것이 어렵습니다. 그 질문이 반복될수록 남는 것들의 인상이 달라집니다. 남은 것들은 그 자리에 있어야 할 이유가 있습니다. 그래서 빛납니다.</p>
@@ -274,7 +298,7 @@
     </div>
 
     <div class="about-chapter about-body-text" data-reveal>
-      <span class="about-chapter__label">무언의 교감 (Silent Resonance)</span>
+      <span class="about-chapter__label">언어 — 무언의 교감</span>
       <p>말하지 않는 것들도 신호입니다.</p>
       <p>같은 음높이의 소리굽쇠 두 개를 나란히 놓고 하나를 울리면, 다른 하나도 떨립니다. 건드리지 않아도. 설명하지 않아도. 같은 주파수입니다. 공명은 의도보다 앞서 일어납니다.</p>
       <p>어떤 여백을 선택하는가. 어떤 물성을 고르는가. 어떤 것을 생략하는가. 그 선택들이 방향을 드러냅니다. 증명하지 않아도 됩니다. 주파수가 맞으면 느껴집니다. 먼저 설명한 것들이 아닙니다. 먼저 느껴집니다.</p>
@@ -285,7 +309,7 @@
     </div>
 
     <div class="about-chapter about-body-text" data-reveal>
-      <span class="about-chapter__label">자기긍정 (Self-Affirmation)</span>
+      <span class="about-chapter__label">기록 — 자기긍정</span>
       <p>소거가 향하는 곳이 있습니다.</p>
       <p>타인의 기준이 걷힌 자리. 외부의 목소리가 잦아든 자리. 처음부터 있었던 것들이 보이기 시작합니다. 걷어낸 자리에 남는 것 — 자기 자신입니다.</p>
       <p><span class="about-slow-accent">자기긍정(自己肯定)</span>은 자만이 아닙니다. 본래의 것을 본래의 것으로 받아들이는 태도입니다. 무엇이 외부에서 온 것이고 무엇이 본래의 것인지 분별하는 것. 소거가 반복될수록 그 분별이 선명해집니다.</p>
@@ -296,17 +320,17 @@
   </section>
 
   <!-- ━━━ VI. 발(跋) — 방향 ━━━ -->
-  <section class="about-section container--wide" data-reveal>
+  <section id="ch-6" class="about-section container--wide" data-reveal>
     <span class="about-section__label">VI. 발(跋)<span class="about-section__sub">방향</span></span>
 
     <div class="about-body-text" data-reveal>
       <p>소거를 오래 실천한 자리에는 무언가 남습니다. 의도하지 않아도. 이름 붙이지 않아도 알아보는 것들이. 설명하지 않아도 전달되는 것들이.</p>
       <p>남겨지는 것들은 계획되지 않습니다. 매일의 선택들이 쌓이면서 스스로 결정됩니다. 어떤 말을 선택했는가. 어떤 여백을 남겼는가. 어떤 것을 거절했는가. 그 선택들의 집합이 시간을 지나며 형태를 갖습니다.</p>
       <p>어떤 것들은 기억됩니다. 무엇을 했는지가 아니라, 어떤 방식으로 존재했는지로. 무엇을 말했는지가 아니라, 무엇을 말하지 않았는지로. 그 방식이 시간을 지나면서 지층이 됩니다. 지층은 쌓는 것이 아닙니다. 방향을 지키면 쌓입니다.</p>
-      <p>상권이 없는 한적한 곳에 자리를 잡았습니다. 유동인구가 답이 아니었습니다. 찾아오는 사람만 오는 자리. 조건이 불리할수록 방향이 시험됩니다. 조건이 좋으면 누구나 지속합니다. 조건이 나쁠 때 같은 선택을 반복하는 것이 방향의 증거입니다.</p>
       <p>소거가 오래 이어지면 무엇이 남는지 아직 알 수 없습니다. 쌓이는 중입니다. 방향이 있고 소거가 매일 일어나고 있다면, 됩니다.</p>
       <p>서(序)에서 물었습니다. 나는 무엇을 좋아하는가. 어떤 시간에 가장 나다운가. 무엇을 하고 있을 때 가장 고요한가. 우화해에 대해서도 같은 질문을 합니다. 소거가 반복될수록 대답이 조금씩 선명해집니다. 선명해지면 무엇을 걷어낼 것인지가 더 잘 보입니다. 소거가 더 잘 일어납니다. 순환합니다.</p>
       <p>완성된 대답은 나오지 않습니다. 매일 조금씩. 그 선명함이 삶의 지층이 됩니다.</p>
+      <p>한 사람이 자기 기준으로 살아가는 것. 그 사람의 존재가 다른 누군가에게 가능성이 되는 것. 이 자리의 이유입니다.</p>
       <p class="about-declaration">걷어내면 드러납니다. 소거를 매일 실행합니다.</p>
     </div>
   </section>
