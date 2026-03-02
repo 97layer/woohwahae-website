@@ -579,30 +579,44 @@ class ContentPublisher:
         repo_root = website_root.parent  # LAYER OS 루트
 
         # Commit message with Co-Authored-By
-        commit_msg = f"""archive: {slug} ({date})
+        commit_msg = (
+            "archive: %s (%s)\n\n"
+            "Co-Authored-By: Claude <noreply@anthropic.com>"
+        ) % (slug, date)
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"""
+        github_token = os.getenv('GITHUB_TOKEN', '')
+        github_repo = os.getenv('GITHUB_REPO', '97layer/97layerOS')
 
         try:
-            cmds = [
-                ["git", "-C", str(repo_root), "add", "website/", "knowledge/service/items.json"],
-                ["git", "-C", str(repo_root), "commit", "-m", commit_msg],
-                ["git", "-C", str(repo_root), "push"],
-            ]
-            for cmd in cmds:
+            stage_cmd = ["git", "-C", str(repo_root), "add", "website/", "knowledge/service/items.json"]
+            commit_cmd = ["git", "-C", str(repo_root), "commit", "-m", commit_msg]
+
+            for cmd in [stage_cmd, commit_cmd]:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
                 if result.returncode != 0:
-                    # "nothing to commit"은 무시
                     if "nothing to commit" in result.stdout or "nothing to commit" in result.stderr:
                         continue
                     logger.warning("[Publisher] git 명령 실패: %s\n%s", ' '.join(cmd), result.stderr[:200])
 
+            # push: GITHUB_TOKEN이 있으면 HTTPS 토큰 인증, 없으면 기존 방식
+            if github_token:
+                auth_url = "https://%s@github.com/%s.git" % (github_token, github_repo)
+                push_cmd = ["git", "-C", str(repo_root), "push", auth_url, "main"]
+                push_result = subprocess.run(push_cmd, capture_output=True, text=True, timeout=60)
+                if push_result.returncode != 0:
+                    logger.warning("[Publisher] git push 실패 (인증 오류 또는 네트워크): returncode=%d", push_result.returncode)
+                    return False
+            else:
+                logger.warning("[Publisher] GITHUB_TOKEN 미설정 — 로컬 저장만 완료, push 생략")
+                return True
+
             logger.info("[Publisher] git push 완료 → CF Pages 자동 배포 예정")
             return True
 
-        except Exception as e:
+        except subprocess.TimeoutExpired:
+            logger.error("[Publisher] git push 타임아웃")
+            return False
+        except OSError as e:
             logger.error("[Publisher] git push 실패: %s", e)
             return False
 

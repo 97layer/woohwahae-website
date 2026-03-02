@@ -2,6 +2,7 @@
 Git Publisher — website/ 변경사항을 GitHub Pages에 자동 배포
 """
 
+import os
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -50,17 +51,28 @@ def publish_to_website() -> tuple[bool, str]:
             return False, 'git commit 실패: %s' % result.stderr
 
         # 4. Push to website branch
+        github_token = os.getenv('GITHUB_TOKEN', '')
+        github_repo = os.getenv('GITHUB_REPO', '97layer/97layerOS')
+
+        if github_token:
+            auth_url = 'https://%s@github.com/%s.git' % (github_token, github_repo)
+            push_cmd = ['git', 'push', auth_url, 'main:website']
+        else:
+            push_cmd = ['git', 'push', 'origin', 'main:website']
+
         result = subprocess.run(
-            ['git', 'push', 'origin', 'main:website'],
+            push_cmd,
             cwd=str(BASE_DIR),
             capture_output=True, text=True, timeout=60
         )
         if result.returncode != 0:
+            if github_token:
+                return False, 'git push 실패 (인증 오류 또는 네트워크): returncode=%d' % result.returncode
             return False, 'git push 실패: %s' % result.stderr
 
         return True, '발행 완료! (%s)' % now
 
     except subprocess.TimeoutExpired:
         return False, 'Git 명령 타임아웃. 네트워크를 확인해주세요.'
-    except Exception as e:
+    except OSError as e:
         return False, '오류: %s' % str(e)

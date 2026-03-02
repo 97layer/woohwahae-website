@@ -1,0 +1,37 @@
+{
+  "sources": [
+    {
+      "name": "Kinfolk",
+      "url": "https://kinfolk.com/feed/",
+      "category": "slow_life",
+      "language": "en"
+    },
+    {
+      "name": "Monocle",
+      "url": "https://monocle.com/rss/all/",
+      "category": "culture_design",
+      "language": "en"
+    },
+    {
+      "name": "It's Nice That",
+      "url": "https://www.itsnicethat.com/rss",
+      "category": "design",
+      "language": "en"
+    },
+    {
+      "name": "Dezeen",
+      "url": "https://www.dezeen.com/feed/",
+      "category": "design_architecture",
+      "language": "en"
+    },
+    {
+      "name": "아무튼, 계속",
+      "url": "https://brunch.co.kr/rss/magazine/slowlife",
+      "category": "slow_life",
+      "language": "ko"
+    }
+  ],
+  "poll_interval_hours": 6,
+  "max_signals_per_source": 5,
+  "min_score_threshold": 0
+}
