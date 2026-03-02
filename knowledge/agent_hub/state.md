@@ -2,7 +2,7 @@
 
 > **목적**: 어떤 모델/세션이 오더라도 사고 흐름이 끊기지 않도록 보장하는 물리적 앵커
 > **갱신 정책**: 덮어쓰기 (최신 상태만 유지). session-stop 훅이 자동 갱신.
-> **마지막 갱신**: 2026-03-01
+> **마지막 갱신**: 2026-03-02
 
 ---
 
@@ -81,9 +81,11 @@
 - ⏳ **모바일 전체** — 640px 이하 레이아웃 검증
 
 ### [CODE / INFRA]
-- ⏳ **GITHUB_TOKEN .env 설정** — 파이프라인 끝단 막힌 것 (에세이 생성돼도 git push 불가)
+- ✅ **GITHUB_TOKEN .env 설정** — VM에 추가 완료, 파이프라인 end-to-end 개통
+- ✅ **세컨드 브레인 폐쇄 루프** — decision_log.jsonl + retrospective_analysis 구현
+- ✅ **텔레그램 대화 엔진 리뉴얼** — 컨텍스트 영속성 + 장기 기억 + Zero-Noise 프롬프트
 - ⏳ **P4 Brand Scout** — 외부 신호 자동 수집
-- ⏳ **VM 배포** — notebooklm_bridge + 이전 코드 반영 (notebooklm_bridge fix 178576d6 미반영)
+- ⏳ **VM 배포** — conversation_engine + intent_classifier 반영 필요
 
 **완료됨**:
 
@@ -155,27 +157,27 @@ ssh 97layer-vm "for s in 97layer-telegram 97layer-ecosystem 97layer-gardener woo
 
 ## 📍 현재 상태 (CURRENT STATE)
 
-### [2026-03-01] claude-sonnet-4-6
+### [2026-03-02] claude-sonnet-4-6
 
-**완료 (누적)**:
-- ✅ SAGE-ARCHITECT 대개편 (directives 34→23 md, Ver 12.0)
-- ✅ P0 보안 + P1 directive_loader + P2 로깅 정규화(39건) + P3 파이프라인 와이어링
-- ✅ 홈 Three.js 필드라인 인터랙션 (카메라 버그, 마우스 틸트, 스크롤 줌)
-- ✅ 전 페이지 디자인 + CF Pages 배포됨 (863ebe24)
-- ✅ MCP 중복 제거 3개 (filesystem/fetch/sequential-thinking)
-- ✅ NotebookLM bridge 활성화 (CLI 경유 쿼리, 노트북 ID 환경변수)
-- ✅ CLAUDE.md 119→43줄 압축
+**완료**:
+- ✅ 세컨드 브레인 폐쇄 루프 — decision_log.jsonl, retrospective_analysis, session-stop 기록
+- ✅ GITHUB_TOKEN VM .env 추가 → 파이프라인 end-to-end 개통
+- ✅ 텔레그램 대화 엔진 전면 리뉴얼:
+  - ConversationEngine: 컨텍스트 파일 영속성 (knowledge/system/conversation_contexts.json)
+  - ConversationEngine: 장기 기억 학습 복원 (5번째 대화마다)
+  - ConversationEngine: Zero-Noise 반말 동료 포지션 프롬프트
+  - IntentClassifier: 규칙 우선 (단순 메시지는 Gemini API 호출 0회)
 
 **파이프라인 현황**:
-- corpus ripe 클러스터 2개 (슬로우라이프/본질) — 에세이 트리거 대기
-- **GITHUB_TOKEN 미설정** → 에세이 생성돼도 git push 불가 (파이프라인 끝단 막힘)
+- corpus ripe 클러스터 2개 (슬로우라이프/본질) — GITHUB_TOKEN 개통으로 에세이→발행 자동화 가능
+- VM 재배포 필요 (conversation_engine + intent_classifier 신규 코드 미반영)
 
 **다음**:
-- ⏳ GITHUB_TOKEN .env에 추가 (순호가 직접)
-- ⏳ VM 배포 (178576d6 notebooklm_bridge fix 미반영)
+- ⏳ VM 배포 (telegram + ecosystem 재시작)
 - ⏳ archive/about 디자인 압축
+- ⏳ P4 Brand Scout
 
-**업데이트 시간**: 2026-03-01T10:30:00
+**업데이트 시간**: 2026-03-02T11:30:00
 
 work_lock: unlocked
 
