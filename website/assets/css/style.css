@@ -7573,7 +7573,7 @@ body.is-loaded .home-preloader__logo {
 .editor-links {
   width: 100%;
   max-width: var(--max-content);
-  margin: 0 auto;
+  margin: var(--space-md) auto 0;
   padding-bottom: 0;
 }
 
@@ -8542,6 +8542,14 @@ body.is-loaded .home-preloader__logo {
   text-transform: uppercase;
   color: var(--text-sub);
 }
+.archive-hero__desc {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--text-faint);
+  display: block;
+  margin-top: 0.4rem;
+}
 
 .archive-filter {
   display: flex;
@@ -9110,6 +9118,8 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   color: var(--text-faint);
 }
 .about-body-text--spaced { margin-top: var(--space-xl); }
+.appendix-font--body { font-family: var(--font-body); font-weight: 300; margin-bottom: 0.8rem; }
+.appendix-font--mono { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-sub); }
 
 @media (max-width: 640px) {
   .about-hero { flex-direction: column-reverse; gap: var(--space-md); }
