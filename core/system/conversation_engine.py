@@ -174,17 +174,35 @@ class ConversationEngine:
 LAYER OS:"""
 
     def _get_identity(self) -> str:
+        """
+        브랜드 인격 로드 — SSOT: sage_architect.md.
+        system.md(운영 매뉴얼)가 아닌 인격 문서를 대화 컨텍스트로 사용.
+        """
         if self._identity_cache:
             return self._identity_cache
+        try:
+            from core.system.directive_loader import load_for_agent
+            # Task C (시스템 문서) 컨텍스트: 인격 §1-§5 + 금칙 §9
+            identity = load_for_agent("CE", max_total=3000)
+            if identity and len(identity) > 100:
+                self._identity_cache = identity
+                return self._identity_cache
+        except Exception:
+            pass
+        # fallback: sage_architect.md 직접 로드
         parts = []
-        for path in [self.directives_dir / 'the_origin.md', self.directives_dir / 'system.md']:
+        for path in [
+            self.directives_dir / 'sage_architect.md',
+            self.directives_dir / 'the_origin.md',
+        ]:
             try:
                 if path.exists():
-                    parts.append(path.read_text(encoding='utf-8')[:2000])
+                    parts.append(path.read_text(encoding='utf-8')[:1800])
             except Exception:
                 pass
         self._identity_cache = '\n\n---\n\n'.join(parts) if parts else (
-            "WOOHWAHAE — 슬로우라이프 헤어 아틀리에. 본질, 여백, 조용한 지능."
+            "WOOHWAHAE — 소거(消去)를 렌즈로 삼는 슬로우라이프 아틀리에. "
+            "동도서기(東道西器): 동방의 관조, 서방의 체계."
         )
         return self._identity_cache
 

@@ -180,6 +180,10 @@ class ContentPublisher:
             meta={**meta, "pull_quote": pull_quote}
         )
 
+        # 7. 유기적 순환 — 발행 완료 신호를 지식 스트림에 재주입
+        #    발행된 에세이가 새로운 신호로 순환 → Corpus 누적 → 다음 클러스터 성숙에 기여
+        self._inject_published_signal(signal_id, meta, archive_essay, instagram_caption)
+
         result = {
             "status": "published",
             "signal_id": signal_id,
@@ -191,6 +195,49 @@ class ContentPublisher:
 
         logger.info("[Publisher] 완료: %s, telegram=%s, website=%s", signal_id, telegram_sent, website_published)
         return result
+
+    def _inject_published_signal(
+        self, signal_id: str, meta: Dict, essay: str, caption: str
+    ) -> None:
+        """
+        발행 완료 → 지식 스트림 피드백 신호 생성.
+
+        목적: 발행된 에세이가 다음 Corpus 군집 분석의 입력이 되어
+              시스템이 자신의 출력을 학습하고 진화하는 유기적 순환 구현.
+
+        신호 타입: 'published_essay' — SA가 식별, Corpus에 누적.
+        """
+        try:
+            signals_dir = self.base_path / "knowledge" / "signals"
+            signals_dir.mkdir(parents=True, exist_ok=True)
+
+            feedback_signal = {
+                "signal_id": f"pub_{signal_id}",
+                "type": "published_essay",
+                "status": "captured",
+                "content": essay[:500] if essay else caption[:300],
+                "source": "content_publisher",
+                "captured_at": datetime.now().isoformat(),
+                "metadata": {
+                    "original_signal_id": signal_id,
+                    "themes": meta.get("themes", []),
+                    "essay_title": meta.get("essay_title", ""),
+                    "cd_brand_score": meta.get("cd_brand_score", 0),
+                    "sa_strategic_score": meta.get("sa_strategic_score", 0),
+                    "published_at": meta.get("published_at", ""),
+                    "website_url": meta.get("website_url", ""),
+                },
+            }
+
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            out_path = signals_dir / f"pub_{signal_id}_{ts}.json"
+            out_path.write_text(
+                json.dumps(feedback_signal, indent=2, ensure_ascii=False),
+                encoding="utf-8"
+            )
+            logger.info("[Publisher] 순환 신호 생성: %s", out_path.name)
+        except Exception as e:
+            logger.warning("[Publisher] 순환 신호 생성 실패 (비치명): %s", e)
 
     def _get_image(self, payload: Dict, publish_dir: Path, sa_result: Dict, ad_result: Dict) -> Optional[Dict]:
         """

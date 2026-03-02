@@ -129,38 +129,34 @@ class PipelineOrchestrator:
         return count
 
     def _ralph_score(self, ce_result: Dict) -> int:
-        """CE 결과물 Ralph 점수 계산 (간단 휴리스틱)"""
-        score = 50  # 기본
+        """
+        CE 결과물 Ralph Loop 점수 계산.
+        sage_architect.md §6.5 기준 4-Loop 순차 스캔.
+        SSOT: core/utils/essay_quality_validator.EssayQualityValidator
+        """
         content = ce_result.get("result", {})
+        essay = content.get("archive_essay", "")
 
-        # 인스타 캡션 존재 여부
-        if content.get("instagram_caption"):
-            caption = content["instagram_caption"]
-            if len(caption) > 50:
-                score += 10
-            if len(caption) <= 300:
-                score += 5
+        # 에세이 없으면 최저 점수
+        if not essay or len(essay.strip()) < 50:
+            logger.warning("[Orchestrator] Ralph: 에세이 없음 → 0점")
+            return 0
 
-        # 해시태그 존재
-        if content.get("hashtags"):
-            score += 5
-
-        # 아카이브 에세이 존재
-        if content.get("archive_essay"):
-            essay = content["archive_essay"]
-            if 200 <= len(essay) <= 1500:
-                score += 15
-            elif len(essay) > 100:
-                score += 8
-
-        # SA 전략 점수 반영
-        sa_score = content.get("sa_strategic_score", 0)
-        if sa_score >= 80:
-            score += 10
-        elif sa_score >= 60:
-            score += 5
-
-        return min(score, 100)
+        try:
+            from core.utils.essay_quality_validator import EssayQualityValidator
+            validator = EssayQualityValidator()
+            result = validator.validate(essay)
+            score = result["score"]
+            if result["issues"]:
+                top_issues = [i.get("match", i.get("type", "")) for i in result["issues"][:3]]
+                logger.info("[Orchestrator] Ralph %d/100 | 이슈: %s", score, top_issues)
+            else:
+                logger.info("[Orchestrator] Ralph %d/100 | 이슈 없음", score)
+            return score
+        except Exception as e:
+            logger.warning("[Orchestrator] Ralph Loop 실행 실패, fallback: %s", e)
+            # fallback: 에세이 존재 확인만
+            return 60 if len(essay) >= 200 else 40
 
     def _get_processed_signal_ids(self) -> set:
         """이미 파이프라인에 투입되었거나 큐에 대기 중인 signal_id 반환 (중복 투입 방지)"""
