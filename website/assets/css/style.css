@@ -8842,6 +8842,51 @@ body.is-loaded .home-preloader__logo {
   color: var(--text);
 }
 
+/* ─── Archive Controls (filter + search) ─── */
+.archive-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.archive-filter {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.archive-filter__btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.archive-filter__btn.is-active { color: var(--text); }
+.archive-filter__btn:hover { color: var(--text-sub); }
+
+.archive-search {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  outline: none;
+  padding: 0.2rem 0;
+  width: 120px;
+  transition: border-color 0.2s ease;
+}
+.archive-search::placeholder { color: var(--text-faint); }
+.archive-search:focus { border-bottom-color: var(--text-sub); }
+.archive-search::-webkit-search-cancel-button { -webkit-appearance: none; }
+
 /* ─── Practice Shop Items (Directing / Product) ─── */
 .shop-grid {
   display: grid;
