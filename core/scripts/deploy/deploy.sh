@@ -91,6 +91,15 @@ for name, info in d['inactive'].items():
     ssh ${VM_HOST} "sudo certbot certificates"
     ;;
 
+  test-git-push)
+    # VM에서 git push 권한 + user config 검증
+    echo "=== VM git config ==="
+    ssh ${VM_HOST} "git -C ${VM_PATH} config user.name 2>&1 || echo 'NO user.name'"
+    ssh ${VM_HOST} "git -C ${VM_PATH} config user.email 2>&1 || echo 'NO user.email'"
+    echo "=== git push dry-run ==="
+    ssh ${VM_HOST} "cd ${VM_PATH} && git push --dry-run 2>&1"
+    ;;
+
   git-push-auth)
     # VM git remote URL에 GITHUB_TOKEN 주입 → /note git push 가능하게
     echo "VM .env에서 GITHUB_TOKEN 로드 후 remote URL 업데이트..."

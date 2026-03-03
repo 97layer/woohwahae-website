@@ -989,7 +989,6 @@ class TelegramSecretaryV6:
                 _git_env = {
                     **__import__('os').environ,
                     'GIT_TERMINAL_PROMPT': '0',
-                    'HOME': str(PROJECT_ROOT),
                 }
 
                 _add = await _asyncio.create_subprocess_exec(
@@ -1007,7 +1006,7 @@ class TelegramSecretaryV6:
                 _, _commit_err = await _commit.communicate()
 
                 _push = await _asyncio.create_subprocess_exec(
-                    'git', 'push',
+                    'git', 'push', 'origin', 'HEAD:main',
                     cwd=str(PROJECT_ROOT), env=_git_env,
                     stdout=_pipe, stderr=_pipe
                 )
