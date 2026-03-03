@@ -1,237 +1,220 @@
+#!/usr/bin/env python3
 """
-Cascade Manager — 의존성 기반 자동 전파 엔진
-
-파일 변경 감지 → 의존성 그래프 BFS → 영향권 계산 → Tier별 처리
-
-Author: LAYER OS
-Created: 2026-02-26
+Cascade Manager - CD 알림 전송 (Telegram/Email)
+CI/CD 파이프라인 이벤트를 Telegram 및 Email로 알림 전송
 """
 
-import json
 import os
-from pathlib import Path
-from typing import Dict, List, Set
-from dataclasses import dataclass
+import logging
+import smtplib
+import ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime
+from typing import Optional
+
+import httpx
+
+logger = logging.getLogger(__name__)
 
 
-@dataclass
-class ImpactReport:
-    """영향권 분석 결과"""
-    source: str
-    tier: str
-    affected_nodes: Set[str]
-    cascade_actions: List[str]
+def _require_env(key: str) -> str:
+    """환경변수 필수 조회 — fallback 없음."""
+    value = os.environ.get(key)
+    if not value:
+        raise RuntimeError("Required environment variable not set: %s" % key)
+    return value
 
 
-class CascadeManager:
+# ─── Telegram ─────────────────────────────────────────────────
+
+def _build_cd_message(event: str, detail: str, status: str, timestamp: Optional[str] = None) -> str:
+    """CD 알림 메시지 템플릿 생성."""
+    ts = timestamp or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    status_emoji = {"success": "✅", "failure": "❌", "started": "🚀", "cancelled": "⚠️"}.get(status, "ℹ️")
+    return (
+        f"{status_emoji} *LAYER OS CD 알림*\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"이벤트: `{event}`\n"
+        f"상태: `{status}`\n"
+        f"상세: {detail}\n"
+        f"시각: `{ts}`"
+    )
+
+
+def send_telegram_cd_notification(
+    event: str,
+    detail: str,
+    status: str,
+    timestamp: Optional[str] = None,
+    bot_token: Optional[str] = None,
+    chat_id: Optional[str] = None,
+) -> bool:
     """
-    파일 변경 시 연쇄 영향 추적 및 자동 전파
+    Telegram으로 CD 알림 전송.
 
-    안전 장치:
-    - 분석만 수행 (AI 자동 수정 비활성화)
-    - FROZEN/PROPOSE: 수동 승인 필요
-    - AUTO: 캐시 무효화만 (HTML 재생성 금지)
+    Args:
+        event: 이벤트 이름 (예: "deploy", "rollback")
+        detail: 상세 설명
+        status: "success" | "failure" | "started" | "cancelled"
+        timestamp: 타임스탬프 문자열 (None이면 현재 시각)
+        bot_token: Telegram Bot Token (None이면 환경변수 TELEGRAM_BOT_TOKEN)
+        chat_id: Telegram Chat ID (None이면 환경변수 TELEGRAM_CHAT_ID)
+
+    Returns:
+        True if sent successfully, False otherwise.
     """
+    try:
+        token = bot_token or _require_env("TELEGRAM_BOT_TOKEN")
+        cid = chat_id or _require_env("TELEGRAM_CHAT_ID")
+    except RuntimeError as exc:
+        logger.warning("Telegram CD notification skipped: %s", exc)
+        return False
 
-    def __init__(self, graph_path: str = None, auto_modify: bool = False):
-        self.project_root = Path(os.getenv('PROJECT_ROOT', os.getcwd()))
-        if graph_path:
-            self.graph_path = Path(graph_path)
-        else:
-            self.graph_path = self.project_root / 'knowledge/system/dependency_graph.json'
-        self.graph = self._load_graph()
-        self.auto_modify = auto_modify  # 기본값: False (안전 모드)
+    message = _build_cd_message(event, detail, status, timestamp)
+    url = "https://api.telegram.org/bot%s/sendMessage" % token
+    payload = {
+        "chat_id": cid,
+        "text": message,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True,
+    }
 
-    def _load_graph(self) -> Dict:
-        """의존성 그래프 로드"""
-        if not self.graph_path.exists():
-            raise FileNotFoundError(f"Dependency graph not found: {self.graph_path}")
+    try:
+        response = httpx.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        logger.info("Telegram CD notification sent: event=%s status=%s", event, status)
+        return True
+    except httpx.HTTPStatusError as exc:
+        logger.error(
+            "Telegram CD notification HTTP error: status=%s body=%s",
+            exc.response.status_code,
+            exc.response.text,
+        )
+        return False
+    except httpx.RequestError as exc:
+        logger.error("Telegram CD notification request error: %s", exc)
+        return False
 
-        with open(self.graph_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
 
-    def on_file_change(self, filepath: str) -> ImpactReport:
-        """
-        파일 변경 감지 → 영향권 계산 → Tier별 처리
+# ─── Email ────────────────────────────────────────────────────
 
-        Args:
-            filepath: 변경된 파일 경로 (상대 또는 절대)
+def send_email_cd_notification(
+    event: str,
+    detail: str,
+    status: str,
+    timestamp: Optional[str] = None,
+    smtp_host: Optional[str] = None,
+    smtp_port: Optional[int] = None,
+    smtp_user: Optional[str] = None,
+    smtp_password: Optional[str] = None,
+    from_addr: Optional[str] = None,
+    to_addr: Optional[str] = None,
+) -> bool:
+    """
+    Email로 CD 알림 전송 (TLS).
 
-        Returns:
-            ImpactReport: 영향권 분석 결과
-        """
-        # 경로 정규화 (상대/절대 둘 다 지원)
-        path = Path(filepath)
-        if path.is_absolute():
-            # 절대경로 → 상대경로 변환
-            try:
-                filepath = str(path.relative_to(self.project_root))
-            except ValueError:
-                # 프로젝트 외부 파일
-                print(f"⚠️  {filepath} is outside project root. Skipping.")
-                return ImpactReport(
-                    source=str(path),
-                    tier="UNKNOWN",
-                    affected_nodes=set(),
-                    cascade_actions=[]
-                )
-        else:
-            # 이미 상대경로
-            filepath = str(path)
+    환경변수:
+        SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD,
+        NOTIFY_FROM_EMAIL, NOTIFY_TO_EMAIL
 
-        # 그래프에 없으면 스킵
-        if filepath not in self.graph['nodes']:
-            print(f"⚠️  {filepath} not in dependency graph. Skipping cascade.")
-            return ImpactReport(
-                source=filepath,
-                tier="UNKNOWN",
-                affected_nodes=set(),
-                cascade_actions=[]
-            )
+    Returns:
+        True if sent successfully, False otherwise.
+    """
+    try:
+        host = smtp_host or _require_env("SMTP_HOST")
+        port = smtp_port or int(_require_env("SMTP_PORT"))
+        user = smtp_user or _require_env("SMTP_USER")
+        password = smtp_password or _require_env("SMTP_PASSWORD")
+        sender = from_addr or _require_env("NOTIFY_FROM_EMAIL")
+        recipient = to_addr or _require_env("NOTIFY_TO_EMAIL")
+    except RuntimeError as exc:
+        logger.warning("Email CD notification skipped: %s", exc)
+        return False
 
-        # 영향권 계산
-        impact = self.calculate_impact(filepath)
+    ts = timestamp or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    status_label = {"success": "성공", "failure": "실패", "started": "시작", "cancelled": "취소"}.get(status, status)
+    subject = "[LAYER OS CD] %s — %s (%s)" % (event, status_label, ts)
 
-        # Tier별 처리
-        tier = self.graph['nodes'][filepath]['tier']
-        if tier == "FROZEN":
-            self._handle_frozen(impact)
-        elif tier == "PROPOSE":
-            self._handle_propose(impact)
-        else:  # AUTO
-            self._handle_auto(impact)
+    body = (
+        "LAYER OS CD 알림\n"
+        "===================\n"
+        "이벤트 : %s\n"
+        "상태   : %s\n"
+        "상세   : %s\n"
+        "시각   : %s\n"
+    ) % (event, status, detail, ts)
 
-        return impact
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = sender
+    msg["To"] = recipient
+    msg.attach(MIMEText(body, "plain", "utf-8"))
 
-    def calculate_impact(self, filepath: str) -> ImpactReport:
-        """
-        BFS로 영향 범위 계산
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP(host, port) as server:
+            server.ehlo()
+            server.starttls(context=context)
+            server.login(user, password)
+            server.sendmail(sender, [recipient], msg.as_string())
+        logger.info("Email CD notification sent: event=%s status=%s to=%s", event, status, recipient)
+        return True
+    except smtplib.SMTPAuthenticationError as exc:
+        logger.error("Email CD notification SMTP auth error: %s", exc)
+        return False
+    except smtplib.SMTPException as exc:
+        logger.error("Email CD notification SMTP error: %s", exc)
+        return False
 
-        Args:
-            filepath: 변경된 파일 경로
 
-        Returns:
-            ImpactReport: 영향을 받는 노드 집합
-        """
-        node = self.graph['nodes'][filepath]
-        tier = node['tier']
-        cascade_rules = node.get('cascade_rules', {})
+# ─── Unified Entry Point ──────────────────────────────────────
 
-        # BFS 탐색
-        visited = set()
-        queue = [filepath]
+def notify_cd_event(
+    event: str,
+    detail: str,
+    status: str,
+    timestamp: Optional[str] = None,
+    channels: Optional[list] = None,
+) -> dict:
+    """
+    CD 이벤트 알림 — Telegram 및/또는 Email로 전송.
 
-        while queue:
-            current = queue.pop(0)
-            if current in visited:
-                continue
-            visited.add(current)
+    Args:
+        event: 이벤트 이름
+        detail: 상세 설명
+        status: "success" | "failure" | "started" | "cancelled"
+        timestamp: 타임스탬프 (None이면 현재 시각)
+        channels: ["telegram", "email"] 중 선택 (None이면 둘 다 시도)
 
-            # 현재 노드의 dependents 추가
-            if current in self.graph['nodes']:
-                for dependent in self.graph['nodes'][current].get('dependents', []):
-                    # 와일드카드 확장 (예: website/**/*.html)
-                    if '*' in dependent:
-                        # 실제 구현 시 glob 패턴 매칭 필요
-                        pass
-                    else:
-                        queue.append(dependent)
+    Returns:
+        {"telegram": bool, "email": bool}
+    """
+    if channels is None:
+        channels = ["telegram", "email"]
 
-        # 액션 추출
-        actions = []
-        if 'on_change' in cascade_rules:
-            actions.append(cascade_rules['on_change'])
-        if 'propagate' in cascade_rules:
-            actions.append(cascade_rules['propagate'])
+    results = {}
 
-        return ImpactReport(
-            source=filepath,
-            tier=tier,
-            affected_nodes=visited,
-            cascade_actions=actions
+    if "telegram" in channels:
+        results["telegram"] = send_telegram_cd_notification(
+            event=event,
+            detail=detail,
+            status=status,
+            timestamp=timestamp,
         )
 
-    def _handle_frozen(self, impact: ImpactReport):
-        """FROZEN Tier: CD 알림 + 승인 대기"""
-        print(f"🔴 FROZEN 파일 변경 감지: {impact.source}")
-        print(f"   영향 범위: {len(impact.affected_nodes)}개 노드")
-        print(f"   → CD 승인 필요. 자동 전파 중단.")
-        # TODO: CD 알림 전송 (Telegram/Email)
+    if "email" in channels:
+        results["email"] = send_email_cd_notification(
+            event=event,
+            detail=detail,
+            status=status,
+            timestamp=timestamp,
+        )
 
-    def _handle_propose(self, impact: ImpactReport):
-        """PROPOSE Tier: 에이전트 알림 + 검토 큐"""
-        print(f"🟡 PROPOSE 파일 변경 감지: {impact.source}")
-        print(f"   영향 범위: {len(impact.affected_nodes)}개 노드")
-        print(f"   → 에이전트 재프롬프트 큐에 추가")
-        # TODO: 에이전트 알림 + 검토 큐 추가
-
-    def _handle_auto(self, impact: ImpactReport):
-        """AUTO Tier: 자동 전파"""
-        print(f"🟢 AUTO 파일 변경 감지: {impact.source}")
-        print(f"   영향 범위: {len(impact.affected_nodes)}개 노드")
-        print(f"   → 자동 전파 시작")
-
-        for action in impact.cascade_actions:
-            if action == "invalidate_cache":
-                self._invalidate_cache(impact.affected_nodes)
-            elif action == "regenerate_html":
-                self._regenerate_html(impact.affected_nodes)
-            elif action == "cf_pages_deploy":
-                self._trigger_deploy()
-
-    def _invalidate_cache(self, nodes: Set[str]):
-        """캐시 무효화"""
-        print(f"   └─ 캐시 무효화: {len(nodes)}개 노드")
-        cache_path = self.project_root / 'knowledge/system/filesystem_cache.json'
-
-        if not cache_path.exists():
-            print(f"      (캐시 파일 없음, 스킵)")
-            return
-
-        try:
-            with open(cache_path, 'r', encoding='utf-8') as f:
-                cache = json.load(f)
-
-            # 영향받는 노드 캐시 삭제
-            modified = False
-            for node in nodes:
-                if node in cache:
-                    del cache[node]
-                    modified = True
-
-            if modified:
-                with open(cache_path, 'w', encoding='utf-8') as f:
-                    json.dump(cache, f, indent=2, ensure_ascii=False)
-                print(f"      ✅ 캐시 갱신됨")
-        except Exception as e:
-            print(f"      ⚠️  캐시 갱신 실패: {e}")
-
-    def _regenerate_html(self, nodes: Set[str]):
-        """HTML 재생성"""
-        print(f"   └─ HTML 재생성: {len(nodes)}개 파일")
-        # Note: content_publisher는 수동 실행 권장
-        # 자동 재생성은 위험성 높음 (데이터 손실 가능)
-        print(f"      → 수동 실행 권장: python core/system/content_publisher.py")
-
-    def _trigger_deploy(self):
-        """배포 트리거"""
-        print(f"   └─ CF Pages 배포 예약")
-        print(f"      → git push 시 자동 배포됨")
-
-
-# CLI 인터페이스
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Usage: python cascade_manager.py <filepath>")
-        sys.exit(1)
-
-    manager = CascadeManager()
-    report = manager.on_file_change(sys.argv[1])
-
-    print(f"\n📊 영향권 분석 결과:")
-    print(f"   소스: {report.source}")
-    print(f"   Tier: {report.tier}")
-    print(f"   영향 노드: {len(report.affected_nodes)}개")
-    print(f"   액션: {', '.join(report.cascade_actions)}")
+    logger.info(
+        "CD notification results: event=%s status=%s results=%s",
+        event,
+        status,
+        results,
+    )
+    return results

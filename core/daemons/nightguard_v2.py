@@ -1,660 +1,228 @@
 #!/usr/bin/env python3
 """
-LAYER OS Nightguard V2: Self-Diagnostic Autonomous Daemon
-Purpose: Monitor system health, detect failures, auto-recover, and alert admin
-Philosophy: Intelligence Autonomy - self-awareness and self-healing
-
-Critical Responsibilities:
-1. Authentication Monitoring (Cookie Risk mitigation)
-2. API Quota Tracking (Gemini, Anthropic)
-3. Service Health Checks (Telegram bot, MCP servers)
-4. Auto-Recovery (restart failed services)
-5. Admin Alerts (Telegram notifications)
-
-Author: LAYER OS Technical Director
-Created: 2026-02-16
-Priority: P0 (Critical)
+Nightguard v2 - Quota Tracking Daemon
+사용 로그 기반 실제 할당량 추적 데몬
 """
 
 import os
 import sys
 import json
-import time
-import asyncio
-import subprocess
-from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 import logging
+from pathlib import Path
+from datetime import datetime, date
+from collections import defaultdict
+from typing import Dict, Any, Optional
 
-# Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# Environment variables
-from dotenv import load_dotenv
-load_dotenv(PROJECT_ROOT / '.env')
+# 경로 설정
+LOGS_DIR = PROJECT_ROOT / "knowledge" / "logs"
+QUOTA_STATE_FILE = PROJECT_ROOT / "knowledge" / "system" / "quota_state.json"
+USAGE_LOG_GLOB = "usage_*.jsonl"
 
-# Telegram for admin alerts
-try:
-    from telegram import Bot
-    TELEGRAM_AVAILABLE = True
-except ImportError:
-    TELEGRAM_AVAILABLE = False
+# 기본 할당량 (환경변수로 오버라이드 가능)
+DEFAULT_QUOTAS: Dict[str, int] = {
+    "api_calls_per_day": int(os.getenv("QUOTA_API_CALLS_PER_DAY", "500")),
+    "tokens_per_day": int(os.getenv("QUOTA_TOKENS_PER_DAY", "100000")),
+    "images_per_day": int(os.getenv("QUOTA_IMAGES_PER_DAY", "50")),
+    "youtube_per_day": int(os.getenv("QUOTA_YOUTUBE_PER_DAY", "20")),
+}
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s [Nightguard] %(levelname)s: %(message)s',
-    handlers=[
-        logging.FileHandler(PROJECT_ROOT / 'knowledge' / 'system' / 'nightguard.log'),
-        logging.StreamHandler()
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("nightguard_v2")
 
 
-class NightguardV2:
-    """
-    Self-diagnostic autonomous daemon
-
-    Monitors:
-    - NotebookLM cookie expiration
-    - Gemini API quota
-    - Anthropic API quota
-    - Telegram bot health
-    - MCP server health
-    - Disk space
-    - Memory usage
-
-    Actions:
-    - Send Telegram alerts
-    - Auto-restart services
-    - Log all incidents
-    """
-
-    def __init__(self, admin_telegram_id: Optional[str] = None):
-        """
-        Initialize Nightguard V2
-
-        Args:
-            admin_telegram_id: Telegram user ID for admin alerts
-        """
-        self.project_root = PROJECT_ROOT
-        self.admin_id = admin_telegram_id or os.getenv('ADMIN_TELEGRAM_ID')
-        self.bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
-        self.google_api_key = os.getenv('GOOGLE_API_KEY')
-        self.anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
-
-        # State files
-        self.state_dir = PROJECT_ROOT / 'knowledge' / 'system'
-        self.state_dir.mkdir(parents=True, exist_ok=True)
-        self.state_file = self.state_dir / 'nightguard_state.json'
-        self.cookie_file = self.state_dir / 'notebooklm_cookie.json'
-
-        # Initialize Telegram bot for alerts
-        self.bot = None
-        if TELEGRAM_AVAILABLE and self.bot_token:
-            try:
-                self.bot = Bot(token=self.bot_token)
-            except Exception as e:
-                logger.error("Failed to initialize Telegram bot: %s", e)
-
-        # Load state
-        self.state = self._load_state()
-
-        logger.info("🤖 Nightguard V2 initialized")
-
-    def _load_state(self) -> Dict:
-        """Load persistent state"""
-        if not self.state_file.exists():
-            return {
-                'last_check': None,
-                'alerts_sent': [],
-                'incidents': []
-            }
-
+def _load_quota_state() -> Dict[str, Any]:
+    """현재 할당량 상태 로드. 파일 없으면 빈 상태 반환."""
+    if QUOTA_STATE_FILE.exists():
         try:
-            with open(self.state_file, 'r', encoding='utf-8') as f:
+            with open(QUOTA_STATE_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            logger.error("Failed to load state: %s", e)
-            return {
-                'last_check': None,
-                'alerts_sent': [],
-                'incidents': []
-            }
+            logger.warning("quota_state 로드 실패: %s", e)
+    return {}
 
-    def _save_state(self):
-        """Save persistent state"""
+
+def _save_quota_state(state: Dict[str, Any]) -> None:
+    """할당량 상태 저장."""
+    try:
+        QUOTA_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        state["updated_at"] = datetime.now().isoformat()
+        with open(QUOTA_STATE_FILE, "w", encoding="utf-8") as f:
+            json.dump(state, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        logger.error("quota_state 저장 실패: %s", e)
+
+
+def _parse_usage_logs(target_date: Optional[str] = None) -> Dict[str, int]:
+    """
+    usage_*.jsonl 파일을 파싱해 오늘(또는 target_date)의 사용량 집계.
+
+    각 로그 레코드 예시:
+    {"ts": "2026-01-15T10:30:00", "type": "api_call", "tokens": 1200, "model": "claude-3"}
+    {"ts": "2026-01-15T11:00:00", "type": "image", "count": 1}
+    {"ts": "2026-01-15T12:00:00", "type": "youtube", "count": 1}
+    """
+    if target_date is None:
+        target_date = date.today().isoformat()  # "2026-01-15"
+
+    counters: Dict[str, int] = defaultdict(int)
+
+    if not LOGS_DIR.exists():
+        logger.info("logs 디렉토리 없음, 사용량 0으로 반환: %s", LOGS_DIR)
+        return dict(counters)
+
+    log_files = list(LOGS_DIR.glob(USAGE_LOG_GLOB))
+    logger.info("사용 로그 파일 %d개 발견", len(log_files))
+
+    for log_file in log_files:
         try:
-            with open(self.state_file, 'w', encoding='utf-8') as f:
-                json.dump(self.state, f, indent=2, ensure_ascii=False)
-        except Exception as e:
-            logger.error("Failed to save state: %s", e)
+            with open(log_file, "r", encoding="utf-8") as f:
+                for lineno, line in enumerate(f, 1):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        record = json.loads(line)
+                    except json.JSONDecodeError as e:
+                        logger.debug("JSON 파싱 오류 %s:%d — %s", log_file.name, lineno, e)
+                        continue
 
-    async def send_alert(self, message: str, critical: bool = False):
-        """
-        Send alert to admin via Telegram
+                    # 날짜 필터
+                    ts = record.get("ts", "")
+                    if not ts.startswith(target_date):
+                        continue
 
-        Args:
-            message: Alert message
-            critical: If True, prepend 🚨, else ⚠️
-        """
-        emoji = "🚨" if critical else "⚠️"
-        full_message = f"{emoji} 나이트가드 알림\n\n{message}\n\n🕐 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                    record_type = record.get("type", "")
 
-        logger.warning(full_message)
+                    if record_type == "api_call":
+                        counters["api_calls_per_day"] += 1
+                        counters["tokens_per_day"] += int(record.get("tokens", 0))
 
-        # Send Telegram alert
-        if self.bot and self.admin_id:
-            try:
-                await self.bot.send_message(
-                    chat_id=self.admin_id,
-                    text=full_message,
-                    parse_mode='Markdown'
-                )
-                logger.info("Alert sent to admin: %s", self.admin_id)
-            except Exception as e:
-                logger.error("Failed to send Telegram alert: %s", e)
-        else:
-            logger.warning("Telegram bot not configured - alert not sent")
+                    elif record_type == "image":
+                        counters["images_per_day"] += int(record.get("count", 1))
 
-        # Record alert
-        self.state['alerts_sent'].append({
-            'timestamp': datetime.now().isoformat(),
-            'message': message,
-            'critical': critical
-        })
-        self._save_state()
+                    elif record_type == "youtube":
+                        counters["youtube_per_day"] += int(record.get("count", 1))
 
-    def _log_incident(self, component: str, issue: str, action: str):
-        """Log incident for audit trail"""
-        incident = {
-            'timestamp': datetime.now().isoformat(),
-            'component': component,
-            'issue': issue,
-            'action': action
-        }
-        self.state['incidents'].append(incident)
-        self._save_state()
-        logger.info("Incident logged: %s - %s - %s", component, issue, action)
-
-    # ========================
-    # Authentication Monitoring
-    # ========================
-
-    def check_notebooklm_cookie(self) -> Dict:
-        """
-        Check NotebookLM cookie expiration
-
-        Returns:
-            {
-                'status': 'ok' | 'warning' | 'critical' | 'missing',
-                'expires_in_hours': int,
-                'message': str
-            }
-        """
-        if not self.cookie_file.exists():
-            return {
-                'status': 'missing',
-                'expires_in_hours': 0,
-                'message': 'NotebookLM cookie file not found'
-            }
-
-        try:
-            with open(self.cookie_file, 'r', encoding='utf-8') as f:
-                cookie_data = json.load(f)
-
-            # Check if cookie has expiration info
-            if 'updated_at' not in cookie_data:
-                return {
-                    'status': 'warning',
-                    'expires_in_hours': 0,
-                    'message': 'Cookie file missing update timestamp'
-                }
-
-            # Google cookies typically expire after 14 days
-            updated_at = datetime.fromisoformat(cookie_data['updated_at'])
-            age_hours = (datetime.now() - updated_at).total_seconds() / 3600
-            expires_in_hours = (14 * 24) - age_hours
-
-            if expires_in_hours < 0:
-                status = 'critical'
-                message = f'Cookie EXPIRED {abs(expires_in_hours):.0f}h ago'
-            elif expires_in_hours < 48:
-                status = 'critical'
-                message = f'Cookie expires in {expires_in_hours:.0f}h (< 48h)'
-            elif expires_in_hours < 72:
-                status = 'warning'
-                message = f'Cookie expires in {expires_in_hours:.0f}h (< 72h)'
-            else:
-                status = 'ok'
-                message = f'Cookie healthy - expires in {expires_in_hours:.0f}h'
-
-            return {
-                'status': status,
-                'expires_in_hours': expires_in_hours,
-                'message': message
-            }
+                    else:
+                        logger.debug("알 수 없는 record type: %s", record_type)
 
         except Exception as e:
-            return {
-                'status': 'warning',
-                'expires_in_hours': 0,
-                'message': f'Failed to check cookie: {str(e)}'
-            }
+            logger.warning("로그 파일 처리 실패 %s: %s", log_file.name, e)
 
-    # ========================
-    # API Quota Monitoring
-    # ========================
-
-    def check_gemini_quota(self) -> Dict:
-        """
-        Check Gemini API quota (approximate)
-
-        Note: Google doesn't provide direct quota API, this is estimation based on usage logs
-
-        Returns:
-            {
-                'status': 'ok' | 'warning' | 'critical',
-                'estimated_quota_remaining': float,
-                'message': str
-            }
-        """
-        # TODO: Implement actual quota tracking based on usage logs
-        # For now, just check if API key is present
-
-        if not self.google_api_key:
-            return {
-                'status': 'critical',
-                'estimated_quota_remaining': 0,
-                'message': 'GOOGLE_API_KEY not configured'
-            }
-
-        # Placeholder: assume OK for now
-        return {
-            'status': 'ok',
-            'estimated_quota_remaining': 100.0,
-            'message': 'Gemini API key configured (quota tracking not implemented)'
-        }
-
-    def check_anthropic_quota(self) -> Dict:
-        """
-        Check Anthropic API quota
-
-        Returns:
-            {
-                'status': 'ok' | 'warning' | 'critical',
-                'estimated_quota_remaining': float,
-                'message': str
-            }
-        """
-        if not self.anthropic_api_key:
-            return {
-                'status': 'warning',
-                'estimated_quota_remaining': 0,
-                'message': 'ANTHROPIC_API_KEY not configured (CD agent will not work)'
-            }
-
-        # TODO: Implement actual quota tracking via Anthropic API
-        # For now, just check if key is present
-
-        return {
-            'status': 'ok',
-            'estimated_quota_remaining': 100.0,
-            'message': 'Anthropic API key configured (quota tracking not implemented)'
-        }
-
-    # ========================
-    # Service Health Checks
-    # ========================
-
-    def check_telegram_bot(self) -> Dict:
-        """
-        Check if Telegram bot is running
-
-        Returns:
-            {
-                'status': 'ok' | 'critical',
-                'process_id': int | None,
-                'message': str
-            }
-        """
-        try:
-            # Check if telegram_secretary*.py is running
-            result = subprocess.run(
-                ['pgrep', '-f', 'telegram_secretary'],
-                capture_output=True,
-                text=True
-            )
-
-            if result.returncode == 0:
-                pid = result.stdout.strip().split('\n')[0]
-                return {
-                    'status': 'ok',
-                    'process_id': int(pid),
-                    'message': f'Telegram bot running (PID: {pid})'
-                }
-            else:
-                return {
-                    'status': 'critical',
-                    'process_id': None,
-                    'message': 'Telegram bot NOT running'
-                }
-
-        except Exception as e:
-            return {
-                'status': 'warning',
-                'process_id': None,
-                'message': f'Failed to check Telegram bot: {str(e)}'
-            }
-
-    def check_mcp_server(self) -> Dict:
-        """
-        Check if NotebookLM MCP server is accessible
-
-        Returns:
-            {
-                'status': 'ok' | 'warning' | 'critical',
-                'message': str
-            }
-        """
-        # Check if container is running
-        try:
-            result = subprocess.run(
-                ['podman', 'ps', '--filter', 'name=97layer-os', '--format', '{{.Names}}'],
-                capture_output=True,
-                text=True,
-                cwd=self.project_root
-            )
-
-            if '97layer-os' in result.stdout:
-                return {
-                    'status': 'ok',
-                    'message': 'Podman container "97layer-os" running'
-                }
-            else:
-                return {
-                    'status': 'critical',
-                    'message': 'Podman container "97layer-os" NOT running'
-                }
-
-        except Exception as e:
-            return {
-                'status': 'warning',
-                'message': f'Failed to check MCP server: {str(e)}'
-            }
-
-    # ========================
-    # System Resources
-    # ========================
-
-    def check_disk_space(self) -> Dict:
-        """
-        Check available disk space
-
-        Returns:
-            {
-                'status': 'ok' | 'warning' | 'critical',
-                'available_gb': float,
-                'percent_used': float,
-                'message': str
-            }
-        """
-        try:
-            import shutil
-            usage = shutil.disk_usage(self.project_root)
-
-            available_gb = usage.free / (1024**3)
-            percent_used = (usage.used / usage.total) * 100
-
-            if percent_used > 95:
-                status = 'critical'
-                message = f'Disk {percent_used:.1f}% full (< 5% free)'
-            elif percent_used > 90:
-                status = 'warning'
-                message = f'Disk {percent_used:.1f}% full (< 10% free)'
-            else:
-                status = 'ok'
-                message = f'Disk {percent_used:.1f}% full ({available_gb:.1f}GB free)'
-
-            return {
-                'status': status,
-                'available_gb': available_gb,
-                'percent_used': percent_used,
-                'message': message
-            }
-
-        except Exception as e:
-            return {
-                'status': 'warning',
-                'available_gb': 0,
-                'percent_used': 0,
-                'message': f'Failed to check disk space: {str(e)}'
-            }
-
-    # ========================
-    # Auto-Recovery
-    # ========================
-
-    async def restart_telegram_bot(self) -> bool:
-        """
-        Attempt to restart Telegram bot via systemd (on GCP VM)
-
-        Returns:
-            True if restart successful, False otherwise
-        """
-        try:
-            logger.info("Attempting to restart Telegram bot...")
-
-            # Try systemd restart
-            result = subprocess.run(
-                ['sudo', 'systemctl', 'restart', '97layer-telegram'],
-                capture_output=True,
-                text=True,
-                timeout=30
-            )
-
-            if result.returncode == 0:
-                logger.info("✅ Telegram bot restarted successfully")
-                self._log_incident('telegram_bot', 'service_down', 'auto_restarted')
-                await self.send_alert("✅ 텔레그램 봇이 중단되어 자동으로 재시작했습니다", critical=False)
-                return True
-            else:
-                logger.error("Failed to restart Telegram bot: %s", result.stderr)
-                self._log_incident('telegram_bot', 'service_down', 'restart_failed')
-                await self.send_alert(f"❌ 텔레그램 봇 중단 — 자동 재시작 실패\n\n오류: {result.stderr}", critical=True)
-                return False
-
-        except Exception as e:
-            logger.error("Exception during Telegram bot restart: %s", e)
-            await self.send_alert(f"❌ 텔레그램 봇 중단 — 재시작 중 오류 발생: {str(e)}", critical=True)
-            return False
-
-    # ========================
-    # Main Diagnostic Loop
-    # ========================
-
-    async def run_diagnostics(self) -> Dict:
-        """
-        Run full system diagnostics
-
-        Returns:
-            {
-                'timestamp': str,
-                'overall_status': 'healthy' | 'degraded' | 'critical',
-                'components': {
-                    'notebooklm_cookie': {...},
-                    'gemini_quota': {...},
-                    'anthropic_quota': {...},
-                    'telegram_bot': {...},
-                    'mcp_server': {...},
-                    'disk_space': {...}
-                },
-                'actions_taken': [...]
-            }
-        """
-        logger.info("🔍 Running system diagnostics...")
-
-        # Run all checks
-        components = {
-            'notebooklm_cookie': self.check_notebooklm_cookie(),
-            'gemini_quota': self.check_gemini_quota(),
-            'anthropic_quota': self.check_anthropic_quota(),
-            'telegram_bot': self.check_telegram_bot(),
-            'mcp_server': self.check_mcp_server(),
-            'disk_space': self.check_disk_space()
-        }
-
-        # Determine overall status
-        critical_count = sum(1 for c in components.values() if c.get('status') == 'critical')
-        warning_count = sum(1 for c in components.values() if c.get('status') == 'warning')
-
-        if critical_count > 0:
-            overall_status = 'critical'
-        elif warning_count > 0:
-            overall_status = 'degraded'
-        else:
-            overall_status = 'healthy'
-
-        actions_taken = []
-
-        # Handle critical issues
-
-        # 1. NotebookLM Cookie
-        cookie_status = components['notebooklm_cookie']
-        if cookie_status['status'] == 'critical':
-            await self.send_alert(
-                f"🍪 노트북LM 로그인 만료\n\n{cookie_status['message']}\n\n"
-                "조치 방법: 쿠키를 수동으로 갱신해주세요\n"
-                "1. Chrome → notebooklm.google.com 접속\n"
-                "2. DevTools(F12) → Application → Cookies 복사\n"
-                "3. knowledge/system/notebooklm_cookie.json 업데이트",
-                critical=True
-            )
-            actions_taken.append('alerted_admin_cookie_expiry')
-
-        # 2. Telegram Bot
-        bot_status = components['telegram_bot']
-        if bot_status['status'] == 'critical':
-            # Auto-restart
-            restart_success = await self.restart_telegram_bot()
-            if restart_success:
-                actions_taken.append('restarted_telegram_bot')
-                # Re-check
-                components['telegram_bot'] = self.check_telegram_bot()
-            else:
-                actions_taken.append('telegram_restart_failed')
-
-        # 3. MCP Server
-        mcp_status = components['mcp_server']
-        if mcp_status['status'] == 'critical':
-            await self.send_alert(
-                f"🐳 맥북 연결 끊김\n\n{mcp_status['message']}\n\n"
-                "조치 방법: 맥북에서 포드맨을 재시작해주세요\n"
-                "`podman start 97layer-os`",
-                critical=True
-            )
-            actions_taken.append('alerted_admin_mcp_down')
-
-        # 4. Disk Space
-        disk_status = components['disk_space']
-        if disk_status['status'] == 'critical':
-            await self.send_alert(
-                f"💾 서버 저장공간 부족\n\n{disk_status['message']}\n\n"
-                "조치 방법: 불필요한 파일을 정리해주세요\n"
-                "확인 위치: knowledge/signals/, logs/",
-                critical=True
-            )
-            actions_taken.append('alerted_admin_disk_space')
-
-        # Update state
-        self.state['last_check'] = datetime.now().isoformat()
-        self._save_state()
-
-        result = {
-            'timestamp': datetime.now().isoformat(),
-            'overall_status': overall_status,
-            'components': components,
-            'actions_taken': actions_taken
-        }
-
-        logger.info("✅ Diagnostics complete - Status: %s", overall_status.upper())
-
-        return result
-
-    async def run_daemon(self, interval_minutes: int = 30):
-        """
-        Run Nightguard as a continuous daemon
-
-        Args:
-            interval_minutes: Check interval in minutes (default: 30)
-        """
-        logger.info("🛡️  Nightguard V2 daemon starting...")
-        logger.info("   Check interval: %d minutes", interval_minutes)
-        logger.info("   Admin Telegram ID: %s", self.admin_id or "NOT CONFIGURED")
-
-        if not self.admin_id:
-            logger.warning("⚠️  Admin Telegram ID not configured - alerts will only be logged")
-
-        try:
-            while True:
-                result = await self.run_diagnostics()
-
-                # Sleep until next check
-                await asyncio.sleep(interval_minutes * 60)
-
-        except KeyboardInterrupt:
-            logger.info("\n🛑 Nightguard daemon stopped by user")
-        except Exception as e:
-            logger.error("❌ Nightguard daemon crashed: %s", e)
-            raise
-
-
-async def main():
-    """CLI entry point"""
-    import argparse
-
-    parser = argparse.ArgumentParser(description='LAYER OS Nightguard V2 - Self-Diagnostic Daemon')
-    parser.add_argument(
-        '--interval',
-        type=int,
-        default=30,
-        help='Check interval in minutes (default: 30)'
+    logger.info(
+        "사용량 집계 완료 (날짜=%s): api=%d, tokens=%d, images=%d, youtube=%d",
+        target_date,
+        counters.get("api_calls_per_day", 0),
+        counters.get("tokens_per_day", 0),
+        counters.get("images_per_day", 0),
+        counters.get("youtube_per_day", 0),
     )
-    parser.add_argument(
-        '--once',
-        action='store_true',
-        help='Run diagnostics once and exit (no daemon mode)'
-    )
-    parser.add_argument(
-        '--admin-id',
-        type=str,
-        help='Telegram user ID for admin alerts (or set ADMIN_TELEGRAM_ID in .env)'
-    )
+    return dict(counters)
 
-    args = parser.parse_args()
 
-    nightguard = NightguardV2(admin_telegram_id=args.admin_id)
+def _compute_quota_status(
+    usage: Dict[str, int],
+    quotas: Dict[str, int],
+) -> Dict[str, Any]:
+    """사용량 대비 할당량 상태 계산. 초과 항목 플래그 포함."""
+    status: Dict[str, Any] = {}
+    any_exceeded = False
 
-    if args.once:
-        result = await nightguard.run_diagnostics()
-        print("\n" + "="*80)
-        print("NIGHTGUARD DIAGNOSTICS REPORT".center(80))
-        print("="*80)
-        print(f"\n⏰ Timestamp: {result['timestamp']}")
-        print(f"📊 Overall Status: {result['overall_status'].upper()}")
-        print(f"\n🔍 Component Status:")
-        for component, status in result['components'].items():
-            emoji = {'ok': '✅', 'warning': '⚠️', 'critical': '🚨', 'missing': '❓'}.get(status['status'], '•')
-            print(f"  {emoji} {component}: {status['message']}")
-        if result['actions_taken']:
-            print(f"\n🛠️  Actions Taken: {', '.join(result['actions_taken'])}")
-        print("\n" + "="*80)
+    for key, limit in quotas.items():
+        used = usage.get(key, 0)
+        pct = round(used / limit * 100, 1) if limit > 0 else 0.0
+        exceeded = used >= limit
+        if exceeded:
+            any_exceeded = True
+        status[key] = {
+            "used": used,
+            "limit": limit,
+            "pct": pct,
+            "exceeded": exceeded,
+        }
+
+    status["any_exceeded"] = any_exceeded
+    return status
+
+
+def run_quota_check(target_date: Optional[str] = None) -> Dict[str, Any]:
+    """
+    사용 로그 기반 할당량 체크 실행.
+    결과를 quota_state.json에 저장하고 반환.
+    """
+    if target_date is None:
+        target_date = date.today().isoformat()
+
+    logger.info("할당량 체크 시작: %s", target_date)
+
+    usage = _parse_usage_logs(target_date)
+    quotas = DEFAULT_QUOTAS.copy()
+
+    # 기존 상태에서 사용자 정의 할당량 로드 (있으면)
+    existing_state = _load_quota_state()
+    custom_quotas = existing_state.get("custom_quotas", {})
+    quotas.update({k: v for k, v in custom_quotas.items() if isinstance(v, int) and v > 0})
+
+    quota_status = _compute_quota_status(usage, quotas)
+
+    state = {
+        "date": target_date,
+        "quotas": quotas,
+        "usage": usage,
+        "status": quota_status,
+        "custom_quotas": custom_quotas,
+    }
+
+    _save_quota_state(state)
+
+    if quota_status.get("any_exceeded"):
+        exceeded_keys = [
+            k for k, v in quota_status.items()
+            if isinstance(v, dict) and v.get("exceeded")
+        ]
+        logger.warning("할당량 초과 항목: %s", exceeded_keys)
     else:
-        await nightguard.run_daemon(interval_minutes=args.interval)
+        logger.info("모든 할당량 정상 범위")
+
+    return state
+
+
+def get_quota_summary() -> str:
+    """현재 할당량 상태를 사람이 읽기 쉬운 문자열로 반환."""
+    state = _load_quota_state()
+    if not state:
+        return "할당량 데이터 없음 (아직 체크가 실행되지 않음)"
+
+    date_str = state.get("date", "unknown")
+    status = state.get("status", {})
+    lines = [f"[Quota Summary — {date_str}]"]
+
+    for key, info in status.items():
+        if not isinstance(info, dict):
+            continue
+        flag = "🔴 초과" if info.get("exceeded") else "🟢 정상"
+        lines.append(
+            f"  {key}: {info['used']}/{info['limit']} ({info['pct']}%) {flag}"
+        )
+
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import time
+
+    interval = int(os.getenv("NIGHTGUARD_INTERVAL", "600"))  # 기본 10분
+    logger.info("Nightguard v2 시작 (interval=%ds)", interval)
+
+    while True:
+        try:
+            run_quota_check()
+        except Exception as e:
+            logger.error("할당량 체크 중 오류: %s", e)
+        time.sleep(interval)
