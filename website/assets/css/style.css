@@ -9326,13 +9326,9 @@ body.page-about { overflow-x: hidden; }
   .editor-link:last-child { border-bottom: 1px solid var(--line); }
   .appendix-drawer { padding: var(--space-lg) var(--space-md); }
 
-  /* 인디케이터 모바일: viewport 최하단 고정, 텍스트 영역 침범 안 함 */
+  /* 인디케이터 모바일: 공간 부족으로 텍스트 침범 → 숨김 */
   #about-toc-float {
-    bottom: 6px;
-    right: 12px;
-    font-size: 0.55rem;
-    padding: 3px 6px;
-    border-top: 1px solid var(--border);
+    display: none !important;
   }
 }
 
