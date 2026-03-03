@@ -27,8 +27,9 @@
 
   /* ── Scene & Camera ── */
   var scene = new THREE.Scene();
-  /* 깊이감: 멀수록 배경으로 녹아드는 지수 안개 */
-  scene.fog = new THREE.FogExp2(0xE3E2E0, 0.030);
+  /* fog 밀도: 카메라 거리에 비례 스케일 (z=22 기준 0.030) */
+  var fogDensity = 0.030 * (22 / ((isMobile && window.innerHeight > window.innerWidth) ? 32 : 22));
+  scene.fog = new THREE.FogExp2(0xE3E2E0, fogDensity);
 
   var fieldGroup = new THREE.Group();
   scene.add(fieldGroup);
@@ -106,7 +107,7 @@
       var frac = (si2 + 1) / SEEDS;
 
       /* 극(pole) 근처 진하게, 바깥으로 갈수록 소멸 */
-      var baseOp = isMobile ? (0.18 - frac * 0.10) : (0.40 - frac * 0.24);
+      var baseOp = isMobile ? (0.42 - frac * 0.24) : (0.40 - frac * 0.24);
       var col = fieldColor;
 
       var mat = new THREE.LineBasicMaterial({
