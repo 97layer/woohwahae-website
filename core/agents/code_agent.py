@@ -38,6 +38,9 @@ FALLBACK_MODEL = "claude-sonnet-4-6"
 MAX_FLASH_RETRIES = 2
 MAX_API_CALLS_TOTAL = 5
 DAILY_COST_CAP_USD = float(os.getenv("CODE_AGENT_DAILY_CAP", "3"))
+
+# Dual-model 설정
+DUEL_ENABLED = os.getenv("CODE_AGENT_DUEL", "1") == "1"  # 기본 활성화
 COST_LOG_PATH = PROJECT_ROOT / "knowledge" / "system" / "code_agent_cost.json"
 
 # 변경 불가 경로 (FROZEN)
@@ -45,6 +48,26 @@ FROZEN_PATHS = {
     "directives/the_origin.md",
     "knowledge/agent_hub/state.md",
 }
+
+CRITIC_PROMPT = """You are a senior code reviewer for the LAYER OS / WOOHWAHAE project.
+
+Your job: find problems in a proposed code change, then suggest improvements.
+
+Return ONLY a JSON object:
+{
+  "score": 0-100,
+  "issues": ["issue 1", "issue 2", ...],
+  "suggestions": ["specific fix 1", "specific fix 2", ...],
+  "verdict": "APPROVE" | "REVISE"
+}
+
+Rules:
+- score >= 85 → APPROVE (good enough, no revision needed)
+- score < 85 → REVISE (list concrete fixes)
+- Be specific: point to exact lines or patterns, not vague criticism
+- Focus on: correctness, edge cases, security, LAYER OS conventions (lazy logging, no hardcoded secrets)
+- Do NOT rewrite the code — only critique it
+"""
 
 SYSTEM_PROMPT = """You are a surgical code editor for the LAYER OS / WOOHWAHAE project.
 
@@ -218,15 +241,15 @@ def _call_gemini(prompt: str) -> Optional[dict]:
         return None
 
 
-def _call_claude(prompt: str) -> Optional[dict]:
-    """Claude Sonnet 에스컬레이션. 실패 시 None."""
+def _call_claude(prompt: str, system: str = SYSTEM_PROMPT) -> Optional[dict]:
+    """Claude Sonnet 호출 (Proposer 또는 Critic). 실패 시 None."""
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         msg = client.messages.create(
             model=FALLBACK_MODEL,
             max_tokens=4096,
-            system=SYSTEM_PROMPT,
+            system=system,
             messages=[{"role": "user", "content": prompt}],
         )
         raw = msg.content[0].text.strip()
@@ -234,7 +257,6 @@ def _call_claude(prompt: str) -> Optional[dict]:
         if m:
             raw = m.group(1)
         result = json.loads(raw)
-        # 비용 추적
         inp = msg.usage.input_tokens
         out = msg.usage.output_tokens
         cost = _estimate_cost(FALLBACK_MODEL, inp, out)
@@ -246,8 +268,26 @@ def _call_claude(prompt: str) -> Optional[dict]:
         return None
 
 
+def _critique_with_claude(draft: dict, instruction: str) -> Optional[dict]:
+    """Claude가 Gemini 초안을 비판. score/issues/suggestions/verdict 반환."""
+    draft_text = json.dumps(draft, ensure_ascii=False, indent=2)
+    prompt = (
+        f"지시: {instruction}\n\n"
+        f"Gemini가 생성한 코드 변경안:\n```json\n{draft_text}\n```\n\n"
+        f"이 변경안을 검토하고 JSON으로만 응답:"
+    )
+    return _call_claude(prompt, system=CRITIC_PROMPT)
+
+
 def _generate_changes(instruction: str, context_files: list[dict]) -> Optional[dict]:
-    """Flash → Claude 에스컬레이션으로 변경 생성."""
+    """
+    Dual-model 생성:
+      Round 1) Gemini Flash → 초안
+      Round 2) Claude Critic → score/issues/suggestions
+               score >= 85 → APPROVE (초안 채택)
+               score < 85  → Gemini Flash → 피드백 반영 최종안
+      Fallback) Gemini 연속 실패 시 Claude Proposer 에스컬레이션
+    """
     today_cost = _get_today_cost()
     if today_cost >= DAILY_COST_CAP_USD:
         logger.error("일일 비용 캡 초과: $%.2f / $%.2f", today_cost, DAILY_COST_CAP_USD)
@@ -257,26 +297,66 @@ def _generate_changes(instruction: str, context_files: list[dict]) -> Optional[d
     for f in context_files:
         context_text += f"\n\n### {f['path']}\n```\n{f['content']}\n```"
 
-    prompt = (
-        f"{SYSTEM_PROMPT}\n\n"
+    base_prompt = (
         f"지시: {instruction}\n\n"
         f"관련 파일:{context_text}\n\n"
         f"JSON만 반환:"
     )
 
-    # Flash 최대 2회
+    # ── Round 1: Gemini 초안 생성 ──────────────────────────────────────
+    draft = None
     for attempt in range(MAX_FLASH_RETRIES):
-        result = _call_gemini(prompt)
-        if result and "files" in result:
-            logger.info("Flash 성공 (attempt %s)", attempt + 1)
-            cost = _estimate_cost(PRIMARY_MODEL, len(prompt) // 4, 500)
+        draft = _call_gemini(base_prompt)
+        if draft and "files" in draft:
+            cost = _estimate_cost(PRIMARY_MODEL, len(base_prompt) // 4, 500)
             _add_cost(cost)
-            return result
-        logger.warning("Flash attempt %s 실패", attempt + 1)
+            logger.info("Gemini 초안 생성 (attempt %s)", attempt + 1)
+            break
+        logger.warning("Gemini attempt %s 실패", attempt + 1)
 
-    # Claude 에스컬레이션
-    logger.info("Claude 에스컬레이션")
-    return _call_claude(prompt)
+    if not draft or not draft.get("files"):
+        logger.info("Gemini 실패 → Claude Proposer 에스컬레이션")
+        return _call_claude(base_prompt)
+
+    if not DUEL_ENABLED:
+        return draft
+
+    # ── Round 2: Claude Critic ──────────────────────────────────────────
+    critique = _critique_with_claude(draft, instruction)
+    if not critique:
+        logger.warning("Critic 호출 실패 → Gemini 초안 채택")
+        return draft
+
+    score = critique.get("score", 0)
+    verdict = critique.get("verdict", "REVISE")
+    issues = critique.get("issues", [])
+    suggestions = critique.get("suggestions", [])
+    logger.info("Critic 결과: score=%s verdict=%s issues=%s", score, verdict, len(issues))
+
+    if verdict == "APPROVE" or score >= 85:
+        logger.info("Critic APPROVE → 초안 채택")
+        draft["_critic"] = {"score": score, "verdict": "APPROVE"}
+        return draft
+
+    # ── Round 3: Gemini 재생성 (Critic 피드백 반영) ────────────────────
+    feedback_block = "\n".join(f"- {s}" for s in suggestions) or "\n".join(f"- {i}" for i in issues)
+    revised_prompt = (
+        f"지시: {instruction}\n\n"
+        f"관련 파일:{context_text}\n\n"
+        f"이전 코드 검토 결과 (score={score}/100):\n{feedback_block}\n\n"
+        f"위 피드백을 반영해 개선된 JSON만 반환:"
+    )
+    revised = _call_gemini(revised_prompt)
+    if revised and revised.get("files"):
+        cost = _estimate_cost(PRIMARY_MODEL, len(revised_prompt) // 4, 500)
+        _add_cost(cost)
+        revised["_critic"] = {"score": score, "verdict": "REVISED", "issues": issues}
+        logger.info("Gemini 수정안 생성 완료 (critic score=%s)", score)
+        return revised
+
+    # 재생성도 실패 → 초안 반환
+    logger.warning("Gemini 재생성 실패 → 초안 채택")
+    return draft
 
 
 # ─── 파일 적용 ───────────────────────────────────────────────────────────────
@@ -317,7 +397,16 @@ def _apply_changes(changes: dict) -> tuple[bool, str]:
 
 def _build_diff_text(changes: dict) -> str:
     """변경 내용을 텔레그램용 diff 텍스트로 변환."""
-    lines = [f"변경 요약: {changes.get('summary', '—')}"]
+    critic = changes.get("_critic", {})
+    if critic:
+        score = critic.get("score", "—")
+        verdict = critic.get("verdict", "—")
+        critic_line = f"🤖 Critic: score={score}/100 · {verdict}"
+        if critic.get("issues"):
+            critic_line += f" · {len(critic['issues'])}건 지적"
+        lines = [critic_line, f"변경 요약: {changes.get('summary', '—')}"]
+    else:
+        lines = [f"변경 요약: {changes.get('summary', '—')}"]
     for f in changes.get("files", []):
         lines.append(f"\n📄 {f['path']}")
         old = f.get("old_content", "")
