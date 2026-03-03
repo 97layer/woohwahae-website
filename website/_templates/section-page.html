@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="{{ description }}" name="description"/>
+  <meta content="{{ title }}" property="og:title"/>
+  <meta content="website" property="og:type"/>
+  <meta content="{{ og_url }}" property="og:url"/>
+  <title>{{ title }}</title>
+  <!-- COMPONENT:head -->
+  <!-- /COMPONENT:head -->
+</head>
+<body class="{{ body_class }}">
+<!-- COMPONENT:nav -->
+<!-- /COMPONENT:nav -->
+<main class="page-main">
+  <div class="page-intro container--wide">
+    <p class="page-preamble">{{ preamble }}</p>
+    {% if controls %}{{ controls | safe }}{% endif %}
+  </div>
+  {{ body | safe }}
+</main>
+{% if page_script %}{{ page_script | safe }}{% endif %}
+<script defer src="/assets/js/site.js?v={{ js_hash }}"></script>
+<!-- COMPONENT:footer -->
+<!-- /COMPONENT:footer -->
+</body>
+</html>

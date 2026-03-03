@@ -6562,22 +6562,22 @@ body.is-loaded .home-preloader__logo {
   100% { opacity: 0;   }
 }
 
-/* ─── Home Hero Nav Overlay (A+C: 인내/쌍극 분리 시 출현) ─── */
+/* ─── Home Hero Nav Overlay — 프리로더 후 하단에서 슬라이드업 ─── */
 .home-hero__nav {
   position: absolute;
-  bottom: 3rem;
+  bottom: 0;
   left: 0;
   right: 0;
   padding: 0 var(--space-xl);
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 1.4s var(--ease), transform 1.4s var(--ease);
-  pointer-events: none;
+  background: transparent;
   z-index: 20;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1.0s var(--ease) 0.5s, transform 1.0s var(--ease) 0.5s;
+  pointer-events: none;
 }
 
-body.is-patient .home-hero__nav,
-body.is-field-open .home-hero__nav {
+body.is-loaded .home-hero__nav {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -6586,7 +6586,6 @@ body.is-field-open .home-hero__nav {
 @media (max-width: 640px) {
   .home-hero__nav {
     padding: 0 1.5rem;
-    bottom: 2rem;
   }
 }
 
@@ -9116,6 +9115,105 @@ body::after {
   border-bottom: 1px solid var(--line);
   margin-bottom: var(--space-lg);
 }
+
+/* === 섹션 페이지 공통 (archive / practice / lab) === */
+.page-intro {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-md);
+}
+.page-preamble {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: var(--fw-light);
+  letter-spacing: 0.04em;
+  color: var(--text-sub);
+  line-height: 1.75;
+  max-width: var(--max-content);
+  margin-bottom: var(--space-sm);
+}
+@media (max-width: 640px) {
+  .page-preamble { font-size: 0.64rem; letter-spacing: 0.02em; }
+}
+
+/* === Lab Grid & Cards === */
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 640px) {
+  .lab-grid { grid-template-columns: 1fr; }
+}
+.lab-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--line);
+  padding: var(--space-md) 0;
+  transition: opacity var(--duration) var(--ease-out);
+  position: relative;
+}
+.lab-card:nth-child(odd) { padding-right: var(--space-md); }
+.lab-card:nth-child(even) { padding-left: var(--space-md); border-left: 1px solid var(--line); }
+.lab-card.hidden { display: none; }
+.lab-card:hover { opacity: 0.6; }
+.lab-card--placeholder { cursor: default; opacity: 0.4; pointer-events: none; }
+.lab-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 var(--space-xs);
+}
+.lab-card-num {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: var(--ls-label);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin: 0;
+}
+.lab-card-date {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  opacity: 0.6;
+}
+.lab-card-title {
+  font-size: 1rem;
+  font-weight: var(--fw-light);
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-xs);
+  color: var(--text);
+}
+.lab-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  font-weight: var(--fw-light);
+  line-height: 1.6;
+  margin: 0 0 var(--space-sm);
+}
+.lab-card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.lab-card-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--line);
+  color: var(--text-faint);
+}
+.lab-card-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--text-faint);
+  float: right;
+  margin-top: 0.15rem;
+  transition: transform var(--duration) var(--ease-out), color var(--duration) var(--ease-out);
+}
+.lab-card:hover .lab-card-icon { transform: translate(2px, -2px); color: var(--text); }
 
 
 .about-zero-label {

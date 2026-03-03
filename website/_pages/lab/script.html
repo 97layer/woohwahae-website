@@ -1,0 +1,45 @@
+<script>
+  /* Lab — 날짜 주입 */
+  document.addEventListener('DOMContentLoaded', function () {
+    var dates = {
+      '001': '2025.10.12', '002': '2025.10.21', '003': '2025.11.10', '004': '2025.11.23',
+      '005': '2025.12.11', '006': '2025.12.28', '007': '2026.01.04', '008': '2026.01.15',
+      '009': '2026.01.28', '010': '2026.02.02', '011': '2026.02.05', '012': '2026.02.10',
+      '013': '2026.02.16', '014': '2026.02.19', '015': '2026.02.20'
+    };
+    document.querySelectorAll('.lab-card-num').forEach(function (el) {
+      var match = el.innerText.match(/Exp\.(\d{3})/);
+      if (match && dates[match[1]]) {
+        var wrapper = document.createElement('div');
+        wrapper.className = 'lab-card-meta';
+        el.parentNode.insertBefore(wrapper, el);
+        wrapper.appendChild(el);
+        var dateSpan = document.createElement('span');
+        dateSpan.className = 'lab-card-date';
+        dateSpan.textContent = dates[match[1]];
+        wrapper.appendChild(dateSpan);
+      }
+    });
+  });
+
+  /* Lab — 필터 */
+  document.addEventListener('DOMContentLoaded', function () {
+    var filterBtns = document.querySelectorAll('#lab-filter .archive-filter__btn');
+    var cards = document.querySelectorAll('.lab-card');
+    filterBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        filterBtns.forEach(function (b) { b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        var filterValue = btn.getAttribute('data-filter');
+        cards.forEach(function (card) {
+          var category = card.getAttribute('data-category');
+          if (filterValue === 'all') {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.toggle('hidden', category !== filterValue);
+          }
+        });
+      });
+    });
+  });
+</script>

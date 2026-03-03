@@ -205,6 +205,7 @@ def bust_cache(dry_run: bool = False) -> int:
 def main():
     parser = argparse.ArgumentParser(description="LAYER OS 통합 빌드")
     parser.add_argument("--archive", action="store_true", help="아카이브만 빌드")
+    parser.add_argument("--sections", action="store_true", help="섹션 페이지만 빌드 (archive/practice/lab index)")
     parser.add_argument("--components", action="store_true", help="컴포넌트만 주입")
     parser.add_argument("--easter", action="store_true", help="about 이스터에그 타임스탬프+수치 갱신")
     parser.add_argument("--bust", action="store_true", help="캐시 버스팅만")
@@ -212,7 +213,7 @@ def main():
     args = parser.parse_args()
 
     # 특정 단계만 실행
-    run_all = not (args.archive or args.components or args.easter or args.bust)
+    run_all = not (args.archive or args.sections or args.components or args.easter or args.bust)
 
     logger.info("═══ LAYER OS Build Pipeline ═══")
 
@@ -220,7 +221,11 @@ def main():
     if run_all or args.archive:
         run_script("build_archive.py", dry_run=args.dry_run)
 
-    # 2. Components (nav/footer/wave-bg 주입)
+    # 2. Section Pages (archive / practice / lab Jinja2 조립)
+    if run_all or args.sections or args.components:
+        run_script("build_sections.py", dry_run=args.dry_run)
+
+    # 3. Components (nav/footer/head 주입)
     if run_all or args.components:
         run_script("build_components.py", dry_run=args.dry_run)
 
