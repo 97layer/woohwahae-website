@@ -87,6 +87,90 @@ _COMMIT_PREFIX = re.compile(r'^(feat|fix|refactor|docs|chore|style|test|perf):\s
 _ABOUT_HTML = WEBSITE_DIR / "about" / "index.html"
 _CL_START = "/* CHANGELOG:START */"
 _CL_END   = "/* CHANGELOG:END */"
+_ST_START = "/* STATS:START */"
+_ST_END   = "/* STATS:END */"
+
+
+def compute_site_stats() -> dict:
+    """git 히스토리에서 사이트 통계 계산."""
+    # 총 커밋 수
+    r1 = subprocess.run(
+        ["git", "log", "--oneline", "--", "website/"],
+        cwd=str(PROJECT_ROOT), capture_output=True, text=True,
+    )
+    total_commits = len([l for l in r1.stdout.strip().splitlines() if l])
+
+    # 최초 커밋 날짜
+    r2 = subprocess.run(
+        ["git", "log", "--reverse", "--pretty=format:%as", "--", "website/"],
+        cwd=str(PROJECT_ROOT), capture_output=True, text=True,
+    )
+    lines = [l for l in r2.stdout.strip().splitlines() if l]
+    first_date = lines[0].replace("-", ".") if lines else ""
+
+    # 소거된 라인 수
+    r3 = subprocess.run(
+        ["git", "log", "--shortstat", "--", "website/"],
+        cwd=str(PROJECT_ROOT), capture_output=True, text=True,
+    )
+    deletions = 0
+    for line in r3.stdout.splitlines():
+        m = re.search(r'(\d+) deletion', line)
+        if m:
+            deletions += int(m.group(1))
+
+    # 커밋 타임스탬프 → 투입 시간 추정 (2시간 이내 = 한 세션)
+    r4 = subprocess.run(
+        ["git", "log", "--pretty=format:%at", "--", "website/"],
+        cwd=str(PROJECT_ROOT), capture_output=True, text=True,
+    )
+    timestamps = sorted([int(t) for t in r4.stdout.strip().splitlines() if t.strip()])
+    total_minutes = 0
+    SESSION_GAP = 7200  # 2시간
+    if timestamps:
+        session_start = timestamps[0]
+        prev = timestamps[0]
+        for ts in timestamps[1:]:
+            if ts - prev > SESSION_GAP:
+                total_minutes += max((prev - session_start) / 60 + 30, 30)
+                session_start = ts
+            prev = ts
+        total_minutes += max((prev - session_start) / 60 + 30, 30)
+    estimated_hours = round(total_minutes / 60)
+
+    return {
+        "total_commits": total_commits,
+        "first_date": first_date,
+        "lines_deleted": deletions,
+        "estimated_hours": estimated_hours,
+    }
+
+
+def inject_site_stats(dry_run: bool = False) -> bool:
+    """사이트 통계 → about/index.html STATS 마커에 주입."""
+    if not _ABOUT_HTML.exists():
+        return False
+    html = _ABOUT_HTML.read_text(encoding="utf-8")
+    if _ST_START not in html or _ST_END not in html:
+        logger.warning("stats 마커 없음 — 스킵")
+        return False
+
+    stats = compute_site_stats()
+    data_js = "var SITE_STATS = %s;" % json.dumps(stats, ensure_ascii=False)
+    block = "%s\n  %s\n  %s" % (_ST_START, data_js, _ST_END)
+    updated = re.sub(
+        r"/\* STATS:START \*/.*?/\* STATS:END \*/",
+        block, html, flags=re.DOTALL,
+    )
+    if updated == html:
+        return True
+    if not dry_run:
+        _ABOUT_HTML.write_text(updated, encoding="utf-8")
+        logger.info("stats 주입: commits=%d, hours=%dh, deleted=%d줄",
+                    stats["total_commits"], stats["estimated_hours"], stats["lines_deleted"])
+    else:
+        logger.info("[DRY-RUN] stats: %s", stats)
+    return True
 
 
 def inject_changelog(dry_run: bool = False) -> bool:
@@ -141,11 +225,12 @@ def main():
     parser.add_argument("--components", action="store_true", help="컴포넌트만 주입")
     parser.add_argument("--bust", action="store_true", help="캐시 버스팅만")
     parser.add_argument("--changelog", action="store_true", help="changelog만 주입")
+    parser.add_argument("--stats", action="store_true", help="site stats만 주입")
     parser.add_argument("--dry-run", action="store_true", help="변경 프리뷰")
     args = parser.parse_args()
 
     # 특정 단계만 실행
-    run_all = not (args.archive or args.components or args.bust or args.changelog)
+    run_all = not (args.archive or args.components or args.bust or args.changelog or args.stats)
 
     logger.info("═══ LAYER OS Build Pipeline ═══")
 
@@ -162,7 +247,12 @@ def main():
         logger.info("─── changelog ───")
         inject_changelog(dry_run=args.dry_run)
 
-    # 4. Cache Busting
+    # 4. Site Stats 주입
+    if run_all or args.stats:
+        logger.info("─── site stats ───")
+        inject_site_stats(dry_run=args.dry_run)
+
+    # 5. Cache Busting
     if run_all or args.bust:
         logger.info("─── cache bust ───")
         bust_cache(dry_run=args.dry_run)
