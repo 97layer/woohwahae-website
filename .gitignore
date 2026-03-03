@@ -48,6 +48,7 @@ brain/
 !website/archive/lookbook/assets/images/*.jpg
 !website/assets/media/profile/*.jpg
 !website/woosunho/works/**/*.jpg
+!website/woosunho/works/**/*.jpeg
 *.jpeg
 config.json
 *COMPLETE.md
