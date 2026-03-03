@@ -9050,6 +9050,8 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   line-height: 1.8;
 }
 
+body.page-about { overflow-x: hidden; }
+
 .page-about .journey-title {
   font-size: clamp(2.4rem, 5.5vw, 4.8rem);
   line-height: 1.05;
@@ -9157,7 +9159,17 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   color: var(--text-faint);
   font-weight: 300;
 }
-.about-appendix__body { padding-bottom: var(--space-lg); }
+.about-appendix__body {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s ease;
+}
+.about-appendix__body.is-open {
+  max-height: 2400px;
+  opacity: 1;
+  padding-bottom: var(--space-lg);
+}
 .about-appendix__term {
   font-family: var(--font-mono);
   font-size: 0.65rem;
