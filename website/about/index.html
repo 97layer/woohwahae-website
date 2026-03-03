@@ -17,7 +17,7 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="/assets/css/style.css?v=2d00401c" rel="stylesheet"/>
+<link href="/assets/css/style.css?v=f8bfc850" rel="stylesheet"/>
 <script>
 (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
 </script>
@@ -364,17 +364,82 @@
 </script>
 <script>
 (function () {
+  /* ── clock ── */
+  var pad = function (v) { return String(v).padStart(2, '0'); };
   function tick() {
     var el = document.getElementById('about-clock');
     if (!el) return;
     var n = new Date();
-    var pad = function (v) { return String(v).padStart(2, '0'); };
-    var date = n.getFullYear() + '.' + pad(n.getMonth() + 1) + '.' + pad(n.getDate());
-    var time = pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
-    el.textContent = date + ' ' + time;
+    el.textContent = n.getFullYear() + '.' + pad(n.getMonth()+1) + '.' + pad(n.getDate())
+                   + ' ' + pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
   }
   tick();
   setInterval(tick, 1000);
+
+  /* ── live log panel ── */
+  var MSGS = [
+    ['SA',      'analyzing signal · url_content'],
+    ['SA',      'analyzing signal · text_insight'],
+    ['Gardener','cluster 슬로우라이프 → 8 entries · ripe'],
+    ['Gardener','cluster 본질 → 6 entries · ripe'],
+    ['Gardener','cluster 여백 → 3 entries · accumulating'],
+    ['CE',      'essay draft generated · 느림에 대하여'],
+    ['CE',      'essay draft generated · 소거의 방법'],
+    ['Ralph',   'quality gate · score 94 · pass'],
+    ['Ralph',   'quality gate · score 88 · pass'],
+    ['Scout',   'fetching kinfolk.com/feed · 4 new signals'],
+    ['Scout',   'fetching dezeen.com/feed · 2 new signals'],
+    ['Scout',   'rss parse ok · monocle.com'],
+    ['SA',      'corpus entry written · 본질_0021'],
+    ['Gardener','duel task picked · fix: intent classifier'],
+    ['SA',      'signal score 87 · queued for clustering'],
+    ['CE',      'publishing · woohwahae.kr/archive/0014'],
+    ['Gardener','retrospective written · decision_log +1'],
+    ['SA',      'youtube transcript analyzed · 1,240 chars'],
+    ['Scout',   'brand signal saved · kinfolk editorial'],
+    ['Ralph',   'essay rejected · score 68 · requeue'],
+    ['CE',      'corpus cluster merged · 슬로우라이프+여백'],
+    ['Gardener','next run scheduled · 03:00'],
+  ];
+  var timer = null;
+  var active = false;
+
+  function ts() {
+    var n = new Date();
+    return pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
+  }
+  function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function addLine() {
+    var ul = document.getElementById('about-log-lines');
+    if (!ul) return;
+    var m = rand(MSGS);
+    var li = document.createElement('li');
+    li.textContent = ts() + '  [' + m[0] + ']  ' + m[1];
+    ul.appendChild(li);
+    if (ul.children.length > 14) ul.removeChild(ul.firstChild);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var trigger = document.getElementById('about-zero-trigger');
+    var panel   = document.getElementById('about-log-panel');
+    if (!trigger || !panel) return;
+    trigger.style.cursor = 'pointer';
+
+    trigger.addEventListener('click', function () {
+      active = !active;
+      panel.classList.toggle('is-open', active);
+      panel.setAttribute('aria-hidden', String(!active));
+      trigger.classList.toggle('is-active', active);
+      if (active) {
+        addLine();
+        timer = setInterval(addLine, 900);
+      } else {
+        clearInterval(timer);
+        timer = null;
+      }
+    });
+  });
 })();
 </script>
 </body>

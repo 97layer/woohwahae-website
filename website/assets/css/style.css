@@ -8989,6 +8989,32 @@ body::after {
 }
 p.about-zero-label { margin-bottom: var(--space-md); }
 #about-clock:not(:empty)::after { content: ' · '; }
+.about-zero-label--toggle:hover { color: var(--text-sub); }
+.about-zero-label--toggle.is-active { color: var(--text-sub); }
+
+#about-log-panel {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  margin-bottom: 0;
+}
+#about-log-panel.is-open {
+  max-height: 220px;
+  opacity: 1;
+  margin-bottom: var(--space-md);
+}
+#about-log-lines {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  line-height: 1.9;
+}
+#about-log-lines li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .page-about .journey-title {
   font-size: clamp(2.4rem, 5.5vw, 4.8rem);
