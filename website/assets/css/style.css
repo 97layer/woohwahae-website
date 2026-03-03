@@ -9014,12 +9014,29 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   max-height: 0;
   opacity: 0;
   margin-bottom: 0;
-  transition: max-height 0.3s ease, opacity 0.25s ease, margin-bottom 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45em;
+  transition: max-height 0.4s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
 }
 .about-zero-easter.is-open {
-  max-height: 12em;
+  max-height: 14em;
   opacity: 1;
   margin-bottom: var(--space-md);
+}
+.elog {
+  display: flex;
+  gap: 1.6em;
+  align-items: baseline;
+}
+.elog time {
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  letter-spacing: 0.04em;
+  opacity: 0.35;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 #about-log-stats {
   font-family: var(--font-mono);
