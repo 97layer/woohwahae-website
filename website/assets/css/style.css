@@ -9109,6 +9109,11 @@ p.about-zero-label { margin-bottom: var(--space-md); }
 }
 .about-appendix__block + .about-appendix__block { margin-top: 0; }
 .about-appendix__toggle {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
   cursor: pointer;
   list-style: none;
   font-family: var(--font-mono);
@@ -9120,16 +9125,14 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   align-items: center;
   justify-content: space-between;
   user-select: none;
+  transition: color 0.2s;
 }
-.about-appendix__toggle::-webkit-details-marker { display: none; }
-.about-appendix__toggle::after {
-  content: '+';
+.about-appendix__toggle:hover { color: var(--text); }
+.about-appendix__toggle span {
   font-size: 0.9rem;
   color: var(--text-faint);
   font-weight: 300;
 }
-.about-appendix__block[open] .about-appendix__toggle { color: var(--text); }
-.about-appendix__block[open] .about-appendix__toggle::after { content: '−'; }
 .about-appendix__body { padding-bottom: var(--space-lg); }
 .about-appendix__term {
   font-family: var(--font-mono);
