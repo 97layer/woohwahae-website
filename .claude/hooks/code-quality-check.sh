@@ -13,6 +13,31 @@ if [ -z "$FILE_PATH" ]; then
   exit 0
 fi
 
+# ─── CSS / HTML 시각 검증 강제 ──────────────────────────────
+case "$FILE_PATH" in
+  */website/assets/css/style.css)
+    echo "━━━ VISUAL SCAN REQUIRED ━━━"
+    echo "style.css 수정 감지. 커밋 전 의무 체크리스트:"
+    echo "  1. getBoundingClientRect() 로 문제 요소 픽셀 측정"
+    echo "  2. 모바일(390px) + 데스크탑(1280px) 양방향 스크린샷"
+    echo "  3. 수정된 패턴이 사용되는 모든 페이지 타입 확인"
+    echo "     (about / archive / essay / practice / home)"
+    echo "  4. 수치가 증명한 후에만 커밋"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    exit 0
+    ;;
+  */website/*.html|*/website/**/*.html)
+    BASENAME=$(basename "$FILE_PATH")
+    echo "━━━ HTML EDIT: ${BASENAME} ━━━"
+    echo "HTML 수정 감지. 확인 사항:"
+    echo "  1. 연관 컴포넌트(nav/footer) 변경 시 → build.py --components 실행"
+    echo "  2. 수정 페이지 모바일 + 데스크탑 스크린샷 확인"
+    echo "  3. 동일 패턴 사용 다른 페이지 파급 체크"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    exit 0
+    ;;
+esac
+
 # core/**/*.py 또는 scripts/**/*.py만 검사
 case "$FILE_PATH" in
   */core/*.py|*/scripts/*.py)
