@@ -16,7 +16,7 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="../assets/css/style.css?v=5f231d76" rel="stylesheet"/>
+<link href="../assets/css/style.css?v=e0a84d5f" rel="stylesheet"/>
 <script>
     (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
   </script>
@@ -49,7 +49,7 @@
 <div class="contact-body container" data-reveal="">
 <form id="contact-form" class="contact-form" novalidate="">
 <div class="contact-field">
-<label for="c-type">의뢰 종류</label>
+<label for="c-type">종류</label>
 <select id="c-type" name="type" required="">
 <option disabled="" selected="" value="">— 선택</option>
 <option value="atelier">Atelier — 헤어</option>
@@ -86,7 +86,7 @@
     var message = document.getElementById('c-message').value.trim();
     var typeLabel = { atelier: 'Atelier — 헤어', direction: '디렉션 — 브랜드 자문', project: '프로젝트 — 협업', other: '기타' }[type] || type;
     var body = [
-      '의뢰 종류: ' + typeLabel,
+      '종류: ' + typeLabel,
       '이름: ' + name,
       '이메일: ' + email,
       '',
