@@ -270,7 +270,7 @@ def _pick_auto_task() -> str | None:
     import subprocess
     result = subprocess.run(
         ["grep", "-rn", "-E", r"#\s*(TODO|FIXME):",
-         "--include=*.py", "--exclude-dir=__pycache__",
+         "--include=*.py", "--exclude=duel.py", "--exclude-dir=__pycache__",
          str(PROJECT_ROOT / "core")],
         capture_output=True, text=True, timeout=10
     )
