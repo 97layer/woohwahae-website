@@ -1,0 +1,2257 @@
+{
+  "generated": "2026-03-03T13:46:17.933501+00:00",
+  "start_date": "2026-02-18",
+  "days": 14,
+  "total_commits": 279,
+  "uncommitted": 49,
+  "invested_hours": 77.2,
+  "entries": [
+    {
+      "type": "commit",
+      "sha": "8f7c9dd",
+      "date": "2026-03-03T22:40:12+09:00",
+      "msg": "시각 검증 스크린샷 → JS 측정 전환 시스템",
+      "rawMsg": "feat: 시각 검증 스크린샷 → JS 측정 전환 시스템"
+    },
+    {
+      "type": "commit",
+      "sha": "9307edf",
+      "date": "2026-03-03T22:30:24+09:00",
+      "msg": "atelier 상세페이지 Provision 패턴 재구성 + Practice 콘텐츠 담백화",
+      "rawMsg": "feat: atelier 상세페이지 Provision 패턴 재구성 + Practice 콘텐츠 담백화"
+    },
+    {
+      "type": "commit",
+      "sha": "d0004e8",
+      "date": "2026-03-03T21:43:22+09:00",
+      "msg": "작업물 고감도 — 스크롤 리빌 + 라이트박스 갤러리 + 호버 스케일 + 간격 정제",
+      "rawMsg": "style: 작업물 고감도 — 스크롤 리빌 + 라이트박스 갤러리 + 호버 스케일 + 간격 정제"
+    },
+    {
+      "type": "commit",
+      "sha": "07ac146",
+      "date": "2026-03-03T21:24:00+09:00",
+      "msg": "elog 트리거 합니다체 적용 (UI 카피 채널 규칙)",
+      "rawMsg": "fix: elog 트리거 합니다체 적용 (UI 카피 채널 규칙)"
+    },
+    {
+      "type": "commit",
+      "sha": "8c5e79a",
+      "date": "2026-03-03T21:22:59+09:00",
+      "msg": "홈 elog 트리거 브랜드 언어 적용",
+      "rawMsg": "fix: 홈 elog 트리거 브랜드 언어 적용"
+    },
+    {
+      "type": "commit",
+      "sha": "886a658",
+      "date": "2026-03-03T21:21:47+09:00",
+      "msg": "홈 elog 트리거 문구 보완",
+      "rawMsg": "fix: 홈 elog 트리거 문구 보완"
+    },
+    {
+      "type": "commit",
+      "sha": "8d2b391",
+      "date": "2026-03-03T21:19:46+09:00",
+      "msg": "홈 elog GitHub 커밋 실시간 fetch + about 이스터 제거",
+      "rawMsg": "feat: 홈 elog GitHub 커밋 실시간 fetch + about 이스터 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "627d0ef",
+      "date": "2026-03-03T21:15:11+09:00",
+      "msg": "홈 히어로에 about 이스터 로그 이식 — 시계 + 토글 포함",
+      "rawMsg": "feat: 홈 히어로에 about 이스터 로그 이식 — 시계 + 토글 포함"
+    },
+    {
+      "type": "commit",
+      "sha": "be7f401",
+      "date": "2026-03-03T21:14:21+09:00",
+      "msg": "섹션 페이지 헤더 골조 통일 — page-intro 레거시 충돌 제거, archive-filter 중복 규칙 제거",
+      "rawMsg": "fix: 섹션 페이지 헤더 골조 통일 — page-intro 레거시 충돌 제거, archive-filter 중복 규칙 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "2492247",
+      "date": "2026-03-03T21:11:56+09:00",
+      "msg": "홈 히어로 elog 비하인드 로그 + 미완성 엔트리 추가",
+      "rawMsg": "feat: 홈 히어로 elog 비하인드 로그 + 미완성 엔트리 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "5b3507b",
+      "date": "2026-03-03T21:08:48+09:00",
+      "msg": "bg-field.js 캐시 버스팅 해시 추가",
+      "rawMsg": "chore: bg-field.js 캐시 버스팅 해시 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "970785b",
+      "date": "2026-03-03T21:06:16+09:00",
+      "msg": "홈 nav 히어로 오버레이 + 안내문구 + 필드 스크롤 개선",
+      "rawMsg": "feat: 홈 nav 히어로 오버레이 + 안내문구 + 필드 스크롤 개선"
+    },
+    {
+      "type": "commit",
+      "sha": "31e20e7",
+      "date": "2026-03-03T20:55:40+09:00",
+      "msg": "revert: 작업물 87장 플랫 메이슨리 복구 (29ca8b2c)",
+      "rawMsg": "revert: 작업물 87장 플랫 메이슨리 복구 (29ca8b2c)"
+    },
+    {
+      "type": "commit",
+      "sha": "8a86c71",
+      "date": "2026-03-03T20:53:54+09:00",
+      "msg": "CSS :root 블록 통합 정리 — 시간대 변수 분리, 인라인 주석 간소화",
+      "rawMsg": "refactor: CSS :root 블록 통합 정리 — 시간대 변수 분리, 인라인 주석 간소화"
+    },
+    {
+      "type": "commit",
+      "sha": "efbd825",
+      "date": "2026-03-03T20:49:12+09:00",
+      "msg": "about 이스터에그 목차 아래로 이동 + 디자인 토큰 재정비",
+      "rawMsg": "refactor: about 이스터에그 목차 아래로 이동 + 디자인 토큰 재정비"
+    },
+    {
+      "type": "commit",
+      "sha": "7ea893b",
+      "date": "2026-03-03T20:45:48+09:00",
+      "msg": "섹션 페이지 Jinja2 템플릿 시스템 구축",
+      "rawMsg": "feat: 섹션 페이지 Jinja2 템플릿 시스템 구축"
+    },
+    {
+      "type": "commit",
+      "sha": "c63857b",
+      "date": "2026-03-03T20:43:45+09:00",
+      "msg": "작업물 병렬 레이아웃 + 사진 자르기 제거",
+      "rawMsg": "fix: 작업물 병렬 레이아웃 + 사진 자르기 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "198880e",
+      "date": "2026-03-03T20:39:38+09:00",
+      "msg": "practice 카드 박스 제거 — 수평선만 남김",
+      "rawMsg": "fix: practice 카드 박스 제거 — 수평선만 남김"
+    },
+    {
+      "type": "commit",
+      "sha": "84944dd",
+      "date": "2026-03-03T20:33:23+09:00",
+      "msg": "작업물 어도비 포트폴리오 스타일 카드 그리드",
+      "rawMsg": "refactor: 작업물 어도비 포트폴리오 스타일 카드 그리드"
+    },
+    {
+      "type": "commit",
+      "sha": "9fe0379",
+      "date": "2026-03-03T20:32:10+09:00",
+      "msg": "about 이스터에그 복구 + lab 필터 박스 제거 + practice 전환 이탈 수정",
+      "rawMsg": "fix: about 이스터에그 복구 + lab 필터 박스 제거 + practice 전환 이탈 수정"
+    },
+    {
+      "type": "commit",
+      "sha": "41abcb6",
+      "date": "2026-03-03T20:29:52+09:00",
+      "msg": "작업물 폴더 단위 묶기 — 30 썸네일 → 라이트박스 갤러리",
+      "rawMsg": "refactor: 작업물 폴더 단위 묶기 — 30 썸네일 → 라이트박스 갤러리"
+    },
+    {
+      "type": "commit",
+      "sha": "2a98c2c",
+      "date": "2026-03-03T20:22:48+09:00",
+      "msg": "작업물 단일 플랫 그리드 + 라이트박스 prev/next 네비",
+      "rawMsg": "refactor: 작업물 단일 플랫 그리드 + 라이트박스 prev/next 네비"
+    },
+    {
+      "type": "commit",
+      "sha": "540eb8f",
+      "date": "2026-03-03T20:21:38+09:00",
+      "msg": "<head> 컴포넌트화 전 페이지 통일",
+      "rawMsg": "refactor: <head> 컴포넌트화 전 페이지 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "bfc4e0b",
+      "date": "2026-03-03T20:16:39+09:00",
+      "msg": "archive 필터 디자인 개선 + 검색 기능 추가",
+      "rawMsg": "feat: archive 필터 디자인 개선 + 검색 기능 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "04070bd",
+      "date": "2026-03-03T20:12:14+09:00",
+      "msg": "Revert \"remove: site-subnav 섹션 네비 제거\"",
+      "rawMsg": "Revert \"remove: site-subnav 섹션 네비 제거\""
+    },
+    {
+      "type": "commit",
+      "sha": "3fb096c",
+      "date": "2026-03-03T20:11:15+09:00",
+      "msg": "remove: site-subnav 섹션 네비 제거",
+      "rawMsg": "remove: site-subnav 섹션 네비 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "29ca8b2",
+      "date": "2026-03-03T20:09:13+09:00",
+      "msg": "MALVIE Magazine + Milbon DA Link 복구 이미지 추가",
+      "rawMsg": "feat: MALVIE Magazine + Milbon DA Link 복구 이미지 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "d378966",
+      "date": "2026-03-03T20:08:57+09:00",
+      "msg": "preamble 타이프라이터 전 페이지 통일 + archive 타입 필터",
+      "rawMsg": "feat: preamble 타이프라이터 전 페이지 통일 + archive 타입 필터"
+    },
+    {
+      "type": "commit",
+      "sha": "5b17373",
+      "date": "2026-03-03T20:03:24+09:00",
+      "msg": "practice 카드 그리드 랜딩 + View Transitions 슬라이드",
+      "rawMsg": "feat: practice 카드 그리드 랜딩 + View Transitions 슬라이드"
+    },
+    {
+      "type": "commit",
+      "sha": "3396655",
+      "date": "2026-03-03T20:02:44+09:00",
+      "msg": "작업물 섹션 — 프로젝트별 수평 스트립으로 재구조화",
+      "rawMsg": "refactor: 작업물 섹션 — 프로젝트별 수평 스트립으로 재구조화"
+    },
+    {
+      "type": "commit",
+      "sha": "e2f62c2",
+      "date": "2026-03-03T19:50:00+09:00",
+      "msg": "woosunho 포트폴리오 작업물 섹션 추가 — 68장 이미지 + 라이트박스",
+      "rawMsg": "feat: woosunho 포트폴리오 작업물 섹션 추가 — 68장 이미지 + 라이트박스"
+    },
+    {
+      "type": "commit",
+      "sha": "e8ee2e3",
+      "date": "2026-03-03T19:47:03+09:00",
+      "msg": "about preamble 최종 확정 — 소거라는 렌즈로",
+      "rawMsg": "style: about preamble 최종 확정 — 소거라는 렌즈로"
+    },
+    {
+      "type": "commit",
+      "sha": "4a4103c",
+      "date": "2026-03-03T19:36:15+09:00",
+      "msg": "about preamble → \"그간 쌓아온 ——\"",
+      "rawMsg": "style: about preamble → \"그간 쌓아온 ——\""
+    },
+    {
+      "type": "commit",
+      "sha": "1fa0ddc",
+      "date": "2026-03-03T19:29:37+09:00",
+      "msg": "about preamble 텍스트 축소 + sessionStorage 최초 1회 타이핑",
+      "rawMsg": "style: about preamble 텍스트 축소 + sessionStorage 최초 1회 타이핑"
+    },
+    {
+      "type": "commit",
+      "sha": "c9f342a",
+      "date": "2026-03-03T19:25:23+09:00",
+      "msg": "about-preamble IBM mono 전환 + 모바일 단행 축소",
+      "rawMsg": "style: about-preamble IBM mono 전환 + 모바일 단행 축소"
+    },
+    {
+      "type": "commit",
+      "sha": "2584301",
+      "date": "2026-03-03T19:22:12+09:00",
+      "msg": "4페이지 section-label 제거 + about preamble 타이핑 모션",
+      "rawMsg": "style: 4페이지 section-label 제거 + about preamble 타이핑 모션"
+    },
+    {
+      "type": "commit",
+      "sha": "b3b6490",
+      "date": "2026-03-03T19:18:36+09:00",
+      "msg": "about 타이프라이터 IBM mono + archive 헤더 컨테이너 통일",
+      "rawMsg": "style: about 타이프라이터 IBM mono + archive 헤더 컨테이너 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "efe4200",
+      "date": "2026-03-03T19:14:28+09:00",
+      "msg": "woosunho 페이지 — sticky sidebar 레이아웃 전면 재설계",
+      "rawMsg": "feat: woosunho 페이지 — sticky sidebar 레이아웃 전면 재설계"
+    },
+    {
+      "type": "commit",
+      "sha": "e36f5a7",
+      "date": "2026-03-03T19:04:37+09:00",
+      "msg": "4페이지 헤더 통일 + practice UI 일관성 정렬",
+      "rawMsg": "style: 4페이지 헤더 통일 + practice UI 일관성 정렬"
+    },
+    {
+      "type": "commit",
+      "sha": "320ffa0",
+      "date": "2026-03-03T18:55:33+09:00",
+      "msg": "woosunho 히어로 여백 압축 — min-height 88→72vh, padding 6→3.5rem, 모바일 name 크기 역전 수정",
+      "rawMsg": "style: woosunho 히어로 여백 압축 — min-height 88→72vh, padding 6→3.5rem, 모바일 name 크기 역전 수정"
+    },
+    {
+      "type": "commit",
+      "sha": "2184f2e",
+      "date": "2026-03-03T18:50:52+09:00",
+      "msg": "woosunho 히어로 정제 — 이름 축소 + 촌스러운 bio 제거",
+      "rawMsg": "style: woosunho 히어로 정제 — 이름 축소 + 촌스러운 bio 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "cfc3943",
+      "date": "2026-03-03T18:42:11+09:00",
+      "msg": "woosunho 프로필 페이지 완성 — 에디터 풀 머지 + 사진 연결",
+      "rawMsg": "feat: woosunho 프로필 페이지 완성 — 에디터 풀 머지 + 사진 연결"
+    },
+    {
+      "type": "commit",
+      "sha": "22bb472",
+      "date": "2026-03-03T18:14:00+09:00",
+      "msg": "캐시 버스팅 해시 갱신 — 전 HTML 파일",
+      "rawMsg": "chore: 캐시 버스팅 해시 갱신 — 전 HTML 파일"
+    },
+    {
+      "type": "commit",
+      "sha": "7102a2f",
+      "date": "2026-03-03T18:13:48+09:00",
+      "msg": "section subnav + archive 리디자인 + JS 캐시 버스팅",
+      "rawMsg": "feat: section subnav + archive 리디자인 + JS 캐시 버스팅"
+    },
+    {
+      "type": "commit",
+      "sha": "9a561c9",
+      "date": "2026-03-03T17:48:51+09:00",
+      "msg": "한다체 에세이 본문 한정 — UI 카피/페이지 설명 문체 강제 전면 제거",
+      "rawMsg": "refactor: 한다체 에세이 본문 한정 — UI 카피/페이지 설명 문체 강제 전면 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "269f175",
+      "date": "2026-03-03T17:39:34+09:00",
+      "msg": "archive 리디자인 — issue 번호 컬럼 + 타입 필터 + 히어로 카운트",
+      "rawMsg": "feat: archive 리디자인 — issue 번호 컬럼 + 타입 필터 + 히어로 카운트"
+    },
+    {
+      "type": "commit",
+      "sha": "29a7341",
+      "date": "2026-03-03T17:21:35+09:00",
+      "msg": "--text-faint WCAG AA 복원 (#9A9A94→#7A7A74) + practice.md 토큰 동기화",
+      "rawMsg": "fix: --text-faint WCAG AA 복원 (#9A9A94→#7A7A74) + practice.md 토큰 동기화"
+    },
+    {
+      "type": "commit",
+      "sha": "8f1f9d5",
+      "date": "2026-03-03T17:11:12+09:00",
+      "msg": "practice/ 맥락 기반 언어 정제 — 명사형 종결·방향 어휘 통일",
+      "rawMsg": "style: practice/ 맥락 기반 언어 정제 — 명사형 종결·방향 어휘 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "eda30af",
+      "date": "2026-03-03T17:11:10+09:00",
+      "msg": "scroll-margin-top + prefers-reduced-motion + 리딩 진행 바 추가",
+      "rawMsg": "feat: scroll-margin-top + prefers-reduced-motion + 리딩 진행 바 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "ffcb8e1",
+      "date": "2026-03-03T17:08:50+09:00",
+      "msg": "HTML 전체 언어 체계 정렬 — about 기준 한다체 통일",
+      "rawMsg": "style: HTML 전체 언어 체계 정렬 — about 기준 한다체 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "b07d2c5",
+      "date": "2026-03-03T17:04:09+09:00",
+      "msg": "about body text text-wrap: pretty 적용 — orphan 줄 감소",
+      "rawMsg": "style: about body text text-wrap: pretty 적용 — orphan 줄 감소"
+    },
+    {
+      "type": "commit",
+      "sha": "af02e02",
+      "date": "2026-03-03T17:01:15+09:00",
+      "msg": "site-footer margin-top 4rem→2.5rem + z-index 55으로 TOC 겹침 차단",
+      "rawMsg": "fix: site-footer margin-top 4rem→2.5rem + z-index 55으로 TOC 겹침 차단"
+    },
+    {
+      "type": "commit",
+      "sha": "ee26815",
+      "date": "2026-03-03T16:54:56+09:00",
+      "msg": "footer-nav 전역 nav padding 상속 차단 — 좌정렬 통일",
+      "rawMsg": "fix: footer-nav 전역 nav padding 상속 차단 — 좌정렬 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "e08ef82",
+      "date": "2026-03-03T16:51:40+09:00",
+      "msg": "푸터 좌정렬 통일 + 네비/컨텍 순서 교체 + declaration border 제거",
+      "rawMsg": "fix: 푸터 좌정렬 통일 + 네비/컨텍 순서 교체 + declaration border 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "61504b9",
+      "date": "2026-03-03T16:48:18+09:00",
+      "msg": "모바일 TOC 인디케이터 nav 하단 고정 + declaration~appendix 간격 축소",
+      "rawMsg": "fix: 모바일 TOC 인디케이터 nav 하단 고정 + declaration~appendix 간격 축소"
+    },
+    {
+      "type": "commit",
+      "sha": "582a102",
+      "date": "2026-03-03T16:38:29+09:00",
+      "msg": "모바일 TOC 인디케이터 하단 전체폭 바로 전환 — 겹침 해결 + 기능 유지",
+      "rawMsg": "fix: 모바일 TOC 인디케이터 하단 전체폭 바로 전환 — 겹침 해결 + 기능 유지"
+    },
+    {
+      "type": "commit",
+      "sha": "1db4271",
+      "date": "2026-03-03T16:37:06+09:00",
+      "msg": "모바일 섹션 인디케이터 숨김 — 텍스트 겹침 구조적 해결",
+      "rawMsg": "fix: 모바일 섹션 인디케이터 숨김 — 텍스트 겹침 구조적 해결"
+    },
+    {
+      "type": "commit",
+      "sha": "92cb149",
+      "date": "2026-03-03T16:34:16+09:00",
+      "msg": "about 모바일 섹션 인디케이터 — 배경색 추가 + viewport 최하단 격리",
+      "rawMsg": "fix: about 모바일 섹션 인디케이터 — 배경색 추가 + viewport 최하단 격리"
+    },
+    {
+      "type": "commit",
+      "sha": "ce583b1",
+      "date": "2026-03-03T16:26:44+09:00",
+      "msg": "푸터 링크 border-bottom 제거 + touch target 해제 + 간격 축소",
+      "rawMsg": "fix: 푸터 링크 border-bottom 제거 + touch target 해제 + 간격 축소"
+    },
+    {
+      "type": "commit",
+      "sha": "fc40b1c",
+      "date": "2026-03-03T16:23:05+09:00",
+      "msg": "redesign: 푸터 전면 재설계 — wordmark/contact+nav/legal 3단 구조",
+      "rawMsg": "redesign: 푸터 전면 재설계 — wordmark/contact+nav/legal 3단 구조"
+    },
+    {
+      "type": "commit",
+      "sha": "1846e1f",
+      "date": "2026-03-03T16:17:34+09:00",
+      "msg": "푸터 순서 재정렬 — 회사정보 → 연락처 → 내비+법적",
+      "rawMsg": "fix: 푸터 순서 재정렬 — 회사정보 → 연락처 → 내비+법적"
+    },
+    {
+      "type": "commit",
+      "sha": "61e389c",
+      "date": "2026-03-03T16:16:54+09:00",
+      "msg": "푸터 사업자 정보 영문 전환 (CEO/BRN/주소)",
+      "rawMsg": "fix: 푸터 사업자 정보 영문 전환 (CEO/BRN/주소)"
+    },
+    {
+      "type": "commit",
+      "sha": "8252a80",
+      "date": "2026-03-03T16:13:59+09:00",
+      "msg": "푸터 여백 축소 + 사업자정보 한 줄 정렬 (데스크탑)",
+      "rawMsg": "fix: 푸터 여백 축소 + 사업자정보 한 줄 정렬 (데스크탑)"
+    },
+    {
+      "type": "commit",
+      "sha": "4404336",
+      "date": "2026-03-03T16:06:03+09:00",
+      "msg": "카피라이트 연도 2026 → 2024 (브랜드 시작 연도)",
+      "rawMsg": "fix: 카피라이트 연도 2026 → 2024 (브랜드 시작 연도)"
+    },
+    {
+      "type": "commit",
+      "sha": "53accf3",
+      "date": "2026-03-03T16:05:06+09:00",
+      "msg": "푸터 사업자 정보 추가 — 대표/등록번호/주소/전화번호, 전체 44페이지 반영",
+      "rawMsg": "feat: 푸터 사업자 정보 추가 — 대표/등록번호/주소/전화번호, 전체 44페이지 반영"
+    },
+    {
+      "type": "commit",
+      "sha": "27fb44e",
+      "date": "2026-03-03T15:58:17+09:00",
+      "msg": "about 불필요 여백 제거 — 프리앰블 max-width, editor 히어로 공백 축소",
+      "rawMsg": "fix: about 불필요 여백 제거 — 프리앰블 max-width, editor 히어로 공백 축소"
+    },
+    {
+      "type": "commit",
+      "sha": "47def5f",
+      "date": "2026-03-03T15:49:48+09:00",
+      "msg": "about 부록 항목 중복 표기 제거 — '부록 01/02/03' → '01/02/03'",
+      "rawMsg": "fix: about 부록 항목 중복 표기 제거 — '부록 01/02/03' → '01/02/03'"
+    },
+    {
+      "type": "commit",
+      "sha": "fb498ac",
+      "date": "2026-03-03T15:46:18+09:00",
+      "msg": "about 모바일 인트로 좌우 정렬 — 좌우 padding 0 → container--wide 위임",
+      "rawMsg": "fix: about 모바일 인트로 좌우 정렬 — 좌우 padding 0 → container--wide 위임"
+    },
+    {
+      "type": "commit",
+      "sha": "1b433fc",
+      "date": "2026-03-03T15:19:50+09:00",
+      "msg": "about 가로 오버플로 + 부록 드로어→인라인 어코디언 전환",
+      "rawMsg": "fix: about 가로 오버플로 + 부록 드로어→인라인 어코디언 전환"
+    },
+    {
+      "type": "commit",
+      "sha": "bc25d39",
+      "date": "2026-03-03T15:11:36+09:00",
+      "msg": "코너 인디케이터 + 섹션 레이블 색상 --text-faint→--text-sub, 인디케이터 0.52→0.6rem",
+      "rawMsg": "style: 코너 인디케이터 + 섹션 레이블 색상 --text-faint→--text-sub, 인디케이터 0.52→0.6rem"
+    },
+    {
+      "type": "commit",
+      "sha": "d3a054e",
+      "date": "2026-03-03T15:02:03+09:00",
+      "msg": "모바일 TOC 플로트 바 — 인트로 지나면 현재 섹션명 nav 하단 고정 표시",
+      "rawMsg": "feat: 모바일 TOC 플로트 바 — 인트로 지나면 현재 섹션명 nav 하단 고정 표시"
+    },
+    {
+      "type": "commit",
+      "sha": "a1e2575",
+      "date": "2026-03-03T15:00:27+09:00",
+      "msg": "about 이스터에그 실제 git 타임스탬프 로그 형식으로 전환",
+      "rawMsg": "feat: about 이스터에그 실제 git 타임스탬프 로그 형식으로 전환"
+    },
+    {
+      "type": "commit",
+      "sha": "4bd718f",
+      "date": "2026-03-03T14:59:49+09:00",
+      "msg": "CONNECTION 섹션 제거 — 에세이 선언으로 끝냄, 푸터 중복",
+      "rawMsg": "refactor: CONNECTION 섹션 제거 — 에세이 선언으로 끝냄, 푸터 중복"
+    },
+    {
+      "type": "commit",
+      "sha": "2140613",
+      "date": "2026-03-03T14:55:31+09:00",
+      "msg": "about 이스터에그 로그 5줄 확장 — 디렉터/소거/AI/비워야",
+      "rawMsg": "feat: about 이스터에그 로그 5줄 확장 — 디렉터/소거/AI/비워야"
+    },
+    {
+      "type": "commit",
+      "sha": "bc63161",
+      "date": "2026-03-03T14:54:10+09:00",
+      "msg": "가독성 개선 — body weight 300→400, IBM mono --text-faint→--text-sub (WCAG 기준)",
+      "rawMsg": "style: 가독성 개선 — body weight 300→400, IBM mono --text-faint→--text-sub (WCAG 기준)"
+    },
+    {
+      "type": "commit",
+      "sha": "9c466c4",
+      "date": "2026-03-03T14:51:18+09:00",
+      "msg": "about 전면 UX 정제 — TOC 미들닷, 드로어 패딩/터치타겟, 챕터간격, 스크롤스파이, Escape키",
+      "rawMsg": "refactor: about 전면 UX 정제 — TOC 미들닷, 드로어 패딩/터치타겟, 챕터간격, 스크롤스파이, Escape키"
+    },
+    {
+      "type": "commit",
+      "sha": "f5d19a9",
+      "date": "2026-03-03T14:47:24+09:00",
+      "msg": "about 이스터에그 클릭 토글 — 눌러보세요 → 문장 reveal",
+      "rawMsg": "feat: about 이스터에그 클릭 토글 — 눌러보세요 → 문장 reveal"
+    },
+    {
+      "type": "commit",
+      "sha": "a260adc",
+      "date": "2026-03-03T14:46:39+09:00",
+      "msg": "about stats 이스터에그 문장화 — 숫자를 서술로",
+      "rawMsg": "refactor: about stats 이스터에그 문장화 — 숫자를 서술로"
+    },
+    {
+      "type": "commit",
+      "sha": "0247fe6",
+      "date": "2026-03-03T14:45:29+09:00",
+      "msg": "about 수정기록 패널 전면 제거 — stats 한 줄만 유지",
+      "rawMsg": "refactor: about 수정기록 패널 전면 제거 — stats 한 줄만 유지"
+    },
+    {
+      "type": "commit",
+      "sha": "370ccb8",
+      "date": "2026-03-03T14:44:32+09:00",
+      "msg": "about-intro 상단 여백 8rem→2rem, margin-bottom 8rem→4rem (붕뜬 공간 제거)",
+      "rawMsg": "fix: about-intro 상단 여백 8rem→2rem, margin-bottom 8rem→4rem (붕뜬 공간 제거)"
+    },
+    {
+      "type": "commit",
+      "sha": "d5d684c",
+      "date": "2026-03-03T14:39:44+09:00",
+      "msg": "about stats 하드코딩 — git 계산 제거",
+      "rawMsg": "refactor: about stats 하드코딩 — git 계산 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "4e905a0",
+      "date": "2026-03-03T14:39:39+09:00",
+      "msg": "about-chapter border-top 제거, 공백만으로 분리",
+      "rawMsg": "fix: about-chapter border-top 제거, 공백만으로 분리"
+    },
+    {
+      "type": "commit",
+      "sha": "2628ed9",
+      "date": "2026-03-03T14:37:29+09:00",
+      "msg": "ch-5 첫 챕터 과도한 상단 여백 제거, chapter label em dash 제거",
+      "rawMsg": "fix: ch-5 첫 챕터 과도한 상단 여백 제거, chapter label em dash 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "c93fb2d",
+      "date": "2026-03-03T14:36:06+09:00",
+      "msg": "about 이스터에그 stats — commits/hours/소거줄/개발자 97layer (빌드 시 자동 계산)",
+      "rawMsg": "feat: about 이스터에그 stats — commits/hours/소거줄/개발자 97layer (빌드 시 자동 계산)"
+    },
+    {
+      "type": "commit",
+      "sha": "f4dcc48",
+      "date": "2026-03-03T14:28:44+09:00",
+      "msg": "about 수정기록 패널 — 헤더 추가, YYYY.MM _ 포맷, 눌러보세요 CTA",
+      "rawMsg": "refactor: about 수정기록 패널 — 헤더 추가, YYYY.MM _ 포맷, 눌러보세요 CTA"
+    },
+    {
+      "type": "commit",
+      "sha": "38e9e37",
+      "date": "2026-03-03T14:28:02+09:00",
+      "msg": "about 레이아웃 무결 패스 — 들여쓰기/appendix border/dead CSS/중복선언 제거",
+      "rawMsg": "fix: about 레이아웃 무결 패스 — 들여쓰기/appendix border/dead CSS/중복선언 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "bec0f2a",
+      "date": "2026-03-03T14:25:08+09:00",
+      "msg": "about 실제 git changelog 주입 — MSGS 시뮬레이션 → 실제 커밋 히스토리 (192건)",
+      "rawMsg": "feat: about 실제 git changelog 주입 — MSGS 시뮬레이션 → 실제 커밋 히스토리 (192건)"
+    },
+    {
+      "type": "commit",
+      "sha": "387e0a9",
+      "date": "2026-03-03T14:24:18+09:00",
+      "msg": "appendix 토글 button 박스 리셋, ::after 이중 표시 제거",
+      "rawMsg": "fix: appendix 토글 button 박스 리셋, ::after 이중 표시 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "b0a524a",
+      "date": "2026-03-03T14:22:12+09:00",
+      "msg": "편집자의 궤적 부록 C로 흡수, CONNECTION 독립 링크 제거",
+      "rawMsg": "refactor: 편집자의 궤적 부록 C로 흡수, CONNECTION 독립 링크 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "9f374be",
+      "date": "2026-03-03T14:19:12+09:00",
+      "msg": "about log 메시지 한국어화 — 내부 시스템명 제거",
+      "rawMsg": "refactor: about log 메시지 한국어화 — 내부 시스템명 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "e5fe0d8",
+      "date": "2026-03-03T14:17:14+09:00",
+      "msg": "about 실시간 로그 패널 — zero-label 클릭 토글",
+      "rawMsg": "feat: about 실시간 로그 패널 — zero-label 클릭 토글"
+    },
+    {
+      "type": "commit",
+      "sha": "c1b35fe",
+      "date": "2026-03-03T14:16:33+09:00",
+      "msg": "appendix 사이드 드로어 + CONNECTION 링크 실제 서비스명 교체",
+      "rawMsg": "feat: appendix 사이드 드로어 + CONNECTION 링크 실제 서비스명 교체"
+    },
+    {
+      "type": "commit",
+      "sha": "abbeeb1",
+      "date": "2026-03-03T14:14:19+09:00",
+      "msg": "about clock 구분자 CSS ::after — 제거 시 레이아웃 안전",
+      "rawMsg": "refactor: about clock 구분자 CSS ::after — 제거 시 레이아웃 안전"
+    },
+    {
+      "type": "commit",
+      "sha": "3d2babf",
+      "date": "2026-03-03T14:12:54+09:00",
+      "msg": "about zero-label 실시간 시계 (날짜+시분초)",
+      "rawMsg": "feat: about zero-label 실시간 시계 (날짜+시분초)"
+    },
+    {
+      "type": "commit",
+      "sha": "66bd140",
+      "date": "2026-03-03T14:12:42+09:00",
+      "msg": "부록 UX — 토글 크기 확대, uppercase 제거, 서브레이블 정리",
+      "rawMsg": "refactor: 부록 UX — 토글 크기 확대, uppercase 제거, 서브레이블 정리"
+    },
+    {
+      "type": "commit",
+      "sha": "18b7c5c",
+      "date": "2026-03-03T14:11:40+09:00",
+      "msg": "about zero-label — beta 제거, 매번 삭제",
+      "rawMsg": "refactor: about zero-label — beta 제거, 매번 삭제"
+    },
+    {
+      "type": "commit",
+      "sha": "46eb9e7",
+      "date": "2026-03-03T14:10:48+09:00",
+      "msg": "lookbook 이미지 02-08 복원 (이전 커밋에서 의도치 않게 삭제됨)",
+      "rawMsg": "fix: lookbook 이미지 02-08 복원 (이전 커밋에서 의도치 않게 삭제됨)"
+    },
+    {
+      "type": "commit",
+      "sha": "8f4b898",
+      "date": "2026-03-03T14:10:11+09:00",
+      "msg": "CONNECTION 링크 2열 그리드 — 수직 나열 해소",
+      "rawMsg": "refactor: CONNECTION 링크 2열 그리드 — 수직 나열 해소"
+    },
+    {
+      "type": "commit",
+      "sha": "574123c",
+      "date": "2026-03-03T14:08:31+09:00",
+      "msg": "about 레이아웃 완결 — ch-4 고립 제목 제거, CONNECTION 링크 모노 통일, 경로 절대화, 캐시 버스트",
+      "rawMsg": "refactor: about 레이아웃 완결 — ch-4 고립 제목 제거, CONNECTION 링크 모노 통일, 경로 절대화, 캐시 버스트"
+    },
+    {
+      "type": "commit",
+      "sha": "45cbdef",
+      "date": "2026-03-03T14:04:28+09:00",
+      "msg": "005 섹션 고립된 about-chapter__title 제거",
+      "rawMsg": "refactor: 005 섹션 고립된 about-chapter__title 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "c858000",
+      "date": "2026-03-03T14:02:47+09:00",
+      "msg": "about 페이지 헤더 분리 — ABOUT 레이블 + intro 블록 독립",
+      "rawMsg": "refactor: about 페이지 헤더 분리 — ABOUT 레이블 + intro 블록 독립"
+    },
+    {
+      "type": "commit",
+      "sha": "9bb7a33",
+      "date": "2026-03-03T14:00:28+09:00",
+      "msg": "섹션 레이블 순서 통일 — 개념어 먼저, 한자어 서브",
+      "rawMsg": "refactor: 섹션 레이블 순서 통일 — 개념어 먼저, 한자어 서브"
+    },
+    {
+      "type": "commit",
+      "sha": "a609236",
+      "date": "2026-03-03T13:58:29+09:00",
+      "msg": "about hero — WOOHWAHAE 타이틀 + SVG 제거",
+      "rawMsg": "refactor: about hero — WOOHWAHAE 타이틀 + SVG 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "91da06d",
+      "date": "2026-03-03T13:57:37+09:00",
+      "msg": "기록 동결 → beta 배포 메시지로 교체",
+      "rawMsg": "refactor: 기록 동결 → beta 배포 메시지로 교체"
+    },
+    {
+      "type": "commit",
+      "sha": "1a32018",
+      "date": "2026-03-03T13:49:05+09:00",
+      "msg": "서(序) P8 마무리 재구성 — 덧씌워진 제거, 소거 선언 구조로",
+      "rawMsg": "refactor: 서(序) P8 마무리 재구성 — 덧씌워진 제거, 소거 선언 구조로"
+    },
+    {
+      "type": "commit",
+      "sha": "3029698",
+      "date": "2026-03-03T13:46:58+09:00",
+      "msg": "본문 em dash 전수 제거, writing_guide 금지어 추가",
+      "rawMsg": "fix: 본문 em dash 전수 제거, writing_guide 금지어 추가"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] about/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] about/woosunho/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-000-manifesto/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-001-beginning/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-002-slow-life/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-003-hair-and-daily/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-004-art-of-waiting/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-005-72h-rule/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-006-8pyeong/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-007-noise-removal/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-008-raw-materiality/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-009-inner-world/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-010-work-and-essence/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/essay-010-work-and-essence/proto_v4.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/journal-001-subtraction/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] archive/lookbook/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-3d-art-core.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-bgm-player.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-bob-silhouette.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-cinematic-video.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-cut-diagram.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-film-grain.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-home-blueprint.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-keyframe-3d.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-lottie-style.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-pro-tool.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-salon-blueprint.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-scissor-ritual.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-svg-anim.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/demo-symbol-3d.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/private-auth.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/proto-essay010-equilibrium.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/proto-essay010-v3.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/proto-essay010.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/prototype-master-cut.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] lab/prototype-ultimate.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] payment-fail.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] payment-success.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] playlist.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] practice/contact.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] practice/product.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] privacy.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] product/index.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[수정] terms.html"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[미추적] assets/js/bg-field.bak.js"
+    },
+    {
+      "type": "local",
+      "sha": "local",
+      "date": "2026-03-03T13:46:17.932944+00:00",
+      "msg": "[미추적] lab/changelog/"
+    },
+    {
+      "type": "commit",
+      "sha": "a4735a1",
+      "date": "2026-03-03T13:45:27+09:00",
+      "msg": "Das Man 대시 제거",
+      "rawMsg": "fix: Das Man 대시 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "4416a4b",
+      "date": "2026-03-03T13:44:26+09:00",
+      "msg": "Das Man 목록에서 누구도 탓하지 않을 것들 제거",
+      "rawMsg": "fix: Das Man 목록에서 누구도 탓하지 않을 것들 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "17f9d5a",
+      "date": "2026-03-03T13:42:40+09:00",
+      "msg": "서(序) P1 대시 제거, Das Man 목록 재구성, hero 모바일 레이아웃 수정",
+      "rawMsg": "fix: 서(序) P1 대시 제거, Das Man 목록 재구성, hero 모바일 레이아웃 수정"
+    },
+    {
+      "type": "commit",
+      "sha": "9afa2c3",
+      "date": "2026-03-03T13:32:51+09:00",
+      "msg": "서(序) '무엇인지' → '어떤 존재인지' 존재론 명시",
+      "rawMsg": "refactor: 서(序) '무엇인지' → '어떤 존재인지' 존재론 명시"
+    },
+    {
+      "type": "commit",
+      "sha": "50dc733",
+      "date": "2026-03-03T13:31:38+09:00",
+      "msg": "서(序) 존재론적 전환 — '무엇인지', 흐려짐의 역설 (클리셰 제거)",
+      "rawMsg": "refactor: 서(序) 존재론적 전환 — '무엇인지', 흐려짐의 역설 (클리셰 제거)"
+    },
+    {
+      "type": "commit",
+      "sha": "9a03f4b",
+      "date": "2026-03-03T13:26:55+09:00",
+      "msg": "서(序) — 사유 잠식 단락 추가 (판단하는 힘, 자유 사유자 호출)",
+      "rawMsg": "feat: 서(序) — 사유 잠식 단락 추가 (판단하는 힘, 자유 사유자 호출)"
+    },
+    {
+      "type": "commit",
+      "sha": "b522d30",
+      "date": "2026-03-03T13:19:47+09:00",
+      "msg": "서(序) 오프닝 — '인간에게' → '이 시대 —'",
+      "rawMsg": "refactor: 서(序) 오프닝 — '인간에게' → '이 시대 —'"
+    },
+    {
+      "type": "commit",
+      "sha": "6ad0259",
+      "date": "2026-03-03T13:17:31+09:00",
+      "msg": "001 서(序) — 목소리 단락 + 균열 입구 단락 추가 (밀도 확장)",
+      "rawMsg": "feat: 001 서(序) — 목소리 단락 + 균열 입구 단락 추가 (밀도 확장)"
+    },
+    {
+      "type": "commit",
+      "sha": "15a2b2d",
+      "date": "2026-03-03T13:11:57+09:00",
+      "msg": "003 느림 — '우리에게' 범위 한정 (속도 반의어 정의)",
+      "rawMsg": "fix: 003 느림 — '우리에게' 범위 한정 (속도 반의어 정의)"
+    },
+    {
+      "type": "commit",
+      "sha": "1de23f1",
+      "date": "2026-03-03T13:09:15+09:00",
+      "msg": "우화해 섹션 — '이름은' → '우리의 이름은' 범위 한정",
+      "rawMsg": "fix: 우화해 섹션 — '이름은' → '우리의 이름은' 범위 한정"
+    },
+    {
+      "type": "commit",
+      "sha": "6f3bba5",
+      "date": "2026-03-03T13:07:01+09:00",
+      "msg": "about TOC 순서 반전 — 개념어 우선 (시선 — 서(序))",
+      "rawMsg": "refactor: about TOC 순서 반전 — 개념어 우선 (시선 — 서(序))"
+    },
+    {
+      "type": "commit",
+      "sha": "c06fbdd",
+      "date": "2026-03-03T13:06:01+09:00",
+      "msg": "revert: about TOC 기존 체계 복원 (001. 서(序) — 시선 세로 리스트)",
+      "rawMsg": "revert: about TOC 기존 체계 복원 (001. 서(序) — 시선 세로 리스트)"
+    },
+    {
+      "type": "commit",
+      "sha": "da953b4",
+      "date": "2026-03-03T13:05:26+09:00",
+      "msg": "about TOC — 아크 단독 네비 (시선/원리/..), 중복 리스트 제거",
+      "rawMsg": "refactor: about TOC — 아크 단독 네비 (시선/원리/..), 중복 리스트 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "3b7dc13",
+      "date": "2026-03-03T12:18:59+09:00",
+      "msg": "about — 形/無形/本 한글 병기, 클리셰 어휘 제거 (나다운가→돌아오는가)",
+      "rawMsg": "refactor: about — 形/無形/本 한글 병기, 클리셰 어휘 제거 (나다운가→돌아오는가)"
+    },
+    {
+      "type": "commit",
+      "sha": "f305afd",
+      "date": "2026-03-03T12:01:24+09:00",
+      "msg": "우화해 sub-label 방식→이름",
+      "rawMsg": "fix: 우화해 sub-label 방식→이름"
+    },
+    {
+      "type": "commit",
+      "sha": "1404aea",
+      "date": "2026-03-03T11:58:50+09:00",
+      "msg": "about 섹션 레이블 재설계 — 동도서기 통합, 표현방식/方式 구조화",
+      "rawMsg": "refactor: about 섹션 레이블 재설계 — 동도서기 통합, 표현방식/方式 구조화"
+    },
+    {
+      "type": "commit",
+      "sha": "ec29d6c",
+      "date": "2026-03-03T10:55:42+09:00",
+      "msg": "룩북 스타일 확정 — 단일 요소/흑배경/ISO400 필름 그레인",
+      "rawMsg": "refactor: 룩북 스타일 확정 — 단일 요소/흑배경/ISO400 필름 그레인"
+    },
+    {
+      "type": "commit",
+      "sha": "0644dab",
+      "date": "2026-03-03T10:35:07+09:00",
+      "msg": "룩북 Imagen 이미지 8장 + validator 이미지 경로 예외",
+      "rawMsg": "feat: 룩북 Imagen 이미지 8장 + validator 이미지 경로 예외"
+    },
+    {
+      "type": "commit",
+      "sha": "819da79",
+      "date": "2026-03-03T10:33:18+09:00",
+      "msg": "룩북 No.01 — Imagen 4.0 생성, HTML 레이아웃, archive 목록 등록",
+      "rawMsg": "feat: 룩북 No.01 — Imagen 4.0 생성, HTML 레이아웃, archive 목록 등록"
+    },
+    {
+      "type": "commit",
+      "sha": "17ffdf6",
+      "date": "2026-03-03T09:21:04+09:00",
+      "msg": "Lab 섹션 컴포넌트 흡수 — nav 04.Lab + 전체 통합",
+      "rawMsg": "feat: Lab 섹션 컴포넌트 흡수 — nav 04.Lab + 전체 통합"
+    },
+    {
+      "type": "commit",
+      "sha": "92466aa",
+      "date": "2026-03-03T00:27:55+09:00",
+      "msg": "잔여 인라인 스타일 제거 — archive/about/editor",
+      "rawMsg": "refactor: 잔여 인라인 스타일 제거 — archive/about/editor"
+    },
+    {
+      "type": "commit",
+      "sha": "9a4f297",
+      "date": "2026-03-03T00:24:25+09:00",
+      "msg": "cache bust v=ad0ac742 — 전체 HTML 갱신",
+      "rawMsg": "chore: cache bust v=ad0ac742 — 전체 HTML 갱신"
+    },
+    {
+      "type": "commit",
+      "sha": "ce5ebed",
+      "date": "2026-03-03T00:24:20+09:00",
+      "msg": "product 인라인 스타일 CSS 이전 + home inline 제거",
+      "rawMsg": "refactor: product 인라인 스타일 CSS 이전 + home inline 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "f5113e6",
+      "date": "2026-03-03T00:15:14+09:00",
+      "msg": "cache bust v=004b0232",
+      "rawMsg": "chore: cache bust v=004b0232"
+    },
+    {
+      "type": "commit",
+      "sha": "c500f35",
+      "date": "2026-03-03T00:15:13+09:00",
+      "msg": "practice 인라인 스타일 CSS 클래스화 + practice/about/editor 스타일 style.css 이전",
+      "rawMsg": "refactor: practice 인라인 스타일 CSS 클래스화 + practice/about/editor 스타일 style.css 이전"
+    },
+    {
+      "type": "commit",
+      "sha": "cd5a433",
+      "date": "2026-03-03T00:12:11+09:00",
+      "msg": "cache bust v=e8659890 — 전체 33파일",
+      "rawMsg": "chore: cache bust v=e8659890 — 전체 33파일"
+    },
+    {
+      "type": "commit",
+      "sha": "70fc875",
+      "date": "2026-03-03T00:12:07+09:00",
+      "msg": "CSS 일관성 — about/editor <style> 블록 style.css 이전, inline style 제거, container 중복 정의 제거",
+      "rawMsg": "refactor: CSS 일관성 — about/editor <style> 블록 style.css 이전, inline style 제거, container 중복 정의 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "4736e27",
+      "date": "2026-03-02T23:33:15+09:00",
+      "msg": "editor 페이지 이미지 슬롯 2개 + editorial photo CSS — tooooools.app 이미지 드롭인 준비",
+      "rawMsg": "feat: editor 페이지 이미지 슬롯 2개 + editorial photo CSS — tooooools.app 이미지 드롭인 준비"
+    },
+    {
+      "type": "commit",
+      "sha": "fb2257d",
+      "date": "2026-03-02T23:30:08+09:00",
+      "msg": "editor 페이지 — 레거시 어조 전면 소거, about 톤 정렬 (부록.md 원자료 기반)",
+      "rawMsg": "refactor: editor 페이지 — 레거시 어조 전면 소거, about 톤 정렬 (부록.md 원자료 기반)"
+    },
+    {
+      "type": "commit",
+      "sha": "8e24353",
+      "date": "2026-03-02T23:27:42+09:00",
+      "msg": "부록 C(편집자궤적) 제거 — /about/editor/ 롱폼으로 일원화",
+      "rawMsg": "refactor: 부록 C(편집자궤적) 제거 — /about/editor/ 롱폼으로 일원화"
+    },
+    {
+      "type": "commit",
+      "sha": "5fd7933",
+      "date": "2026-03-02T23:22:19+09:00",
+      "msg": "부록 C — 편집자의 궤적 타임라인 (2012→2024) + 수상/협업 기록",
+      "rawMsg": "feat: 부록 C — 편집자의 궤적 타임라인 (2012→2024) + 수상/협업 기록"
+    },
+    {
+      "type": "commit",
+      "sha": "8f14e40",
+      "date": "2026-03-02T23:20:24+09:00",
+      "msg": "about 부록 — 3섹션 구조 (철학적배경/브랜드팔레트/편집자궤적)",
+      "rawMsg": "refactor: about 부록 — 3섹션 구조 (철학적배경/브랜드팔레트/편집자궤적)"
+    },
+    {
+      "type": "commit",
+      "sha": "cf7791d",
+      "date": "2026-03-02T23:13:39+09:00",
+      "msg": "practice 6페이지 담백 모드 — 아우라/효율적/감성 수식 전면 소거, 미정의 CSS 토큰 수정",
+      "rawMsg": "refactor: practice 6페이지 담백 모드 — 아우라/효율적/감성 수식 전면 소거, 미정의 CSS 토큰 수정"
+    },
+    {
+      "type": "commit",
+      "sha": "87e0850",
+      "date": "2026-03-02T23:13:35+09:00",
+      "msg": "에세이 000-010 전면 리뉴얼 — Ralph Loop 정렬, 시대한정 어휘 소거, 관찰 톤 통일",
+      "rawMsg": "refactor: 에세이 000-010 전면 리뉴얼 — Ralph Loop 정렬, 시대한정 어휘 소거, 관찰 톤 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "cb39bab",
+      "date": "2026-03-02T23:13:10+09:00",
+      "msg": "about 철학 부록 추가 — 반본환원/본래면목/우화등선/소요유/동도서기 (접이식)",
+      "rawMsg": "feat: about 철학 부록 추가 — 반본환원/본래면목/우화등선/소요유/동도서기 (접이식)"
+    },
+    {
+      "type": "commit",
+      "sha": "ae10c5d",
+      "date": "2026-03-02T22:37:54+09:00",
+      "msg": "에이전트 소거 렌즈 정렬 + Ralph 90 기준선 + 프론트 정비",
+      "rawMsg": "refactor: 에이전트 소거 렌즈 정렬 + Ralph 90 기준선 + 프론트 정비"
+    },
+    {
+      "type": "commit",
+      "sha": "808da69",
+      "date": "2026-03-02T22:07:54+09:00",
+      "msg": "about — 주파수 반복 4→2·그것은 패턴 제거",
+      "rawMsg": "refactor: about — 주파수 반복 4→2·그것은 패턴 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "560c943",
+      "date": "2026-03-02T22:06:27+09:00",
+      "msg": "about 잔여 3건 — IV→V중복·羽처음부터4회·공명중복 제거",
+      "rawMsg": "refactor: about 잔여 3건 — IV→V중복·羽처음부터4회·공명중복 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "1c5e1eb",
+      "date": "2026-03-02T19:15:36+09:00",
+      "msg": "about IV장 — imaginal cells 과학 명칭 제거, 현상 묘사로 전환",
+      "rawMsg": "refactor: about IV장 — imaginal cells 과학 명칭 제거, 현상 묘사로 전환"
+    },
+    {
+      "type": "commit",
+      "sha": "36e7458",
+      "date": "2026-03-02T19:12:18+09:00",
+      "msg": "about 흐름 정제 — 문제는탐색수정·동방단락재배치·IV중복삭제·그것이패턴2건제거",
+      "rawMsg": "refactor: about 흐름 정제 — 문제는탐색수정·동방단락재배치·IV중복삭제·그것이패턴2건제거"
+    },
+    {
+      "type": "commit",
+      "sha": "8f9df62",
+      "date": "2026-03-02T19:05:10+09:00",
+      "msg": "about 최종 정제 6건 — 구호제거·중복단락삭제·메타지시삭제·본래면목추가",
+      "rawMsg": "refactor: about 최종 정제 6건 — 구호제거·중복단락삭제·메타지시삭제·본래면목추가"
+    },
+    {
+      "type": "commit",
+      "sha": "6095241",
+      "date": "2026-03-02T18:55:19+09:00",
+      "msg": "우화해 어원 4층 설계 — imaginal cells·인간생애주기·羽化어원·우화등선 통합",
+      "rawMsg": "refactor: 우화해 어원 4층 설계 — imaginal cells·인간생애주기·羽化어원·우화등선 통합"
+    },
+    {
+      "type": "commit",
+      "sha": "7678cc8",
+      "date": "2026-03-02T18:43:36+09:00",
+      "msg": "V섹션 됩니다 3연속 해소, 발(跋) 순환합니다 메타선언 제거",
+      "rawMsg": "fix: V섹션 됩니다 3연속 해소, 발(跋) 순환합니다 메타선언 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "5dcec1f",
+      "date": "2026-03-02T18:32:24+09:00",
+      "msg": "발(跋) 반복 어구 2건 제거 — '그것으로 됩니다' → '충분합니다', '완성된 대답은' 어순 수정",
+      "rawMsg": "fix: 발(跋) 반복 어구 2건 제거 — '그것으로 됩니다' → '충분합니다', '완성된 대답은' 어순 수정"
+    },
+    {
+      "type": "commit",
+      "sha": "5d73d5e",
+      "date": "2026-03-02T18:29:26+09:00",
+      "msg": "발(跋) 전면 재작성 — 수미상관 완성, 희망 문단, 사용자 직필 2단락 반영",
+      "rawMsg": "refactor: 발(跋) 전면 재작성 — 수미상관 완성, 희망 문단, 사용자 직필 2단락 반영"
+    },
+    {
+      "type": "commit",
+      "sha": "38f55b9",
+      "date": "2026-03-02T18:16:42+09:00",
+      "msg": "about Ralph 루프 — 중복 구문 5건 제거 (자리잡/그러나×2/지층/선택앞에서)",
+      "rawMsg": "style: about Ralph 루프 — 중복 구문 5건 제거 (자리잡/그러나×2/지층/선택앞에서)"
+    },
+    {
+      "type": "commit",
+      "sha": "dee08fc",
+      "date": "2026-03-02T18:14:30+09:00",
+      "msg": "about 5건 정제 — I장 압축, II장 설명단락 제거, III장 뜬구름 부록이동, V장 자기긍정 이미지닫기, 발 밀도 추가",
+      "rawMsg": "refactor: about 5건 정제 — I장 압축, II장 설명단락 제거, III장 뜬구름 부록이동, V장 자기긍정 이미지닫기, 발 밀도 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "835bd2a",
+      "date": "2026-03-02T17:56:33+09:00",
+      "msg": "about 기록 동결 타임스탬프 추가 (2026-03-02)",
+      "rawMsg": "docs: about 기록 동결 타임스탬프 추가 (2026-03-02)"
+    },
+    {
+      "type": "commit",
+      "sha": "c0f6644",
+      "date": "2026-03-02T17:34:52+09:00",
+      "msg": "about 마무리 재작성 — 존재 의의 선언 + 단문 여운",
+      "rawMsg": "style: about 마무리 재작성 — 존재 의의 선언 + 단문 여운"
+    },
+    {
+      "type": "commit",
+      "sha": "3125d74",
+      "date": "2026-03-02T17:31:05+09:00",
+      "msg": "about 소거 적용 — 설명 걷어내고 원리만 남김 (고지적 독자 신뢰)",
+      "rawMsg": "style: about 소거 적용 — 설명 걷어내고 원리만 남김 (고지적 독자 신뢰)"
+    },
+    {
+      "type": "commit",
+      "sha": "9063dd4",
+      "date": "2026-03-02T17:24:53+09:00",
+      "msg": "about 책 구조 완성 — 목차+프리앰블+V장 1:1 대응+비전",
+      "rawMsg": "refactor: about 책 구조 완성 — 목차+프리앰블+V장 1:1 대응+비전"
+    },
+    {
+      "type": "commit",
+      "sha": "3a78e00",
+      "date": "2026-03-02T17:12:05+09:00",
+      "msg": "about 옴니버스 해소 — 챕터 간 브릿지 3건 + 중복 문구 제거",
+      "rawMsg": "fix: about 옴니버스 해소 — 챕터 간 브릿지 3건 + 중복 문구 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "703abcb",
+      "date": "2026-03-02T17:05:19+09:00",
+      "msg": "about 팀 고도화 — 소거 감축(31→20) + 신념 레이어 3문단 + CONNECTION 랜딩",
+      "rawMsg": "feat: about 팀 고도화 — 소거 감축(31→20) + 신념 레이어 3문단 + CONNECTION 랜딩"
+    },
+    {
+      "type": "commit",
+      "sha": "cc4b4da",
+      "date": "2026-03-02T16:51:24+09:00",
+      "msg": "about 산문 교정 — 4팀 감사 기반 출판 품질 마무리",
+      "rawMsg": "style: about 산문 교정 — 4팀 감사 기반 출판 품질 마무리"
+    },
+    {
+      "type": "commit",
+      "sha": "3e2fe00",
+      "date": "2026-03-02T16:31:48+09:00",
+      "msg": "about 매니페스토 6챕터 구조 — 동도서기 흡수 + 서/발 체계",
+      "rawMsg": "refactor: about 매니페스토 6챕터 구조 — 동도서기 흡수 + 서/발 체계"
+    },
+    {
+      "type": "commit",
+      "sha": "5105196",
+      "date": "2026-03-02T15:56:01+09:00",
+      "msg": "about Ralph 루프 4패스 — 출판 품질 교정",
+      "rawMsg": "style: about Ralph 루프 4패스 — 출판 품질 교정"
+    },
+    {
+      "type": "commit",
+      "sha": "c88706b",
+      "date": "2026-03-02T15:50:24+09:00",
+      "msg": "about 논리적 공격 표면 3건 수정 + 낯섦 중복 제거",
+      "rawMsg": "fix: about 논리적 공격 표면 3건 수정 + 낯섦 중복 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "b5d3be7",
+      "date": "2026-03-02T15:45:44+09:00",
+      "msg": "about — AI 수동 접미어 제거 (그것이/이것이 7건)",
+      "rawMsg": "style: about — AI 수동 접미어 제거 (그것이/이것이 7건)"
+    },
+    {
+      "type": "commit",
+      "sha": "e74141e",
+      "date": "2026-03-02T15:40:43+09:00",
+      "msg": "3-way 정렬 — about 역설계 → sage_architect 고도화 + the_origin 동기화",
+      "rawMsg": "refactor: 3-way 정렬 — about 역설계 → sage_architect 고도화 + the_origin 동기화"
+    },
+    {
+      "type": "commit",
+      "sha": "a3d3638",
+      "date": "2026-03-02T13:12:12+09:00",
+      "msg": "about — 렌즈 어조 전환 (정의 선언→우리의 관점), 8섹션 롱폼",
+      "rawMsg": "refactor: about — 렌즈 어조 전환 (정의 선언→우리의 관점), 8섹션 롱폼"
+    },
+    {
+      "type": "commit",
+      "sha": "f37a41c",
+      "date": "2026-03-02T12:13:16+09:00",
+      "msg": "소거 구조 명시 — Via Negativa 제거, 자기긍정 목적지화, 사는방식 삭제",
+      "rawMsg": "refactor: 소거 구조 명시 — Via Negativa 제거, 자기긍정 목적지화, 사는방식 삭제"
+    },
+    {
+      "type": "commit",
+      "sha": "4df8b2f",
+      "date": "2026-03-02T10:39:04+09:00",
+      "msg": "the_origin 재구조화 + website 이전 세션 변경 반영",
+      "rawMsg": "docs: the_origin 재구조화 + website 이전 세션 변경 반영"
+    },
+    {
+      "type": "commit",
+      "sha": "90fa9a6",
+      "date": "2026-03-01T18:19:41+09:00",
+      "msg": "전체 Crimson Text/italic 제거 — Pretendard+Mono 단일화",
+      "rawMsg": "style: 전체 Crimson Text/italic 제거 — Pretendard+Mono 단일화"
+    },
+    {
+      "type": "commit",
+      "sha": "6e6833d",
+      "date": "2026-03-01T18:13:50+09:00",
+      "msg": "워크북 타이포그래피 — Crimson Text/italic 제거, Pretendard+Mono만",
+      "rawMsg": "fix: 워크북 타이포그래피 — Crimson Text/italic 제거, Pretendard+Mono만"
+    },
+    {
+      "type": "commit",
+      "sha": "6621daa",
+      "date": "2026-03-01T13:50:18+09:00",
+      "msg": "영점의 발견 워크북 (Zero Point Workbook No.1)",
+      "rawMsg": "feat: 영점의 발견 워크북 (Zero Point Workbook No.1)"
+    },
+    {
+      "type": "commit",
+      "sha": "9f811c7",
+      "date": "2026-03-01T11:11:26+09:00",
+      "msg": "practice/ 페이지 완성 — 폼 동작·콘텐츠 정렬",
+      "rawMsg": "feat: practice/ 페이지 완성 — 폼 동작·콘텐츠 정렬"
+    },
+    {
+      "type": "commit",
+      "sha": "e2e54d3",
+      "date": "2026-03-01T10:08:14+09:00",
+      "msg": "about 전면 재구성 + 에디터 페이지 분리",
+      "rawMsg": "feat: about 전면 재구성 + 에디터 페이지 분리"
+    },
+    {
+      "type": "commit",
+      "sha": "c198338",
+      "date": "2026-03-01T10:02:35+09:00",
+      "msg": "about 레이아웃 개선 — 타이틀/SVG 나란히, 여백 정제, 어원 char 대형화",
+      "rawMsg": "style: about 레이아웃 개선 — 타이틀/SVG 나란히, 여백 정제, 어원 char 대형화"
+    },
+    {
+      "type": "commit",
+      "sha": "4d66cc6",
+      "date": "2026-03-01T09:55:58+09:00",
+      "msg": "about 페이지 전면 재설계 + 레거시 CSS 정리",
+      "rawMsg": "style: about 페이지 전면 재설계 + 레거시 CSS 정리"
+    },
+    {
+      "type": "commit",
+      "sha": "3fa7a9f",
+      "date": "2026-03-01T09:42:29+09:00",
+      "msg": "모바일 archive 공백 + 디자인 표면 정제 (마르지엘라+동도서기)",
+      "rawMsg": "fix: 모바일 archive 공백 + 디자인 표면 정제 (마르지엘라+동도서기)"
+    },
+    {
+      "type": "commit",
+      "sha": "f25f150",
+      "date": "2026-03-01T09:05:30+09:00",
+      "msg": "데스크톱 nav 링크 복구 + practice tabs bordered-tag 전환",
+      "rawMsg": "fix: 데스크톱 nav 링크 복구 + practice tabs bordered-tag 전환"
+    },
+    {
+      "type": "commit",
+      "sha": "9136f82",
+      "date": "2026-03-01T02:27:34+09:00",
+      "msg": "design: 전 페이지 MVP 콘텐츠 + 스케일 정제",
+      "rawMsg": "design: 전 페이지 MVP 콘텐츠 + 스케일 정제"
+    },
+    {
+      "type": "commit",
+      "sha": "514e987",
+      "date": "2026-03-01T01:26:33+09:00",
+      "msg": "홈 필드라인 버그수정 + 스크롤줌인 + 마우스틸트 인터랙션",
+      "rawMsg": "feat: 홈 필드라인 버그수정 + 스크롤줌인 + 마우스틸트 인터랙션"
+    },
+    {
+      "type": "commit",
+      "sha": "dbf6b0c",
+      "date": "2026-03-01T01:09:38+09:00",
+      "msg": "design: 홈 히어로 RESONANCE 텍스트 제거 — 순수 필드라인",
+      "rawMsg": "design: 홈 히어로 RESONANCE 텍스트 제거 — 순수 필드라인"
+    },
+    {
+      "type": "commit",
+      "sha": "b3747e8",
+      "date": "2026-03-01T01:09:20+09:00",
+      "msg": "design: 홈 히어로 유리레이어+SVG 제거 — 필드라인 직접 노출",
+      "rawMsg": "design: 홈 히어로 유리레이어+SVG 제거 — 필드라인 직접 노출"
+    },
+    {
+      "type": "commit",
+      "sha": "b0bbcb0",
+      "date": "2026-02-28T21:16:11+09:00",
+      "msg": "레거시 삭제 + 누적 변경 커밋",
+      "rawMsg": "chore: 레거시 삭제 + 누적 변경 커밋"
+    },
+    {
+      "type": "commit",
+      "sha": "c918571",
+      "date": "2026-02-28T19:26:48+09:00",
+      "msg": "design: 모바일 최적화 + Margiela 감도 적용",
+      "rawMsg": "design: 모바일 최적화 + Margiela 감도 적용"
+    },
+    {
+      "type": "commit",
+      "sha": "12e2a6d",
+      "date": "2026-02-28T18:32:34+09:00",
+      "msg": "quick: 18:32 웹 업데이트",
+      "rawMsg": "quick: 18:32 웹 업데이트"
+    },
+    {
+      "type": "commit",
+      "sha": "20f5aa4",
+      "date": "2026-02-28T18:32:24+09:00",
+      "msg": "홈페이지 스크롤 및 콘텐츠 가시성 복구",
+      "rawMsg": "fix: 홈페이지 스크롤 및 콘텐츠 가시성 복구"
+    },
+    {
+      "type": "commit",
+      "sha": "d19561c",
+      "date": "2026-02-28T18:17:04+09:00",
+      "msg": "design: 디자인 일관성 딥워크 완료 (AD 권한)",
+      "rawMsg": "design: 디자인 일관성 딥워크 완료 (AD 권한)"
+    },
+    {
+      "type": "commit",
+      "sha": "96ea4f7",
+      "date": "2026-02-28T17:36:14+09:00",
+      "msg": "session-stop hook 추가 + Lock 자동 해제",
+      "rawMsg": "chore: session-stop hook 추가 + Lock 자동 해제"
+    },
+    {
+      "type": "commit",
+      "sha": "940f306",
+      "date": "2026-02-28T16:13:50+09:00",
+      "msg": "아틀리에 랜딩 완성 — intro 한 줄 + 예약 안내 + service-lead CSS",
+      "rawMsg": "feat: 아틀리에 랜딩 완성 — intro 한 줄 + 예약 안내 + service-lead CSS"
+    },
+    {
+      "type": "commit",
+      "sha": "c83e7e5",
+      "date": "2026-02-28T16:12:30+09:00",
+      "msg": "아틀리에 서비스 설명 섹션 제거 — 가격표만 유지",
+      "rawMsg": "refactor: 아틀리에 서비스 설명 섹션 제거 — 가격표만 유지"
+    },
+    {
+      "type": "commit",
+      "sha": "9c374aa",
+      "date": "2026-02-28T16:11:49+09:00",
+      "msg": "아틀리에 가격표 — 커트/디자인00/디자인01 구조로 변경",
+      "rawMsg": "fix: 아틀리에 가격표 — 커트/디자인00/디자인01 구조로 변경"
+    },
+    {
+      "type": "commit",
+      "sha": "a453634",
+      "date": "2026-02-28T16:09:01+09:00",
+      "msg": "아틀리에 가격 메뉴 + Archive 리스트 전환 + service CSS 완성 + practice.md II-8 채널별 어조 추가",
+      "rawMsg": "feat: 아틀리에 가격 메뉴 + Archive 리스트 전환 + service CSS 완성 + practice.md II-8 채널별 어조 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "a74c50e",
+      "date": "2026-02-28T10:47:47+09:00",
+      "msg": "서비스 페이지 어조 SA 필터 적용 — 한다체→합니다체, 부정선언→관찰서술",
+      "rawMsg": "style: 서비스 페이지 어조 SA 필터 적용 — 한다체→합니다체, 부정선언→관찰서술"
+    },
+    {
+      "type": "commit",
+      "sha": "2803285",
+      "date": "2026-02-28T08:53:26+09:00",
+      "msg": "Practice 전면 개편 — nav-list 패턴 + 서비스 랜딩 실상품화",
+      "rawMsg": "feat: Practice 전면 개편 — nav-list 패턴 + 서비스 랜딩 실상품화"
+    },
+    {
+      "type": "commit",
+      "sha": "f63741d",
+      "date": "2026-02-28T08:04:20+09:00",
+      "msg": "홈 home-below Magazine B 스타일 3섹션 리스트로 재설계",
+      "rawMsg": "style: 홈 home-below Magazine B 스타일 3섹션 리스트로 재설계"
+    },
+    {
+      "type": "commit",
+      "sha": "5a3d26e",
+      "date": "2026-02-28T07:53:48+09:00",
+      "msg": "홈 레이아웃 재설계 + Issue 넘버링 전면 제거",
+      "rawMsg": "style: 홈 레이아웃 재설계 + Issue 넘버링 전면 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "d454dae",
+      "date": "2026-02-28T06:50:11+09:00",
+      "msg": "favicon 경로 통일 + CSS dead code 제거",
+      "rawMsg": "fix: favicon 경로 통일 + CSS dead code 제거"
+    },
+    {
+      "type": "commit",
+      "sha": "0c734ac",
+      "date": "2026-02-28T02:28:06+09:00",
+      "msg": "서비스 페이지 콘텐츠 확장 + 합니다체 적용 (SAGE Service 채널)",
+      "rawMsg": "style: 서비스 페이지 콘텐츠 확장 + 합니다체 적용 (SAGE Service 채널)"
+    },
+    {
+      "type": "commit",
+      "sha": "4137923",
+      "date": "2026-02-28T02:21:22+09:00",
+      "msg": "about 페이지 THE ORIGIN 원문 반영 + practice 카드 여백 정규화",
+      "rawMsg": "style: about 페이지 THE ORIGIN 원문 반영 + practice 카드 여백 정규화"
+    },
+    {
+      "type": "commit",
+      "sha": "7b86ff2",
+      "date": "2026-02-28T02:07:25+09:00",
+      "msg": "the_origin v5.1 + 스키마 정규화 + backfill_signals 추가",
+      "rawMsg": "chore: the_origin v5.1 + 스키마 정규화 + backfill_signals 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "ab94e45",
+      "date": "2026-02-28T02:06:39+09:00",
+      "msg": "HEAD 표준화 — OG 메타 + 아이콘 + 캐시버스트 전 페이지 통일",
+      "rawMsg": "chore: HEAD 표준화 — OG 메타 + 아이콘 + 캐시버스트 전 페이지 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "6080ccc",
+      "date": "2026-02-28T01:18:00+09:00",
+      "msg": "About 전면 리뉴얼 — THE ORIGIN v5.0 롱폼 구현",
+      "rawMsg": "feat: About 전면 리뉴얼 — THE ORIGIN v5.0 롱폼 구현"
+    },
+    {
+      "type": "commit",
+      "sha": "25c2721",
+      "date": "2026-02-28T01:05:03+09:00",
+      "msg": "Templates Phase 1 — About 통합 + Practice 개별 페이지 + Brand Book",
+      "rawMsg": "feat: Templates Phase 1 — About 통합 + Practice 개별 페이지 + Brand Book"
+    },
+    {
+      "type": "commit",
+      "sha": "6eec0f3",
+      "date": "2026-02-27T22:23:10+09:00",
+      "msg": "practice/ 통합 + 소문자 통일 + state.md 리네임",
+      "rawMsg": "refactor: practice/ 통합 + 소문자 통일 + state.md 리네임"
+    },
+    {
+      "type": "commit",
+      "sha": "2f0b607",
+      "date": "2026-02-27T21:19:32+09:00",
+      "msg": "SAGE-ARCHITECT 대개편 — 멀티에이전트 위계 재설계 (34→23 md)",
+      "rawMsg": "refactor: SAGE-ARCHITECT 대개편 — 멀티에이전트 위계 재설계 (34→23 md)"
+    },
+    {
+      "type": "commit",
+      "sha": "6614121",
+      "date": "2026-02-27T03:37:55+09:00",
+      "msg": "about/index 매니페스토 + 브랜드 가이드 통합 (WIP)",
+      "rawMsg": "feat: about/index 매니페스토 + 브랜드 가이드 통합 (WIP)"
+    },
+    {
+      "type": "commit",
+      "sha": "5bd4238",
+      "date": "2026-02-26T20:12:51+09:00",
+      "msg": "proto 파일 archive → lab 이동 (명명규칙 준수)",
+      "rawMsg": "refactor: proto 파일 archive → lab 이동 (명명규칙 준수)"
+    },
+    {
+      "type": "commit",
+      "sha": "de80034",
+      "date": "2026-02-26T20:05:13+09:00",
+      "msg": "인프라 정비 — 캐시버스팅 반영 + 디자인토큰 강화 + 문서 동기화",
+      "rawMsg": "feat: 인프라 정비 — 캐시버스팅 반영 + 디자인토큰 강화 + 문서 동기화"
+    },
+    {
+      "type": "commit",
+      "sha": "8f6107e",
+      "date": "2026-02-26T19:07:34+09:00",
+      "msg": "archive/index.html 명명규칙 예외 추가 + 컴포넌트 주입",
+      "rawMsg": "fix: archive/index.html 명명규칙 예외 추가 + 컴포넌트 주입"
+    },
+    {
+      "type": "commit",
+      "sha": "6e104a6",
+      "date": "2026-02-26T19:02:19+09:00",
+      "msg": "컴포넌트 통일 — nav/footer/wave-bg 단일 소스 + 홈 리디자인",
+      "rawMsg": "feat: 컴포넌트 통일 — nav/footer/wave-bg 단일 소스 + 홈 리디자인"
+    },
+    {
+      "type": "commit",
+      "sha": "ffaa354",
+      "date": "2026-02-26T18:38:07+09:00",
+      "msg": "Design System 완결 — Dependency Graph + Visual Validator",
+      "rawMsg": "feat: Design System 완결 — Dependency Graph + Visual Validator"
+    },
+    {
+      "type": "commit",
+      "sha": "a66f8df",
+      "date": "2026-02-26T17:45:51+09:00",
+      "msg": "THE ORIGIN 생태계 완전 구축 — 58파일 레거시 전면 청산",
+      "rawMsg": "refactor: THE ORIGIN 생태계 완전 구축 — 58파일 레거시 전면 청산"
+    },
+    {
+      "type": "commit",
+      "sha": "493d066",
+      "date": "2026-02-26T15:28:53+09:00",
+      "msg": "인프라 구조조정 — Cloudflare Pages 분리 + VM API 전용화",
+      "rawMsg": "refactor: 인프라 구조조정 — Cloudflare Pages 분리 + VM API 전용화"
+    },
+    {
+      "type": "commit",
+      "sha": "7ddcbe7",
+      "date": "2026-02-26T09:33:44+09:00",
+      "msg": "푸터 네이버예약/주소 제거 + QUANTA 컴포넌트 통일 태스크 추가",
+      "rawMsg": "fix: 푸터 네이버예약/주소 제거 + QUANTA 컴포넌트 통일 태스크 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "b31f4bd",
+      "date": "2026-02-26T09:19:31+09:00",
+      "msg": "푸터에 Contact 섹션 분리 배치 (중간 랜딩 → 푸터)",
+      "rawMsg": "fix: 푸터에 Contact 섹션 분리 배치 (중간 랜딩 → 푸터)"
+    },
+    {
+      "type": "commit",
+      "sha": "7de625f",
+      "date": "2026-02-26T08:51:23+09:00",
+      "msg": "홈 하단 Contact 엔트리 추가 + QUANTA 핸드오프 갱신",
+      "rawMsg": "fix: 홈 하단 Contact 엔트리 추가 + QUANTA 핸드오프 갱신"
+    },
+    {
+      "type": "commit",
+      "sha": "2cdd00c",
+      "date": "2026-02-26T08:49:01+09:00",
+      "msg": "푸터 연락처 보강 + story→journey 파일명 통일",
+      "rawMsg": "fix: 푸터 연락처 보강 + story→journey 파일명 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "1c4867f",
+      "date": "2026-02-26T08:42:31+09:00",
+      "msg": "SVG 히어로 패밀리룩 통일 + 심볼 해상도 최적화",
+      "rawMsg": "feat: SVG 히어로 패밀리룩 통일 + 심볼 해상도 최적화"
+    },
+    {
+      "type": "commit",
+      "sha": "5cf741b",
+      "date": "2026-02-26T08:33:34+09:00",
+      "msg": "홈 히어로 리빌딩 — 로고 심볼 + 하단 세션 + 푸터 구체화",
+      "rawMsg": "feat: 홈 히어로 리빌딩 — 로고 심볼 + 하단 세션 + 푸터 구체화"
+    },
+    {
+      "type": "commit",
+      "sha": "5eb5888",
+      "date": "2026-02-26T08:20:54+09:00",
+      "msg": "배경색 톤다운 — warm beige → neutral gray 통일",
+      "rawMsg": "style: 배경색 톤다운 — warm beige → neutral gray 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "5b5eb1e",
+      "date": "2026-02-26T08:15:43+09:00",
+      "msg": "about.html 레거시도 Story → Journey 통일",
+      "rawMsg": "fix: about.html 레거시도 Story → Journey 통일"
+    },
+    {
+      "type": "commit",
+      "sha": "660baba",
+      "date": "2026-02-26T08:14:41+09:00",
+      "msg": "Story → Journey 용어 통일 (서사)",
+      "rawMsg": "fix: Story → Journey 용어 통일 (서사)"
+    },
+    {
+      "type": "commit",
+      "sha": "0875bbe",
+      "date": "2026-02-26T02:23:40+09:00",
+      "msg": "비주얼 Phase 1 — 캔버스 복구 + 파동 SVG + About/Practice 레이아웃",
+      "rawMsg": "feat: 비주얼 Phase 1 — 캔버스 복구 + 파동 SVG + About/Practice 레이아웃"
+    },
+    {
+      "type": "commit",
+      "sha": "7f23b3b",
+      "date": "2026-02-26T01:59:43+09:00",
+      "msg": "에세이 푸터 통일 (레거시 구조 → 신규 site-footer)",
+      "rawMsg": "fix: 에세이 푸터 통일 (레거시 구조 → 신규 site-footer)"
+    },
+    {
+      "type": "commit",
+      "sha": "90e1a3b",
+      "date": "2026-02-26T01:54:31+09:00",
+      "msg": "전체 네비/푸터 링크 일괄 통일 (Archive|Practice|About)",
+      "rawMsg": "fix: 전체 네비/푸터 링크 일괄 통일 (Archive|Practice|About)"
+    },
+    {
+      "type": "commit",
+      "sha": "2581f4d",
+      "date": "2026-02-26T01:50:08+09:00",
+      "msg": "HTML 리빌딩 + 카피 원칙 규격화",
+      "rawMsg": "feat: HTML 리빌딩 + 카피 원칙 규격화"
+    },
+    {
+      "type": "commit",
+      "sha": "7a2e050",
+      "date": "2026-02-25T23:15:23+09:00",
+      "msg": "크로스체크 5건 처리 + backend→core/ 이동",
+      "rawMsg": "refactor: 크로스체크 5건 처리 + backend→core/ 이동"
+    },
+    {
+      "type": "commit",
+      "sha": "14bb12e",
+      "date": "2026-02-25T23:07:06+09:00",
+      "msg": "website IA 확정 + assets/media 통합 + woosunho 포트폴리오",
+      "rawMsg": "refactor: website IA 확정 + assets/media 통합 + woosunho 포트폴리오"
+    },
+    {
+      "type": "commit",
+      "sha": "d6a448b",
+      "date": "2026-02-25T22:37:47+09:00",
+      "msg": "4축 구조 정렬 — directives/knowledge/core/website",
+      "rawMsg": "refactor: 4축 구조 정렬 — directives/knowledge/core/website"
+    },
+    {
+      "type": "commit",
+      "sha": "24de42a",
+      "date": "2026-02-25T00:34:18+09:00",
+      "msg": "Phase 30 완료 — 풀스택 리빌딩 + VM 배포",
+      "rawMsg": "feat: Phase 30 완료 — 풀스택 리빌딩 + VM 배포"
+    },
+    {
+      "type": "commit",
+      "sha": "168fb4c",
+      "date": "2026-02-25T00:30:12+09:00",
+      "msg": "Copyright 2024 유지 (저작권 연도)",
+      "rawMsg": "fix: Copyright 2024 유지 (저작권 연도)"
+    },
+    {
+      "type": "commit",
+      "sha": "b88e23b",
+      "date": "2026-02-25T00:29:23+09:00",
+      "msg": "Nav/Footer 컴포넌트 통일 (Phase 13-14)",
+      "rawMsg": "feat: Nav/Footer 컴포넌트 통일 (Phase 13-14)"
+    },
+    {
+      "type": "commit",
+      "sha": "a4a37ed",
+      "date": "2026-02-25T00:28:03+09:00",
+      "msg": "타이포그래피 + 색상 일관성 개선",
+      "rawMsg": "feat: 타이포그래피 + 색상 일관성 개선"
+    },
+    {
+      "type": "commit",
+      "sha": "775f62e",
+      "date": "2026-02-25T00:08:27+09:00",
+      "msg": "브랜드 메뉴얼 품질 업그레이드 — 색상 우선순위 체계 확립",
+      "rawMsg": "feat: 브랜드 메뉴얼 품질 업그레이드 — 색상 우선순위 체계 확립"
+    },
+    {
+      "type": "commit",
+      "sha": "8217418",
+      "date": "2026-02-24T23:27:12+09:00",
+      "msg": "perf: 폰트 로딩 최적화 + SSE 캐시 + admin 대시보드 개선",
+      "rawMsg": "perf: 폰트 로딩 최적화 + SSE 캐시 + admin 대시보드 개선"
+    },
+    {
+      "type": "commit",
+      "sha": "d5467a0",
+      "date": "2026-02-24T23:21:46+09:00",
+      "msg": "Three.js 헤어 렌더러 번들 + 포털 UI 정비",
+      "rawMsg": "feat: Three.js 헤어 렌더러 번들 + 포털 UI 정비"
+    },
+    {
+      "type": "commit",
+      "sha": "c402a54",
+      "date": "2026-02-24T23:01:38+09:00",
+      "msg": "모바일 hero 렌더 품질 개선",
+      "rawMsg": "fix: 모바일 hero 렌더 품질 개선"
+    },
+    {
+      "type": "commit",
+      "sha": "2288aa2",
+      "date": "2026-02-24T22:55:26+09:00",
+      "msg": "모바일 portrait 홈 최적화 — 필드 스케일 + 히어로 텍스트",
+      "rawMsg": "fix: 모바일 portrait 홈 최적화 — 필드 스케일 + 히어로 텍스트"
+    },
+    {
+      "type": "commit",
+      "sha": "72d2e35",
+      "date": "2026-02-24T22:41:48+09:00",
+      "msg": "홈 메인 페이지 UX 재설계 — Hero + Content 분리",
+      "rawMsg": "refactor: 홈 메인 페이지 UX 재설계 — Hero + Content 분리"
+    },
+    {
+      "type": "commit",
+      "sha": "503153b",
+      "date": "2026-02-24T22:39:23+09:00",
+      "msg": "Three.js 3D 헤어 실루엣 시스템 — Blender glTF 에셋 + 브라우저 실시간 렌더링",
+      "rawMsg": "feat: Three.js 3D 헤어 실루엣 시스템 — Blender glTF 에셋 + 브라우저 실시간 렌더링"
+    },
+    {
+      "type": "commit",
+      "sha": "16b1d6b",
+      "date": "2026-02-24T22:36:57+09:00",
+      "msg": "포털 3D 헤어 시각화 통합 — GLTFLoader + get_hair_style 함수 추가",
+      "rawMsg": "feat: 포털 3D 헤어 시각화 통합 — GLTFLoader + get_hair_style 함수 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "0c5df9e",
+      "date": "2026-02-24T22:36:46+09:00",
+      "msg": "모바일 최적화 — viewport/100dvh/input-zoom/nav-backdrop/Three.js 해상도",
+      "rawMsg": "fix: 모바일 최적화 — viewport/100dvh/input-zoom/nav-backdrop/Three.js 해상도"
+    },
+    {
+      "type": "commit",
+      "sha": "cb0e03b",
+      "date": "2026-02-24T22:28:18+09:00",
+      "msg": "백엔드 템플릿 3종 Design System v7.0 규격화",
+      "rawMsg": "refactor: 백엔드 템플릿 3종 Design System v7.0 규격화"
+    },
+    {
+      "type": "commit",
+      "sha": "d4bcd36",
+      "date": "2026-02-24T22:15:58+09:00",
+      "msg": "고객 포털 헤어 실루엣 시각화 시스템 통합",
+      "rawMsg": "feat: 고객 포털 헤어 실루엣 시각화 시스템 통합"
+    },
+    {
+      "type": "commit",
+      "sha": "ea49f0b",
+      "date": "2026-02-24T22:08:30+09:00",
+      "msg": "arc-row 5번째 span 레이아웃 붕괴 — cat+type 단일 span으로 병합",
+      "rawMsg": "fix: arc-row 5번째 span 레이아웃 붕괴 — cat+type 단일 span으로 병합"
+    },
+    {
+      "type": "commit",
+      "sha": "8a2992c",
+      "date": "2026-02-24T22:02:25+09:00",
+      "msg": "Archive 카테고리×타입 2-레이어 발행 시스템 구축",
+      "rawMsg": "feat: Archive 카테고리×타입 2-레이어 발행 시스템 구축"
+    },
+    {
+      "type": "commit",
+      "sha": "84a4498",
+      "date": "2026-02-24T21:41:16+09:00",
+      "msg": "UI/UX 일관성 리디자인 — bg-field.js 추출 + nav/CSS 표준화",
+      "rawMsg": "feat: UI/UX 일관성 리디자인 — bg-field.js 추출 + nav/CSS 표준화"
+    },
+    {
+      "type": "commit",
+      "sha": "0ed77c2",
+      "date": "2026-02-24T21:19:57+09:00",
+      "msg": "guard_rules v1.1 + reports archive + website",
+      "rawMsg": "chore: guard_rules v1.1 + reports archive + website"
+    },
+    {
+      "type": "commit",
+      "sha": "63613cb",
+      "date": "2026-02-24T18:46:14+09:00",
+      "msg": "Brand OS A-Z v2 — 동아시아 내러티브 + 이중 모드 카피 통합",
+      "rawMsg": "feat: Brand OS A-Z v2 — 동아시아 내러티브 + 이중 모드 카피 통합"
+    },
+    {
+      "type": "commit",
+      "sha": "d0394f0",
+      "date": "2026-02-24T17:22:26+09:00",
+      "msg": "폐기 파일 3개 삭제 (ralph_agent, nightguard_daemon, website/products)",
+      "rawMsg": "chore: 폐기 파일 3개 삭제 (ralph_agent, nightguard_daemon, website/products)"
+    },
+    {
+      "type": "commit",
+      "sha": "08156ca",
+      "date": "2026-02-24T17:14:42+09:00",
+      "msg": "nginx auth_basic 제거 + 프록시 연결 + 사이트 정상화",
+      "rawMsg": "fix: nginx auth_basic 제거 + 프록시 연결 + 사이트 정상화"
+    },
+    {
+      "type": "commit",
+      "sha": "79171a3",
+      "date": "2026-02-24T17:08:00+09:00",
+      "msg": "파일시스템 일괄 정리 + FILESYSTEM_MANIFEST 갱신",
+      "rawMsg": "chore: 파일시스템 일괄 정리 + FILESYSTEM_MANIFEST 갱신"
+    },
+    {
+      "type": "commit",
+      "sha": "cba63b1",
+      "date": "2026-02-24T17:05:16+09:00",
+      "msg": "shop·objects 브랜드 보이스 정리 — Coming Soon 제거, 반복 카피 축약, objects nav Lab 추가",
+      "rawMsg": "refactor: shop·objects 브랜드 보이스 정리 — Coming Soon 제거, 반복 카피 축약, objects nav Lab 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "1753d50",
+      "date": "2026-02-24T15:33:37+09:00",
+      "msg": "전수 조사 기반 파일시스템 구조 정리",
+      "rawMsg": "chore: 전수 조사 기반 파일시스템 구조 정리"
+    },
+    {
+      "type": "commit",
+      "sha": "2b0a74e",
+      "date": "2026-02-24T15:11:27+09:00",
+      "msg": "copyright year 2026 → 2024 복원",
+      "rawMsg": "fix: copyright year 2026 → 2024 복원"
+    },
+    {
+      "type": "commit",
+      "sha": "f5f6c7b",
+      "date": "2026-02-24T15:09:51+09:00",
+      "msg": "웹사이트 일관성 패치 — 모바일 nav slide-out, footer 통일, CSS 버전 bump",
+      "rawMsg": "style: 웹사이트 일관성 패치 — 모바일 nav slide-out, footer 통일, CSS 버전 bump"
+    },
+    {
+      "type": "commit",
+      "sha": "4020b7b",
+      "date": "2026-02-24T12:39:30+09:00",
+      "msg": "Sprint 6 — woohwahae.kr 슈퍼앱 통합 구조 구축",
+      "rawMsg": "feat: Sprint 6 — woohwahae.kr 슈퍼앱 통합 구조 구축"
+    },
+    {
+      "type": "commit",
+      "sha": "8460372",
+      "date": "2026-02-24T10:22:43+09:00",
+      "msg": "미추적 신규 파일 5개 추적 시작",
+      "rawMsg": "feat: 미추적 신규 파일 5개 추적 시작"
+    },
+    {
+      "type": "commit",
+      "sha": "634f7ee",
+      "date": "2026-02-24T08:01:22+09:00",
+      "msg": "LAYER OS Rebuild Phase 2A~4 — Brand OS + 파편정리 + 에이전트리빌딩 + 통합스키마",
+      "rawMsg": "feat: LAYER OS Rebuild Phase 2A~4 — Brand OS + 파편정리 + 에이전트리빌딩 + 통합스키마"
+    },
+    {
+      "type": "commit",
+      "sha": "25fc052",
+      "date": "2026-02-21T22:20:28+09:00",
+      "msg": "pre-renewal snapshot: website 52 files before full rebrand",
+      "rawMsg": "pre-renewal snapshot: website 52 files before full rebrand"
+    },
+    {
+      "type": "commit",
+      "sha": "1b7727f",
+      "date": "2026-02-18T23:17:10+09:00",
+      "msg": "feat(multiuse): 원소스 멀티유즈 — 1번 생성 → 5개 채널 동시 출력",
+      "rawMsg": "feat(multiuse): 원소스 멀티유즈 — 1번 생성 → 5개 채널 동시 출력"
+    },
+    {
+      "type": "commit",
+      "sha": "9115d73",
+      "date": "2026-02-18T21:02:13+09:00",
+      "msg": "harness: 세션 무결성 강제화 + Cortex 통합 + 필수 파일 생성",
+      "rawMsg": "harness: 세션 무결성 강제화 + Cortex 통합 + 필수 파일 생성"
+    },
+    {
+      "type": "commit",
+      "sha": "730fd80",
+      "date": "2026-02-18T19:28:13+09:00",
+      "msg": "publish: 2026-02-18 19:28",
+      "rawMsg": "publish: 2026-02-18 19:28"
+    },
+    {
+      "type": "commit",
+      "sha": "b43c033",
+      "date": "2026-02-18T19:27:28+09:00",
+      "msg": "publish: 2026-02-18 19:27",
+      "rawMsg": "publish: 2026-02-18 19:27"
+    },
+    {
+      "type": "commit",
+      "sha": "8e8bc68",
+      "date": "2026-02-18T18:15:44+09:00",
+      "msg": "Update 97layerOS: WOOHWAHAE website redesign and system sync",
+      "rawMsg": "Update 97layerOS: WOOHWAHAE website redesign and system sync"
+    },
+    {
+      "type": "commit",
+      "sha": "6d380a3",
+      "date": "2026-02-18T18:15:16+09:00",
+      "msg": "WOOHWAHAE website IA redesign (7->4 nav, integrate Photography)",
+      "rawMsg": "Refactor: WOOHWAHAE website IA redesign (7->4 nav, integrate Photography)"
+    },
+    {
+      "type": "commit",
+      "sha": "096abb0",
+      "date": "2026-02-18T13:53:06+09:00",
+      "msg": "feat(website): Archive 섹션 활성화 + 전체 페이지 연결",
+      "rawMsg": "feat(website): Archive 섹션 활성화 + 전체 페이지 연결"
+    },
+    {
+      "type": "commit",
+      "sha": "5bf6c05",
+      "date": "2026-02-18T10:54:17+09:00",
+      "msg": "fix(website): 슬로우 라이프 매거진 컨셉으로 복구",
+      "rawMsg": "fix(website): 슬로우 라이프 매거진 컨셉으로 복구"
+    },
+    {
+      "type": "commit",
+      "sha": "585b7ae",
+      "date": "2026-02-17T17:48:42+09:00",
+      "msg": "chore(website): 미사용 파일 삭제 + 구조 문서화",
+      "rawMsg": "chore(website): 미사용 파일 삭제 + 구조 문서화"
+    },
+    {
+      "type": "commit",
+      "sha": "45d09d3",
+      "date": "2026-02-17T17:48:00+09:00",
+      "msg": "refactor(website): nav 로고 단독화 + 카피 직접화",
+      "rawMsg": "refactor(website): nav 로고 단독화 + 카피 직접화"
+    },
+    {
+      "type": "commit",
+      "sha": "afd0185",
+      "date": "2026-02-17T17:43:52+09:00",
+      "msg": "refactor(website): 오리지널 로고 복원 + 카피 톤 조정 + CSS 추가",
+      "rawMsg": "refactor(website): 오리지널 로고 복원 + 카피 톤 조정 + CSS 추가"
+    },
+    {
+      "type": "commit",
+      "sha": "4e25d79",
+      "date": "2026-02-17T17:31:09+09:00",
+      "msg": "refactor(website): 디자인 전면 개선 — 구조 축소 + CSS 정리",
+      "rawMsg": "refactor(website): 디자인 전면 개선 — 구조 축소 + CSS 정리"
+    },
+    {
+      "type": "commit",
+      "sha": "5522805",
+      "date": "2026-02-17T17:20:59+09:00",
+      "msg": "temp: CNAME 임시 제거 — github.io 직접 확인용",
+      "rawMsg": "temp: CNAME 임시 제거 — github.io 직접 확인용"
+    },
+    {
+      "type": "commit",
+      "sha": "3506d90",
+      "date": "2026-02-17T16:52:47+09:00",
+      "msg": "PWA 전환 + 어드민 패널 구축",
+      "rawMsg": "feat: PWA 전환 + 어드민 패널 구축"
+    },
+    {
+      "type": "commit",
+      "sha": "ad093a9",
+      "date": "2026-02-17T16:39:31+09:00",
+      "msg": "feat(website): v3 — Aesop 미감 + 영어 통일 + Hub 6칸 + 햄버거 메뉴",
+      "rawMsg": "feat(website): v3 — Aesop 미감 + 영어 통일 + Hub 6칸 + 햄버거 메뉴"
+    },
+    {
+      "type": "commit",
+      "sha": "0c88848",
+      "date": "2026-02-17T16:15:29+09:00",
+      "msg": "feat(website): v2 브랜드 허브 재설계",
+      "rawMsg": "feat(website): v2 브랜드 허브 재설계"
+    },
+    {
+      "type": "commit",
+      "sha": "b804933",
+      "date": "2026-02-17T15:38:17+09:00",
+      "msg": "feat(website): 홈페이지 허브 구조 구축",
+      "rawMsg": "feat(website): 홈페이지 허브 구조 구축"
+    },
+    {
+      "type": "commit",
+      "sha": "fdeab94",
+      "date": "2026-02-17T15:17:11+09:00",
+      "msg": "WOOHWAHAE 홈페이지 + 전체 파이프라인 구축",
+      "rawMsg": "feat: WOOHWAHAE 홈페이지 + 전체 파이프라인 구축"
+    },
+    {
+      "type": "commit",
+      "sha": "37f4bcb",
+      "date": "2026-02-16T00:00:45+09:00",
+      "msg": "Phase 1 완료 - 세션 연속성 + 멀티에이전트 병렬 + 자산 추적",
+      "rawMsg": "feat: Phase 1 완료 - 세션 연속성 + 멀티에이전트 병렬 + 자산 추적"
+    },
+    {
+      "type": "commit",
+      "sha": "84a7321",
+      "date": "2026-02-15T02:22:29+09:00",
+      "msg": "텔레그램 통신 복구 및 5-Agent Hub 통합 엔진 엔진 고도화",
+      "rawMsg": "feat: 텔레그램 통신 복구 및 5-Agent Hub 통합 엔진 엔진 고도화"
+    }
+  ]
+}

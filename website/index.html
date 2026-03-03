@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="/assets/css/style.css?v=b47e5689">
+<link rel="stylesheet" href="/assets/css/style.css?v=feaa73ff">
 <script>(function(){var h=new Date().getHours();document.documentElement.className=h<6?'time-dawn':h<18?'time-day':h<22?'time-evening':'time-night';})();</script>
 <!-- /COMPONENT:head -->
   <link href="assets/media/brand/icon-192.png" rel="apple-touch-icon" />
@@ -70,9 +70,9 @@
   <!-- 홈 히어로: 100dvh — 필드라인이 곧 비주얼 -->
   <section class="home-hero">
     <div class="home-hero__elog-wrap">
-      <p class="home-hero__elog-trigger" id="home-elog-trigger"><span id="home-clock"></span>처음 만듭니다. 계속 달라집니다. <span class="home-elog-cta">↓ 기록</span></p>
+      <p class="home-hero__elog-trigger" id="home-elog-trigger"><span id="home-clock"></span>[beta] 웹개발은 처음이라 오류가 있을 수 있습니다.<br><span class="home-elog-cta">↓ 로그보기</span> <a class="home-elog-cta" href="/lab/changelog/" style="text-decoration:none;margin-left:0.8em;opacity:0.5;">→ 전체</a></p>
       <div class="home-hero__elog-panel" id="home-elog-panel" aria-hidden="true">
-        <span class="elog elog--loading"><time>—</time>불러오는 중</span>
+        <span class="elog elog--loading"><time>—</time>···</span>
       </div>
     </div>
     <nav class="home-hero__nav">
@@ -122,38 +122,114 @@
     updateClock();
     setInterval(updateClock, 60000);
 
-    /* GitHub 커밋 로그 fetch */
-    function formatDate(iso) {
+    /* 상대 시간 */
+    function relativeTime(iso) {
+      var diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+      if (diff < 60)   return '방금';
+      if (diff < 3600) return Math.floor(diff / 60) + '분 전';
+      if (diff < 86400) return Math.floor(diff / 3600) + '시간 전';
+      if (diff < 86400 * 7) return Math.floor(diff / 86400) + '일 전';
       var d = new Date(iso);
-      var y = d.getFullYear();
-      var mo = String(d.getMonth() + 1).padStart(2, '0');
-      var dd = String(d.getDate()).padStart(2, '0');
-      var h = String(d.getHours()).padStart(2, '0');
-      var mi = String(d.getMinutes()).padStart(2, '0');
-      return y + '.' + mo + '.' + dd + ' ' + h + ':' + mi;
+      return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
     }
 
     function stripPrefix(msg) {
-      /* feat:, fix:, chore: 등 제거 */
-      return msg.replace(/^(feat|fix|refactor|chore|style|docs|test):\s*/i, '').split('\n')[0].trim();
+      var s = msg.replace(/^(feat|fix|refactor|chore|style|docs|test):\s*/i, '').split('\n')[0].trim();
+      return s.length > 20 ? s.slice(0, 20) + '···' : s;
+    }
+
+    var cachedCommits = [];
+    var cachedStats = null;
+    var BASE = 'https://api.github.com/repos/97layer/layeros/';
+
+    function miniBar(val, max, len) {
+      len = len || 6;
+      var filled = Math.max(1, Math.round((val / max) * len));
+      return '▓'.repeat(Math.min(filled, len)) + '░'.repeat(len - Math.min(filled, len));
+    }
+
+    function calcStats(commits) {
+      var now = Date.now();
+      var days = Math.floor((now - new Date('2026-02-18').getTime()) / 86400000) + 1;
+
+      /* 시간대 분포 (KST = UTC+9) */
+      var blocks = [0, 0, 0, 0]; /* 새벽(0-5), 오전(6-11), 오후(12-17), 밤(18-23) */
+      commits.forEach(function(c) {
+        var h = (new Date(c.commit.author.date).getUTCHours() + 9) % 24;
+        blocks[Math.floor(h / 6)]++;
+      });
+      var peakBlock = blocks.indexOf(Math.max.apply(null, blocks));
+      var timeLabels = ['새벽형', '오전형', '오후형', '밤형'];
+      var peakLabel = timeLabels[peakBlock];
+
+      /* fix vs feat 비율 */
+      var typeCounts = { fix: 0, feat: 0, style: 0, chore: 0, refactor: 0, other: 0 };
+      commits.forEach(function(c) {
+        var m = c.commit.message.match(/^(feat|fix|style|chore|refactor):/i);
+        if (m) typeCounts[m[1].toLowerCase()]++;
+        else typeCounts.other++;
+      });
+      var fixPct = Math.round(typeCounts.fix / commits.length * 100);
+      var featPct = Math.round(typeCounts.feat / commits.length * 100);
+      var dominant = typeCounts.fix > typeCounts.feat ? '고침이 더 많다' : '만들기가 더 많다';
+      var dominantPct = typeCounts.fix > typeCounts.feat ? fixPct : featPct;
+
+      return {
+        commits: commits.length,
+        days: days,
+        peakLabel: peakLabel,
+        peakPct: Math.round(Math.max.apply(null, blocks) / commits.length * 100),
+        dominant: dominant,
+        dominantPct: dominantPct
+      };
+    }
+
+    function renderPanel() {
+      if (!cachedCommits.length) return;
+
+      var statsHtml = '';
+      if (cachedStats) {
+        var s = cachedStats;
+        var rows = [
+          { em: '손질',   bar: miniBar(s.commits, Math.max(s.commits, 80)), val: s.commits + '번' },
+          { em: '기간',   bar: miniBar(s.days, Math.max(s.days, 60)),       val: s.days + '일째' },
+          { em: '작업',   bar: miniBar(s.peakPct, 100),                     val: s.peakLabel },
+          { em: '비율',   bar: miniBar(s.dominantPct, 100),                 val: s.dominant }
+        ];
+        statsHtml = '<div class="elog-stats">' +
+          rows.map(function(r) {
+            return '<span class="elog-stats__row"><em>' + r.em + '</em>' +
+              '<span class="elog-bar">' + r.bar + '</span><b>' + r.val + '</b></span>';
+          }).join('') +
+          '</div><div class="elog-divider"></div>';
+      }
+
+      var logsHtml = cachedCommits.slice(0, 8).map(function(c) {
+        return '<span class="elog"><time>' + relativeTime(c.commit.author.date) + '</time>' +
+          stripPrefix(c.commit.message) + '</span>';
+      }).join('');
+
+      panel.innerHTML = statsHtml + logsHtml;
     }
 
     function loadCommits() {
-      fetch('https://api.github.com/repos/97layer/layeros/commits?per_page=10&path=website/')
+      fetch(BASE + 'commits?per_page=100&path=website/')
         .then(function(r) { return r.json(); })
         .then(function(commits) {
           if (!Array.isArray(commits) || !commits.length) return;
-          var html = commits.map(function(c) {
-            var date = formatDate(c.commit.author.date);
-            var msg = stripPrefix(c.commit.message);
-            return '<span class="elog"><time>' + date + '</time>' + msg + '</span>';
-          }).join('');
-          panel.innerHTML = html;
+          cachedCommits = commits;
+          cachedStats = calcStats(commits);
+          renderPanel();
         })
         .catch(function() {
           panel.innerHTML = '<span class="elog"><time>—</time>기록을 불러올 수 없다.</span>';
         });
     }
+
+    /* 상대 시간 자동 갱신 (1분마다) */
+    setInterval(function() {
+      if (cachedCommits.length && panel.classList.contains('is-open')) renderPanel();
+    }, 60000);
 
     /* 토글 — 첫 열기 시 fetch */
     var fetched = false;
