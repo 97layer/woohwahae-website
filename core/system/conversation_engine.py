@@ -125,6 +125,9 @@ class ConversationEngine:
             if len(ctx['history']) % MEMORY_UPDATE_EVERY == 0:
                 self._update_long_term_memory(message, answer)
 
+            # 대화 → 신호 루프: 인사이트성 메시지를 SA 파이프라인으로 투입
+            self._maybe_signal_conversation(user_id, message, answer)
+
             return answer
 
         except Exception as e:
@@ -394,6 +397,63 @@ JSON만 출력:
 
         lm_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
         logger.debug("장기 기억 업데이트: +%d개 개념", len(extracted.get('concepts', [])))
+
+    # ─── 대화 → 신호 루프 ────────────────────────────────────────
+
+    def _maybe_signal_conversation(self, user_id: str, message: str, answer: str) -> None:
+        """
+        인사이트성 대화를 signal JSON으로 자동 저장 → SA 파이프라인 투입.
+
+        기준:
+        - 50자 이상 (단답/명령 제외)
+        - 운영 명령 패턴 아닐 것 (배포/재시작/에러 등)
+        - 브랜드/개인/라이프스타일 키워드 포함 OR 100자 이상
+        """
+        if len(message) < 50:
+            return
+
+        ops_keywords = [
+            'deploy', 'restart', '배포', '재시작', '에러', '오류', '버그',
+            'fix', 'ssh', 'git push', 'git pull', 'install', '설치', '로그', 'log', 'status',
+        ]
+        lower_msg = message.lower()
+        if any(kw in lower_msg for kw in ops_keywords):
+            return
+
+        brand_keywords = [
+            '우화해', 'woohwahae', '슬로우', '브랜드', '에세이', '고객', '철학',
+            '공간', '본질', '디자인', '헤어', '아틀리에', '소거', '여백', '기록',
+            '일상', '의도', '방향', '인생', '커리어', '비즈니스', '수익',
+        ]
+        has_brand = any(kw in lower_msg for kw in brand_keywords)
+        if not has_brand and len(message) < 100:
+            return
+
+        signals_dir = self.knowledge_dir / 'signals'
+        signals_dir.mkdir(exist_ok=True)
+
+        ts = datetime.now()
+        filename = 'conv_%s.json' % ts.strftime('%Y%m%d_%H%M%S')
+        signal_path = signals_dir / filename
+
+        if signal_path.exists():
+            return
+
+        signal = {
+            'signal_id': 'conv_%s' % ts.strftime('%Y%m%d_%H%M%S'),
+            'type': 'conversation_insight',
+            'content': message[:500],
+            'captured_at': ts.isoformat(),
+            'from_user': str(user_id),
+            'status': 'new',
+            'source': 'telegram_conversation',
+            'meta': {'response_preview': answer[:200]},
+        }
+        try:
+            signal_path.write_text(json.dumps(signal, ensure_ascii=False, indent=2), encoding='utf-8')
+            logger.info("💡 대화 신호 생성: %s (%d자)", filename, len(message))
+        except Exception as e:
+            logger.warning("대화 신호 생성 실패: %s", e)
 
     # ─── 유틸 ────────────────────────────────────────────────────
 

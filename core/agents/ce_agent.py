@@ -393,6 +393,25 @@ JSON만 반환.
 
         category_hint = f"\n카테고리: {content_category}" if content_category else ""
 
+        # 대화 패턴 컨텍스트 (Gardener가 추출한 현재 관심사 → 에세이 방향 힌트)
+        conv_context_block = ""
+        try:
+            lm_path = PROJECT_ROOT / 'knowledge' / 'long_term_memory.json'
+            if lm_path.exists():
+                _lm = json.loads(lm_path.read_text(encoding='utf-8'))
+                _cp = _lm.get('conversation_patterns', {})
+                _concerns = _cp.get('active_concerns', [])
+                _brand_ctx = _cp.get('brand_context', '')
+                _lines = []
+                if _concerns:
+                    _lines.append('현재 관심사: ' + ', '.join(_concerns[:3]))
+                if _brand_ctx:
+                    _lines.append('브랜드 맥락: ' + _brand_ctx)
+                if _lines:
+                    conv_context_block = '\n'.join(_lines)
+        except Exception:
+            pass
+
         prompt = f"""너는 WOOHWAHAE의 편집장이다. SAGE-ARCHITECT 인격으로 쓴다.
 
 주제: {theme}{category_hint}
@@ -460,7 +479,7 @@ JSON만 반환.
 
 ---
 
-## 관찰 원문 흐름 (신호 {entry_count}개)
+{f"## 현재 관심 맥락 (참고)\n{conv_context_block}\n\n---\n\n" if conv_context_block else ""}## 관찰 원문 흐름 (신호 {entry_count}개)
 {context_text}
 
 ---
