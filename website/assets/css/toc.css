@@ -1,0 +1,92 @@
+/**
+ * LAYER OS — Thought Traces (Universal Mobile TOC) CSS
+ * "사유의 궤적: Glassmorphism Floating Navigation"
+ */
+
+.thought-traces {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    z-index: 2000;
+    width: auto;
+    min-width: 140px;
+    max-width: 85vw;
+    transition: transform 0.8s var(--ease), opacity 0.8s var(--ease);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 모바일 전용 레이아웃 */
+@media (min-width: 768px) {
+    .thought-traces {
+        display: none !important;
+        /* 데스크탑에서는 숨김 */
+    }
+}
+
+.thought-traces.is-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.thought-traces__bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background: var(--glass-surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    position: relative;
+}
+
+.thought-traces__label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: var(--fw-light);
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+    transition: opacity 0.4s var(--ease);
+}
+
+/* 업데이트 시 미세한 맥박 애니메이션 */
+.thought-traces__bar.is-updating .thought-traces__label {
+    animation: thought-pulse 0.6s var(--ease);
+}
+
+@keyframes thought-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(0.98);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 하단 진행선 (미니멀) */
+.thought-traces__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1.5px;
+    background: var(--text);
+    width: 0;
+    opacity: 0.15;
+    transition: width 0.3s var(--ease);
+}

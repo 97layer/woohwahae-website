@@ -716,7 +716,7 @@ a {
   border: none;
   border-bottom: 1px solid var(--line);
   background: transparent;
-  font-family: var(--font-kr);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 1rem;
   text-align: center;
   outline: none;
@@ -734,7 +734,7 @@ a {
   border: none;
   padding: 0.6rem 2.5rem;
   font-size: 0.78rem;
-  font-family: var(--font-kr);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   letter-spacing: 0.12em;
   cursor: pointer;
   transition: opacity 0.3s var(--ease);
