@@ -7811,7 +7811,7 @@ body.is-loaded .home-preloader__logo {
 /* ─── About Body Text ─── */
 .about-body-text p {
   font-size: 0.9rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.9;
   color: var(--text-sub);
   margin-bottom: 1.2rem;
@@ -7851,14 +7851,14 @@ body.is-loaded .home-preloader__logo {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  color: var(--text-faint);
+  color: var(--text-sub);
   text-transform: uppercase;
   margin-bottom: 0.5rem;
 }
 
 .etymology-desc {
   font-size: 0.82rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.8;
   color: var(--text-sub);
 }
@@ -8965,7 +8965,7 @@ body::after {
   font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.16em;
-  color: var(--text-faint);
+  color: var(--text-sub);
   text-transform: uppercase;
 }
 p.about-zero-label { margin-bottom: var(--space-md); }
@@ -9060,17 +9060,17 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
-  color: var(--text-faint);
+  color: var(--text-sub);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
   padding: 0.6rem 0;
   display: block;
 }
-.about-toc a:hover { color: var(--text-sub); }
-.about-toc a.is-active { color: var(--text-sub); }
+.about-toc a:hover { color: var(--text); }
+.about-toc a.is-active { color: var(--text); }
 .about-preamble {
   font-size: 0.88rem;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--text-sub);
   line-height: 1.7;
   margin-bottom: var(--space-lg);
@@ -9095,7 +9095,7 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   font-family: var(--font-mono);
   font-size: 0.58rem;
   letter-spacing: 0.18em;
-  color: var(--text-faint);
+  color: var(--text-sub);
   text-transform: uppercase;
   display: block;
   margin-bottom: var(--space-md);
