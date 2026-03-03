@@ -137,6 +137,7 @@ class TelegramSecretaryV6:
             f"/report — 오늘 처리 요약\n"
             f"/growth [YYYY-MM] — 성장 지표\n"
             f"/signal [텍스트] — 신호 직접 투입\n"
+            f"/note [제목] [내용] — 텍스트 메모 저장 (분석 없음)\n"
             f"/client list|add|info|due — 고객 관리\n"
             f"/visit <이름> <서비스> [만족도] — 방문 기록\n"
             f"/pending — 가드너 제안 목록\n\n"
@@ -919,6 +920,69 @@ class TelegramSecretaryV6:
             await update.message.reply_text(f"신호 투입 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
 
     @admin_only
+    async def note_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """/note [제목] — 텍스트를 knowledge/docs/[제목].md로 저장 (분석 없음)"""
+        args = context.args or []
+        # 첫 번째 단어 = 제목 (없으면 타임스탬프)
+        if args:
+            title = args[0].strip()
+            body = ' '.join(args[1:]).strip()
+        else:
+            title = ''
+            body = ''
+
+        # 본문이 없으면 사용법 안내
+        if not body:
+            await update.message.reply_text(
+                "사용법: <code>/note 제목 본문 내용</code>\n\n"
+                "예: <code>/note career_draft 2012년 미용학원 등록...</code>\n\n"
+                "저장 위치: knowledge/docs/[제목].md\n"
+                "분석 없음 — 나중에 직접 지시해서 활용.",
+                parse_mode=constants.ParseMode.HTML
+            )
+            return
+
+        try:
+            from datetime import datetime as _dt
+            docs_dir = PROJECT_ROOT / 'knowledge' / 'docs'
+            docs_dir.mkdir(parents=True, exist_ok=True)
+
+            # 파일명: 소문자, 공백→언더스코어
+            safe_title = title.lower().replace(' ', '_') or _dt.now().strftime('note_%Y%m%d_%H%M%S')
+            # .md 중복 방지
+            if not safe_title.endswith('.md'):
+                safe_title += '.md'
+
+            note_path = docs_dir / safe_title
+
+            # 기존 파일 있으면 append, 없으면 신규 생성
+            ts = _dt.now().strftime('%Y-%m-%d %H:%M')
+            if note_path.exists():
+                existing = note_path.read_text(encoding='utf-8')
+                note_path.write_text(
+                    existing + f"\n\n---\n_추가: {ts}_\n\n{body}",
+                    encoding='utf-8'
+                )
+                action = "추가"
+            else:
+                note_path.write_text(
+                    f"_저장: {ts}_\n\n{body}",
+                    encoding='utf-8'
+                )
+                action = "생성"
+
+            preview = _escape_html(body[:80])
+            await update.message.reply_text(
+                f"📝 <b>노트 {action}</b>\n\n"
+                f"파일: <code>knowledge/docs/{safe_title}</code>\n\n"
+                f"\"{preview}\"",
+                parse_mode=constants.ParseMode.HTML
+            )
+        except Exception as e:
+            logger.error("note_command error: %s", e)
+            await update.message.reply_text(f"노트 저장 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
+    @admin_only
     async def report_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """/report — 오늘 처리 요약"""
         try:
@@ -1338,6 +1402,7 @@ class TelegramSecretaryV6:
         application.add_handler(CommandHandler("status", self.status_command))
         application.add_handler(CommandHandler("publish", self.publish_command))
         application.add_handler(CommandHandler("signal", self.signal_command))
+        application.add_handler(CommandHandler("note", self.note_command))
         application.add_handler(CommandHandler("report", self.report_command))
         application.add_handler(CommandHandler("draft", self.draft_command))
         application.add_handler(CommandHandler("corpus", self.corpus_command))
