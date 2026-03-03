@@ -7625,7 +7625,7 @@ body.is-loaded .home-preloader__logo {
   font-size: 0.58rem;
   font-weight: 300;
   letter-spacing: var(--ls-label);
-  color: var(--text-faint);
+  color: var(--text-sub);
   text-transform: uppercase;
   margin-bottom: 1.5rem;
   padding-top: 2rem;
@@ -9061,7 +9061,7 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   font-family: var(--font-mono);
   font-size: 0.6rem;
   letter-spacing: 0.16em;
-  color: var(--text-faint);
+  color: var(--text-sub);
   text-transform: uppercase;
   display: block;
   margin-top: 0.4rem;
@@ -9237,36 +9237,24 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   border-bottom: 1px solid var(--line);
 }
 
-/* ── 모바일 TOC 플로트 바 ── */
+/* ── 섹션 번호 코너 인디케이터 ── */
 #about-toc-float {
   position: fixed;
-  top: 60px;
-  left: 0;
-  right: 0;
+  bottom: 28px;
+  right: 20px;
   z-index: 50;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line);
-  padding: 0.55rem var(--space-md);
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.14em;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
   color: var(--text-sub);
   text-transform: uppercase;
   opacity: 0;
-  transform: translateY(-100%);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.3s ease;
   pointer-events: none;
-  display: none;
+  user-select: none;
 }
 #about-toc-float.is-visible {
   opacity: 1;
-  transform: translateY(0);
-}
-@media (max-width: 768px) {
-  #about-toc-float { display: block; }
-}
-@media (min-width: 769px) {
-  #about-toc-float { top: 80px; }
 }
 
 @media (max-width: 640px) {
