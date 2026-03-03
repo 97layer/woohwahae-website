@@ -8988,6 +8988,7 @@ body::after {
   text-transform: uppercase;
 }
 p.about-zero-label { margin-bottom: var(--space-md); }
+#about-clock:not(:empty)::after { content: ' · '; }
 
 .page-about .journey-title {
   font-size: clamp(2.4rem, 5.5vw, 4.8rem);
