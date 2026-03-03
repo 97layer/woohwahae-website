@@ -7582,30 +7582,26 @@ body.is-loaded .home-preloader__logo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.2rem 0;
+  padding: 0.9rem 0;
   border-top: 1px solid var(--line);
   text-decoration: none;
-  color: var(--text);
-  font-size: 1.05rem;
-  font-weight: 300;
-  letter-spacing: 0.02em;
+  color: var(--text-sub);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
   border-bottom: none;
   border-left: none;
   border-right: none;
-  transition: opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: color 0.3s ease;
 }
+.editor-link:hover { color: var(--text); }
 
 .editor-link:last-child {
   border-bottom: 1px solid var(--line);
 }
 
-.editor-link:hover {
-  opacity: 0.6;
-}
-
 .editor-link span:last-child {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
   color: var(--text-faint);
 }
 
