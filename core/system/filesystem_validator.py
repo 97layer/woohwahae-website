@@ -62,6 +62,7 @@ ALLOWED_PATTERNS = {
     "website/archive/": [
         r"^(essay|magazine|lookbook)-\d{3}-.+/index\.html$",
         r"^index\.(html|json)$",
+        r"^lookbook/assets/images/lookbook-\d{2}-.+\.(jpg|jpeg|png|webp)$",
     ],
 }
 
