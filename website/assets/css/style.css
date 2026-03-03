@@ -9196,12 +9196,17 @@ body.page-about { overflow-x: hidden; }
 .about-toc a:hover { color: var(--text); }
 .about-toc a.is-active { color: var(--text); }
 .about-preamble {
-  font-size: 0.88rem;
-  font-weight: 400;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: var(--fw-light);
+  letter-spacing: 0.04em;
   color: var(--text-sub);
-  line-height: 1.7;
+  line-height: 1.75;
   max-width: var(--max-content);
   margin-bottom: var(--space-lg);
+}
+@media (max-width: 640px) {
+  .about-preamble { font-size: 0.64rem; letter-spacing: 0.02em; }
 }
 .about-declaration {
   margin-top: var(--space-lg);
