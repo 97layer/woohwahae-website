@@ -7617,7 +7617,7 @@ body.is-loaded .home-preloader__logo {
 .about-section {
   max-width: var(--max-content);
   margin: 0 auto;
-  padding: 0 var(--space-md) 2rem;
+  padding: 0 var(--space-md) 1.25rem;
 }
 
 .about-section__label {
@@ -8106,6 +8106,10 @@ body.is-loaded .home-preloader__logo {
 .footer-legal a:hover { color: var(--text-sub); }
 
 @media (max-width: 640px) {
+  .site-footer {
+    margin-top: 2rem;
+  }
+
   .footer-mid {
     flex-direction: column;
     align-items: flex-start;
@@ -9140,8 +9144,8 @@ body.page-about { overflow-x: hidden; }
   margin-bottom: var(--space-lg);
 }
 .about-declaration {
-  margin-top: var(--space-lg);
-  padding-top: var(--space-md);
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
   border-top: 1px solid var(--line);
   font-size: 1rem;
   font-weight: 400;
@@ -9326,23 +9330,19 @@ body.page-about { overflow-x: hidden; }
   .editor-link:last-child { border-bottom: 1px solid var(--line); }
   .appendix-drawer { padding: var(--space-lg) var(--space-md); }
 
-  /* 인디케이터 모바일: 하단 전체폭 바로 전환 — 텍스트 침범 없음 */
+  /* 인디케이터 모바일: 헤더 하단 서브바 — nav(60px) 바로 아래 */
   #about-toc-float {
     left: 0;
     right: 0;
-    bottom: 0;
-    padding: 6px 1rem;
-    border-top: 1px solid var(--border);
+    top: 60px;
+    bottom: auto;
+    padding: 5px 1rem;
+    border-bottom: 1px solid var(--border);
     border-left: none;
     font-size: 0.58rem;
-    text-align: right;
+    text-align: left;
     background: var(--bg);
-  }
-
-  /* 콘텐츠 하단 패딩 — 바 높이만큼 확보 */
-  .page-about main,
-  .page-about .container--wide {
-    padding-bottom: 2.5rem;
+    z-index: 190;
   }
 }
 
