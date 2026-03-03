@@ -9068,33 +9068,6 @@ body::after {
   margin-bottom: var(--space-lg);
 }
 
-/* 소거라는 —— 타이프라이터 (IBM mono 터미널 스타일) */
-.about-hero-text {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: var(--fw-light);
-  letter-spacing: 0.16em;
-  color: var(--text-sub);
-  line-height: 1.9;
-  text-transform: uppercase;
-  margin-top: 0.4rem;
-  margin-bottom: var(--space-sm);
-  min-height: 1.5em;
-}
-.about-hero-cursor {
-  display: inline-block;
-  width: 0.55em;
-  height: 0.8em;
-  background: var(--text-sub);
-  margin-left: 0.15em;
-  vertical-align: text-bottom;
-  animation: cursor-blink 0.9s step-end infinite;
-}
-@keyframes cursor-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-.about-hero-cursor.is-done { animation: none; opacity: 0; }
 
 .about-zero-label {
   font-family: var(--font-mono);
