@@ -10,17 +10,18 @@
 <meta content="website" property="og:type"/>
 <meta content="https://woohwahae.kr/about/" property="og:url"/>
 <title>About — WOOHWAHAE</title>
-<meta content="#E3E2E0" name="theme-color"/>
-<link href="/assets/media/brand/symbol.png" rel="icon" type="image/png"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
-<link href="/assets/css/style.css?v=109a12e5" rel="stylesheet"/>
-<script>
-(function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
-</script>
+  <!-- COMPONENT:head -->
+<meta name="theme-color" content="#E3E2E0">
+<link rel="icon" href="/assets/media/brand/symbol.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="/assets/css/style.css?v=c1e5be68">
+<script>(function(){var h=new Date().getHours();document.documentElement.className=h<6?'time-dawn':h<18?'time-day':h<22?'time-evening':'time-night';})();</script>
+<!-- /COMPONENT:head -->
+
 </head>
 <body class="page-about">
 <div id="reading-progress"></div>
@@ -61,10 +62,10 @@
     <p class="about-zero-label about-zero-label--toggle" data-reveal id="about-zero-trigger"><span id="about-clock"></span>조금씩 수정됩니다. <span class="about-zero-cta">눌러보세요</span></p>
     <div class="about-zero-label about-zero-easter" id="about-zero-easter" aria-hidden="true">
     <!-- EASTER:START -->
-    <span class="elog"><time>2026.03.03 17:04</time>글을 447번 고쳤습니다. 7,463,717줄이 사라졌습니다.</span>
-    <span class="elog"><time>2026.03.02 17:34</time>디렉터가 밤낮없이 수정하고 있습니다.</span>
-    <span class="elog"><time>2026.02.24 21:40</time>지운 것이 남은 것보다 많습니다.</span>
-    <span class="elog"><time>2026.02.14 00:08</time>비워야 보인다고 믿습니다. — LAYER OS</span>
+    <span class="elog"><time>2026.03.03 20:16</time>글을 477번 고쳤습니다. 7,466,433줄이 사라졌습니다.</span>
+    <span class="elog"><time>2026.03.02 22:52</time>디렉터가 밤낮없이 수정하고 있습니다.</span>
+    <span class="elog"><time>2026.02.24 22:39</time>지운 것이 남은 것보다 많습니다.</span>
+    <span class="elog"><time>2026.02.14 00:08</time>비워야 보인다고 믿습니다. — 97layer</span>
     <!-- EASTER:END -->
     </div>
     <nav class="about-toc" data-reveal>
@@ -319,119 +320,5 @@
 <!-- /COMPONENT:footer -->
 
 <script defer src="/assets/js/site.js?v=8891238c"></script>
-<script>
-(function () {
-  document.querySelectorAll('[data-accordion]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var body = document.getElementById(btn.dataset.accordion);
-      if (!body) return;
-      var isOpen = body.classList.contains('is-open');
-      /* 모두 닫기 */
-      document.querySelectorAll('.about-appendix__body').forEach(function (b) { b.classList.remove('is-open'); });
-      document.querySelectorAll('[data-accordion]').forEach(function (b) {
-        b.setAttribute('aria-expanded', 'false');
-        var sp = b.querySelector('span');
-        if (sp && sp.textContent !== '→') sp.textContent = '+';
-      });
-      if (!isOpen) {
-        body.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-        var sp = btn.querySelector('span');
-        if (sp) sp.textContent = '×';
-      }
-    });
-  });
-})();
-</script>
-<script>
-(function () {
-  /* ── clock ── */
-  var pad = function (v) { return String(v).padStart(2, '0'); };
-  function tick() {
-    var el = document.getElementById('about-clock');
-    if (!el) return;
-    var n = new Date();
-    el.textContent = n.getFullYear() + '.' + pad(n.getMonth()+1) + '.' + pad(n.getDate())
-                   + ' ' + pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
-  }
-  tick();
-  setInterval(tick, 1000);
-
-  /* preamble typewriter → site.js로 이전 */
-
-  document.addEventListener('DOMContentLoaded', function () {
-    /* ── 이스터에그 ── */
-    var trigger = document.getElementById('about-zero-trigger');
-    var easter  = document.getElementById('about-zero-easter');
-    if (trigger && easter) {
-      trigger.style.cursor = 'pointer';
-      trigger.addEventListener('click', function () {
-        var open = easter.classList.toggle('is-open');
-        easter.setAttribute('aria-hidden', String(!open));
-        trigger.classList.toggle('is-active', open);
-      });
-    }
-
-    /* ── TOC 스크롤 스파이 + 모바일 플로트 바 ── */
-    var tocLinks = document.querySelectorAll('.about-toc a[href^="#"]');
-    var floatBar = document.getElementById('about-toc-float');
-    var floatText = document.getElementById('about-toc-float__text');
-    var sectionLabels = {
-      'ch-1': '001 · 시선',
-      'ch-2': '002 · 원리',
-      'ch-3': '003 · 태도',
-      'ch-4': '004 · 이름',
-      'ch-5': '005 · 실천',
-      'ch-6': '006 · 순환'
-    };
-
-    if (tocLinks.length && 'IntersectionObserver' in window) {
-      var sectionMap = {};
-      tocLinks.forEach(function (a) {
-        var id = a.getAttribute('href').slice(1);
-        sectionMap[id] = a;
-      });
-
-      var setActive = function (id) {
-        tocLinks.forEach(function (a) { a.classList.remove('is-active'); });
-        if (sectionMap[id]) sectionMap[id].classList.add('is-active');
-        if (floatText && sectionLabels[id]) floatText.textContent = sectionLabels[id];
-      };
-
-      var obs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) setActive(e.target.id);
-        });
-      }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
-      Object.keys(sectionMap).forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) obs.observe(el);
-      });
-    }
-
-    /* ── 인트로 지나면 플로트 바 표시 ── */
-    if (floatBar && 'IntersectionObserver' in window) {
-      var introObs = new IntersectionObserver(function (entries) {
-        if (entries[0].isIntersecting) {
-          floatBar.classList.remove('is-visible');
-        } else {
-          floatBar.classList.add('is-visible');
-        }
-      }, { threshold: 0.1 });
-      var introEl = document.querySelector('.about-intro');
-      if (introEl) introObs.observe(introEl);
-    }
-
-    /* ── 리딩 진행 바 ── */
-    var progressBar = document.getElementById('reading-progress');
-    if (progressBar) {
-      window.addEventListener('scroll', function () {
-        var total = document.documentElement.scrollHeight - window.innerHeight;
-        progressBar.style.width = (total > 0 ? (window.scrollY / total * 100) : 0) + '%';
-      }, { passive: true });
-    }
-  });
-})();
-</script>
 </body>
 </html>

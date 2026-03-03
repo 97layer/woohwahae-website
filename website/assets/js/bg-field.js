@@ -27,8 +27,8 @@
 
   /* ── Scene & Camera ── */
   var scene = new THREE.Scene();
-  /* 안개 밀도 대폭 감소 (가시성 확보 - 0.02 -> 0.015) */
-  scene.fog = new THREE.FogExp2(0xE3E2E0, 0.015);
+  /* 깊이감: 멀수록 배경으로 녹아드는 지수 안개 */
+  scene.fog = new THREE.FogExp2(0xE3E2E0, 0.042);
 
   var fieldGroup = new THREE.Group();
   scene.add(fieldGroup);
@@ -43,6 +43,20 @@
     mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
     mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
   });
+
+  /* ── 시간대별 컬러 팔레트 ── */
+  var timeClass = document.documentElement.className;
+  var fieldColor, fogHex;
+  if (timeClass === 'time-dawn') {
+    fieldColor = 0x1A1C2E; fogHex = 0xEAEAE8; /* 새벽: 차고 깊음 */
+  } else if (timeClass === 'time-evening') {
+    fieldColor = 0x1C0F08; fogHex = 0xE6E5E3; /* 저녁: 따뜻하고 어두움 */
+  } else if (timeClass === 'time-night') {
+    fieldColor = 0x100E1C; fogHex = 0xDCDCDA; /* 밤: 어둡고 차갑게 */
+  } else {
+    fieldColor = 0x000000; fogHex = 0xE3E2E0; /* 낮: 기준 */
+  }
+  scene.fog.color.setHex(fogHex);
 
   /* ── 쌍극자 필드라인 파라미터 (V37: 가시성 보정 — 맑지만 선명하게) ── */
   var isPortrait = window.innerHeight > window.innerWidth;
@@ -89,9 +103,9 @@
       var r0 = seeds[si2];
       var frac = (si2 + 1) / SEEDS;
 
-      /* 모바일 우선 투명도 */
-      var baseOp = isMobile ? (0.12 - frac * 0.05) : (0.22 - frac * 0.10);
-      var col = 0x000000; /* 완전한 잉크 블랙으로 대비 강화 */
+      /* 극(pole) 근처 진하게, 바깥으로 갈수록 소멸 */
+      var baseOp = isMobile ? (0.15 - frac * 0.10) : (0.30 - frac * 0.22);
+      var col = fieldColor;
 
       var mat = new THREE.LineBasicMaterial({
         color: col,
@@ -176,25 +190,35 @@
     requestAnimationFrame(animate);
     var t = clock.getElapsedTime();
 
-    /* Y축 저속 회전 */
-    fieldGroup.rotation.y = t * 0.025;
+    /* Y축 저속 회전 — 더 느리게, 더 관조적으로 */
+    fieldGroup.rotation.y = t * 0.016;
 
-    /* 스크롤 기반 줌인: 스크롤할수록 카메라가 필드 중심으로 진입 */
+    /* 미세 호흡: 전체 필드가 4.5초 주기로 아주 조금 팽창/수축 */
+    var breathe = 1.0 + Math.sin(t * 0.22) * 0.004;
+    fieldGroup.scale.set(breathe, breathe, breathe);
+
+    /* 라인별 opacity 호흡 — 각 라인이 미세하게 다른 타이밍으로 */
+    for (var fi = 0; fi < fieldLines.length; fi++) {
+      var fl = fieldLines[fi];
+      fl.mat.opacity = fl.baseOp * (0.82 + 0.18 * Math.sin(t * 0.10 + fl.phase));
+    }
+
+    /* 스크롤 기반 줌인 */
     var ratio = (window._fieldState && window._fieldState.ratio) || 0;
-    var targetZ = BASE_Z - ratio * 14;   /* 22 → 8 */
-    var targetFov = BASE_FOV + ratio * 18; /* 38 → 56 */
+    var targetZ = BASE_Z - ratio * 14;
+    var targetFov = BASE_FOV + ratio * 18;
     camera.position.z += (targetZ - camera.position.z) * 0.06;
     camera.fov += (targetFov - camera.fov) * 0.06;
     camera.updateProjectionMatrix();
 
-    /* 마우스 기반 카메라 틸트 (관성 적용) */
-    targetCamX += (1.2 + mouse.y * -1.5 - targetCamX) * 0.04;
-    targetCamY += (mouse.x * 2.0 - targetCamY) * 0.04;
+    /* 마우스 틸트 — 감도 절제 */
+    targetCamX += (1.2 + mouse.y * -1.0 - targetCamX) * 0.04;
+    targetCamY += (mouse.x * 1.4 - targetCamY) * 0.04;
     camera.position.x = targetCamY;
     camera.position.y = targetCamX;
     camera.lookAt(0, 0, 0);
 
-    if (dustMat) dustMat.opacity = 0.04;
+    if (dustMat) dustMat.opacity = 0.025;
 
     renderer.render(scene, camera);
 
