@@ -221,20 +221,31 @@ def _is_editable(rel_path: str) -> bool:
 
 # ─── LLM 호출 ────────────────────────────────────────────────────────────────
 
-def _call_gemini(prompt: str) -> Optional[dict]:
+def _call_gemini(prompt: str, system: str = SYSTEM_PROMPT) -> Optional[dict]:
     """Gemini Flash로 변경 생성. 실패 시 None."""
     try:
         from google import genai
-        client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+        from google.genai import types as genai_types
+        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        client = genai.Client(api_key=api_key)
         resp = client.models.generate_content(
             model=PRIMARY_MODEL,
             contents=prompt,
+            config=genai_types.GenerateContentConfig(
+                system_instruction=system,
+            ),
         )
         raw = resp.text.strip()
-        # JSON 블록 추출
+        # JSON 블록 추출 시도 1: ```json ... ```
         m = re.search(r'```json\s*([\s\S]+?)\s*```', raw)
         if m:
             raw = m.group(1)
+        else:
+            # 시도 2: 첫 { ~ 마지막 } 추출 (설명 텍스트 제거)
+            start = raw.find('{')
+            end = raw.rfind('}')
+            if start != -1 and end != -1:
+                raw = raw[start:end + 1]
         return json.loads(raw)
     except Exception as e:
         logger.warning("Gemini 호출 실패: %s", e)
