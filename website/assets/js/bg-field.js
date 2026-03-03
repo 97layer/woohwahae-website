@@ -197,6 +197,18 @@
     if (dustMat) dustMat.opacity = 0.04;
 
     renderer.render(scene, camera);
+
+    if (!window.__fieldReady) {
+      window.__fieldReady = true;
+      var elapsed = performance.now();
+      var preloader = document.getElementById('preloader');
+      if (preloader) {
+        preloader.classList.add('is-revealing');
+        setTimeout(function () {
+          document.body.classList.add('is-loaded');
+        }, 300);
+      }
+    }
   }
   animate();
 })();

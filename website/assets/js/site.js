@@ -152,4 +152,35 @@
         }, { passive: true });
     });
 
+    /* ─── View Transitions: 방향 감지 ─── */
+    (function () {
+        var NAV_ORDER = ['/', '/archive/', '/practice/', '/about/', '/lab/'];
+        function navIdx(path) {
+            for (var i = 0; i < NAV_ORDER.length; i++) {
+                var p = NAV_ORDER[i];
+                if (p === '/' ? path === p : path.indexOf(p) === 0) return i;
+            }
+            return 0;
+        }
+        /* 이전 클릭에서 저장한 방향 복원 */
+        var dir = sessionStorage.getItem('vt_dir') || 'forward';
+        sessionStorage.removeItem('vt_dir');
+        document.documentElement.setAttribute('data-nav-dir', dir);
+
+        /* 링크 클릭 시 방향 저장 */
+        document.addEventListener('click', function (e) {
+            var a = e.target.closest('a[href]');
+            if (!a) return;
+            var href = a.getAttribute('href');
+            if (!href || /^(https?:|mailto:|tel:|#)/.test(href)) return;
+            try {
+                var url = new URL(href, window.location.href);
+                if (url.origin !== window.location.origin) return;
+                var from = navIdx(window.location.pathname);
+                var to = navIdx(url.pathname);
+                sessionStorage.setItem('vt_dir', to < from ? 'back' : 'forward');
+            } catch (err) {}
+        });
+    })();
+
 })();

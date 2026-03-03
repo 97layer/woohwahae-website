@@ -21,7 +21,7 @@
     rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     rel="stylesheet" />
-  <link href="assets/css/style.css?v=58523445" rel="stylesheet" />
+  <link href="assets/css/style.css?v=d3fffaa9" rel="stylesheet" />
   <script defer="" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
   <script>
@@ -41,11 +41,17 @@
     <img src="/assets/media/brand/symbol.png" alt="" class="home-preloader__logo">
   </div>
   <script>
-    window.addEventListener('load', function () {
-      setTimeout(function () {
-        document.body.classList.add('is-loaded');
-      }, 1500);
-    });
+    /* fallback: Three.js 로드 실패 시 3s 후 강제 해제 */
+    setTimeout(function () {
+      if (!window.__fieldReady) {
+        window.__fieldReady = true;
+        var preloader = document.getElementById('preloader');
+        if (preloader) preloader.classList.add('is-revealing');
+        setTimeout(function () {
+          document.body.classList.add('is-loaded');
+        }, 1200);
+      }
+    }, 1500);
   </script>
   <!-- /COMPONENT:preloader -->
   <!-- COMPONENT:nav -->
@@ -108,7 +114,7 @@
   </section>
 
   <script defer="" src="assets/js/bg-field.js"></script>
-  <script defer="" src="assets/js/site.js?v=2055c213"></script>
+  <script defer="" src="assets/js/site.js?v=9790f35d"></script>
 
 
   <!-- COMPONENT:footer -->

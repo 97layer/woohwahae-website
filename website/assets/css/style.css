@@ -10134,3 +10134,94 @@ body:not(.home-radical) .wave-bg {
     min-height: 44px;
   }
 }
+
+/* ════════════════════════════════════════════════
+   VIEW TRANSITIONS (Chrome 126+)
+   ════════════════════════════════════════════════ */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root) {
+  animation: 300ms var(--ease-out) both vt-slide-out;
+}
+::view-transition-new(root) {
+  animation: 300ms var(--ease-out) both vt-slide-in;
+}
+html[data-nav-dir="back"] ::view-transition-old(root) { animation-name: vt-slide-out-back; }
+html[data-nav-dir="back"] ::view-transition-new(root) { animation-name: vt-slide-in-back; }
+
+@keyframes vt-slide-out      { to   { opacity: 0; transform: translateX(-24px); } }
+@keyframes vt-slide-in       { from { opacity: 0; transform: translateX(24px);  } }
+@keyframes vt-slide-out-back { to   { opacity: 0; transform: translateX(24px);  } }
+@keyframes vt-slide-in-back  { from { opacity: 0; transform: translateX(-24px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/* ════════════════════════════════════════════════
+   PRACTICE — Section Card Grid
+   ════════════════════════════════════════════════ */
+.practice-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+@media (max-width: 640px) {
+  .practice-section-grid { grid-template-columns: 1fr; }
+}
+
+.practice-section-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--text);
+  min-height: 180px;
+  transition: background-color var(--duration) var(--ease-out);
+}
+.practice-section-card:hover { background-color: var(--bg-dark); }
+
+.practice-section-card__num {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+}
+.practice-section-card__title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: var(--fw-light);
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+.practice-section-card__lead {
+  font-size: 0.875rem;
+  color: var(--text-sub);
+  line-height: 1.65;
+  flex: 1;
+  margin: 0;
+}
+.practice-section-card__arrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  align-self: flex-end;
+  transition: transform var(--duration) var(--ease-out);
+}
+.practice-section-card:hover .practice-section-card__arrow { transform: translateX(4px); }
+
+.practice-section-card--inactive {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.practice-section-card__tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  align-self: flex-end;
+}
