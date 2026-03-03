@@ -56,6 +56,21 @@ for FILE in "$ORIGIN" "$SAGE" "$PRACTICE"; do
   fi
 done
 
+# ─── DEEPWORK 상태 주입 ─────────────────────────────────────
+# active 상태이면 중단 지점과 남은 TODO를 컨텍스트에 주입
+
+DEEPWORK="$PROJECT_ROOT/knowledge/agent_hub/deepwork.md"
+if [ -f "$DEEPWORK" ]; then
+  DW_STATUS=$(grep -m1 "^status:" "$DEEPWORK" 2>/dev/null | awk '{print $2}')
+  if [ "$DW_STATUS" = "active" ]; then
+    echo ""
+    echo "━━━ DEEPWORK ACTIVE ━━━"
+    cat "$DEEPWORK"
+    echo "→ 위 TODO를 순서대로 계속 실행하라. 사용자 개입 없이."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━"
+  fi
+fi
+
 # ─── 구조 감사 (선제 스캔) ──────────────────────────────────
 
 AUDIT_SCRIPT="$PROJECT_ROOT/core/scripts/structure_audit.py"

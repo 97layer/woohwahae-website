@@ -62,6 +62,10 @@
           {
             "type": "command",
             "command": ".claude/hooks/code-quality-check.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/deepwork-tracker.sh"
           }
         ]
       },
@@ -71,6 +75,10 @@
           {
             "type": "command",
             "command": ".claude/hooks/code-quality-check.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/deepwork-tracker.sh"
           }
         ]
       },
