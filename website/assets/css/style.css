@@ -9076,6 +9076,10 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   padding-top: var(--space-lg);
   border-top: 1px solid var(--line);
 }
+.about-section > .about-chapter:first-of-type {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+}
 .about-chapter__label {
   font-family: var(--font-mono);
   font-size: 0.58rem;
