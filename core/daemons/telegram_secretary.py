@@ -981,9 +981,41 @@ class TelegramSecretaryV6:
                 )
                 action = "생성"
 
+            # git commit+push → 로컬 동기화
+            import asyncio as _asyncio
+            sync_ok = False
+            try:
+                _git_env = {**__import__('os').environ, 'GIT_TERMINAL_PROMPT': '0'}
+                _devnull = _asyncio.subprocess.DEVNULL
+
+                _add = await _asyncio.create_subprocess_exec(
+                    'git', 'add', str(note_path),
+                    cwd=str(PROJECT_ROOT), env=_git_env,
+                    stdout=_devnull, stderr=_devnull
+                )
+                await _add.wait()
+
+                _commit = await _asyncio.create_subprocess_exec(
+                    'git', 'commit', '-m', f'note: {safe_title[:-3]}',
+                    cwd=str(PROJECT_ROOT), env=_git_env,
+                    stdout=_devnull, stderr=_devnull
+                )
+                await _commit.wait()
+
+                _push = await _asyncio.create_subprocess_exec(
+                    'git', 'push',
+                    cwd=str(PROJECT_ROOT), env=_git_env,
+                    stdout=_devnull, stderr=_devnull
+                )
+                await _push.wait()
+                sync_ok = _push.returncode == 0
+            except Exception as _ge:
+                logger.warning("note git sync failed: %s", _ge)
+
             preview = _escape_html(body[:80])
+            sync_tag = " · git pushed" if sync_ok else " · git sync 실패"
             await update.message.reply_text(
-                f"📝 <b>노트 {action}</b>\n\n"
+                f"📝 <b>노트 {action}</b>{sync_tag}\n\n"
                 f"파일: <code>knowledge/docs/{safe_title}</code>\n\n"
                 f"\"{preview}\"",
                 parse_mode=constants.ParseMode.HTML
