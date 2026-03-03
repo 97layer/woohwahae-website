@@ -1238,6 +1238,9 @@ JSON만 출력.""" % (messages_text, initiated_str)
         # 12. Duel 자율 실행 (TODO/FIXME/propose_queue에서 태스크 선정 → Claude vs Gemini)
         duel_result = self._run_duel_auto()
 
+        # 13. Brand Scout — 외부 RSS 신호 자동 수집
+        scout_result = self._run_brand_scout()
+
         return {
             'stats': stats,
             'new_proposals': new_proposals,
@@ -1246,37 +1249,78 @@ JSON만 출력.""" % (messages_text, initiated_str)
             'deferred_triggered': deferred_triggered,
             'retrospective': retro,
             'duel': duel_result,
+            'scout': scout_result,
         }
 
     def _run_duel_auto(self) -> dict:
-        """Gardener 사이클마다 duel.py --auto 실행 (백그라운드 subprocess)."""
-        import subprocess as _sp
-        duel_script = PROJECT_ROOT / "core" / "scripts" / "duel.py"
-        if not duel_script.exists():
-            return {"status": "skipped", "reason": "duel.py not found"}
+        """
+        Gardener 사이클마다 duel --auto 실행.
+        결과가 있으면 ProposeGate에 등록 → 텔레그램 봇이 순호에게 전송.
+        """
+        import os as _os
         try:
-            proc = _sp.run(
-                ["python3", str(duel_script), "--auto"],
-                cwd=str(PROJECT_ROOT),
-                capture_output=True, text=True, timeout=120
-            )
-            if proc.returncode == 0:
-                # ANSI 제거 후 요약 1줄 추출
-                import re as _re
-                clean = _re.sub(r'\x1b\[[0-9;]*m', '', proc.stdout)
-                summary_lines = [l.strip() for l in clean.splitlines()
-                                 if l.strip() and '요약:' in l]
-                summary = summary_lines[0] if summary_lines else "완료"
-                logger.info("Duel 완료: %s", summary)
-                return {"status": "ok", "summary": summary}
-            else:
-                logger.warning("Duel 종료 코드 %d: %s", proc.returncode, proc.stderr[:200])
-                return {"status": "failed", "rc": proc.returncode}
-        except _sp.TimeoutExpired:
-            logger.warning("Duel 타임아웃 (120s)")
-            return {"status": "timeout"}
+            from core.scripts.duel import duel, _pick_auto_task
+            from core.system.propose_gate import ProposeGate
+            from core.agents.code_agent import _build_diff_text
+            from datetime import datetime as _dt, timezone as _tz
+        except ImportError as e:
+            logger.warning("Duel 임포트 실패: %s", e)
+            return {"status": "skipped", "reason": str(e)}
+
+        task = _pick_auto_task()
+        if not task:
+            logger.info("Duel: 자율 태스크 없음")
+            return {"status": "skipped", "reason": "no_task"}
+
+        logger.info("Duel 태스크: %s", task[:80])
+        try:
+            result = duel(task, max_rounds=2, apply=False)
         except Exception as e:
             logger.warning("Duel 실행 오류: %s", e)
+            return {"status": "error", "msg": str(e)}
+
+        if not result or not result.get("files"):
+            logger.info("Duel 결과 없음")
+            return {"status": "no_result"}
+
+        # ProposeGate에 등록 — 텔레그램 봇이 polling으로 전송
+        admin_chat_id = _os.getenv("ADMIN_TELEGRAM_ID")
+        if not admin_chat_id:
+            logger.warning("ADMIN_TELEGRAM_ID 미설정 — duel 결과 미전송")
+            return {"status": "ok_no_send", "summary": result.get("summary", "—")}
+
+        try:
+            gate = ProposeGate()
+            task_id = "duel_%s" % _dt.now(_tz.utc).strftime("%Y%m%d_%H%M%S")
+            diff_text = _build_diff_text(result)
+            gate.propose(
+                task_id=task_id,
+                diff_text=f"[Duel Auto] {task[:80]}\n\n{diff_text}",
+                chat_id=int(admin_chat_id),
+                callback_data={"type": "duel", "changes": result},
+            )
+            logger.info("Duel 결과 ProposeGate 등록: %s", task_id)
+            return {"status": "proposed", "task_id": task_id, "summary": result.get("summary", "—")}
+        except Exception as e:
+            logger.warning("Duel ProposeGate 등록 실패: %s", e)
+            return {"status": "error", "msg": str(e)}
+
+    def _run_brand_scout(self) -> dict:
+        """Brand Scout — scout_agent.run_once() 호출로 외부 RSS 신호 수집."""
+        try:
+            from core.agents.scout_agent import ScoutAgent
+        except ImportError as e:
+            logger.warning("ScoutAgent 임포트 실패: %s", e)
+            return {"status": "skipped", "reason": str(e)}
+
+        try:
+            scout = ScoutAgent()
+            stats = scout.run_once()
+            logger.info("Brand Scout 완료: 주입 %d / 스킵 %d / 오류 %d",
+                        stats.get("injected", 0), stats.get("skipped", 0), stats.get("errors", 0))
+            return {"status": "ok", **stats}
+        except Exception as e:
+            logger.warning("Brand Scout 오류: %s", e)
             return {"status": "error", "msg": str(e)}
 
     def format_telegram_report(self, result: Dict) -> str:

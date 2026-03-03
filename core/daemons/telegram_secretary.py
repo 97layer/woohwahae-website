@@ -1503,6 +1503,42 @@ class TelegramSecretaryV6:
                 name="propose_expiry_check"
             )
 
+            # Gardener 자율 제안 polling — 5분마다 미전송 제안을 순호에게 전송
+            async def _duel_proposal_check_job(context):
+                if not self.propose_gate:
+                    return
+                admin_id = os.getenv("ADMIN_TELEGRAM_ID")
+                if not admin_id:
+                    return
+                unsent = self.propose_gate.get_pending_unsent()
+                for task in unsent:
+                    try:
+                        short_diff = task["diff_text"][:3000]
+                        escaped = (short_diff
+                                   .replace("&", "&amp;")
+                                   .replace("<", "&lt;")
+                                   .replace(">", "&gt;"))
+                        msg_text = (
+                            f"[DUEL PROPOSE] <code>{task['task_id']}</code>\n\n"
+                            f"<pre>{escaped}</pre>\n\n"
+                            f"ok = 적용 / no = 폐기"
+                        )
+                        sent_msg = await context.bot.send_message(
+                            chat_id=int(admin_id),
+                            text=msg_text,
+                            parse_mode=constants.ParseMode.HTML,
+                        )
+                        self.propose_gate.mark_sent(task["task_id"], sent_msg.message_id)
+                        logger.info("Duel 제안 전송: %s", task["task_id"])
+                    except Exception as send_e:
+                        logger.warning("Duel 제안 전송 실패 (%s): %s", task["task_id"], send_e)
+
+            job_queue.run_repeating(
+                _duel_proposal_check_job,
+                interval=300,  # 5분
+                name="duel_proposal_check"
+            )
+
         logger.info("🚀 V6 Secretary Service Started")
         application.run_polling()
 

@@ -79,6 +79,7 @@ class ProposeGate:
             "status": "pending",
             "created_at": now,
             "message_ids": [],  # 텔레그램 메시지 ID 목록 (confirm 매칭용)
+            "sent_to_telegram": False,  # Gardener 자율 제안: 봇이 전송 후 True로 갱신
         }
         _save_queue(queue)
         logger.info("PROPOSE 등록: %s", task_id)
@@ -157,6 +158,22 @@ class ProposeGate:
             return "rejected"
 
         return "unknown"
+
+    def get_pending_unsent(self) -> list:
+        """전송되지 않은 pending 제안 목록 반환 (Gardener 자율 제안용)."""
+        queue = _load_queue()
+        return [
+            t for t in queue.values()
+            if t.get("status") == "pending" and not t.get("sent_to_telegram", True)
+        ]
+
+    def mark_sent(self, task_id: str, telegram_message_id: int) -> None:
+        """봇이 전송 완료 후 sent_to_telegram=True로 갱신."""
+        queue = _load_queue()
+        if task_id in queue:
+            queue[task_id]["sent_to_telegram"] = True
+            queue[task_id]["message_ids"].append(telegram_message_id)
+            _save_queue(queue)
 
     def get_task(self, task_id: str) -> Optional[dict]:
         """태스크 상태 조회."""
