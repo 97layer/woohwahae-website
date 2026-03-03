@@ -9131,6 +9131,57 @@ p.about-zero-label { margin-bottom: var(--space-md); }
 .appendix-font--body { font-family: var(--font-body); font-weight: 300; margin-bottom: 0.8rem; }
 .appendix-font--mono { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-sub); }
 
+/* Appendix Drawer */
+.appendix-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,25,22,0.35);
+  z-index: 200;
+  cursor: pointer;
+}
+.appendix-overlay.is-open { display: block; }
+.appendix-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: min(520px, 92vw);
+  height: 100vh;
+  background: var(--bg);
+  z-index: 201;
+  overflow-y: auto;
+  padding: var(--space-xl) var(--space-lg) var(--space-xl);
+  border-left: 1px solid var(--line);
+  transition: right 0.4s cubic-bezier(0.19,1,0.22,1);
+}
+.appendix-drawer.is-open { right: 0; }
+.appendix-drawer__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: var(--space-lg);
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.appendix-drawer__close:hover { border-color: var(--text); color: var(--text); }
+.appendix-drawer__title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--text-sub);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--line);
+}
+
 @media (max-width: 640px) {
   .about-hero { flex-direction: column; gap: var(--space-sm); }
   .about-hero__right { flex-direction: row; align-items: center; gap: 0.8rem; }
@@ -9139,6 +9190,7 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   .editor-link:nth-child(even) { padding-left: 0; border-left: none; }
   .editor-link:nth-child(3) { border-bottom: none; }
   .editor-link:last-child { border-bottom: 1px solid var(--line); }
+  .appendix-drawer { padding: var(--space-lg) var(--space-md); }
 }
 
 
