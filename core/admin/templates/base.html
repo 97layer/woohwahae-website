@@ -56,6 +56,9 @@
         <!-- LAYER 2 -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">LAYER 2 — DESIGN</div>
+          <a href="{{ url_for('about_edit') }}" class="sidebar-link {% if request.path == '/about/edit' %}active{% endif %}">
+            어바웃
+          </a>
           <a href="{{ url_for('lab_panel') }}" class="sidebar-link {% if request.path == '/lab' %}active{% endif %}">
             랩
           </a>

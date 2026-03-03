@@ -1071,6 +1071,35 @@ def settings_password():
     return redirect(url_for('settings_panel'))
 
 
+# ─── About Editor ───
+
+@app.route('/about/edit', methods=['GET', 'POST'])
+@login_required
+def about_edit():
+    about_path = WEBSITE_DIR / 'about' / 'index.html'
+    error = None
+    if request.method == 'POST':
+        content = request.form.get('content', '')
+        if not content.strip():
+            error = '내용이 비어있습니다.'
+        else:
+            try:
+                about_path.write_text(content, encoding='utf-8')
+                _audit('about_edit')
+                flash('어바웃 페이지가 저장되었습니다.')
+                if request.form.get('publish'):
+                    from core.admin.utils.git_publisher import publish_to_website
+                    success, message = publish_to_website()
+                    flash(message if success else f'저장은 완료, 발행 실패: {message}')
+            except Exception as e:
+                logger.error("about_edit write: %s", e)
+                error = f'저장 실패: {e}'
+    content = ''
+    if about_path.exists():
+        content = about_path.read_text(encoding='utf-8')
+    return render_template('about_edit.html', content=content, error=error)
+
+
 # ─── B11: 에러 핸들러 ───
 @app.errorhandler(400)
 def bad_request(e):
