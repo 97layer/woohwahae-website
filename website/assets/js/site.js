@@ -152,6 +152,27 @@
         }, { passive: true });
     });
 
+    /* ─── Preamble Typewriter (모든 페이지 공통) ─── */
+    (function () {
+        var el = document.querySelector('.about-preamble');
+        if (!el) return;
+        var phrase = el.textContent.trim();
+        if (!phrase) return;
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var key = 'typed_' + location.pathname;
+        el.textContent = '';
+        if (reduced || sessionStorage.getItem(key)) {
+            el.textContent = phrase;
+            return;
+        }
+        sessionStorage.setItem(key, '1');
+        var i = 0;
+        var timer = setInterval(function () {
+            el.textContent = phrase.slice(0, ++i);
+            if (i >= phrase.length) clearInterval(timer);
+        }, 65);
+    })();
+
     /* ─── View Transitions: 방향 감지 ─── */
     (function () {
         var NAV_ORDER = ['/', '/archive/', '/practice/', '/about/', '/lab/'];

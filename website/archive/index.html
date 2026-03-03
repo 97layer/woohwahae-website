@@ -15,7 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="stylesheet" href="../assets/css/style.css?v=d3fffaa9">
+  <link rel="stylesheet" href="../assets/css/style.css?v=109a12e5">
   <script>
     (function () { var h = new Date().getHours(); document.documentElement.className = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; })();
   </script>
@@ -49,8 +49,13 @@
   <main class="page-main">
 
     <div class="about-intro container--wide">
-      <p class="about-preamble" data-reveal>에세이, 저널, 룩북을 올립니다.</p>
-      <p class="about-zero-label"><span id="archive-count"></span></p>
+      <p class="about-preamble">에세이, 저널, 룩북을 올립니다.</p>
+      <nav class="practice-tabs" aria-label="Archive filter" id="archive-type-filter">
+        <button class="practice-tab active" data-filter="all">All</button>
+        <button class="practice-tab" data-filter="essay">Essay</button>
+        <button class="practice-tab" data-filter="journal">Journal</button>
+        <button class="practice-tab" data-filter="lookbook">Lookbook</button>
+      </nav>
     </div>
 
     <!-- 리스트 -->
@@ -88,26 +93,25 @@
 </footer>
 <!-- /COMPONENT:footer -->
 
-  <script src="../assets/js/site.js?v=9790f35d" defer></script>
+  <script src="../assets/js/site.js?v=8891238c" defer></script>
   <script>
-    /* Archive 리스트 렌더링 */
+    /* Archive 리스트 렌더링 + 타입 필터 */
     fetch('index.json')
       .then(function (r) { return r.json(); })
       .then(function (posts) {
         var list = document.getElementById('archive-list');
         if (!list || !posts.length) return;
 
-        /* 히어로 카운트 주입 */
-        var countEl = document.getElementById('archive-count');
-        if (countEl) countEl.textContent = posts.length + ' pieces';
-
+        /* 아이템 렌더링 */
         posts.forEach(function (p, i) {
           var num = String(i + 1).padStart(3, '0');
+          var type = (p.type || 'essay').toLowerCase();
 
           var item = document.createElement('a');
           item.href = p.slug + '/';
           item.className = 'archive-list-item';
           item.setAttribute('data-reveal', '');
+          item.setAttribute('data-type', type);
           item.innerHTML =
             '<span class="archive-list-item__issue">' + num + '</span>' +
             '<span class="archive-list-item__title">' + p.title + '</span>' +
@@ -122,6 +126,20 @@
           });
         }, { threshold: 0.05 });
         document.querySelectorAll('[data-reveal]').forEach(function (el) { obs.observe(el); });
+
+        /* 타입 필터 */
+        var filterBtns = document.querySelectorAll('#archive-type-filter .practice-tab');
+        filterBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var filter = btn.getAttribute('data-filter');
+            filterBtns.forEach(function (b) { b.classList.toggle('active', b === btn); });
+            var items = list.querySelectorAll('.archive-list-item');
+            items.forEach(function (item) {
+              var show = filter === 'all' || item.getAttribute('data-type') === filter;
+              item.style.display = show ? '' : 'none';
+            });
+          });
+        });
       })
       .catch(function () { console.warn('archive: index.json 없음'); });
   </script>

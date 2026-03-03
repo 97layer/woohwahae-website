@@ -8816,6 +8816,8 @@ body.is-loaded .home-preloader__logo {
   scrollbar-width: none;
   border-bottom: 1px solid var(--border);
 }
+/* about-intro 안에서는 practice-tabs 자체 border 제거 (about-intro가 border 담당) */
+.about-intro .practice-tabs { border-bottom: none; margin-bottom: 0; }
 .practice-tabs::-webkit-scrollbar { display: none; }
 
 .practice-tab {
