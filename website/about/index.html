@@ -378,28 +378,26 @@
 
   /* ── live log panel ── */
   var MSGS = [
-    ['SA',      'analyzing signal · url_content'],
-    ['SA',      'analyzing signal · text_insight'],
-    ['Gardener','cluster 슬로우라이프 → 8 entries · ripe'],
-    ['Gardener','cluster 본질 → 6 entries · ripe'],
-    ['Gardener','cluster 여백 → 3 entries · accumulating'],
-    ['CE',      'essay draft generated · 느림에 대하여'],
-    ['CE',      'essay draft generated · 소거의 방법'],
-    ['Ralph',   'quality gate · score 94 · pass'],
-    ['Ralph',   'quality gate · score 88 · pass'],
-    ['Scout',   'fetching kinfolk.com/feed · 4 new signals'],
-    ['Scout',   'fetching dezeen.com/feed · 2 new signals'],
-    ['Scout',   'rss parse ok · monocle.com'],
-    ['SA',      'corpus entry written · 본질_0021'],
-    ['Gardener','duel task picked · fix: intent classifier'],
-    ['SA',      'signal score 87 · queued for clustering'],
-    ['CE',      'publishing · woohwahae.kr/archive/0014'],
-    ['Gardener','retrospective written · decision_log +1'],
-    ['SA',      'youtube transcript analyzed · 1,240 chars'],
-    ['Scout',   'brand signal saved · kinfolk editorial'],
-    ['Ralph',   'essay rejected · score 68 · requeue'],
-    ['CE',      'corpus cluster merged · 슬로우라이프+여백'],
-    ['Gardener','next run scheduled · 03:00'],
+    '새 글감 수집됨',
+    '링크 분석 완료 · kinfolk.com',
+    '주제 군집 형성 중 · 슬로우라이프',
+    '주제 군집 형성 중 · 본질',
+    '에세이 초안 검토 중',
+    '아카이브 업데이트됨',
+    '큐레이션 기록 추가됨',
+    '링크 분석 완료 · dezeen.com',
+    '새 글감 수집됨 · 영상',
+    '발행 완료 · woohwahae.kr',
+    '주제 연결됨 · 느림과 여백',
+    '새 글감 수집됨 · 3건',
+    '에세이 발행 대기 중',
+    '아카이브 색인 갱신됨',
+    '큐레이션 흐름 점검 중',
+    '주제 군집 성숙됨 · 소거',
+    '링크 분석 완료 · monocle.com',
+    '에세이 초안 작성됨 · 느림에 대하여',
+    '새 글감 수집됨 · 텍스트',
+    '발행 준비 완료',
   ];
   var timer = null;
   var active = false;
@@ -415,7 +413,7 @@
     if (!ul) return;
     var m = rand(MSGS);
     var li = document.createElement('li');
-    li.textContent = ts() + '  [' + m[0] + ']  ' + m[1];
+    li.textContent = ts() + '  ' + m;
     ul.appendChild(li);
     if (ul.children.length > 14) ul.removeChild(ul.firstChild);
   }
