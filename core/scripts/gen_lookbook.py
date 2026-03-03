@@ -27,8 +27,8 @@ from google.genai import types
 OUTPUT_DIR = Path(__file__).resolve().parents[2] / "website/archive/lookbook/assets/images"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-GRAIN_INTENSITY = 28      # 0=없음, 18=subtle, 28=film, 40=heavy
-GRAIN_HIGHLIGHT_PROTECT = 0.55  # 밝은 영역은 grain 줄이기 (0~1)
+GRAIN_INTENSITY = 10      # 0=없음, 10=subtle, 18=film, 28=heavy
+GRAIN_HIGHLIGHT_PROTECT = 0.80  # 밝은 영역은 grain 줄이기 (0~1)
 
 
 def apply_film_grain(img_bytes: bytes) -> bytes:
@@ -55,7 +55,7 @@ def apply_film_grain(img_bytes: bytes) -> bytes:
     out = Image.fromarray(result)
 
     buf = io.BytesIO()
-    out.save(buf, format="JPEG", quality=92, subsampling=2)
+    out.save(buf, format="JPEG", quality=97, subsampling=0)
     return buf.getvalue()
 
 SHARED = "analog 35mm film grain, no text, no logo, 3:4 portrait"
