@@ -9208,8 +9208,8 @@ body.is-loaded .home-hero__nav {
   display: grid;
   grid-template-columns: 1fr 1.6fr;
   gap: var(--space-xl);
-  margin-bottom: var(--space-xl);
-  padding-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
   border-bottom: 1px solid var(--line);
 }
 .atelier-detail__left .section-label {
@@ -9409,12 +9409,11 @@ body.is-loaded .home-hero__nav {
   display: block;
 }
 .atelier-price-item__notice {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 300;
   color: var(--text-sub);
   margin-bottom: 0.8rem;
-  line-height: 1.7;
+  line-height: 1.9;
 }
 .atelier-price-item__guide-text {
   font-size: 0.78rem;
