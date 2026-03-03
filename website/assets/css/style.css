@@ -8951,6 +8951,12 @@ body::after {
    ABOUT PAGE — Migrated from inline <style> block
    ════════════════════════════════════════════════ */
 
+.about-intro {
+  padding: var(--space-xl) 0 var(--space-lg);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-xl);
+}
+
 .about-hero {
   display: flex;
   align-items: flex-start;
