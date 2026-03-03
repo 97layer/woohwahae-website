@@ -91,6 +91,55 @@ for name, info in d['inactive'].items():
     ssh ${VM_HOST} "sudo certbot certificates"
     ;;
 
+  git-push-auth)
+    # VM git remote URL에 GITHUB_TOKEN 주입 → /note git push 가능하게
+    echo "VM .env에서 GITHUB_TOKEN 로드 후 remote URL 업데이트..."
+    ssh ${VM_HOST} "
+      set -a; source ${VM_PATH}/.env; set +a
+      if [ -z \"\$GITHUB_TOKEN\" ]; then
+        echo 'ERROR: GITHUB_TOKEN not set in .env' >&2; exit 1
+      fi
+      REPO=\$(git -C ${VM_PATH} remote get-url origin | sed 's|https://.*@||' | sed 's|https://||')
+      git -C ${VM_PATH} remote set-url origin \"https://\${GITHUB_TOKEN}@\${REPO}\"
+      echo 'Remote URL updated (token hidden)'
+      git -C ${VM_PATH} remote get-url origin | sed 's|https://[^@]*@|https://***@|'
+    "
+    ;;
+
+  logs)
+    TARGET="${2:-}"
+    if [ -n "$TARGET" ]; then
+      ssh ${VM_HOST} "sudo journalctl -u ${TARGET} -n 40 --no-pager 2>&1"
+    else
+      for svc in 97layer-telegram 97layer-ecosystem woohwahae-backend 97layer-gardener; do
+        echo "━━━ $svc ━━━"
+        ssh ${VM_HOST} "sudo journalctl -u ${svc} -n 15 --no-pager 2>&1 | tail -15"
+        echo ""
+      done
+    fi
+    ;;
+
+  backend-init)
+    echo "woohwahae-backend 필수 환경변수 확인 및 주입..."
+    ssh ${VM_HOST} "
+      ENV_FILE=${VM_PATH}/.env
+      # FLASK_SECRET_KEY 없으면 생성
+      if ! grep -q '^FLASK_SECRET_KEY=' \$ENV_FILE 2>/dev/null; then
+        KEY=\$(python3 -c 'import secrets; print(secrets.token_hex(32))')
+        echo \"FLASK_SECRET_KEY=\$KEY\" >> \$ENV_FILE
+        echo 'FLASK_SECRET_KEY 생성 완료'
+      else
+        echo 'FLASK_SECRET_KEY 이미 존재'
+      fi
+      # .env 현재 키 목록 확인 (값 제외)
+      grep -o '^[^=]*' \$ENV_FILE | sort
+    "
+    echo "woohwahae-backend 재시작..."
+    ssh ${VM_HOST} "sudo systemctl restart woohwahae-backend"
+    sleep 4
+    ssh ${VM_HOST} "systemctl is-active woohwahae-backend && sudo journalctl -u woohwahae-backend -n 8 --no-pager 2>&1"
+    ;;
+
   admin-setpw)
     # $2 = 평문 비밀번호
     if [ -z "$2" ]; then echo "Usage: deploy.sh admin-setpw <password>"; exit 1; fi

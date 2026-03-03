@@ -985,30 +985,38 @@ class TelegramSecretaryV6:
             import asyncio as _asyncio
             sync_ok = False
             try:
-                _git_env = {**__import__('os').environ, 'GIT_TERMINAL_PROMPT': '0'}
-                _devnull = _asyncio.subprocess.DEVNULL
+                _pipe = _asyncio.subprocess.PIPE
+                _git_env = {
+                    **__import__('os').environ,
+                    'GIT_TERMINAL_PROMPT': '0',
+                    'HOME': str(PROJECT_ROOT),
+                }
 
                 _add = await _asyncio.create_subprocess_exec(
                     'git', 'add', str(note_path),
                     cwd=str(PROJECT_ROOT), env=_git_env,
-                    stdout=_devnull, stderr=_devnull
+                    stdout=_pipe, stderr=_pipe
                 )
-                await _add.wait()
+                _, _add_err = await _add.communicate()
 
                 _commit = await _asyncio.create_subprocess_exec(
                     'git', 'commit', '-m', f'note: {safe_title[:-3]}',
                     cwd=str(PROJECT_ROOT), env=_git_env,
-                    stdout=_devnull, stderr=_devnull
+                    stdout=_pipe, stderr=_pipe
                 )
-                await _commit.wait()
+                _, _commit_err = await _commit.communicate()
 
                 _push = await _asyncio.create_subprocess_exec(
                     'git', 'push',
                     cwd=str(PROJECT_ROOT), env=_git_env,
-                    stdout=_devnull, stderr=_devnull
+                    stdout=_pipe, stderr=_pipe
                 )
-                await _push.wait()
+                _, _push_err = await _push.communicate()
                 sync_ok = _push.returncode == 0
+                if not sync_ok:
+                    logger.warning("note git push failed (rc=%d): %s",
+                                   _push.returncode,
+                                   (_push_err or b'').decode('utf-8', errors='replace').strip())
             except Exception as _ge:
                 logger.warning("note git sync failed: %s", _ge)
 
