@@ -9009,6 +9009,18 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   border-bottom: 1px solid var(--border);
 }
 .about-zero-cta { opacity: 0.45; }
+.about-zero-easter {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  margin-bottom: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease, margin-bottom 0.3s ease;
+}
+.about-zero-easter.is-open {
+  max-height: 3em;
+  opacity: 1;
+  margin-bottom: var(--space-md);
+}
 #about-log-stats {
   font-family: var(--font-mono);
   font-size: 0.44rem;
