@@ -8937,7 +8937,7 @@ body.is-loaded .home-hero__nav {
 }
 
 /* ─── Archive Controls (filter + search) ─── */
-/* ─── Archive filter: vertical TOC 패밀리룩 ─── */
+/* ─── Archive filter: practice-section-card 동일 구조 ─── */
 .page-archive .page-intro {
   display: block;
 }
@@ -8950,35 +8950,49 @@ body.is-loaded .home-hero__nav {
   flex-direction: column;
   gap: 0;
 }
-/* ALL 행 — 버튼 + 검색 인라인 */
-.archive-filter__row {
+/* ALL 행 래퍼: 버튼 + 검색 인라인 */
+.archive-filter__item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 0.5px solid rgba(26, 26, 26, 0.1);
+  border-bottom: 1px solid var(--line);
+  width: 100%;
 }
-.archive-filter__row .archive-filter__btn {
+.archive-filter__item .archive-filter__btn {
   border-bottom: none;
-  flex: 0 0 auto;
+  flex: 1;
+  width: auto;
 }
 .archive-filter__btn {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  background: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
   border: none;
-  border-bottom: 0.5px solid rgba(26, 26, 26, 0.1);
-  padding: 0.65rem 0;
-  display: block;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  cursor: pointer;
   text-align: left;
   width: 100%;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  transition: opacity var(--duration) var(--ease-out);
 }
-.archive-filter__btn.is-active { color: var(--text); }
-.archive-filter__btn:hover { color: var(--text-sub); }
+.archive-filter__btn:hover { opacity: 0.6; }
+.archive-filter__num {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+  flex: 0 0 auto;
+}
+.archive-filter__label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: var(--fw-light);
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  flex: 1;
+}
+.archive-filter__btn.is-active .archive-filter__label { color: var(--text); }
 
 .archive-search {
   font-family: var(--font-mono);
@@ -8991,6 +9005,7 @@ body.is-loaded .home-hero__nav {
   outline: none;
   padding: 0.2rem 0;
   width: 120px;
+  flex: 0 0 auto;
   transition: border-color 0.2s ease;
 }
 .archive-search::placeholder { color: var(--text-faint); }
@@ -9000,9 +9015,9 @@ body.is-loaded .home-hero__nav {
 .archive-count {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   color: var(--text-faint);
-  padding: 0.65rem 0 0;
+  padding: var(--space-sm) 0 0;
   margin: 0;
 }
 

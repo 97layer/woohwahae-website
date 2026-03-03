@@ -30,14 +30,21 @@
 
       var activeFilter = 'all';
       var searchQuery = '';
+      if (countEl) countEl.textContent = posts.length + ' / ' + posts.length;
+
+      var countEl = document.getElementById('archive-count');
 
       function applyFilters() {
         var items = list.querySelectorAll('.archive-list-item');
+        var visible = 0;
         items.forEach(function (item) {
           var typeMatch = activeFilter === 'all' || item.getAttribute('data-type') === activeFilter;
           var textMatch = !searchQuery || item.querySelector('.archive-list-item__title').textContent.toLowerCase().indexOf(searchQuery) !== -1;
-          item.style.display = (typeMatch && textMatch) ? '' : 'none';
+          var show = typeMatch && textMatch;
+          item.style.display = show ? '' : 'none';
+          if (show) visible++;
         });
+        if (countEl) countEl.textContent = visible + ' / ' + posts.length;
       }
 
       var filterBtns = document.querySelectorAll('#archive-type-filter .archive-filter__btn');
