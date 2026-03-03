@@ -38,7 +38,9 @@
 | `--text-sub` | #4a4a4a | 보조 텍스트 | ★★★ PRIMARY |
 | `--text-faint` | #7A7A74 | 희미한 텍스트 (WCAG AA 4.5:1 확보) | ★★★ PRIMARY |
 | `--white` | #FFFFFF | 흰색 (반전용) | ★★★ PRIMARY |
-| `--line` | #D5D4CF | 구분선 | ★★★ PRIMARY |
+| `--line` | #EFEEED | 구분선 (극세선, 배경 근접) | ★★★ PRIMARY |
+| `--border` | var(--line) | --line 별칭 | ★★★ PRIMARY |
+| `--footer-bg` | #DFDEDC | 푸터 배경 | SECONDARY |
 
 ### Stone Palette (SECONDARY)
 
@@ -73,6 +75,7 @@
 | `--ls-label` | 0.10em | nav, section-label |
 | `--ls-wide` | 0.16em | 카테고리, 필터 버튼 |
 | `--ls-heading` | -0.03em | h1, h2 헤딩 |
+| `--ls-tight` | -0.01em | 본문 가독성 미세 조정 |
 
 | Token | 값 |
 |-------|-----|
