@@ -21,6 +21,13 @@ if str(PROJECT_ROOT) not in sys.path:
 logging.basicConfig(level=logging.WARNING, format="%(message)s")
 logger = logging.getLogger(__name__)
 
+# .env 로드 (로컬 실행 시 API 키 주입)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / ".env")
+except ImportError:
+    pass
+
 # code_agent 함수 재사용
 from core.agents.code_agent import (
     _call_claude,
