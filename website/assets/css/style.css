@@ -6562,6 +6562,34 @@ body.is-loaded .home-preloader__logo {
   100% { opacity: 0;   }
 }
 
+/* ─── Home Hero Nav Overlay (A+C: 인내/쌍극 분리 시 출현) ─── */
+.home-hero__nav {
+  position: absolute;
+  bottom: 3rem;
+  left: 0;
+  right: 0;
+  padding: 0 var(--space-xl);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.4s var(--ease), transform 1.4s var(--ease);
+  pointer-events: none;
+  z-index: 20;
+}
+
+body.is-patient .home-hero__nav,
+body.is-field-open .home-hero__nav {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+  .home-hero__nav {
+    padding: 0 1.5rem;
+    bottom: 2rem;
+  }
+}
+
 /* ─── Home Scroll Space — field-bg 클로즈업 구간 ─── */
 .home-scroll-space {
   position: relative;
@@ -10185,7 +10213,6 @@ html[data-nav-dir="back"] ::view-transition-new(root) { animation-name: vt-slide
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
 }
 @media (max-width: 640px) {
   .practice-section-grid { grid-template-columns: 1fr; }
@@ -10195,15 +10222,13 @@ html[data-nav-dir="back"] ::view-transition-new(root) { animation-name: vt-slide
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  padding: var(--space-md);
-  border-right: 1px solid var(--line);
+  padding: var(--space-md) 0;
   border-bottom: 1px solid var(--line);
   text-decoration: none;
   color: var(--text);
-  min-height: 180px;
-  transition: background-color var(--duration) var(--ease-out);
+  transition: opacity var(--duration) var(--ease-out);
 }
-.practice-section-card:hover { background-color: var(--bg-dark); }
+.practice-section-card:hover { opacity: 0.6; }
 
 .practice-section-card__num {
   font-family: var(--font-mono);
