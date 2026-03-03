@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="/assets/css/style.css?v=c1e5be68">
+<link rel="stylesheet" href="/assets/css/style.css?v=1f23774c">
 <script>(function(){var h=new Date().getHours();document.documentElement.className=h<6?'time-dawn':h<18?'time-day':h<22?'time-evening':'time-night';})();</script>
 <!-- /COMPONENT:head -->
 
@@ -320,5 +320,37 @@
 <!-- /COMPONENT:footer -->
 
 <script defer src="/assets/js/site.js?v=8891238c"></script>
+<script>
+  /* ─── About 이스터에그 + 시계 ─── */
+  (function () {
+    var trigger = document.getElementById('about-zero-trigger');
+    var easter = document.getElementById('about-zero-easter');
+    var clock = document.getElementById('about-clock');
+
+    /* 시계 */
+    function updateClock() {
+      if (!clock) return;
+      var now = new Date();
+      var y = now.getFullYear();
+      var mo = String(now.getMonth() + 1).padStart(2, '0');
+      var d = String(now.getDate()).padStart(2, '0');
+      var h = String(now.getHours()).padStart(2, '0');
+      var mi = String(now.getMinutes()).padStart(2, '0');
+      clock.textContent = y + '.' + mo + '.' + d + ' ' + h + ':' + mi + ' · ';
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    /* 토글 */
+    if (trigger && easter) {
+      trigger.style.cursor = 'pointer';
+      trigger.addEventListener('click', function () {
+        var isOpen = easter.classList.contains('is-open');
+        easter.classList.toggle('is-open', !isOpen);
+        easter.setAttribute('aria-hidden', String(isOpen));
+      });
+    }
+  })();
+</script>
 </body>
 </html>

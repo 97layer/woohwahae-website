@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="/assets/css/style.css?v=c1e5be68">
+<link rel="stylesheet" href="/assets/css/style.css?v=1f23774c">
 <script>(function(){var h=new Date().getHours();document.documentElement.className=h<6?'time-dawn':h<18?'time-day':h<22?'time-evening':'time-night';})();</script>
 <!-- /COMPONENT:head -->
   <meta content="WOOHWAHAE Lab — 실험 아카이브. 웹 렌더링, 모션, 인터랙션 프로토타입." name="description" />
@@ -266,16 +266,16 @@
   <!-- wave-bg 추가 -->
   <div class="about-intro container--wide">
     <p class="about-preamble">웹 렌더링, 모션, 인터랙션 프로토타입. 완성 전 단계의 날것 실험들.</p>
+    <nav class="archive-filter" aria-label="Lab filters" id="lab-filter">
+      <button class="archive-filter__btn is-active" data-filter="all">All</button>
+      <button class="archive-filter__btn" data-filter="platform">Platform Build</button>
+      <button class="archive-filter__btn" data-filter="hair">Hair Architect</button>
+      <button class="archive-filter__btn" data-filter="kinetic">Kinematics</button>
+      <button class="archive-filter__btn" data-filter="pro">Pro System</button>
+    </nav>
   </div>
   <!-- Filter Toggle -->
   <div class="container--wide">
-    <nav class="practice-tabs" aria-label="Lab filters">
-      <button class="practice-tab active" data-filter="all">All</button>
-      <button class="practice-tab" data-filter="platform">Platform Build</button>
-      <button class="practice-tab" data-filter="hair">Hair Architect</button>
-      <button class="practice-tab" data-filter="kinetic">Kinematics</button>
-      <button class="practice-tab" data-filter="pro">Pro System</button>
-    </nav>
   </div>
   <div class="lab-grid" id="labGrid">
     <a class="lab-card fade-in" data-category="hair" href="demo-bob-silhouette.html">
@@ -530,15 +530,13 @@
 
     // Filtering Logic
     document.addEventListener('DOMContentLoaded', () => {
-      const filterBtns = document.querySelectorAll('.practice-tab[data-filter]');
+      const filterBtns = document.querySelectorAll('#lab-filter .archive-filter__btn');
       const cards = document.querySelectorAll('.lab-card');
 
       filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-          // Remove active class from all
-          filterBtns.forEach(b => b.classList.remove('active'));
-          // Add active class to clicked
-          btn.classList.add('active');
+          filterBtns.forEach(b => b.classList.remove('is-active'));
+          btn.classList.add('is-active');
 
           const filterValue = btn.getAttribute('data-filter');
 
