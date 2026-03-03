@@ -9073,12 +9073,10 @@ p.about-zero-label { margin-bottom: var(--space-md); }
 }
 .about-chapter {
   margin-top: var(--space-xl);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--line);
+  padding-top: 0;
 }
 .about-section > .about-chapter:first-of-type {
-  margin-top: var(--space-md);
-  padding-top: var(--space-md);
+  margin-top: var(--space-lg);
 }
 .about-chapter__label {
   font-family: var(--font-mono);
