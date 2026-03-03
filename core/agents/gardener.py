@@ -1234,6 +1234,9 @@ JSON만 출력.""" % (messages_text, initiated_str)
                         sum(retro.get('decision_counts', {}).values()),
                         list(retro.get('reject_targets', {}).keys()))
 
+        # 12. Duel 자율 실행 (TODO/FIXME/propose_queue에서 태스크 선정 → Claude vs Gemini)
+        duel_result = self._run_duel_auto()
+
         return {
             'stats': stats,
             'new_proposals': new_proposals,
@@ -1241,7 +1244,39 @@ JSON만 출력.""" % (messages_text, initiated_str)
             'corpus': corpus_result,
             'deferred_triggered': deferred_triggered,
             'retrospective': retro,
+            'duel': duel_result,
         }
+
+    def _run_duel_auto(self) -> dict:
+        """Gardener 사이클마다 duel.py --auto 실행 (백그라운드 subprocess)."""
+        import subprocess as _sp
+        duel_script = PROJECT_ROOT / "core" / "scripts" / "duel.py"
+        if not duel_script.exists():
+            return {"status": "skipped", "reason": "duel.py not found"}
+        try:
+            proc = _sp.run(
+                ["python3", str(duel_script), "--auto"],
+                cwd=str(PROJECT_ROOT),
+                capture_output=True, text=True, timeout=120
+            )
+            if proc.returncode == 0:
+                # ANSI 제거 후 요약 1줄 추출
+                import re as _re
+                clean = _re.sub(r'\x1b\[[0-9;]*m', '', proc.stdout)
+                summary_lines = [l.strip() for l in clean.splitlines()
+                                 if l.strip() and '요약:' in l]
+                summary = summary_lines[0] if summary_lines else "완료"
+                logger.info("Duel 완료: %s", summary)
+                return {"status": "ok", "summary": summary}
+            else:
+                logger.warning("Duel 종료 코드 %d: %s", proc.returncode, proc.stderr[:200])
+                return {"status": "failed", "rc": proc.returncode}
+        except _sp.TimeoutExpired:
+            logger.warning("Duel 타임아웃 (120s)")
+            return {"status": "timeout"}
+        except Exception as e:
+            logger.warning("Duel 실행 오류: %s", e)
+            return {"status": "error", "msg": str(e)}
 
     def format_telegram_report(self, result: Dict) -> str:
         """텔레그램 전송용 리포트 포맷"""
