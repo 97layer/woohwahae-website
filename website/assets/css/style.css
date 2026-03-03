@@ -9017,7 +9017,7 @@ p.about-zero-label { margin-bottom: var(--space-md); }
   transition: max-height 0.3s ease, opacity 0.25s ease, margin-bottom 0.3s ease;
 }
 .about-zero-easter.is-open {
-  max-height: 6em;
+  max-height: 12em;
   opacity: 1;
   margin-bottom: var(--space-md);
 }
