@@ -96,8 +96,19 @@ for name, info in d['inactive'].items():
     echo "=== VM git config ==="
     ssh ${VM_HOST} "git -C ${VM_PATH} config user.name 2>&1 || echo 'NO user.name'"
     ssh ${VM_HOST} "git -C ${VM_PATH} config user.email 2>&1 || echo 'NO user.email'"
-    echo "=== git push dry-run ==="
-    ssh ${VM_HOST} "cd ${VM_PATH} && git push --dry-run 2>&1"
+    echo "=== git push dry-run (HEAD:main) ==="
+    ssh ${VM_HOST} "cd ${VM_PATH} && git push --dry-run origin HEAD:main 2>&1"
+    echo "=== end-to-end note test ==="
+    ssh ${VM_HOST} "
+      cd ${VM_PATH}
+      TS=\$(date +%Y%m%d_%H%M%S)
+      F=knowledge/docs/deploy_test_\${TS}.md
+      echo '_test: '\${TS}$'\n\ndeploy test note' > \$F
+      git add \$F
+      git commit -m \"note: deploy_test_\${TS}\" 2>&1
+      git push origin HEAD:main 2>&1
+      echo 'returncode='$?
+    "
     ;;
 
   git-push-auth)
