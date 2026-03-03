@@ -8,6 +8,12 @@
       "env": {
         "NODE_ENV": "production"
       }
+    },
+    "sequential-thinking": {
+      "command": "node",
+      "args": [
+        "/Users/97layer/97layerOS/.local_node/node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js"
+      ]
     }
   }
 }
