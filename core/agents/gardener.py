@@ -54,6 +54,7 @@ PROPOSE = {
     "sa.md",
     "ad.md",
     "ce.md",
+    "vd.md",   # Visual Director — 룩북 비주얼 시그니처 진화
 }
 
 # AUTO: long_term_memory.json, state.md → 기존 SA/CE가 이미 처리
