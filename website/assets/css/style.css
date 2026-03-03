@@ -8076,6 +8076,27 @@ body.is-loaded .home-preloader__logo {
   }
 }
 
+.footer-biz {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+  line-height: 1.9;
+}
+
+@media (max-width: 640px) {
+  .footer-biz {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+  .footer-biz .footer-sep { display: none; }
+}
+
 /* ─── woosunho 포트폴리오 ─── */
 .ws-nav {
   position: fixed;
