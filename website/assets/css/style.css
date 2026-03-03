@@ -7816,6 +7816,7 @@ body.is-loaded .home-preloader__logo {
   color: var(--text-sub);
   margin-bottom: 1.2rem;
   max-width: 560px;
+  text-wrap: pretty;
 }
 
 .about-body-text p:last-child { margin-bottom: 0; }
