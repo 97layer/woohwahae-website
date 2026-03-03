@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="Lookbook No.01 — Subtraction. WOOHWAHAE." name="description" />
+  <title>Lookbook No.01 — WOOHWAHAE</title>
+  <meta content="#E3E2E0" name="theme-color" />
+  <link href="/assets/media/brand/symbol.png" rel="icon" type="image/png" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="/assets/css/style.css?v=d98fc6cd" rel="stylesheet" />
+  <style>
+    /* ─── Lookbook Layout ─── */
+    .lb-hero {
+      padding: 28vh 0 20vh;
+      text-align: center;
+    }
+
+    .lb-hero__label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 1.6rem;
+    }
+
+    .lb-hero__title {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--text);
+      margin: 0 0 2rem;
+    }
+
+    .lb-hero__year {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      color: var(--text-faint);
+    }
+
+    /* ─── Image Sequence ─── */
+    .lb-sequence {
+      padding: 0 0 12vh;
+    }
+
+    .lb-item {
+      margin-bottom: 6rem;
+    }
+
+    .lb-item--full {
+      width: 100%;
+    }
+
+    .lb-item--half {
+      max-width: 62%;
+    }
+
+    .lb-item--half.lb-item--right {
+      margin-left: auto;
+    }
+
+    .lb-item--narrow {
+      max-width: 44%;
+    }
+
+    .lb-item--narrow.lb-item--center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .lb-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 6rem;
+    }
+
+    .lb-pair .lb-item {
+      margin-bottom: 0;
+    }
+
+    /* ─── Images ─── */
+    .lb-img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      filter: saturate(0.88);
+    }
+
+    .lb-item--full .lb-img {
+      aspect-ratio: 4 / 3;
+    }
+
+    .lb-pair .lb-img {
+      aspect-ratio: 3 / 4;
+    }
+
+    /* ─── Captions ─── */
+    .lb-caption {
+      margin-top: 0.9rem;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+
+    .lb-item--right .lb-caption,
+    .lb-item--center .lb-caption {
+      text-align: right;
+    }
+
+    /* ─── Divider ─── */
+    .lb-rule {
+      width: 1px;
+      height: 6rem;
+      background: var(--line);
+      margin: 0 auto 6rem;
+    }
+
+    /* ─── Editor Note ─── */
+    .lb-note {
+      max-width: 34rem;
+      margin: 0 auto 16vh;
+      padding: 0 var(--space-xl);
+      text-align: center;
+    }
+
+    .lb-note__label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.24em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 1.6rem;
+    }
+
+    .lb-note__text {
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--text-sub);
+      letter-spacing: 0.01em;
+    }
+
+    /* ─── Back link ─── */
+    .lb-back {
+      display: block;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      text-decoration: none;
+      padding-bottom: 8vh;
+      transition: color 0.4s;
+    }
+
+    .lb-back:hover {
+      color: var(--text);
+    }
+
+    /* ─── Mobile ─── */
+    @media (max-width: 640px) {
+      .lb-hero {
+        padding: 20vh var(--space-lg) 14vh;
+      }
+
+      .lb-item--half,
+      .lb-item--narrow {
+        max-width: 100%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+
+      .lb-pair {
+        grid-template-columns: 1fr;
+      }
+
+      .lb-pair .lb-img {
+        aspect-ratio: 3 / 4;
+      }
+
+      .lb-sequence {
+        padding: 0 var(--space-lg) 8vh;
+      }
+
+      .lb-item {
+        margin-bottom: 4rem;
+      }
+
+      .lb-pair {
+        margin-bottom: 4rem;
+        gap: 1rem;
+      }
+
+      .lb-item--full .lb-img {
+        aspect-ratio: 3 / 4;
+      }
+
+      .lb-note {
+        padding: 0 var(--space-lg);
+        margin-bottom: 10vh;
+      }
+    }
+  </style>
+</head>
+
+<body class="page-archive">
+
+  <!-- COMPONENT:nav -->
+  <nav class="site-nav" id="site-nav">
+    <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+      <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
+      <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
+      <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
+      <li><a href="/lab/"><span class="numeric-tag">04.</span>Lab</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-overlay" id="nav-overlay">
+    <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
+    <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
+    <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
+    <a href="/lab/"><span class="nav-overlay__num">04.</span>Lab</a>
+  </div>
+  <!-- /COMPONENT:nav -->
+
+  <main>
+
+    <!-- Hero -->
+    <header class="lb-hero">
+      <p class="lb-hero__label" data-reveal>Lookbook No.01</p>
+      <h1 class="lb-hero__title" data-reveal>Subtraction</h1>
+      <p class="lb-hero__year" data-reveal>2026</p>
+    </header>
+
+    <!-- Image Sequence -->
+    <div class="lb-sequence">
+
+      <!-- 01. Full width -->
+      <div class="lb-item lb-item--full" data-reveal>
+        <img class="lb-img" src="assets/images/lookbook-01-stillness.jpg" alt="Stillness" loading="lazy" />
+        <p class="lb-caption">Stillness</p>
+      </div>
+
+      <!-- 02 + 03. Pair -->
+      <div class="lb-pair" data-reveal>
+        <div class="lb-item">
+          <img class="lb-img" src="assets/images/lookbook-02-texture.jpg" alt="Texture" loading="lazy" />
+          <p class="lb-caption">Texture</p>
+        </div>
+        <div class="lb-item">
+          <img class="lb-img" src="assets/images/lookbook-03-space.jpg" alt="Space" loading="lazy" />
+          <p class="lb-caption">Space</p>
+        </div>
+      </div>
+
+      <!-- 04. Half right -->
+      <div class="lb-item lb-item--half lb-item--right" data-reveal>
+        <img class="lb-img" src="assets/images/lookbook-04-ritual.jpg" alt="Ritual" loading="lazy" />
+        <p class="lb-caption">Ritual</p>
+      </div>
+
+      <!-- 05. Narrow center -->
+      <div class="lb-item lb-item--narrow lb-item--center" data-reveal>
+        <img class="lb-img" src="assets/images/lookbook-05-material.jpg" alt="Material" loading="lazy" />
+        <p class="lb-caption">Material</p>
+      </div>
+
+      <!-- Divider -->
+      <div class="lb-rule"></div>
+
+      <!-- 06. Full width -->
+      <div class="lb-item lb-item--full" data-reveal>
+        <img class="lb-img" src="assets/images/lookbook-06-portrait.jpg" alt="Portrait" loading="lazy" />
+        <p class="lb-caption">Portrait</p>
+      </div>
+
+      <!-- 07. Half left -->
+      <div class="lb-item lb-item--half" data-reveal>
+        <img class="lb-img" src="assets/images/lookbook-07-moment.jpg" alt="Moment" loading="lazy" />
+        <p class="lb-caption">Moment</p>
+      </div>
+
+      <!-- 08. Full width -->
+      <div class="lb-item lb-item--full" data-reveal>
+        <img class="lb-img" src="assets/images/lookbook-08-light.jpg" alt="Light" loading="lazy" />
+        <p class="lb-caption">Light</p>
+      </div>
+
+    </div>
+
+    <!-- Editor Note -->
+    <div class="lb-note" data-reveal>
+      <p class="lb-note__label">Editor's Note</p>
+      <p class="lb-note__text">
+        가득 쥔 손으로는 손 안을 볼 수 없습니다.<br>
+        걷어내는 것이 곧 발견입니다.
+      </p>
+    </div>
+
+    <!-- Back -->
+    <a class="lb-back" href="/archive/" data-reveal>← Archive</a>
+
+  </main>
+
+  <!-- COMPONENT:footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-row footer-row--contact">
+        <a href="mailto:hello@woohwahae.kr" class="footer-link">hello@woohwahae.kr</a>
+        <span class="footer-sep">·</span>
+        <a href="https://instagram.com/woohwahae" class="footer-link" target="_blank" rel="noopener">@woohwahae</a>
+      </div>
+      <div class="footer-row footer-row--bottom">
+        <nav class="footer-nav">
+          <a href="/archive/">Archive</a>
+          <span class="footer-sep">·</span>
+          <a href="/practice/">Practice</a>
+          <span class="footer-sep">·</span>
+          <a href="/about/">About</a>
+          <span class="footer-sep">·</span>
+          <a href="/lab/">Lab</a>
+        </nav>
+        <div class="footer-meta">
+          <a href="/privacy.html">Privacy</a>
+          <a href="/terms.html">Terms</a>
+          <span>&copy; 2026 WOOHWAHAE</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /COMPONENT:footer -->
+
+  <script src="/assets/js/site.js" defer></script>
+
+</body>
+
+</html>

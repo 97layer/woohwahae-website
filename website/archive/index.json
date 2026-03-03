@@ -1,5 +1,15 @@
 [
   {
+    "slug": "lookbook",
+    "title": "Lookbook No.01 — Subtraction",
+    "date": "2026.03.03",
+    "issue": "Visual 001",
+    "preview": "가득 쥔 손으로는 손 안을 볼 수 없습니다. 걷어내는 것이 곧 발견입니다.",
+    "category": "Visual",
+    "type": "Lookbook",
+    "readMin": null
+  },
+  {
     "slug": "essay-010-work-and-essence",
     "title": "일과 본질",
     "date": "2026.02.20",

@@ -6952,7 +6952,8 @@ body.is-loaded .home-preloader__logo {
 
 /* ─── Archive ─── */
 .archive-hero {
-  padding: var(--space-xl) 0 var(--space-md);
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-md);
 }
 
 .archive-filter {
@@ -8531,7 +8532,8 @@ body.is-loaded .home-preloader__logo {
 
 /* ─ Archive: 학술지 목차 스타일 ─ */
 .archive-hero {
-  padding: 2rem 0 1.2rem;
+  padding-top: 2rem;
+  padding-bottom: 1.2rem;
 }
 
 .archive-hero .section-label {
@@ -9796,4 +9798,59 @@ p.about-zero-label { margin-bottom: var(--space-md); }
     width: 100%;
     right: -100%;
   }
+}
+
+/* ═══════════════════════════════════════════════
+   MOBILE OPTIMISATION — archive / about / global
+   ═══════════════════════════════════════════════ */
+
+/* ── global: section-label 최소 가독 크기 ── */
+@media (max-width: 640px) {
+  .section-label {
+    font-size: 0.72rem;   /* 9.6px → 11.5px */
+    letter-spacing: 0.14em;
+  }
+
+  .archive-hero__desc {
+    font-size: 0.72rem;   /* 0.58rem → 0.72rem */
+    letter-spacing: 0.12em;
+  }
+
+  /* ── archive: 리스트 아이템 패딩 늘려 touch target 확보 ── */
+  .archive-list-item {
+    padding: var(--space-md) 0;
+  }
+}
+
+/* ── about: TOC touch target + 폰트 ── */
+.about-toc a {
+  font-size: 0.7rem;        /* 0.58rem → 0.7rem */
+  padding: 0.6rem 0;        /* touch target ≈ 44px */
+  display: block;
+}
+
+.about-zero-label {
+  font-size: 0.65rem;       /* 0.52rem → 0.65rem */
+  letter-spacing: 0.16em;
+}
+
+/* ── about: section sub-label 가독성 ── */
+.about-section__sub {
+  font-size: 0.6rem;        /* 0.48rem → 0.6rem */
+  letter-spacing: 0.16em;
+}
+
+/* ── footer: touch target 확보 ── */
+.footer-nav a,
+.footer-meta a {
+  padding: 0.5rem 0.2rem;
+  display: inline-block;
+  min-height: 2.75rem;      /* ≈ 44px */
+  line-height: 2.75rem;
+}
+
+/* ── lab: wave-bg 모바일 overflow 방지 ── */
+.page-lab .wave-bg,
+body:not(.home-radical) .wave-bg {
+  overflow: hidden;
 }
