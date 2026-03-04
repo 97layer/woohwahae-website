@@ -2,7 +2,8 @@
 from datetime import datetime
 from typing import Optional, List, Dict
 from decimal import Decimal
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class OrderItemBase(BaseModel):
@@ -27,13 +28,12 @@ class OrderItemResponse(BaseModel):
     quantity: int
     subtotal: Decimal
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderCreate(BaseModel):
     """Order creation schema."""
-    items: List[OrderItemCreate] = Field(..., min_items=1)
+    items: List[OrderItemCreate] = Field(..., min_length=1)
     shipping_address: Dict[str, str]
     shipping_method: Optional[str] = None
     payment_method: str = Field(..., max_length=50)
@@ -67,8 +67,7 @@ class OrderResponse(BaseModel):
     created_at: datetime
     items: List[OrderItemResponse]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderListResponse(BaseModel):

@@ -118,16 +118,16 @@
         if (path === '/' || path === '/index.html') return;
 
         var active = '';
-        if (path.indexOf('/archive') === 0 || path.indexOf('/essay-') !== -1 || path.indexOf('/journal-') !== -1 || path.indexOf('/lookbook') !== -1) active = 'archive';
+        if (path.indexOf('/archive') === 0 || path.indexOf('/essay-') !== -1 || path.indexOf('/journal-') !== -1 || path.indexOf('/lookbook') !== -1 || path.indexOf('/playlist') !== -1) active = 'archive';
         else if (path.indexOf('/practice') === 0) active = 'practice';
         else if (path.indexOf('/about') === 0) active = 'about';
         else if (path.indexOf('/lab') === 0) active = 'lab';
+        if (active === 'lab') return;
 
         var sections = [
             { key: 'archive', label: 'Archive', href: '/archive/' },
             { key: 'practice', label: 'Practice', href: '/practice/' },
-            { key: 'about', label: 'About', href: '/about/' },
-            { key: 'lab', label: 'Lab', href: '/lab/' }
+            { key: 'about', label: 'About', href: '/about/' }
         ];
 
         /* 상단 탭 active 통일: 현재 경로에 맞춰 nav/overlay 모두 강조 */

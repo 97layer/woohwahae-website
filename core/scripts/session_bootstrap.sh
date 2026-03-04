@@ -248,13 +248,21 @@ if plan_council_path is not None:
         add_issue(f"plan_council check failed: {output}")
 
 if plan_dispatch_path is not None:
+    smoke_nontrivial_task = "스킬 및 기본 툴 체계를 분석하고 업그레이드 항목을 구현한다"
+    smoke_manual_task = (
+        "다중 파일 웹 개편 작업: website/archive/index.html, website/practice/index.html, "
+        "website/lab/index.html의 레이아웃 간격/타이포 일관성만 조정하고 "
+        "about 텍스트 및 백엔드/인프라는 변경하지 않는다. "
+        "변경 후 visual_validator와 build_components로 검증한다."
+    )
     smoke_cases = [
-        ("auto", "ok", "--auto"),
-        ("manual", "하네스 구조 리팩토링 계획 점검", "--manual"),
+        ("auto-simple", "ok", "--auto"),
+        ("auto-nontrivial", smoke_nontrivial_task, "--auto"),
+        ("manual", smoke_manual_task, "--manual"),
     ]
     for label, task_text, mode_flag in smoke_cases:
         proc = subprocess.run(
-            ["bash", str(plan_dispatch_path), task_text, mode_flag],
+            ["bash", str(plan_dispatch_path), task_text, mode_flag, "--smoke"],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -283,7 +291,21 @@ if plan_dispatch_path is not None:
             add_issue(f"plan_dispatch {label} missing consensus object")
         if not isinstance(dispatcher, dict):
             add_issue(f"plan_dispatch {label} missing dispatcher object")
-        elif label == "manual" and dispatcher.get("executed") is not True:
+            continue
+
+        if label == "auto-simple":
+            if dispatcher.get("executed") is not False:
+                add_issue("plan_dispatch auto-simple must remain skip path")
+            if dispatcher.get("reason") != "simple_task":
+                add_issue("plan_dispatch auto-simple must report reason=simple_task")
+
+        if label == "auto-nontrivial":
+            if dispatcher.get("executed") is not True:
+                add_issue("plan_dispatch auto-nontrivial must execute council path")
+            if dispatcher.get("complexity") not in {"medium", "high"}:
+                add_issue("plan_dispatch auto-nontrivial complexity must be medium/high")
+
+        if label == "manual" and dispatcher.get("executed") is not True:
             add_issue("plan_dispatch manual must execute council path")
 
 if issues:

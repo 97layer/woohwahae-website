@@ -308,7 +308,7 @@ class QueueManager:
             agent_id: Agent emitting the event
             payload: Event-specific data
         """
-        timestamp = datetime.now().isoformat().replace(':', '-')
+        timestamp = datetime.now().isoformat()
         event_id = f"{int(time.time() * 1000)}_{agent_id}_{event_type.value}"
 
         event = Event(
@@ -325,6 +325,32 @@ class QueueManager:
         event_file = self.queue_root / 'events' / f'{event_id}.json'
         event_file.write_text(json.dumps(event_dict, indent=2))
 
+    @staticmethod
+    def _parse_event_timestamp(raw_timestamp: str) -> Optional[datetime]:
+        try:
+            return datetime.fromisoformat(raw_timestamp)
+        except ValueError:
+            # Legacy compatibility: yyyy-mm-ddTHH-MM-SS(.us)
+            if "T" not in raw_timestamp:
+                return None
+            date_part, time_part = raw_timestamp.split("T", 1)
+            time_chunks = time_part.split(":")
+            if len(time_chunks) == 1:
+                legacy = time_chunks[0]
+                if "-" in legacy:
+                    head, *tail = legacy.split("-")
+                    if len(tail) >= 2:
+                        # Restore first two separators to ISO time format.
+                        tail[0:2] = [tail[0], tail[1]]
+                        restored = f"{date_part}T{head}:{tail[0]}:{tail[1]}"
+                        if len(tail) > 2:
+                            restored += "-" + "-".join(tail[2:])
+                        try:
+                            return datetime.fromisoformat(restored)
+                        except ValueError:
+                            return None
+            return None
+
     def get_events(self, since: Optional[datetime] = None) -> List[Event]:
         """
         Get all events (optionally since a specific time)
@@ -339,15 +365,25 @@ class QueueManager:
         events = []
 
         for event_file in sorted(events_dir.glob('*.json')):
-            event_data = json.loads(event_file.read_text())
+            try:
+                event_data = json.loads(event_file.read_text())
+            except json.JSONDecodeError:
+                continue
 
             # Convert event_type string back to Enum
-            if isinstance(event_data['event_type'], str):
-                event_data['event_type'] = EventType(event_data['event_type'])
+            event_type_raw = event_data.get('event_type')
+            if isinstance(event_type_raw, str):
+                try:
+                    event_data['event_type'] = EventType(event_type_raw)
+                except ValueError:
+                    continue
 
             event = Event(**event_data)
+            event_time = self._parse_event_timestamp(event.timestamp)
+            if event_time is None:
+                continue
 
-            if since is None or datetime.fromisoformat(event.timestamp) > since:
+            if since is None or event_time > since:
                 events.append(event)
 
         return events

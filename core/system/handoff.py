@@ -15,6 +15,13 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 import hashlib
 import subprocess
+import re
+from contextlib import contextmanager
+
+try:
+    import fcntl  # POSIX file lock
+except ImportError:  # pragma: no cover
+    fcntl = None
 
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -53,6 +60,7 @@ class HandoffEngine:
         self.work_lock_path = KNOWLEDGE_PATHS["system"] / "work_lock.json"
         self.fs_cache_path = KNOWLEDGE_PATHS["system"] / "filesystem_cache.json"
         self.asset_registry_path = KNOWLEDGE_PATHS["system"] / "asset_registry.json"
+        self.asset_registry_lock_path = KNOWLEDGE_PATHS["system"] / "asset_registry.lock"
 
         # 디렉토리 생성 (Container 내부)
         self.work_lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -358,6 +366,144 @@ class HandoffEngine:
     # 4. Asset Registry (자산 등록)
     # ─────────────────────────────────────────────────────────────
 
+    @contextmanager
+    def _asset_registry_lock(self):
+        """Serialize registry writes across concurrent agents/processes."""
+        self.asset_registry_lock_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.asset_registry_lock_path, 'a+', encoding='utf-8') as lock_fp:
+            if fcntl is not None:
+                fcntl.flock(lock_fp.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                if fcntl is not None:
+                    fcntl.flock(lock_fp.fileno(), fcntl.LOCK_UN)
+
+    def _default_asset_registry(self) -> Dict[str, Any]:
+        now = datetime.now().isoformat()
+        return {
+            "version": "2.0",
+            "created_at": now,
+            "last_updated": now,
+            "assets": [],
+            "stats": {
+                "total": 0,
+                "by_type": {},
+                "by_status": {},
+                "by_source": {},
+            },
+        }
+
+    def _normalize_asset_registry(self, registry: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(registry, dict):
+            registry = {}
+        registry.setdefault("version", "2.0")
+        registry.setdefault("created_at", datetime.now().isoformat())
+        registry.setdefault("last_updated", datetime.now().isoformat())
+        assets = registry.get("assets")
+        if not isinstance(assets, list):
+            assets = []
+        registry["assets"] = assets
+
+        stats = registry.get("stats")
+        if not isinstance(stats, dict):
+            stats = {}
+        stats.setdefault("total", len(assets))
+        stats.setdefault("by_type", {})
+        stats.setdefault("by_status", {})
+        stats.setdefault("by_source", {})
+        registry["stats"] = stats
+        return registry
+
+    def _recompute_asset_stats(self, assets: List[Any]) -> Dict[str, Any]:
+        by_type: Dict[str, int] = {}
+        by_status: Dict[str, int] = {}
+        by_source: Dict[str, int] = {}
+        total = 0
+
+        for item in assets:
+            if not isinstance(item, dict):
+                continue
+            total += 1
+            asset_type = str(item.get("type", "") or "")
+            status = str(item.get("status", "") or "")
+            source = str(item.get("source", "") or "")
+            if asset_type:
+                by_type[asset_type] = by_type.get(asset_type, 0) + 1
+            if status:
+                by_status[status] = by_status.get(status, 0) + 1
+            if source:
+                by_source[source] = by_source.get(source, 0) + 1
+
+        return {
+            "total": total,
+            "by_type": by_type,
+            "by_status": by_status,
+            "by_source": by_source,
+        }
+
+    def _load_asset_registry(self) -> tuple[Dict[str, Any], bool]:
+        """
+        Returns (registry, recovered)
+        recovered=True when malformed trailing data was stripped.
+        """
+        if not self.asset_registry_path.exists():
+            return self._default_asset_registry(), False
+
+        text = self.asset_registry_path.read_text(encoding='utf-8', errors='ignore').strip()
+        if not text:
+            return self._default_asset_registry(), False
+
+        try:
+            payload = json.loads(text)
+            return self._normalize_asset_registry(payload), False
+        except json.JSONDecodeError:
+            # Recover first JSON object when file has trailing garbage/partial writes.
+            decoder = json.JSONDecoder()
+            payload, _ = decoder.raw_decode(text)
+            if not isinstance(payload, dict):
+                return self._default_asset_registry(), True
+            return self._normalize_asset_registry(payload), True
+
+    def _save_asset_registry(self, registry: Dict[str, Any]) -> None:
+        registry = self._normalize_asset_registry(registry)
+        registry["last_updated"] = datetime.now().isoformat(timespec="seconds")
+        tmp_path = self.asset_registry_path.with_suffix(".json.tmp")
+        tmp_path.write_text(
+            json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        tmp_path.replace(self.asset_registry_path)
+
+    def _next_asset_id(self, registry: Dict[str, Any]) -> str:
+        month = datetime.now().strftime("%Y-%m")
+        max_seq = 0
+        for asset in registry.get("assets", []):
+            if not isinstance(asset, dict):
+                continue
+            raw_id = str(asset.get("id", ""))
+            match = re.match(rf"^AST-{re.escape(month)}-(\d+)$", raw_id)
+            if not match:
+                continue
+            seq = int(match.group(1))
+            if seq > max_seq:
+                max_seq = seq
+        total = int(registry.get("stats", {}).get("total", 0))
+        next_seq = max(max_seq, total) + 1
+        return f"AST-{month}-{next_seq:03d}"
+
+    def repair_asset_registry(self) -> bool:
+        """Repair malformed asset_registry.json by loading and rewriting normalized JSON."""
+        with self._asset_registry_lock():
+            registry, recovered = self._load_asset_registry()
+            registry["stats"] = self._recompute_asset_stats(registry.get("assets", []))
+            self._save_asset_registry(registry)
+        if recovered:
+            print("✅ Asset registry repaired (recovered malformed trailing data)")
+        else:
+            print("✅ Asset registry validated (no recovery needed)")
+        return True
+
     def register_asset(self, path: str, asset_type: str, source: str, metadata: Dict = None) -> str:
         """
         생성된 자산 등록
@@ -371,48 +517,35 @@ class HandoffEngine:
         Returns:
             asset_id (e.g., AST-2026-02-001)
         """
-        # Load or create registry
-        if self.asset_registry_path.exists():
-            with open(self.asset_registry_path, 'r', encoding='utf-8') as f:
-                registry = json.load(f)
-        else:
-            registry = {
-                "version": "1.0",
-                "assets": [],
-                "stats": {"total": 0, "by_type": {}, "by_status": {}}
+        with self._asset_registry_lock():
+            registry, recovered = self._load_asset_registry()
+
+            asset_id = self._next_asset_id(registry)
+            now = datetime.now().isoformat()
+
+            asset = {
+                "id": asset_id,
+                "type": asset_type,
+                "source": source,
+                "created_at": now,
+                "path": path,
+                "status": "captured",
+                "metadata": metadata or {},
+                "lifecycle": [
+                    {
+                        "stage": "captured",
+                        "at": now,
+                        "by": source
+                    }
+                ]
             }
 
-        # Generate asset ID
-        asset_id = f"AST-{datetime.now().strftime('%Y-%m')}-{registry['stats']['total']+1:03d}"
+            registry["assets"].append(asset)
+            registry["stats"] = self._recompute_asset_stats(registry.get("assets", []))
+            self._save_asset_registry(registry)
 
-        # Create asset entry
-        asset = {
-            "id": asset_id,
-            "type": asset_type,
-            "source": source,
-            "created_at": datetime.now().isoformat(),
-            "path": path,
-            "status": "captured",
-            "metadata": metadata or {},
-            "lifecycle": [
-                {
-                    "stage": "captured",
-                    "at": datetime.now().isoformat(),
-                    "by": source
-                }
-            ]
-        }
-
-        # Update registry
-        registry['assets'].append(asset)
-        registry['stats']['total'] += 1
-        registry['stats']['by_type'][asset_type] = registry['stats']['by_type'].get(asset_type, 0) + 1
-        registry['stats']['by_status']['captured'] = registry['stats']['by_status'].get('captured', 0) + 1
-
-        # Save
-        with open(self.asset_registry_path, 'w', encoding='utf-8') as f:
-            json.dump(registry, f, indent=2, ensure_ascii=False)
-
+        if recovered:
+            print("⚠️  Asset registry had malformed trailing data; auto-recovered before append")
         print(f"📦 Asset registered: {asset_id} ({asset_type})")
         return asset_id
 
@@ -432,6 +565,7 @@ def main():
     parser.add_argument('--next-steps', type=str, nargs='+', help='다음 단계 (handoff 시)')
     parser.add_argument('--update-cache', action='store_true', help='파일 시스템 캐시 갱신')
     parser.add_argument('--register-asset', nargs=3, metavar=('PATH', 'TYPE', 'SOURCE'), help='자산 등록')
+    parser.add_argument('--repair-asset-registry', action='store_true', help='asset_registry.json 복구/정규화')
     parser.add_argument('--test', action='store_true', help='테스트 모드')
 
     args = parser.parse_args()
@@ -472,6 +606,9 @@ def main():
     elif args.register_asset:
         path, asset_type, source = args.register_asset
         engine.register_asset(path, asset_type, source)
+
+    elif args.repair_asset_registry:
+        engine.repair_asset_registry()
 
     else:
         parser.print_help()

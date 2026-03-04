@@ -31,6 +31,8 @@ def _set_test_env(monkeypatch):
     monkeypatch.setenv('FASTAPI_ADMIN_PASSWORD_HASH', pw_hash)
     monkeypatch.setenv('CORS_ORIGINS', 'https://woohwahae.kr')
     monkeypatch.setenv('FASTAPI_CORS_ORIGINS', 'https://woohwahae.kr')
+    monkeypatch.setenv('JWT_SECRET_KEY', 'test-jwt-secret-key-not-for-production')
+    monkeypatch.setenv('PHOTO_UPLOAD_ADMIN_TOKEN', 'upload-test-token')
 
 
 @pytest.fixture

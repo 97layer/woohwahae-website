@@ -1,5 +1,7 @@
 {
   "title": "Lab — WOOHWAHAE",
+  "headline": "실험의 아카이브",
+  "section_label": "004. LAB",
   "description": "WOOHWAHAE Lab — 실험 아카이브. 웹 렌더링, 모션, 인터랙션 프로토타입.",
   "og_url": "https://woohwahae.kr/lab/",
   "body_class": "page-lab",

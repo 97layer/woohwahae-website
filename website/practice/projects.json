@@ -1,0 +1,16 @@
+[
+  {
+    "number": "01",
+    "title": "Project 01",
+    "year": "2026",
+    "summary": "브랜드 감도 정렬을 위한 공간/콘텐츠 통합 설계 프로젝트.",
+    "href": "/practice/project.html"
+  },
+  {
+    "number": "02",
+    "title": "Project 02",
+    "year": "2026",
+    "summary": "서비스 동선과 사용자 인터페이스를 재조합하는 확장 실험.",
+    "href": "/practice/project.html"
+  }
+]

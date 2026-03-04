@@ -1,22 +1,24 @@
 """Order API endpoints."""
-from typing import Optional
-from datetime import datetime
-from math import ceil
+from datetime import datetime, timezone
 from decimal import Decimal
+from math import ceil
+import secrets
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from ..models import get_db, Order, OrderItem, Product, User, OrderStatus, PaymentStatus
 from ..schemas import OrderCreate, OrderUpdate, OrderResponse, OrderListResponse
-from ..utils import get_current_user, get_current_active_admin, redis_client
+from ..utils import get_current_user, get_current_active_admin
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 
 def generate_order_number() -> str:
     """Generate unique order number."""
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"WH{timestamp}"
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    return f"WH{timestamp}{secrets.randbelow(10000):04d}"
 
 
 @router.post("", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
@@ -31,7 +33,8 @@ def create_order(
     order_items = []
 
     for item in order_data.items:
-        product = db.query(Product).filter(Product.id == item.product_id).first()
+        product_query = db.query(Product).filter(Product.id == item.product_id)
+        product = product_query.with_for_update().first()
         if not product:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -179,15 +182,15 @@ def update_order(
     if "status" in update_data:
         new_status = update_data["status"]
         if new_status == OrderStatus.SHIPPED.value and not order.shipped_at:
-            order.shipped_at = datetime.utcnow()
+            order.shipped_at = datetime.now(timezone.utc)
         elif new_status == OrderStatus.DELIVERED.value and not order.delivered_at:
-            order.delivered_at = datetime.utcnow()
+            order.delivered_at = datetime.now(timezone.utc)
         elif new_status == OrderStatus.CANCELLED.value and not order.cancelled_at:
-            order.cancelled_at = datetime.utcnow()
+            order.cancelled_at = datetime.now(timezone.utc)
 
     if "payment_status" in update_data:
         if update_data["payment_status"] == PaymentStatus.PAID.value and not order.paid_at:
-            order.paid_at = datetime.utcnow()
+            order.paid_at = datetime.now(timezone.utc)
 
     for field, value in update_data.items():
         setattr(order, field, value)
@@ -223,7 +226,7 @@ def cancel_order(
         )
 
     order.status = OrderStatus.CANCELLED.value
-    order.cancelled_at = datetime.utcnow()
+    order.cancelled_at = datetime.now(timezone.utc)
 
     # Restore stock
     for item in order.items:

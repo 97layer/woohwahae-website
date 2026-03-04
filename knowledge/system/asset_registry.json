@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "created_at": "2026-02-16T18:01:14.427889",
-  "last_updated": "2026-02-19T00:22:25",
+  "last_updated": "2026-03-04T18:11:16",
   "assets": [
     {
       "id": "image_tmp2t4zprye_20260217_002322",
@@ -1388,36 +1388,858 @@
           "by": "unit_test"
         }
       ]
+    },
+    {
+      "id": "AST-2026-03-114",
+      "type": "visual",
+      "source": "agent",
+      "created_at": "2026-03-04T13:17:30.050291",
+      "path": "website/archive/lookbook/assets/images/lookbook-15-wave.jpg",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T13:17:30.050429",
+          "by": "agent"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-115",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T16:54:34.818865",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T16:54:34.819111",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-116",
+      "type": "script",
+      "source": "codex",
+      "created_at": "2026-03-04T17:00:25.957802",
+      "path": "core/scripts/skill_tool_audit.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:00:25.957924",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-117",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:08:38.824117",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:08:38.824120",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-118",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:08:50.127723",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:08:50.127812",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-119",
+      "type": "script",
+      "source": "codex",
+      "created_at": "2026-03-04T17:08:57.115987",
+      "path": "core/system/plan_dispatch_classifier.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:08:57.116101",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-120",
+      "type": "test",
+      "source": "codex",
+      "created_at": "2026-03-04T17:08:57.284688",
+      "path": "core/tests/test_plan_dispatch_classifier.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:08:57.284901",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-121",
+      "type": "test",
+      "source": "codex",
+      "created_at": "2026-03-04T17:08:57.374193",
+      "path": "core/tests/test_plan_dispatch_smoke.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:08:57.374328",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-122",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:09:58.410387",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:09:58.410390",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-123",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:10:16.862994",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:10:16.863104",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-124",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:11:22.052098",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:11:22.052188",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-125",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:15:07.672706",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:15:07.672708",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-126",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:17:39.078726",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:17:39.078813",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-127",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:19:09.438600",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:19:09.438686",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-128",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:22:01.202606",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:22:01.202694",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-129",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:22:34.211495",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:22:34.211584",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-130",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:23:10.227882",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:23:10.227885",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-131",
+      "type": "script",
+      "source": "codex",
+      "created_at": "2026-03-04T17:23:25.842912",
+      "path": "core/system/plan_dispatch_metrics.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:23:25.843228",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-132",
+      "type": "script",
+      "source": "codex",
+      "created_at": "2026-03-04T17:23:25.926751",
+      "path": "core/system/plan_dispatch_replay.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:23:25.926862",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-133",
+      "type": "test",
+      "source": "codex",
+      "created_at": "2026-03-04T17:23:26.007170",
+      "path": "core/tests/test_plan_dispatch_metrics.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:23:26.007279",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-134",
+      "type": "test",
+      "source": "codex",
+      "created_at": "2026-03-04T17:23:26.136227",
+      "path": "core/tests/test_plan_dispatch_replay.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:23:26.136337",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-135",
+      "type": "data",
+      "source": "codex",
+      "created_at": "2026-03-04T17:23:56.978249",
+      "path": "knowledge/system/plan_dispatch_metrics.jsonl",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:23:56.978366",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-136",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:27:10.629902",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:27:10.629906",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-137",
+      "type": "data",
+      "source": "codex",
+      "created_at": "2026-03-04T17:27:44.340439",
+      "path": "knowledge/system/plan_dispatch_replay_reports.jsonl",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:27:44.340550",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-138",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:33:14.724270",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:33:14.724274",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-139",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:39:02.493227",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:39:02.493230",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-140",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:39:15.017616",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:39:15.017697",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-141",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:40:06.599435",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:40:06.599569",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-142",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:51:44.885557",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:51:44.885640",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-143",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:54:36.812253",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:54:36.812256",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-144",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T17:55:41.970909",
+      "path": "core/scripts/plan_dispatch_daily_report.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:55:41.971022",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-145",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T17:55:46.421782",
+      "path": "core/tests/test_plan_dispatch_daily_report.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:55:46.421892",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-146",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T17:56:08.022175",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T17:56:08.022177",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-147",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:05:34.918647",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:05:34.918651",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-148",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:05:51.286695",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:05:51.286698",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-149",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:06:11.063435",
+      "path": "core/tests/test_monitor_dashboard.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:06:11.063577",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-150",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:08:28.508063",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:08:28.508063",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-151",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:08:47.073251",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:08:47.073251",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-152",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:09:07.879176",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:09:07.879176",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-153",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:09:19.736319",
+      "path": "core/system/handoff.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:09:19.736319",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-154",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:09:19.816055",
+      "path": "core/system/monitor_dashboard.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:09:19.816055",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-155",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:09:19.895216",
+      "path": "core/scripts/plan_dispatch.sh",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:09:19.895216",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-156",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:09:19.976339",
+      "path": ".github/workflows/plan-dispatch-health.yml",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:09:19.976339",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-157",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:10:16.238372",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:10:16.238372",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-158",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:10:30.997803",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:10:30.997803",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-159",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:11:03.599780",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:11:03.599780",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-160",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:11:16.948373",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:11:16.948373",
+          "by": "unit_test"
+        }
+      ]
     }
   ],
   "stats": {
-    "total": 113,
+    "total": 159,
     "by_type": {
       "signal": 39,
-      "content": 24,
+      "content": 23,
       "media": 10,
       "skill": 4,
       "documentation": 1,
       "report": 2,
       "document": 3,
       "page": 2,
-      "test": 25,
+      "test": 58,
       "directive": 1,
       "module": 1,
-      "system": 1
+      "system": 1,
+      "visual": 1,
+      "script": 4,
+      "data": 2,
+      "code": 7
     },
     "by_status": {
-      "captured": 59,
+      "captured": 106,
       "completed": 1,
       "analyzed": 14,
       "stored": 1,
-      "published": 24,
+      "published": 23,
       "active": 14
     },
     "by_source": {
       "telegram": 23,
       "97layer": 16,
-      "manual": 38
+      "manual": 39,
+      "audit": 1,
+      "ux_plan": 1,
+      "sa_agent": 4,
+      "unit_test": 54,
+      "auto": 1,
+      "bot_templates": 1,
+      "agent": 2,
+      "codex": 17
     }
   }
 }

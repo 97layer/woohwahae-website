@@ -1,9 +1,20 @@
 """FastAPI application entry point."""
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import auth_router, products_router, cart_router, orders_router
+from .api import auth_router, products_router, cart_router, orders_router, payments_router
+from .config import settings
 from .models import init_db
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """Initialize resources on startup."""
+    init_db()
+    yield
+
 
 # Create FastAPI app
 app = FastAPI(
@@ -12,20 +23,16 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+    lifespan=lifespan,
 )
 
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://woohwahae.kr",
-        "https://www.woohwahae.kr",
-        "http://localhost:3000",
-        "http://localhost:5173",
-    ],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Session-ID"],
 )
 
 # Register routers
@@ -35,12 +42,7 @@ app.include_router(auth_router, prefix=API_V1_PREFIX)
 app.include_router(products_router, prefix=API_V1_PREFIX)
 app.include_router(cart_router, prefix=API_V1_PREFIX)
 app.include_router(orders_router, prefix=API_V1_PREFIX)
-
-
-@app.on_event("startup")
-def startup_event():
-    """Initialize database on startup."""
-    init_db()
+app.include_router(payments_router, prefix=API_V1_PREFIX)
 
 
 @app.get("/")
@@ -65,5 +67,5 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True
+        reload=settings.DEBUG
     )

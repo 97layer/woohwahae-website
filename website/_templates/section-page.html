@@ -16,6 +16,12 @@
 <!-- /COMPONENT:nav -->
 <main class="page-main">
   <div class="page-intro container--wide">
+    {% if section_label %}
+    <p class="section-label">{{ section_label }}</p>
+    {% endif %}
+    {% if headline %}
+    <h1 class="page-title">{{ headline }}</h1>
+    {% endif %}
     <p class="page-preamble">{{ preamble }}</p>
     {% if concept_board %}
     <section class="lab-concept-board" data-reveal aria-label="{{ concept_board.get('aria', '랩 디자인 컨셉') }}">

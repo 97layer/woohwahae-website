@@ -4,16 +4,20 @@ WOOHWAHAE Photo Upload Extension
 사진 업로드 기능 추가
 """
 
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
-from typing import List
-import os
-import shutil
-from datetime import datetime
+from __future__ import annotations
+
 import json
+import os
+import re
+import secrets
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
+
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 # FastAPI 앱 초기화
 app = FastAPI(title="WOOHWAHAE Photo Upload", version="1.0.0")
@@ -21,10 +25,10 @@ app = FastAPI(title="WOOHWAHAE Photo Upload", version="1.0.0")
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8081", "http://localhost:8082", "http://localhost:8000"],
+    allow_origins=["https://woohwahae.kr", "http://localhost:8082"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "DELETE"],
+    allow_headers=["Authorization", "X-Admin-Token", "Content-Type"],
 )
 
 # 업로드 디렉토리 설정
@@ -41,50 +45,127 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 # 이미지 메타데이터 저장 파일
 METADATA_FILE = UPLOAD_DIR / "metadata.json"
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp", "svg"}
+ALLOWED_MIME_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+}
+MAX_UPLOAD_BYTES = int(os.getenv("PHOTO_UPLOAD_MAX_BYTES", str(10 * 1024 * 1024)))
+MAX_UPLOAD_FILES = int(os.getenv("PHOTO_UPLOAD_MAX_FILES", "10"))
+PHOTO_UPLOAD_TOKEN = os.getenv("PHOTO_UPLOAD_ADMIN_TOKEN", "").strip()
 
-def load_metadata():
+
+def _extract_admin_token(request: Request) -> str:
+    auth = request.headers.get("authorization", "").strip()
+    if auth.lower().startswith("bearer "):
+        return auth.split(" ", 1)[1].strip()
+    return request.headers.get("x-admin-token", "").strip()
+
+
+def _require_admin_auth(request: Request) -> None:
+    if not PHOTO_UPLOAD_TOKEN:
+        raise HTTPException(
+            status_code=503,
+            detail="PHOTO_UPLOAD_ADMIN_TOKEN is not configured",
+        )
+    token = _extract_admin_token(request)
+    if not token or not secrets.compare_digest(token, PHOTO_UPLOAD_TOKEN):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+def _safe_filename_parts(original_name: str) -> tuple[str, str]:
+    if not original_name:
+        raise HTTPException(status_code=400, detail="Empty filename")
+    basename = Path(original_name).name
+    suffix = Path(basename).suffix.lower().lstrip(".")
+    if suffix not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Invalid file extension")
+    stem = re.sub(r"[^a-zA-Z0-9._-]", "_", Path(basename).stem).strip("._")
+    if not stem:
+        stem = "upload"
+    return stem[:80], suffix
+
+
+def _safe_upload_path(relative_path: str) -> Path:
+    target = (UPLOAD_DIR / relative_path).resolve()
+    if not str(target).startswith(str(UPLOAD_DIR.resolve())):
+        raise HTTPException(status_code=400, detail="Invalid path")
+    return target
+
+
+def load_metadata() -> list[dict]:
     """저장된 메타데이터 불러오기"""
     if METADATA_FILE.exists():
-        with open(METADATA_FILE, 'r') as f:
-            return json.load(f)
+        try:
+            return json.loads(METADATA_FILE.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return []
     return []
 
-def save_metadata(metadata):
+
+def save_metadata(metadata: list[dict]) -> None:
     """메타데이터 저장"""
-    with open(METADATA_FILE, 'w') as f:
-        json.dump(metadata, f, indent=2, ensure_ascii=False)
+    METADATA_FILE.write_text(
+        json.dumps(metadata, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
 @app.post("/api/upload")
 async def upload_photos(
-    photos: List[UploadFile] = File(...),
-    category: str = Form(...)
+    request: Request,
+    photos: list[UploadFile] = File(...),
+    category: str = Form(...),
 ):
     """사진 업로드"""
+    _require_admin_auth(request)
     if category not in CATEGORIES:
         raise HTTPException(status_code=400, detail="Invalid category")
+    if not photos:
+        raise HTTPException(status_code=400, detail="No files provided")
+    if len(photos) > MAX_UPLOAD_FILES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too many files (max {MAX_UPLOAD_FILES})",
+        )
 
     uploaded_files = []
     metadata = load_metadata()
+    next_id = (max((m.get("id", 0) for m in metadata), default=0) + 1)
 
     for photo in photos:
-        # 파일명 생성 (타임스탬프 추가)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{timestamp}_{photo.filename}"
+        stem, suffix = _safe_filename_parts(photo.filename or "")
+        content_type = (photo.content_type or "").lower()
+        if content_type not in ALLOWED_MIME_TYPES:
+            raise HTTPException(status_code=400, detail="Invalid content type")
+
+        raw = await photo.read(MAX_UPLOAD_BYTES + 1)
+        await photo.close()
+        if len(raw) > MAX_UPLOAD_BYTES:
+            raise HTTPException(status_code=400, detail="File too large")
+
+        # 파일명 생성 (UTC 타임스탬프 + 랜덤 토큰)
+        now_utc = datetime.now(timezone.utc)
+        timestamp = now_utc.strftime("%Y%m%d_%H%M%S")
+        filename = f"{timestamp}_{secrets.token_hex(6)}_{stem}.{suffix}"
         filepath = UPLOAD_DIR / category / filename
 
         # 파일 저장
-        with open(filepath, "wb") as buffer:
-            shutil.copyfileobj(photo.file, buffer)
+        filepath.write_bytes(raw)
 
         # 메타데이터 추가
         file_info = {
-            "id": len(metadata) + 1,
+            "id": next_id,
             "filename": f"{category}/{filename}",
-            "original_name": photo.filename,
+            "original_name": Path(photo.filename or "").name,
             "category": category,
-            "uploaded_at": datetime.now().isoformat(),
-            "size": filepath.stat().st_size
+            "uploaded_at": now_utc.isoformat(),
+            "size": filepath.stat().st_size,
+            "content_type": content_type,
         }
+        next_id += 1
         metadata.append(file_info)
         uploaded_files.append(file_info)
 
@@ -98,8 +179,9 @@ async def upload_photos(
     }
 
 @app.get("/api/images")
-async def get_images(category: str = None):
+async def get_images(request: Request, category: Optional[str] = None):
     """업로드된 이미지 목록 조회"""
+    _require_admin_auth(request)
     metadata = load_metadata()
 
     if category:
@@ -109,8 +191,9 @@ async def get_images(category: str = None):
     return metadata
 
 @app.get("/api/images/{category}")
-async def get_category_images(category: str):
+async def get_category_images(request: Request, category: str):
     """특정 카테고리 이미지 조회"""
+    _require_admin_auth(request)
     if category not in CATEGORIES:
         raise HTTPException(status_code=400, detail="Invalid category")
 
@@ -119,8 +202,9 @@ async def get_category_images(category: str):
     return filtered
 
 @app.delete("/api/images/{image_id}")
-async def delete_image(image_id: int):
+async def delete_image(request: Request, image_id: int):
     """이미지 삭제"""
+    _require_admin_auth(request)
     metadata = load_metadata()
 
     # 이미지 찾기
@@ -134,7 +218,7 @@ async def delete_image(image_id: int):
         raise HTTPException(status_code=404, detail="Image not found")
 
     # 파일 삭제
-    filepath = UPLOAD_DIR / image["filename"]
+    filepath = _safe_upload_path(image["filename"])
     if filepath.exists():
         filepath.unlink()
 
@@ -145,8 +229,9 @@ async def delete_image(image_id: int):
     return {"success": True, "message": "Image deleted"}
 
 @app.get("/api/gallery/{category}")
-async def get_gallery_html(category: str):
+async def get_gallery_html(request: Request, category: str):
     """갤러리 HTML 생성"""
+    _require_admin_auth(request)
     if category not in CATEGORIES:
         raise HTTPException(status_code=400, detail="Invalid category")
 

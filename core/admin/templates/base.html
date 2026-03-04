@@ -51,6 +51,10 @@
             class="sidebar-link {% if request.path.startswith('/ritual') %}active{% endif %}">
             고객
           </a>
+          <a href="{{ url_for('bookings_dashboard') }}"
+            class="sidebar-link {% if request.path.startswith('/bookings') %}active{% endif %}">
+            예약
+          </a>
         </div>
 
         <!-- LAYER 2 -->

@@ -51,16 +51,23 @@ def build_page(page_id: str, out_path: Path) -> None:
     controls = None if controls_struct else (_read(page_dir / "controls.html").strip() or None)
     body = _read(page_dir / "body.html")
     page_script = _read(page_dir / "script.html").strip() or None
+    concept_board = meta.get("concept_board")
+
+    if not body.strip():
+        print(f"경고: {page_id}/body.html 비어있음 (본문 없음)")
 
     env = Environment(loader=FileSystemLoader(str(TMPL_DIR)), autoescape=False)
     tmpl = env.get_template("section-page.html")
 
     rendered = tmpl.render(
         title=meta["title"],
+        headline=meta.get("headline", ""),
+        section_label=meta.get("section_label", ""),
         description=meta["description"],
         og_url=meta["og_url"],
         body_class=meta["body_class"],
         preamble=meta["preamble"],
+        concept_board=concept_board,
         controls_struct=controls_struct,
         controls=controls,
         body=body,

@@ -39,10 +39,18 @@ class MonitorDashboard:
         self.asset_registry = PROJECT_ROOT / 'knowledge' / 'system' / 'asset_registry.json'
         self.ralph_log = PROJECT_ROOT / 'knowledge' / 'system' / 'ralph_validations.jsonl'
         self.reports_dir = PROJECT_ROOT / 'knowledge' / 'reports' / 'daily'
+        self.plan_dispatch_daily_dir = PROJECT_ROOT / 'knowledge' / 'system' / 'plan_dispatch_daily'
 
     def clear_screen(self):
         """Clear terminal screen"""
         os.system('clear' if os.name != 'nt' else 'cls')
+
+    @staticmethod
+    def _display_path(path: Path) -> str:
+        try:
+            return str(path.relative_to(PROJECT_ROOT))
+        except ValueError:
+            return str(path)
 
     def get_work_lock_status(self) -> Dict:
         """Get current work lock status from handoff.json"""
@@ -109,6 +117,39 @@ class MonitorDashboard:
         return {
             'morning': morning_file.exists(),
             'evening': evening_file.exists()
+        }
+
+    def get_plan_dispatch_daily_status(self) -> Dict:
+        """Get latest plan_dispatch daily report status."""
+        if not self.plan_dispatch_daily_dir.exists():
+            return {'available': False}
+
+        candidates = sorted(self.plan_dispatch_daily_dir.glob('plan_dispatch_*.json'))
+        if not candidates:
+            return {'available': False}
+
+        latest = candidates[-1]
+        try:
+            payload = json.loads(latest.read_text(encoding='utf-8'))
+        except Exception:
+            return {
+                'available': True,
+                'status': 'invalid',
+                'file': self._display_path(latest),
+            }
+
+        health = payload.get('health', {}) if isinstance(payload, dict) else {}
+        metrics = payload.get('metrics', {}) if isinstance(payload, dict) else {}
+        replay = payload.get('replay', {}) if isinstance(payload, dict) else {}
+        status = str(health.get('status', 'unknown')).lower()
+        generated_at = str(payload.get('generated_at', ''))[:19] if isinstance(payload, dict) else ''
+        return {
+            'available': True,
+            'status': status,
+            'generated_at': generated_at,
+            'fallback_rate': float(metrics.get('fallback_rate', 0.0)),
+            'allowed_rate': float(replay.get('allowed_rate', 0.0)),
+            'file': self._display_path(latest),
         }
 
     def get_recent_files(self, limit: int = 5) -> List[Dict]:
@@ -241,6 +282,22 @@ class MonitorDashboard:
         evening_status = "✅" if reports['evening'] else "⏳"
         print(f"  {morning_status} Morning Briefing (09:00)")
         print(f"  {evening_status} Evening Report (21:00)")
+        print()
+
+        # plan_dispatch Daily Health
+        pd_status = self.get_plan_dispatch_daily_status()
+        print("━━━ 🩺 Plan Dispatch Daily ━━━")
+        if not pd_status.get('available'):
+            print("  ⏳ Daily health report not generated")
+        else:
+            status = str(pd_status.get('status', 'unknown')).lower()
+            icon = {'pass': '✅', 'warn': '⚠️', 'fail': '❌', 'invalid': '❌'}.get(status, '•')
+            print(f"  {icon} Health: {status}")
+            print(f"  Fallback Rate: {pd_status.get('fallback_rate', 0.0):.3f}")
+            print(f"  Allowed Rate: {pd_status.get('allowed_rate', 0.0):.3f}")
+            if pd_status.get('generated_at'):
+                print(f"  Generated: {pd_status.get('generated_at')}")
+            print(f"  File: {pd_status.get('file')}")
         print()
 
         # Recent File Changes

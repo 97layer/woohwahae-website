@@ -1,13 +1,16 @@
 """Base database models and session management."""
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Database configuration
-DATABASE_URL = "postgresql://user:password@localhost:5432/woohwahae_ecommerce"
+from ..config import settings
 
 # Create engine
-engine = create_engine(DATABASE_URL, echo=True)
+_connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(
+    settings.DATABASE_URL,
+    echo=settings.SQL_ECHO,
+    connect_args=_connect_args,
+)
 
 # Session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

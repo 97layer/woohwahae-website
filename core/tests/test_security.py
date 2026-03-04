@@ -290,6 +290,20 @@ class TestFastAPIAuth:
             json={'page': 'test', 'element_id': 'h1', 'content': 'hello'})
         assert resp.status_code == 401
 
+    def test_fastapi_header_token_required(self, fastapi_client, test_password):
+        """관리자 데이터 조회는 Authorization 헤더를 요구한다."""
+        login = fastapi_client.post('/api/admin/login', json={'password': test_password})
+        token = login.json()['token']
+
+        denied = fastapi_client.get('/api/contents/index')
+        assert denied.status_code == 401
+
+        allowed = fastapi_client.get(
+            '/api/contents/index',
+            headers={'Authorization': f'Bearer {token}'},
+        )
+        assert allowed.status_code == 200
+
 
 # ─── #10: FastAPI 토큰 만료 ───────────────────────────────────
 
@@ -316,7 +330,7 @@ class TestPydanticValidation:
         # 50001자 콘텐츠 → 거부
         resp = fastapi_client.post(
             '/api/content/update',
-            params={'token': token},
+            headers={'Authorization': f'Bearer {token}'},
             json={
                 'page': 'test',
                 'element_id': 'h1',

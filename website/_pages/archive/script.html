@@ -1,79 +1,163 @@
 <script>
-  /* Archive 리스트 렌더링 + 타입 필터 */
-  fetch('index.json')
-    .then(function (r) { return r.json(); })
-    .then(function (posts) {
-      var list = document.getElementById('archive-list');
-      if (!list || !posts.length) return;
+  (function () {
+    var coverEl = document.getElementById('archive-cover');
+    var lanesEl = document.getElementById('archive-lanes');
+    if (!coverEl || !lanesEl) return;
 
-      posts.forEach(function (p, i) {
-        var num = String(i + 1).padStart(3, '0');
-        var type = (p.type || 'essay').toLowerCase();
-        var item = document.createElement('a');
-        item.href = p.slug + '/';
-        item.className = 'archive-list-item';
-        item.setAttribute('data-reveal', '');
-        item.setAttribute('data-type', type);
-        item.innerHTML =
-          '<span class="archive-list-item__issue">' + num + '</span>' +
-          '<span class="archive-list-item__title">' + p.title + '</span>' +
-          '<span class="archive-list-item__date">' + p.date + '</span>';
-        list.appendChild(item);
+    var TYPE_ORDER = ['essay', 'journal', 'lookbook', 'playlist'];
+    var TYPE_META = {
+      essay: { serial: '01', label: 'Essay', deck: '문장과 사유의 기록' },
+      journal: { serial: '02', label: 'Journal', deck: '과정과 관찰의 단면' },
+      lookbook: { serial: '03', label: 'Lookbook', deck: '질감과 실루엣의 큐레이션' },
+      playlist: { serial: '04', label: 'Playlist', deck: '시간대별 리듬 아카이브' }
+    };
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function dateValue(value) {
+      var text = String(value || '').trim();
+      if (!text) return 0;
+      var normalized = text.replace(/\./g, '-').replace(/\//g, '-');
+      var parsed = Date.parse(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function normalizeType(value) {
+      var type = String(value || '').trim().toLowerCase();
+      if (type === 'journal' || type === 'lookbook' || type === 'playlist') return type;
+      return 'essay';
+    }
+
+    function normalize(post, index) {
+      var slug = String(post.slug || '').replace(/^\//, '').replace(/\/$/, '');
+      var explicitUrl = String(post.url || '').trim();
+      return {
+        index: index,
+        slug: slug,
+        url: explicitUrl || (slug ? slug + '/' : '#'),
+        title: post.title || 'Untitled',
+        summary: post.preview || '',
+        date: post.date || '',
+        dateValue: dateValue(post.date),
+        type: normalizeType(post.type),
+        issue: post.issue || ('Issue ' + String(index + 1).padStart(3, '0')),
+        readMin: typeof post.readMin === 'number' ? post.readMin : null
+      };
+    }
+
+    function sortPosts(posts) {
+      return posts.slice().sort(function (a, b) {
+        if (b.dateValue !== a.dateValue) return b.dateValue - a.dateValue;
+        return a.index - b.index;
       });
+    }
 
-      /* site.js reveal 리듬과 동기화: threshold/rootMargin/stagger 동일 */
-      var revealTargets = list.querySelectorAll('.archive-list-item[data-reveal]');
-      revealTargets.forEach(function (el, i) {
-        el.style.transitionDelay = (i % 9 * 0.08) + 's';
+    function groupPosts(posts) {
+      var groups = { essay: [], journal: [], lookbook: [], playlist: [] };
+      posts.forEach(function (post) {
+        groups[post.type].push(post);
       });
-      if ('IntersectionObserver' in window) {
-        var obs = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) {
-              e.target.classList.add('is-visible');
-              obs.unobserve(e.target);
-            }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
-        revealTargets.forEach(function (el) { obs.observe(el); });
-      } else {
-        revealTargets.forEach(function (el) { el.classList.add('is-visible'); });
+      return groups;
+    }
+
+    function readLabel(post) {
+      return post.readMin && post.readMin > 0 ? String(post.readMin) + ' min' : 'Read';
+    }
+
+    function renderCover(post) {
+      if (!post) {
+        coverEl.innerHTML = '<p class="archive-cover__empty">기록을 불러오지 못했습니다.</p>';
+        return;
       }
+      var typeMeta = TYPE_META[post.type] || TYPE_META.essay;
+      coverEl.innerHTML = [
+        '<div class="archive-cover__shell">',
+        '<div class="archive-cover__rail">',
+        '<p class="archive-cover__kicker">Archive Curated</p>',
+        '<p class="archive-cover__issue">', escapeHtml(post.issue), '</p>',
+        '<p class="archive-cover__label">', escapeHtml(typeMeta.label), '</p>',
+        '</div>',
+        '<div class="archive-cover__main">',
+        '<h2 class="archive-cover__title">', escapeHtml(post.title), '</h2>',
+        '<p class="archive-cover__summary">', escapeHtml(post.summary), '</p>',
+        '<div class="archive-cover__meta"><span>', escapeHtml(post.date), '</span><span>', escapeHtml(readLabel(post)), '</span></div>',
+        '<a class="archive-cover__cta" href="', escapeHtml(post.url), '">Open Record</a>',
+        '</div>',
+        '</div>'
+      ].join('');
+    }
 
-      var activeFilter = 'all';
-      var searchQuery = '';
-      var countEl = document.getElementById('archive-count');
-      if (countEl) countEl.textContent = posts.length + ' / ' + posts.length;
+    function laneMiniTemplate(post) {
+      return [
+        '<article class="archive-mini">',
+        '<p class="archive-mini__meta"><span>', escapeHtml(post.issue), '</span><span>', escapeHtml(post.date), '</span></p>',
+        '<h4 class="archive-mini__title">', escapeHtml(post.title), '</h4>',
+        '<a class="archive-mini__link" href="', escapeHtml(post.url), '">Open</a>',
+        '</article>'
+      ].join('');
+    }
 
-      function applyFilters() {
-        var items = list.querySelectorAll('.archive-list-item');
-        var visible = 0;
-        items.forEach(function (item) {
-          var typeMatch = activeFilter === 'all' || item.getAttribute('data-type') === activeFilter;
-          var textMatch = !searchQuery || item.querySelector('.archive-list-item__title').textContent.toLowerCase().indexOf(searchQuery) !== -1;
-          var show = typeMatch && textMatch;
-          item.style.display = show ? '' : 'none';
-          if (show) visible++;
-        });
-        if (countEl) countEl.textContent = visible + ' / ' + posts.length;
-      }
+    function laneSectionTemplate(type, posts, index) {
+      if (!posts.length) return '';
+      var laneClass = 'archive-lane' + (index % 2 ? ' is-reverse' : '');
+      var meta = TYPE_META[type] || TYPE_META.essay;
+      var feature = posts[0];
+      var rest = posts.slice(1, 6);
+      return [
+        '<section class="', laneClass, '" data-type="', escapeHtml(type), '">',
+        '<header class="archive-lane__head">',
+        '<p class="archive-lane__serial">', escapeHtml(meta.serial), '</p>',
+        '<div class="archive-lane__head-copy">',
+        '<h3 class="archive-lane__label">', escapeHtml(meta.label), '</h3>',
+        '<p class="archive-lane__deck">', escapeHtml(meta.deck), '</p>',
+        '</div>',
+        '</header>',
+        '<div class="archive-lane__body">',
+        '<article class="archive-lane__feature">',
+        '<p class="archive-lane__feature-meta"><span>', escapeHtml(feature.issue), '</span><span>', escapeHtml(feature.date), '</span></p>',
+        '<h4 class="archive-lane__feature-title">', escapeHtml(feature.title), '</h4>',
+        '<p class="archive-lane__feature-summary">', escapeHtml(feature.summary), '</p>',
+        '<div class="archive-lane__feature-foot"><span>', escapeHtml(readLabel(feature)), '</span><a href="', escapeHtml(feature.url), '">Open Record</a></div>',
+        '</article>',
+        '<div class="archive-lane__list">',
+        rest.map(laneMiniTemplate).join(''),
+        '</div>',
+        '</div>',
+        '</section>'
+      ].join('');
+    }
 
-      var filterBtns = document.querySelectorAll('#archive-type-filter .archive-filter__btn');
-      filterBtns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          activeFilter = btn.getAttribute('data-filter');
-          filterBtns.forEach(function (b) { b.classList.toggle('is-active', b === btn); });
-          applyFilters();
-        });
+    function renderLanes(posts) {
+      var groups = groupPosts(posts);
+      var laneHtml = TYPE_ORDER.map(function (type, index) {
+        return laneSectionTemplate(type, groups[type], index);
+      }).join('');
+      lanesEl.innerHTML = laneHtml || '<p class="archive-cover__empty">표시할 기록이 없습니다.</p>';
+    }
+
+    fetch('index.json')
+      .then(function (response) { return response.json(); })
+      .then(function (raw) {
+        if (!Array.isArray(raw) || !raw.length) {
+          renderCover(null);
+          renderLanes([]);
+          return;
+        }
+        var posts = sortPosts(raw.map(normalize));
+        var cover = posts.find(function (post) { return post.type === 'essay'; }) || posts[0];
+        renderCover(cover);
+        renderLanes(posts.filter(function (post) { return post.slug !== cover.slug; }));
+      })
+      .catch(function () {
+        renderCover(null);
+        renderLanes([]);
       });
-
-      var searchEl = document.getElementById('archive-search');
-      if (searchEl) {
-        searchEl.addEventListener('input', function () {
-          searchQuery = searchEl.value.trim().toLowerCase();
-          applyFilters();
-        });
-      }
-    })
-    .catch(function () { console.warn('archive: index.json 없음'); });
+  })();
 </script>

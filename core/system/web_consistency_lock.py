@@ -46,6 +46,17 @@ TONE_RULES = {
 }
 
 
+def unlocked_lock_data() -> dict:
+    """기본 잠금 해제 상태 payload."""
+    return {
+        "locked": False,
+        "agent": None,
+        "task": None,
+        "started_at": None,
+        "initial_state": None,
+    }
+
+
 def get_file_hash(filepath: Path) -> str:
     """파일의 MD5 해시 계산."""
     if not filepath.exists():
@@ -57,7 +68,7 @@ def get_file_hash(filepath: Path) -> str:
 def check_lock() -> dict:
     """현재 잠금 상태 확인."""
     if not LOCK_FILE.exists():
-        return {"locked": False}
+        return unlocked_lock_data()
 
     with open(LOCK_FILE, "r") as f:
         return json.load(f)
@@ -130,8 +141,9 @@ def release_lock(agent_id: str) -> bool:
         }
         f.write(json.dumps(history_entry, default=str) + "\n")
 
-    # 잠금 해제
-    LOCK_FILE.unlink()
+    # 잠금 해제 상태를 파일에 유지 (session bootstrap required file와 정합성 유지)
+    with open(LOCK_FILE, "w") as f:
+        json.dump(unlocked_lock_data(), f, indent=2, ensure_ascii=False)
     logger.info("✅ 잠금 해제: %s", agent_id)
     return True
 

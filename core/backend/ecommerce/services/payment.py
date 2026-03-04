@@ -14,15 +14,17 @@ import stripe
 from core.system.security import require_env
 
 logger = logging.getLogger(__name__)
+_STRIPE_READY = False
 
 
 def _init_stripe() -> None:
     """Stripe SDK를 환경변수 기반으로 초기화."""
+    global _STRIPE_READY
+    if _STRIPE_READY:
+        return
     stripe.api_key = require_env("STRIPE_SECRET_KEY")
+    _STRIPE_READY = True
     logger.info("Stripe SDK initialized: api_version=%s", stripe.api_version)
-
-
-_init_stripe()
 
 
 def create_payment_intent(
@@ -40,6 +42,7 @@ def create_payment_intent(
     Returns:
         생성된 PaymentIntent 객체
     """
+    _init_stripe()
     intent = stripe.PaymentIntent.create(
         amount=amount,
         currency=currency,
@@ -67,6 +70,7 @@ def construct_webhook_event(payload: bytes, sig_header: str) -> stripe.Event:
     Raises:
         stripe.error.SignatureVerificationError: 서명 불일치
     """
+    _init_stripe()
     webhook_secret = require_env("STRIPE_WEBHOOK_SECRET")
     event = stripe.Webhook.construct_event(
         payload=payload,

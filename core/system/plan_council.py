@@ -16,17 +16,21 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 _RETRY_COUNT = int(os.getenv("PLAN_COUNCIL_RETRIES", "3"))
 _RETRY_DELAY = float(os.getenv("PLAN_COUNCIL_RETRY_DELAY", "2.0"))
+_RUNTIME_TTL_SECONDS = max(60, int(os.getenv("PLAN_COUNCIL_TTL_SECONDS", "600")))
+_STABILITY_WINDOW = max(3, int(os.getenv("PLAN_COUNCIL_STABILITY_WINDOW", "8")))
+_MIN_RELIABILITY = float(os.getenv("PLAN_COUNCIL_MIN_RELIABILITY", "0.65"))
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -127,6 +131,187 @@ def _merge_unique(*lists: List[str], limit: int = 8) -> List[str]:
             if len(merged) >= limit:
                 return merged
     return merged
+
+
+def _clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
+    return max(low, min(high, value))
+
+
+def _safe_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _score_from_status(status: str, models_used: List[str]) -> float:
+    normalized = str(status or "").strip().lower()
+    models = [str(m).strip().lower() for m in (models_used or []) if str(m).strip()]
+
+    if normalized == "ready":
+        return 1.0 if len(models) >= 2 else 0.85
+    if normalized == "degraded":
+        if not models:
+            return 0.0
+        if "offline" in models:
+            return 0.25
+        if len(models) == 1:
+            return 0.55
+        return 0.45
+    if normalized == "smoke":
+        return 1.0
+    if normalized == "skipped":
+        return 0.8
+    return 0.5
+
+
+def _load_recent_consensus(limit: int) -> List[Dict[str, Any]]:
+    if limit <= 0 or not REPORT_FILE.exists():
+        return []
+
+    rows: List[Dict[str, Any]] = []
+    try:
+        for raw in REPORT_FILE.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except Exception:
+                continue
+            if not isinstance(obj, dict):
+                continue
+            consensus = obj.get("consensus")
+            if not isinstance(consensus, dict):
+                continue
+            rows.append(
+                {
+                    "status": str(consensus.get("status", "")).strip().lower(),
+                    "models_used": consensus.get("models_used", []),
+                    "decision": str(consensus.get("decision", "go")).strip().lower(),
+                }
+            )
+            if len(rows) > limit:
+                rows = rows[-limit:]
+    except Exception:
+        return []
+    return rows
+
+
+def _build_runtime_meta(
+    *,
+    task: str,
+    timestamp: str,
+    consensus: Dict[str, Any],
+    claude_ok: bool,
+    gemini_ok: bool,
+    claude_error: str,
+    gemini_error: str,
+) -> Dict[str, Any]:
+    models_used = [str(m).strip().lower() for m in consensus.get("models_used", []) if str(m).strip()]
+    status = str(consensus.get("status", "")).strip().lower()
+    decision = str(consensus.get("decision", "go")).strip().lower()
+
+    if claude_ok and gemini_ok:
+        availability_score = 1.0
+    elif claude_ok or gemini_ok:
+        availability_score = 0.5
+    else:
+        availability_score = 0.0
+
+    history = _load_recent_consensus(_STABILITY_WINDOW)
+    history_scores: List[float] = []
+    ready_count = 0
+    dual_model_count = 0
+    transitions = 0
+    previous_status = ""
+
+    for item in history:
+        hist_status = str(item.get("status", "")).strip().lower()
+        hist_models = item.get("models_used", [])
+        hist_models_norm = [str(m).strip().lower() for m in (hist_models if isinstance(hist_models, list) else [])]
+        history_scores.append(_score_from_status(hist_status, hist_models_norm))
+        if hist_status == "ready":
+            ready_count += 1
+        if len(hist_models_norm) >= 2:
+            dual_model_count += 1
+        if previous_status and hist_status != previous_status:
+            transitions += 1
+        previous_status = hist_status
+
+    history_len = len(history_scores)
+    if history_len > 0:
+        history_avg = sum(history_scores) / history_len
+        ready_ratio = ready_count / history_len
+        dual_model_ratio = dual_model_count / history_len
+        flip_ratio = transitions / max(1, history_len - 1)
+        stability_score = _clamp((history_avg * 0.55) + (ready_ratio * 0.25) + ((1.0 - flip_ratio) * 0.20))
+    else:
+        history_avg = availability_score
+        ready_ratio = 1.0 if availability_score == 1.0 else 0.0
+        dual_model_ratio = 1.0 if availability_score == 1.0 else 0.0
+        flip_ratio = 0.0
+        stability_score = availability_score
+
+    current_score = _score_from_status(status, models_used)
+    reliability_score = _clamp((current_score * 0.70) + (stability_score * 0.30))
+
+    if reliability_score >= 0.8:
+        reliability_tier = "high"
+    elif reliability_score >= _MIN_RELIABILITY:
+        reliability_tier = "medium"
+    else:
+        reliability_tier = "low"
+
+    unstable = bool(flip_ratio >= 0.45 or stability_score < 0.55)
+
+    if decision == "needs_clarification":
+        gate_recommendation = "needs_clarification"
+    elif availability_score <= 0.0:
+        gate_recommendation = "hard_stop"
+    elif status == "degraded" or reliability_score < _MIN_RELIABILITY or unstable:
+        gate_recommendation = "caution"
+    else:
+        gate_recommendation = "go"
+
+    council_seed = f"{timestamp}|{task}|{','.join(models_used)}"
+    council_id = hashlib.sha1(council_seed.encode("utf-8")).hexdigest()[:12]
+    generated_at = datetime.now(timezone.utc)
+    expires_at = generated_at + timedelta(seconds=_RUNTIME_TTL_SECONDS)
+
+    return {
+        "council_id": council_id,
+        "generated_at_utc": generated_at.isoformat(),
+        "expires_at_utc": expires_at.isoformat(),
+        "ttl_seconds": _RUNTIME_TTL_SECONDS,
+        "required_models": ["claude", "gemini"],
+        "models_ok": {
+            "claude": claude_ok,
+            "gemini": gemini_ok,
+        },
+        "model_errors": {
+            "claude": claude_error or "",
+            "gemini": gemini_error or "",
+        },
+        "availability_score": round(availability_score, 3),
+        "current_score": round(current_score, 3),
+        "stability_score": round(stability_score, 3),
+        "historical_average_score": round(history_avg, 3),
+        "ready_ratio": round(ready_ratio, 3),
+        "dual_model_ratio": round(dual_model_ratio, 3),
+        "flip_ratio": round(flip_ratio, 3),
+        "stability_window": history_len,
+        "reliability_score": round(reliability_score, 3),
+        "reliability_tier": reliability_tier,
+        "unstable": unstable,
+        "gate_recommendation": gate_recommendation,
+        "status_stamp": {
+            "status": status,
+            "models_used": models_used,
+            "decision": decision,
+            "timestamp": timestamp,
+        },
+    }
 
 
 def _build_prompt(task: str) -> str:
@@ -238,6 +423,12 @@ def _build_consensus(
         if not approach:
             approach = gemini_plan.get("approach", "")
 
+    fallback = False
+    if not sources and os.getenv("PLAN_COUNCIL_OFFLINE_FALLBACK", "0").lower() in {"1", "true", "yes"}:
+        # 네트워크 불가 환경에서도 최소 계획을 허용하기 위한 옵트인 오프라인 모드
+        sources.append("offline")
+        fallback = True
+
     steps = _merge_unique(
         claude_plan.get("steps", []) if claude_plan else [],
         gemini_plan.get("steps", []) if gemini_plan else [],
@@ -281,7 +472,7 @@ def _build_consensus(
         ]
 
     status = "ready"
-    if not sources:
+    if fallback or not sources:
         status = "degraded"
         intent = intent or task[:120]
         approach = approach or "모델 협의 미가용 상태로 로컬 규칙 기반 최소 계획 적용"
@@ -314,14 +505,35 @@ def run_council(task: str, mode: str, save: bool = True) -> Dict[str, Any]:
     claude_plan, claude_error = _call_claude(task)
     gemini_plan, gemini_error = _call_gemini(task)
     consensus = _build_consensus(task, claude_plan, gemini_plan)
+    timestamp = _now_iso()
+
+    runtime = _build_runtime_meta(
+        task=task,
+        timestamp=timestamp,
+        consensus=consensus,
+        claude_ok=bool(claude_plan),
+        gemini_ok=bool(gemini_plan),
+        claude_error=claude_error,
+        gemini_error=gemini_error,
+    )
+    consensus["runtime"] = runtime
+
+    if runtime.get("unstable"):
+        unstable_risk = (
+            "Plan Council 변동성 감지: timestamp/models_used/status를 확인하고 신선한 결과인지 검증 필요"
+        )
+        risks = consensus.get("risks", [])
+        if isinstance(risks, list) and unstable_risk not in risks:
+            consensus["risks"] = [unstable_risk, *risks][:5]
 
     payload = {
-        "timestamp": _now_iso(),
+        "timestamp": timestamp,
         "mode": mode,
         "task": task,
         "claude": {"ok": bool(claude_plan), "error": claude_error, "plan": claude_plan},
         "gemini": {"ok": bool(gemini_plan), "error": gemini_error, "plan": gemini_plan},
         "consensus": consensus,
+        "runtime": runtime,
     }
     if save:
         _append_report(payload)
@@ -335,6 +547,12 @@ def _render_hook_text(payload: Dict[str, Any], max_items: int = 3) -> str:
     intent = str(consensus.get("intent", "")).strip()
     steps = consensus.get("steps", [])[:max_items]
     risks = consensus.get("risks", [])[:max_items]
+    runtime = consensus.get("runtime") if isinstance(consensus.get("runtime"), dict) else {}
+    reliability_score = _safe_float(runtime.get("reliability_score"), default=-1.0)
+    reliability_tier = str(runtime.get("reliability_tier", "")).strip().lower()
+    gate = str(runtime.get("gate_recommendation", "")).strip().lower()
+    expires_at = str(runtime.get("expires_at_utc", "")).strip()
+    unstable = bool(runtime.get("unstable", False))
 
     if status == "degraded" and not consensus.get("models_used"):
         return (
@@ -349,6 +567,15 @@ def _render_hook_text(payload: Dict[str, Any], max_items: int = 3) -> str:
         f"status: {status.upper()}",
         f"models: {models}",
     ]
+    if reliability_score >= 0:
+        tier = reliability_tier or "unknown"
+        lines.append(f"reliability: {reliability_score:.2f} ({tier})")
+    if gate:
+        lines.append(f"gate: {gate}")
+    if unstable:
+        lines.append("stability: unstable")
+    if expires_at:
+        lines.append(f"expires: {expires_at}")
     if intent:
         lines.append(f"intent: {intent[:140]}")
     if steps:
@@ -406,19 +633,27 @@ def _exit_code(payload: Dict[str, Any]) -> int:
     0 = ready + go          → 구현 진행 가능
     1 = degraded (둘 다)    → HARD STOP. 네트워크/키 오류. 구현 금지.
     2 = needs_clarification → 범위 불명확. 사용자 확인 후 진행.
-    3 = degraded (한 모델)  → 단일 모델. 리스크 명시 후 진행 여부 판단.
+    3 = degraded/caution    → 단일 모델 또는 신뢰도/변동성 주의. 승인 후 진행.
     """
     consensus = payload.get("consensus", {})
     status = consensus.get("status", "degraded")
     decision = consensus.get("decision", "go")
     models_used = consensus.get("models_used", [])
+    runtime = consensus.get("runtime") if isinstance(consensus.get("runtime"), dict) else {}
+    gate = str(runtime.get("gate_recommendation", "")).strip().lower()
 
+    if gate == "hard_stop":
+        return 1
+    if gate == "needs_clarification":
+        return 2
     if status == "degraded" and not models_used:
         return 1  # 둘 다 실패
     if status == "degraded":
         return 3  # 한 모델만 성공
     if decision == "needs_clarification":
         return 2  # 범위 불명확
+    if gate == "caution":
+        return 3  # 신뢰도/변동성 주의
     return 0  # ready + go
 
 
@@ -453,8 +688,21 @@ def main() -> int:
         return _exit_code(payload)
 
     consensus = payload.get("consensus", {})
+    runtime = consensus.get("runtime") if isinstance(consensus.get("runtime"), dict) else {}
     print(f"status: {consensus.get('status')}")
     print(f"models: {', '.join(consensus.get('models_used', [])) or 'none'}")
+    if runtime:
+        print(
+            "runtime: "
+            f"reliability={runtime.get('reliability_score')} "
+            f"tier={runtime.get('reliability_tier')} "
+            f"gate={runtime.get('gate_recommendation')}"
+        )
+        print(
+            "stamp: "
+            f"timestamp={runtime.get('status_stamp', {}).get('timestamp', '')} "
+            f"expires={runtime.get('expires_at_utc', '')}"
+        )
     print(f"intent: {consensus.get('intent', '')}")
     print("steps:")
     for idx, step in enumerate(consensus.get("steps", []), start=1):

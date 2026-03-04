@@ -7,16 +7,18 @@ QueueManager 단위 테스트
 임시 디렉토리 사용 — 실제 큐 오염 없음
 """
 
+import json
 import sys
 import time
-import pytest
-import tempfile
 from pathlib import Path
+from datetime import datetime, timedelta
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from core.system.queue_manager import QueueManager, TaskStatus
+from core.system.queue_manager import EventType, QueueManager, TaskStatus
 
 
 @pytest.fixture
@@ -95,6 +97,31 @@ def test_get_pending_by_agent_type(queue):
     sa_tasks = queue.get_pending_tasks(agent_type="SA")
     assert len(sa_tasks) == 2
     assert all(t.agent_type == "SA" for t in sa_tasks)
+
+
+def test_get_events_since_with_iso_timestamps(queue):
+    queue.emit_event(EventType.AGENT_READY, "tester", {"ok": True})
+    events = queue.get_events(since=datetime.now() - timedelta(minutes=1))
+    assert len(events) == 1
+    assert events[0].agent_id == "tester"
+
+
+def test_get_events_legacy_timestamp_compat(queue):
+    event_file = queue.queue_root / "events" / "legacy.json"
+    event_file.write_text(
+        json.dumps(
+            {
+                "event_id": "legacy",
+                "event_type": "agent_ready",
+                "agent_id": "legacy-agent",
+                "payload": {"ok": True},
+                "timestamp": "2026-03-04T16-58-37.725742",
+            }
+        ),
+        encoding="utf-8",
+    )
+    events = queue.get_events(since=datetime(2026, 3, 4, 16, 0, 0))
+    assert any(ev.agent_id == "legacy-agent" for ev in events)
 
 
 if __name__ == "__main__":

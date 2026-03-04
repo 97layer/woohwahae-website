@@ -1,13 +1,10 @@
 """Redis client for cart session management."""
 import json
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from redis import Redis
 
-# Redis configuration
-REDIS_HOST = "localhost"
-REDIS_PORT = 6379
-REDIS_DB = 0
-REDIS_PASSWORD = None
+from ..config import settings
 
 # Cart session TTL (7 days)
 CART_TTL = 60 * 60 * 24 * 7
@@ -19,10 +16,10 @@ class RedisClient:
     def __init__(self):
         """Initialize Redis connection."""
         self.client = Redis(
-            host=REDIS_HOST,
-            port=REDIS_PORT,
-            db=REDIS_DB,
-            password=REDIS_PASSWORD,
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.REDIS_DB,
+            password=settings.REDIS_PASSWORD,
             decode_responses=True
         )
 

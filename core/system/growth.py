@@ -269,12 +269,11 @@ class GrowthModule:
             datetime.now().isoformat(),
         )
 
-        # MANIFEST 검증 적용 (growth_YYYYMM.json이 정확한 형식)
-        from core.system.filesystem_validator import safe_write
-        report_path = PROJECT_ROOT / "knowledge" / "reports" / "growth" / ("growth_%s.json" % period.replace("-", ""))
-        safe_write(report_path, report, agent_id="Growth")
-        logger.info("월간 리포트 생성: %s", report_path.name)
-        return str(report_path)
+        # growth_YYYYMM.json 내 리포트 필드로 저장 (지표 JSON 포맷 유지)
+        data["monthly_report_markdown"] = report
+        report_path = self.save_month(data)
+        logger.info("월간 리포트 생성: %s", Path(report_path).name)
+        return report_path
 
     # ─── 내부 유틸 ────────────────────────────────────────────
 

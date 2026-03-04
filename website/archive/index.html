@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <meta content="에세이, 저널, 룩북. 소거라는 렌즈로 세상을 읽는 기록들." name="description"/>
+  <meta content="에세이, 저널, 룩북, 플레이리스트. 소거라는 렌즈로 세상을 읽는 기록들." name="description"/>
   <meta content="Archive — WOOHWAHAE" property="og:title"/>
   <meta content="website" property="og:type"/>
   <meta content="https://woohwahae.kr/archive/" property="og:url"/>
@@ -16,11 +16,11 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="/assets/css/style.css?v=ca19fa9c">
+<link rel="stylesheet" href="/assets/css/style.css?v=c2f95cd4">
 <script>(function(){var h=new Date().getHours();var cls=h<6?'time-dawn':h<18?'time-day':h<22?'time-evening':'time-night';var root=document.documentElement;root.classList.remove('time-dawn','time-day','time-evening','time-night');root.classList.add(cls);})();</script>
 <!-- /COMPONENT:head -->
 </head>
-<body class="page-archive">
+<body class="page-archive page-archive-index">
 <!-- COMPONENT:nav -->
 <nav class="site-nav" id="site-nav">
   <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
@@ -30,7 +30,6 @@
     <li><a href="/archive/"><span class="numeric-tag">01.</span>Archive</a></li>
     <li><a href="/practice/"><span class="numeric-tag">02.</span>Practice</a></li>
     <li><a href="/about/"><span class="numeric-tag">03.</span>About</a></li>
-    <li><a href="/lab/"><span class="numeric-tag">04.</span>Lab</a></li>
   </ul>
   <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-expanded="false">
     <span></span><span></span>
@@ -41,152 +40,559 @@
   <a href="/archive/"><span class="nav-overlay__num">01.</span>Archive</a>
   <a href="/practice/"><span class="nav-overlay__num">02.</span>Practice</a>
   <a href="/about/"><span class="nav-overlay__num">03.</span>About</a>
-  <a href="/lab/"><span class="nav-overlay__num">04.</span>Lab</a>
 </div>
 <!-- /COMPONENT:nav -->
-<main class="page-main">
-  <div class="page-intro container--wide">
-    <p class="page-preamble">에세이, 저널, 룩북을 올립니다.</p>
-    
-    
-    <div class="section-controls" data-reveal>
-      <nav class="archive-filter"
-           aria-label="아카이브 필터"
-           id="archive-type-filter">
-        
-        
-          
-          <div class="archive-filter__item">
-            
-              
-                <button class="section-chip archive-filter__btn is-active"
-                        data-filter="all">
-                  001. 전체
-                </button>
-              
-            
-            
-              <input class="section-search archive-search"
-                     id="archive-search"
-                     type="search"
-                     placeholder="검색"
-                     autocomplete="off"
-                     spellcheck="false">
-            
-          </div>
-          
-            
-              <button class="section-chip archive-filter__btn"
-                      data-filter="essay">
-                002. 에세이
-              </button>
-            
-          
-            
-              <button class="section-chip archive-filter__btn"
-                      data-filter="journal">
-                003. 저널
-              </button>
-            
-          
-            
-              <button class="section-chip archive-filter__btn"
-                      data-filter="lookbook">
-                004. 룩북
-              </button>
-            
-          
-        
-        
-      </nav>
-    </div>
-    
-  </div>
-  <div class="archive-list container--wide" id="archive-list">
-  <!-- JS로 index.json 기반 렌더링 -->
-</div>
-
-</main>
-<script>
-  /* Archive 리스트 렌더링 + 타입 필터 */
-  fetch('index.json')
-    .then(function (r) { return r.json(); })
-    .then(function (posts) {
-      var list = document.getElementById('archive-list');
-      if (!list || !posts.length) return;
-
-      posts.forEach(function (p, i) {
-        var num = String(i + 1).padStart(3, '0');
-        var type = (p.type || 'essay').toLowerCase();
-        var item = document.createElement('a');
-        item.href = p.slug + '/';
-        item.className = 'archive-list-item';
-        item.setAttribute('data-reveal', '');
-        item.setAttribute('data-type', type);
-        item.innerHTML =
-          '<span class="archive-list-item__issue">' + num + '</span>' +
-          '<span class="archive-list-item__title">' + p.title + '</span>' +
-          '<span class="archive-list-item__date">' + p.date + '</span>';
-        list.appendChild(item);
-      });
-
-      /* site.js reveal 리듬과 동기화: threshold/rootMargin/stagger 동일 */
-      var revealTargets = list.querySelectorAll('.archive-list-item[data-reveal]');
-      revealTargets.forEach(function (el, i) {
-        el.style.transitionDelay = (i % 9 * 0.08) + 's';
-      });
-      if ('IntersectionObserver' in window) {
-        var obs = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) {
-              e.target.classList.add('is-visible');
-              obs.unobserve(e.target);
-            }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
-        revealTargets.forEach(function (el) { obs.observe(el); });
-      } else {
-        revealTargets.forEach(function (el) { el.classList.add('is-visible'); });
-      }
-
-      var activeFilter = 'all';
-      var searchQuery = '';
-      var countEl = document.getElementById('archive-count');
-      if (countEl) countEl.textContent = posts.length + ' / ' + posts.length;
-
-      function applyFilters() {
-        var items = list.querySelectorAll('.archive-list-item');
-        var visible = 0;
-        items.forEach(function (item) {
-          var typeMatch = activeFilter === 'all' || item.getAttribute('data-type') === activeFilter;
-          var textMatch = !searchQuery || item.querySelector('.archive-list-item__title').textContent.toLowerCase().indexOf(searchQuery) !== -1;
-          var show = typeMatch && textMatch;
-          item.style.display = show ? '' : 'none';
-          if (show) visible++;
-        });
-        if (countEl) countEl.textContent = visible + ' / ' + posts.length;
-      }
-
-      var filterBtns = document.querySelectorAll('#archive-type-filter .archive-filter__btn');
-      filterBtns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          activeFilter = btn.getAttribute('data-filter');
-          filterBtns.forEach(function (b) { b.classList.toggle('is-active', b === btn); });
-          applyFilters();
-        });
-      });
-
-      var searchEl = document.getElementById('archive-search');
-      if (searchEl) {
-        searchEl.addEventListener('input', function () {
-          searchQuery = searchEl.value.trim().toLowerCase();
-          applyFilters();
-        });
-      }
-    })
-    .catch(function () { console.warn('archive: index.json 없음'); });
+<script id="archive-data" type="application/json">
+[
+  {
+    "slug": "lookbook",
+    "title": "Lookbook No.01 — Subtraction",
+    "date": "2026.03.03",
+    "issue": "Visual 001",
+    "preview": "가득 쥔 손으로는 손 안을 볼 수 없다. 걷어내는 것이 곧 발견이다.",
+    "category": "Visual",
+    "type": "Lookbook",
+    "readMin": null
+  },
+  {
+    "slug": "lookbook-mock-002-grain-balance",
+    "url": "#",
+    "title": "Lookbook No.02 — Grain Balance",
+    "date": "2026.03.05",
+    "issue": "Visual 002",
+    "preview": "균일함보다 미세한 입자 차이를 남긴다.",
+    "category": "Visual",
+    "type": "Lookbook",
+    "readMin": null
+  },
+  {
+    "slug": "lookbook-mock-003-surface-pressure",
+    "url": "#",
+    "title": "Lookbook No.03 — Surface Pressure",
+    "date": "2026.03.07",
+    "issue": "Visual 003",
+    "preview": "질감은 장식이 아니라 긴장의 표면이다.",
+    "category": "Visual",
+    "type": "Lookbook",
+    "readMin": null
+  },
+  {
+    "slug": "lookbook-mock-004-shadow-gap",
+    "url": "#",
+    "title": "Lookbook No.04 — Shadow Gap",
+    "date": "2026.03.09",
+    "issue": "Visual 004",
+    "preview": "빛보다 그림자 간격으로 균형을 잡는다.",
+    "category": "Visual",
+    "type": "Lookbook",
+    "readMin": null
+  },
+  {
+    "slug": "journal-001-subtraction",
+    "title": "소거하는 법",
+    "date": "2026.03.01",
+    "issue": "Journal 001",
+    "preview": "더하기 전에 묻는 것. 없으면 안 되는가.",
+    "category": "Living",
+    "type": "Journal",
+    "readMin": 2
+  },
+  {
+    "slug": "journal-mock-002-rhythm-check",
+    "url": "#",
+    "title": "리듬 체크",
+    "date": "2026.03.05",
+    "issue": "Journal 002",
+    "preview": "과속 징후를 메모하고 기준선을 다시 맞춘다.",
+    "category": "Living",
+    "type": "Journal",
+    "readMin": 2
+  },
+  {
+    "slug": "journal-mock-003-shift-note",
+    "url": "#",
+    "title": "전환 노트",
+    "date": "2026.03.07",
+    "issue": "Journal 003",
+    "preview": "작업 전환 순간에 남는 소음을 분리해 기록한다.",
+    "category": "Living",
+    "type": "Journal",
+    "readMin": 2
+  },
+  {
+    "slug": "journal-mock-004-silence-log",
+    "url": "#",
+    "title": "침묵 로그",
+    "date": "2026.03.09",
+    "issue": "Journal 004",
+    "preview": "말을 줄였을 때 남는 핵심만 적는다.",
+    "category": "Living",
+    "type": "Journal",
+    "readMin": 2
+  },
+  {
+    "slug": "essay-001-beginning",
+    "title": "시작",
+    "date": "2026.02.17",
+    "issue": "Issue 001",
+    "preview": "처음 시작하는 순간의 기록. 울산에서, 한 사람에게 집중하겠다는 선택.",
+    "category": "Working",
+    "type": "Essay",
+    "readMin": 2
+  },
+  {
+    "slug": "essay-mock-012-breath-threshold",
+    "url": "#",
+    "title": "호흡의 임계점",
+    "date": "2026.03.06",
+    "issue": "Issue 012",
+    "preview": "속도를 낮추는 순간 집중도가 오히려 올라간다.",
+    "category": "Working",
+    "type": "Essay",
+    "readMin": 3
+  },
+  {
+    "slug": "essay-mock-013-line-of-focus",
+    "url": "#",
+    "title": "집중의 선",
+    "date": "2026.03.08",
+    "issue": "Issue 013",
+    "preview": "여러 일을 좇기보다 한 선을 길게 유지한다.",
+    "category": "Working",
+    "type": "Essay",
+    "readMin": 4
+  },
+  {
+    "slug": "essay-mock-014-quiet-discipline",
+    "url": "#",
+    "title": "조용한 규율",
+    "date": "2026.03.10",
+    "issue": "Issue 014",
+    "preview": "반복은 지루함이 아니라 정확도를 위한 장치다.",
+    "category": "Working",
+    "type": "Essay",
+    "readMin": 3
+  },
+  {
+    "slug": "playlist",
+    "url": "/playlist.html",
+    "title": "Playlist — Slow Frequency",
+    "date": "2026.03.04",
+    "issue": "Sound 001",
+    "preview": "호흡과 집중을 위한 사운드 레이어.",
+    "category": "Sound",
+    "type": "Playlist",
+    "readMin": null
+  },
+  {
+    "slug": "playlist-mock-002-dawn-cut",
+    "url": "#",
+    "title": "Playlist — Dawn Cut",
+    "date": "2026.03.05",
+    "issue": "Sound 002",
+    "preview": "아침 루틴의 템포를 낮추는 트랙 셋.",
+    "category": "Sound",
+    "type": "Playlist",
+    "readMin": null
+  },
+  {
+    "slug": "playlist-mock-003-evening-loop",
+    "url": "#",
+    "title": "Playlist — Evening Loop",
+    "date": "2026.03.07",
+    "issue": "Sound 003",
+    "preview": "저녁 집중 구간을 위한 반복 리듬.",
+    "category": "Sound",
+    "type": "Playlist",
+    "readMin": null
+  },
+  {
+    "slug": "playlist-mock-004-midnight-floor",
+    "url": "#",
+    "title": "Playlist — Midnight Floor",
+    "date": "2026.03.09",
+    "issue": "Sound 004",
+    "preview": "야간 작업을 위한 저주파 레이어.",
+    "category": "Sound",
+    "type": "Playlist",
+    "readMin": null
+  }
+]
 </script>
-<script defer src="/assets/js/site.js?v=53abfa73"></script>
+<main class="page-main page-archive-index">
+  <div class="page-intro container--wide">
+    <p class="section-label">ARCHIVE</p>
+    <h1 class="page-title">기록의 인덱스</h1>
+    <p class="page-preamble">날짜와 한 줄만 남기고 배열했습니다. 필요한 기록만 골라 읽을 수 있습니다.</p>
+  </div>
+
+  <div class="archive-tabs container--wide" role="tablist" aria-label="Archive categories">
+    <button class="archive-tab is-active" type="button" data-tab="essay" aria-selected="true">Essay</button>
+    <button class="archive-tab" type="button" data-tab="journal" aria-selected="false">Journal</button>
+    <button class="archive-tab" type="button" data-tab="lookbook" aria-selected="false">Lookbook</button>
+    <button class="archive-tab" type="button" data-tab="playlist" aria-selected="false">Playlist</button>
+  </div>
+
+  <section class="archive-sheets container--wide" aria-live="polite">
+    <div class="archive-list" id="list-essay" data-panel="essay">
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">01</span>
+          <span class="archive-item__type">Essay</span>
+          <span class="archive-item__date">2026.02.17</span>
+        </div>
+        <h3 class="archive-item__title">시작</h3>
+        <p class="archive-item__summary">처음 시작하는 순간의 기록. 울산에서, 한 사람에게 집중하겠다는 선택.</p>
+        <div class="archive-item__actions">
+          <a href="/essay-001-beginning/">2 min</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">02</span>
+          <span class="archive-item__type">Essay</span>
+          <span class="archive-item__date">2026.03.06</span>
+        </div>
+        <h3 class="archive-item__title">호흡의 임계점</h3>
+        <p class="archive-item__summary">속도를 낮추는 순간 집중도가 오히려 올라간다.</p>
+        <div class="archive-item__actions">
+          <a href="#">3 min</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">03</span>
+          <span class="archive-item__type">Essay</span>
+          <span class="archive-item__date">2026.03.08</span>
+        </div>
+        <h3 class="archive-item__title">집중의 선</h3>
+        <p class="archive-item__summary">여러 일을 좇기보다 한 선을 길게 유지한다.</p>
+        <div class="archive-item__actions">
+          <a href="#">4 min</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">04</span>
+          <span class="archive-item__type">Essay</span>
+          <span class="archive-item__date">2026.03.10</span>
+        </div>
+        <h3 class="archive-item__title">조용한 규율</h3>
+        <p class="archive-item__summary">반복은 지루함이 아니라 정확도를 위한 장치다.</p>
+        <div class="archive-item__actions">
+          <a href="#">3 min</a>
+        </div>
+      </article>
+    </div>
+    <div class="archive-list" id="list-journal" data-panel="journal" hidden>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">01</span>
+          <span class="archive-item__type">Journal</span>
+          <span class="archive-item__date">2026.03.01</span>
+        </div>
+        <h3 class="archive-item__title">소거하는 법</h3>
+        <p class="archive-item__summary">더하기 전에 묻는 것. 없으면 안 되는가.</p>
+        <div class="archive-item__actions">
+          <a href="/journal-001-subtraction/">2 min</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">02</span>
+          <span class="archive-item__type">Journal</span>
+          <span class="archive-item__date">2026.03.05</span>
+        </div>
+        <h3 class="archive-item__title">리듬 체크</h3>
+        <p class="archive-item__summary">과속 징후를 메모하고 기준선을 다시 맞춘다.</p>
+        <div class="archive-item__actions">
+          <a href="#">2 min</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">03</span>
+          <span class="archive-item__type">Journal</span>
+          <span class="archive-item__date">2026.03.07</span>
+        </div>
+        <h3 class="archive-item__title">전환 노트</h3>
+        <p class="archive-item__summary">작업 전환 순간에 남는 소음을 분리해 기록한다.</p>
+        <div class="archive-item__actions">
+          <a href="#">2 min</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">04</span>
+          <span class="archive-item__type">Journal</span>
+          <span class="archive-item__date">2026.03.09</span>
+        </div>
+        <h3 class="archive-item__title">침묵 로그</h3>
+        <p class="archive-item__summary">말을 줄였을 때 남는 핵심만 적는다.</p>
+        <div class="archive-item__actions">
+          <a href="#">2 min</a>
+        </div>
+      </article>
+    </div>
+    <div class="archive-list archive-list--grid" id="list-lookbook" data-panel="lookbook" hidden>
+      <article class="archive-lookbook" data-reveal>
+        <div class="archive-lookbook__meta"><span>01</span><span>2026.03.03</span></div>
+        <h3 class="archive-lookbook__title">Lookbook No.01 — Subtraction</h3>
+        <p class="archive-lookbook__summary">가득 쥔 손으로는 손 안을 볼 수 없다. 걷어내는 것이 곧 발견이다.</p>
+        <a class="archive-lookbook__link" href="/lookbook/">Open</a>
+      </article>
+      <article class="archive-lookbook" data-reveal>
+        <div class="archive-lookbook__meta"><span>02</span><span>2026.03.05</span></div>
+        <h3 class="archive-lookbook__title">Lookbook No.02 — Grain Balance</h3>
+        <p class="archive-lookbook__summary">균일함보다 미세한 입자 차이를 남긴다.</p>
+        <a class="archive-lookbook__link" href="#">Open</a>
+      </article>
+      <article class="archive-lookbook" data-reveal>
+        <div class="archive-lookbook__meta"><span>03</span><span>2026.03.07</span></div>
+        <h3 class="archive-lookbook__title">Lookbook No.03 — Surface Pressure</h3>
+        <p class="archive-lookbook__summary">질감은 장식이 아니라 긴장의 표면이다.</p>
+        <a class="archive-lookbook__link" href="#">Open</a>
+      </article>
+      <article class="archive-lookbook" data-reveal>
+        <div class="archive-lookbook__meta"><span>04</span><span>2026.03.09</span></div>
+        <h3 class="archive-lookbook__title">Lookbook No.04 — Shadow Gap</h3>
+        <p class="archive-lookbook__summary">빛보다 그림자 간격으로 균형을 잡는다.</p>
+        <a class="archive-lookbook__link" href="#">Open</a>
+      </article>
+    </div>
+    <div class="archive-list" id="list-playlist" data-panel="playlist" hidden>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">01</span>
+          <span class="archive-item__type">Playlist</span>
+          <span class="archive-item__date">2026.03.04</span>
+        </div>
+        <h3 class="archive-item__title">Playlist — Slow Frequency</h3>
+        <p class="archive-item__summary">호흡과 집중을 위한 사운드 레이어.</p>
+        <div class="archive-item__actions">
+          <a href="/playlist.html">Play</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">02</span>
+          <span class="archive-item__type">Playlist</span>
+          <span class="archive-item__date">2026.03.05</span>
+        </div>
+        <h3 class="archive-item__title">Playlist — Dawn Cut</h3>
+        <p class="archive-item__summary">아침 루틴의 템포를 낮추는 트랙 셋.</p>
+        <div class="archive-item__actions">
+          <a href="#">Play</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">03</span>
+          <span class="archive-item__type">Playlist</span>
+          <span class="archive-item__date">2026.03.07</span>
+        </div>
+        <h3 class="archive-item__title">Playlist — Evening Loop</h3>
+        <p class="archive-item__summary">저녁 집중 구간을 위한 반복 리듬.</p>
+        <div class="archive-item__actions">
+          <a href="#">Play</a>
+        </div>
+      </article>
+      <article class="archive-item" data-reveal>
+        <div class="archive-item__meta">
+          <span class="archive-item__serial">04</span>
+          <span class="archive-item__type">Playlist</span>
+          <span class="archive-item__date">2026.03.09</span>
+        </div>
+        <h3 class="archive-item__title">Playlist — Midnight Floor</h3>
+        <p class="archive-item__summary">야간 작업을 위한 저주파 레이어.</p>
+        <div class="archive-item__actions">
+          <a href="#">Play</a>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<script>
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-tab]'));
+    var panels = {
+      essay: document.getElementById('list-essay'),
+      journal: document.getElementById('list-journal'),
+      lookbook: document.getElementById('list-lookbook'),
+      playlist: document.getElementById('list-playlist')
+    };
+
+    var TYPE_ORDER = ['essay', 'journal', 'lookbook', 'playlist'];
+    var TYPE_LABEL = {
+      essay: 'Essay',
+      journal: 'Journal',
+      lookbook: 'Lookbook',
+      playlist: 'Playlist'
+    };
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function dateValue(value) {
+      var text = String(value || '').trim();
+      if (!text) return 0;
+      var normalized = text.replace(/\./g, '-').replace(/\//g, '-');
+      var parsed = Date.parse(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function normalizeType(value) {
+      var type = String(value || '').trim().toLowerCase();
+      if (type === 'journal' || type === 'lookbook' || type === 'playlist') return type;
+      return 'essay';
+    }
+
+    function normalize(post, index) {
+      var slug = String(post.slug || '').replace(/^\//, '').replace(/\/$/, '');
+      var explicitUrl = String(post.url || '').trim();
+      var url = explicitUrl || (slug ? '/' + slug + '/' : '#');
+      return {
+        index: index,
+        slug: slug,
+        url: url,
+        title: post.title || 'Untitled',
+        summary: post.preview || '',
+        date: post.date || '',
+        dateValue: dateValue(post.date),
+        type: normalizeType(post.type),
+        issue: post.issue || ('Issue ' + String(index + 1).padStart(3, '0')),
+        readMin: typeof post.readMin === 'number' ? post.readMin : null
+      };
+    }
+
+    function sortPosts(posts) {
+      return posts.slice().sort(function (a, b) {
+        if (b.dateValue !== a.dateValue) return b.dateValue - a.dateValue;
+        return a.index - b.index;
+      });
+    }
+
+    function groupPosts(posts) {
+      var groups = { essay: [], journal: [], lookbook: [], playlist: [] };
+      posts.forEach(function (post) {
+        groups[post.type].push(post);
+      });
+      return groups;
+    }
+
+    function readLabel(post) {
+      if (post.readMin && post.readMin > 0) return String(post.readMin) + ' min';
+      if (post.type === 'playlist') return 'Play';
+      return 'Read';
+    }
+
+    function itemTemplate(post, idx) {
+      return [
+        '<article class="archive-item" data-reveal>',
+          '<div class="archive-item__meta">',
+            '<span class="archive-item__serial">', String(idx + 1).padStart(2, '0'), '</span>',
+            '<span class="archive-item__type">', escapeHtml(TYPE_LABEL[post.type] || 'Record'), '</span>',
+            '<span class="archive-item__date">', escapeHtml(post.date || '—'), '</span>',
+          '</div>',
+          '<h3 class="archive-item__title">', escapeHtml(post.title), '</h3>',
+          '<p class="archive-item__summary">', escapeHtml(post.summary), '</p>',
+          '<div class="archive-item__actions">',
+            '<a href="', escapeHtml(post.url), '">', escapeHtml(readLabel(post)), '</a>',
+          '</div>',
+        '</article>'
+      ].join('');
+    }
+
+    function renderList(type, posts) {
+      var panel = panels[type];
+      if (!panel) return;
+      if (!posts.length) {
+        panel.innerHTML = '<p class="archive-empty">기록이 아직 없습니다.</p>';
+        return;
+      }
+      if (type === 'lookbook') {
+        panel.innerHTML = posts.map(function (post, idx) {
+          return [
+            '<article class="archive-lookbook" data-reveal>',
+              '<div class="archive-lookbook__meta">',
+                '<span>', String(idx + 1).padStart(2, '0'), '</span>',
+                '<span>', escapeHtml(post.date || '—'), '</span>',
+              '</div>',
+              '<h3 class="archive-lookbook__title">', escapeHtml(post.title), '</h3>',
+              '<p class="archive-lookbook__summary">', escapeHtml(post.summary), '</p>',
+              '<a class="archive-lookbook__link" href="', escapeHtml(post.url), '">Open</a>',
+            '</article>'
+          ].join('');
+        }).join('');
+        return;
+      }
+      panel.innerHTML = posts.map(function (post, idx) { return itemTemplate(post, idx); }).join('');
+    }
+
+    function activateTab(tabKey) {
+      tabs.forEach(function (tab) {
+        var isActive = tab.getAttribute('data-tab') === tabKey;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', String(isActive));
+      });
+      Object.keys(panels).forEach(function (key) {
+        var panel = panels[key];
+        if (!panel) return;
+        var isActive = key === tabKey;
+        panel.hidden = !isActive;
+      });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activateTab(tab.getAttribute('data-tab'));
+      });
+    });
+
+    function loadInline() {
+      var el = document.getElementById('archive-data');
+      if (!el) return null;
+      try { return JSON.parse(el.textContent || ''); }
+      catch (e) { return null; }
+    }
+
+    function loadData() {
+      var inline = loadInline();
+      if (inline) return Promise.resolve(inline);
+      return fetch('/archive/index.json').then(function (r) { return r.json(); }).catch(function () {
+        return fetch('index.json').then(function (r) { return r.json(); });
+      });
+    }
+
+    loadData()
+      .then(function (raw) {
+        if (!Array.isArray(raw) || !raw.length) {
+          Object.keys(panels).forEach(function (key) {
+            panels[key].innerHTML = '<p class="archive-empty">기록이 아직 없습니다.</p>';
+          });
+          return;
+        }
+        var posts = sortPosts(raw.map(normalize));
+        var groups = groupPosts(posts);
+        TYPE_ORDER.forEach(function (type) {
+          renderList(type, groups[type]);
+        });
+      })
+      .catch(function () {
+        Object.keys(panels).forEach(function (key) {
+          panels[key].innerHTML = '<p class="archive-empty">기록을 불러오지 못했습니다.</p>';
+        });
+      });
+  })();
+</script>
+<script defer src="/assets/js/site.js?v=1ce69050"></script>
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">
@@ -196,12 +602,10 @@
         <a href="/archive/">Archive</a>
         <a href="/practice/">Practice</a>
         <a href="/about/">About</a>
-        <a href="/lab/">Lab</a>
       </nav>
       <div class="footer-contact-row">
         <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
         <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">@woohwahae</a>
-        <a href="tel:05071393-2075">0507-1393-2075</a>
       </div>
     </div>
     <div class="footer-base">
@@ -209,7 +613,7 @@
       <div class="footer-legal">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
-        <span>&copy; 2025 WOOHWAHAE</span>
+        <span>&copy; 2026 WOOHWAHAE</span>
       </div>
     </div>
   </div>

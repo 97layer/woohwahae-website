@@ -25,7 +25,12 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-PROJECT_ROOT = Path(__file__).parent.parent
+# 프로젝트 루트 기준으로 경로를 잡아야 knowledge/ 및 .infra/가 올바르게 지정된다.
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from core.system.evidence_guard import ALLOWED_TYPES, DEFAULT_LOG, append_entry
+
 SIGNALS_DIR = PROJECT_ROOT / "knowledge" / "signals"
 FILES_DIR = SIGNALS_DIR / "files"
 QUEUE_DIR = PROJECT_ROOT / ".infra" / "queue" / "tasks" / "pending"
@@ -95,16 +100,37 @@ def copy_binary(source_path: str, signal_id: str, extension: str) -> str:
     return str(dest)
 
 
-def inject_text(text: str) -> None:
+def log_evidence(
+    signal: dict,
+    signal_path: Path,
+    evidence_type: str,
+    claim: Optional[str] = None,
+    detail: Optional[str] = None,
+) -> None:
+    """evidence_log.jsonl에 캡처 사실을 기록"""
+
+    claim_text = claim or "Captured signal %s (%s)" % (signal["signal_id"], signal["type"])
+    append_entry(Path(DEFAULT_LOG), claim_text, evidence_type, str(signal_path), detail)
+
+
+def _truncate(text: str, limit: int = 240) -> str:
+    if not text:
+        return ""
+    cleaned = " ".join(text.split())
+    return cleaned[:limit] + ("…" if len(cleaned) > limit else "")
+
+
+def inject_text(text: str):
     """텍스트 신호 입력"""
     signal = create_signal("text_insight", text)
     path = save_signal(signal)
     enqueue_for_sa(signal)
     print("저장: %s" % path)
     print("SA 큐 전달: %s" % signal["signal_id"])
+    return signal, path, None
 
 
-def inject_url(url: str) -> None:
+def inject_url(url: str):
     """URL 신호 입력"""
     signal = create_signal(
         "url_content",
@@ -115,9 +141,10 @@ def inject_url(url: str) -> None:
     enqueue_for_sa(signal)
     print("저장: %s" % path)
     print("SA 큐 전달: %s (URL 콘텐츠 추출은 SA가 처리)" % signal["signal_id"])
+    return signal, path, None
 
 
-def inject_image(image_path: str) -> None:
+def inject_image(image_path: str):
     """이미지 신호 입력"""
     source = Path(image_path)
     if not source.exists():
@@ -138,9 +165,10 @@ def inject_image(image_path: str) -> None:
     print("파일 복사: %s" % dest_path)
     print("저장: %s" % path)
     print("SA 큐 전달: %s" % signal_id)
+    return signal, path, dest_path
 
 
-def inject_pdf(pdf_path: str) -> None:
+def inject_pdf(pdf_path: str):
     """PDF 신호 입력"""
     source = Path(pdf_path)
     if not source.exists():
@@ -179,6 +207,7 @@ def inject_pdf(pdf_path: str) -> None:
     print("파일 복사: %s" % dest_path)
     print("저장: %s" % path)
     print("SA 큐 전달: %s" % signal_id)
+    return signal, path, dest_path
 
 
 def main():
@@ -193,16 +222,50 @@ def main():
     group.add_argument("--image", "-i", help="이미지 파일 경로")
     group.add_argument("--pdf", "-p", help="PDF 파일 경로")
 
+    parser.add_argument(
+        "--log-evidence",
+        action="store_true",
+        help="캡처 즉시 evidence_log.jsonl에 기록",
+    )
+    parser.add_argument(
+        "--claim",
+        help="evidence_log에 남길 주장(기본: signal_id와 타입)",
+    )
+    parser.add_argument(
+        "--evidence-type",
+        default="file",
+        choices=sorted(ALLOWED_TYPES),
+        help="evidence_log evidence_type (default: file)",
+    )
+    parser.add_argument(
+        "--detail",
+        help="evidence_log detail 필드에 남길 추가 정보",
+    )
+
     args = parser.parse_args()
 
+    result = None
     if args.text:
-        inject_text(args.text)
+        result = inject_text(args.text)
     elif args.url:
-        inject_url(args.url)
+        result = inject_url(args.url)
     elif args.image:
-        inject_image(args.image)
+        result = inject_image(args.image)
     elif args.pdf:
-        inject_pdf(args.pdf)
+        result = inject_pdf(args.pdf)
+
+    if args.log_evidence and result:
+        signal, signal_path, artifact_path = result
+        detail = args.detail or _truncate(signal.get("content", ""))
+        if artifact_path:
+            detail = (detail + " | artifact=" + str(artifact_path)) if detail else str(artifact_path)
+        log_evidence(
+            signal,
+            signal_path,
+            args.evidence_type,
+            claim=args.claim,
+            detail=detail,
+        )
 
 
 if __name__ == "__main__":

@@ -41,6 +41,11 @@ for step in "${NEXT_STEPS[@]}"; do
     NEXT_ARGS+=("--next-steps" "$step")
 done
 
+REPORT_ARGS=()
+for step in "${NEXT_STEPS[@]}"; do
+    REPORT_ARGS+=("--next-step" "$step")
+done
+
 # Run handoff.py
 if python3 core/system/handoff.py --handoff \
     --agent-id "$AGENT_ID" \
@@ -52,6 +57,17 @@ else
     echo ""
     echo "❌ FATAL: Handoff failed"
     exit 1
+fi
+
+# Generate compact report (summary + 개선/다음 단계)
+if python3 core/system/compact_report.py \
+    --agent-id "$AGENT_ID" \
+    --summary "$SUMMARY" \
+    --improvement-from-next \
+    "${REPORT_ARGS[@]}"; then
+    echo "✅ Compact report generated"
+else
+    echo "⚠️  WARNING: Compact report generation failed (non-blocking)"
 fi
 
 # Verify QUANTA was updated

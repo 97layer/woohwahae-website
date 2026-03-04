@@ -10,17 +10,17 @@ import time
 import json
 import importlib
 import subprocess
+from io import BytesIO
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.wsgi import WSGIMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
+from anyio import to_thread
 from sqlalchemy import create_engine, Column, String, Text, DateTime, Integer
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from pydantic import BaseModel, Field
 
 # LAYER OS core modules
@@ -44,6 +44,108 @@ try:
     load_dotenv(_PROJECT_ROOT / '.env')
 except ImportError:
     pass
+
+
+class WSGIAdapter:
+    """Minimal ASGI-to-WSGI adapter to avoid deprecated middleware imports."""
+
+    def __init__(self, app):
+        self.app = app
+
+    @staticmethod
+    def _build_environ(scope: dict[str, Any], body: bytes) -> dict[str, Any]:
+        environ: dict[str, Any] = {
+            "REQUEST_METHOD": scope["method"],
+            "SCRIPT_NAME": scope.get("root_path", ""),
+            "PATH_INFO": scope.get("path", ""),
+            "QUERY_STRING": scope.get("query_string", b"").decode("latin-1"),
+            "SERVER_PROTOCOL": "HTTP/%s" % scope.get("http_version", "1.1"),
+            "wsgi.version": (1, 0),
+            "wsgi.url_scheme": scope.get("scheme", "http"),
+            "wsgi.input": BytesIO(body),
+            "wsgi.errors": sys.stderr,
+            "wsgi.multithread": True,
+            "wsgi.multiprocess": True,
+            "wsgi.run_once": False,
+            "CONTENT_LENGTH": str(len(body)),
+        }
+        server = scope.get("server")
+        if server:
+            environ["SERVER_NAME"] = server[0]
+            environ["SERVER_PORT"] = str(server[1])
+        client = scope.get("client")
+        if client:
+            environ["REMOTE_ADDR"] = client[0]
+
+        for raw_name, raw_value in scope.get("headers", []):
+            name = raw_name.decode("latin-1").upper().replace("-", "_")
+            value = raw_value.decode("latin-1")
+            if name == "CONTENT_TYPE":
+                environ["CONTENT_TYPE"] = value
+            elif name == "CONTENT_LENGTH":
+                environ["CONTENT_LENGTH"] = value
+            else:
+                environ[f"HTTP_{name}"] = value
+        return environ
+
+    async def __call__(self, scope: dict[str, Any], receive, send) -> None:
+        if scope["type"] != "http":
+            await send({"type": "http.response.start", "status": 500, "headers": []})
+            await send({"type": "http.response.body", "body": b""})
+            return
+
+        body = b""
+        while True:
+            message = await receive()
+            if message["type"] == "http.disconnect":
+                return
+            body += message.get("body", b"")
+            if not message.get("more_body", False):
+                break
+
+        environ = self._build_environ(scope, body)
+        response_chunks: list[bytes] = []
+        status_code = 500
+        response_headers: list[tuple[bytes, bytes]] = []
+
+        def start_response(status: str, headers: list[tuple[str, str]], exc_info=None):
+            nonlocal status_code, response_headers
+            status_code = int(status.split(" ", 1)[0])
+            response_headers = [
+                (key.encode("latin-1"), value.encode("latin-1"))
+                for key, value in headers
+            ]
+            return response_chunks.append
+
+        def run_wsgi():
+            result = self.app(environ, start_response)
+            try:
+                for chunk in result:
+                    if chunk:
+                        response_chunks.append(chunk)
+            finally:
+                if hasattr(result, "close"):
+                    result.close()
+
+        await to_thread.run_sync(run_wsgi)
+
+        await send({
+            "type": "http.response.start",
+            "status": status_code,
+            "headers": response_headers,
+        })
+
+        if not response_chunks:
+            await send({"type": "http.response.body", "body": b""})
+            return
+
+        last_index = len(response_chunks) - 1
+        for index, chunk in enumerate(response_chunks):
+            await send({
+                "type": "http.response.body",
+                "body": chunk,
+                "more_body": index < last_index,
+            })
 
 # ─── 환경변수 (fallback 없음) ─────────────────────────────────
 
@@ -153,6 +255,14 @@ def _queue_pending_summary(limit: int = 50) -> list[dict[str, str]]:
     return summary
 
 
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _utcnow_z() -> str:
+    return _utcnow().isoformat().replace("+00:00", "Z")
+
+
 def _load_plan_council_meta() -> dict[str, Any]:
     report_path = _PROJECT_ROOT / 'knowledge' / 'system' / 'plan_council_reports.jsonl'
     if not report_path.exists():
@@ -184,7 +294,7 @@ def _mount_subapps() -> None:
             mounted_app = getattr(module, 'app')
             app.mount(
                 mount_path,
-                WSGIMiddleware(mounted_app) if is_wsgi else mounted_app,
+                WSGIAdapter(mounted_app) if is_wsgi else mounted_app,
                 name=name,
             )
             _MOUNT_STATUS[name]["mounted"] = True
@@ -199,8 +309,9 @@ _mount_subapps()
 
 # ─── 데이터베이스 ─────────────────────────────────────────────
 
-DATABASE_URL = "sqlite:///./woohwahae_cms.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+DATABASE_URL = os.getenv("FASTAPI_DATABASE_URL", "sqlite:///./woohwahae_cms.db")
+_db_connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(DATABASE_URL, connect_args=_db_connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -211,7 +322,7 @@ class Content(Base):
     page = Column(String(100), index=True)
     element_id = Column(String(200), index=True)
     content = Column(Text)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=_utcnow)
 
 
 Base.metadata.create_all(bind=engine)
@@ -265,9 +376,17 @@ def get_db():
         db.close()
 
 
-def check_admin(request: Request, token: Optional[str] = None):
-    """관리자 권한 확인 — 토큰 유효성 + 만료 검증."""
+def _extract_admin_token(request: Request) -> str:
+    auth = request.headers.get("authorization", "").strip()
+    if auth.lower().startswith("bearer "):
+        return auth.split(" ", 1)[1].strip()
+    return request.headers.get("x-admin-token", "").strip()
+
+
+def check_admin(request: Request):
+    """관리자 권한 확인 — Authorization Bearer 토큰 + 만료 검증."""
     _cleanup_expired_sessions()
+    token = _extract_admin_token(request)
     if not token or token not in _admin_sessions:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return True
@@ -287,6 +406,7 @@ async def admin_login(auth: AdminAuth, request: Request):
         _audit(request, 'login_failed', ip)
         raise HTTPException(status_code=401, detail="Invalid password")
 
+    _login_limiter.reset(ip)
     token = generate_token(32)
     _admin_sessions[token] = {'created': time.time()}
     _audit(request, 'login_success', ip)
@@ -296,7 +416,8 @@ async def admin_login(auth: AdminAuth, request: Request):
 # ─── API 엔드포인트 ───────────────────────────────────────────
 
 @app.get("/api/contents/{page}")
-async def get_page_contents(page: str, db: Session = Depends(get_db)):
+async def get_page_contents(page: str, request: Request, db: Session = Depends(get_db)):
+    check_admin(request)
     if len(page) > 100:
         raise HTTPException(status_code=400, detail="Page name too long")
     contents = db.query(Content).filter(Content.page == page).all()
@@ -304,7 +425,8 @@ async def get_page_contents(page: str, db: Session = Depends(get_db)):
 
 
 @app.get("/api/content/{page}/{element_id}")
-async def get_content(page: str, element_id: str, db: Session = Depends(get_db)):
+async def get_content(page: str, element_id: str, request: Request, db: Session = Depends(get_db)):
+    check_admin(request)
     if len(page) > 100 or len(element_id) > 200:
         raise HTTPException(status_code=400, detail="Input too long")
     content = db.query(Content).filter(
@@ -325,10 +447,9 @@ async def get_content(page: str, element_id: str, db: Session = Depends(get_db))
 async def update_content(
     data: ContentUpdate,
     request: Request,
-    token: str = None,
     db: Session = Depends(get_db)
 ):
-    check_admin(request, token)
+    check_admin(request)
 
     # XSS 방어
     safe_content = sanitize_html_field(data.content)
@@ -342,7 +463,7 @@ async def update_content(
 
     if content:
         content.content = safe_content
-        content.updated_at = datetime.utcnow()
+        content.updated_at = _utcnow()
     else:
         content = Content(
             page=safe_page,
@@ -363,7 +484,8 @@ async def update_content(
 
 
 @app.get("/api/pages")
-async def get_all_pages(db: Session = Depends(get_db)):
+async def get_all_pages(request: Request, db: Session = Depends(get_db)):
+    check_admin(request)
     pages = db.query(Content.page).distinct().all()
     return [p[0] for p in pages]
 
@@ -383,7 +505,7 @@ async def healthz():
 
     return {
         "status": status,
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": _utcnow_z(),
         "gateway": {"name": "fastapi-main", "version": "1.1.0"},
         "services": _MOUNT_STATUS,
         "queue": queue_counts,
@@ -398,7 +520,7 @@ async def harness_status():
     pending = _queue_pending_summary(limit=50)
     return {
         "status": "ok",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": _utcnow_z(),
         "queue": {
             "counts": _queue_counts(),
             "pending": pending,
@@ -431,9 +553,8 @@ async def queue_pending(limit: int = 100):
 async def queue_task_create(
     data: QueueTaskCreate,
     request: Request,
-    token: Optional[str] = None,
 ):
-    check_admin(request, token)
+    check_admin(request)
 
     if data.agent_type not in _ALLOWED_QUEUE_AGENTS:
         raise HTTPException(status_code=400, detail="Unsupported agent_type")
@@ -459,9 +580,8 @@ async def queue_task_create(
 @app.get("/api/admin/overview")
 async def admin_overview(
     request: Request,
-    token: Optional[str] = None,
 ):
-    check_admin(request, token)
+    check_admin(request)
 
     health = await healthz()
     harness = await harness_status()
@@ -470,7 +590,7 @@ async def admin_overview(
         pages = db.query(Content.page).distinct().all()
 
     return {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": _utcnow_z(),
         "health": health,
         "harness": harness,
         "pages": [p[0] for p in pages],
@@ -665,11 +785,18 @@ async def admin_panel():
             el.className = 'status-chip ' + (level || '');
         }
 
+        function authHeaders(extra) {
+            const base = {'Authorization': 'Bearer ' + adminToken};
+            return Object.assign(base, extra || {});
+        }
+
         async function loadSystemStatus() {
             if (!adminToken) return;
             setGlobalStatus('loading', '');
             try {
-                const response = await fetch('/api/admin/overview?token=' + encodeURIComponent(adminToken));
+                const response = await fetch('/api/admin/overview', {
+                    headers: authHeaders()
+                });
                 if (!response.ok) {
                     throw new Error('status load failed');
                 }
@@ -713,7 +840,9 @@ async def admin_panel():
             const editor = document.getElementById('contentEditor');
             editor.innerHTML = '<p>로딩 중...</p>';
             try {
-                const response = await fetch('/api/contents/' + encodeURIComponent(page));
+                const response = await fetch('/api/contents/' + encodeURIComponent(page), {
+                    headers: authHeaders()
+                });
                 const contents = await response.json();
                 if (contents.length === 0) {
                     editor.innerHTML = '<p>아직 편집 가능한 콘텐츠가 없습니다.</p>';
@@ -753,9 +882,9 @@ async def admin_panel():
             }
 
             try {
-                const response = await fetch('/queue/task?token=' + encodeURIComponent(adminToken), {
+                const response = await fetch('/queue/task', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: authHeaders({'Content-Type': 'application/json'}),
                     body: JSON.stringify({
                         agent_type: agentType,
                         task_type: taskType,
@@ -788,9 +917,9 @@ async def admin_panel():
             const content = textarea.value;
             const status = document.getElementById('status-' + id);
             try {
-                const response = await fetch('/api/content/update?token=' + encodeURIComponent(adminToken), {
+                const response = await fetch('/api/content/update', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: authHeaders({'Content-Type': 'application/json'}),
                     body: JSON.stringify({ page: page, element_id: elementId, content: content })
                 });
                 if (response.ok) {

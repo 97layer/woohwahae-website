@@ -15,9 +15,12 @@ import sys
 import re
 import logging
 import json
+import hashlib
+import tempfile
+import shutil
 from pathlib import Path
-from typing import Dict, Optional
-from datetime import datetime
+from typing import Dict, Optional, List
+from datetime import datetime, timedelta
 import asyncio
 
 # Add project root to path
@@ -51,6 +54,8 @@ from core.system.bot_templates import (
     DAILY_BRIEFING, DAILY_BRIEFING_RIPE, DAILY_BRIEFING_IDLE,
     PUBLISH_COMPLETE,
 )
+from core.system.agent_logger import AgentLogger
+from telegram.helpers import escape_markdown
 
 # Configure logging
 logging.basicConfig(
@@ -81,6 +86,10 @@ def _escape_html(text: str) -> str:
 
 
 _TG_MAX = 4000  # Telegram 4096자 한도 — 여유분 확보
+SIGNALS_DIR = PROJECT_ROOT / "knowledge" / "signals"
+SIGNAL_INDEX_PATH = PROJECT_ROOT / "knowledge" / "signals" / "index_hash.json"
+REMINDER_PATH = PROJECT_ROOT / "knowledge" / "system" / "reminders.json"
+BACKUP_DIR = PROJECT_ROOT / "backups"
 
 
 def _tg(text: str, max_len: int = _TG_MAX) -> str:
@@ -102,6 +111,29 @@ def admin_only(func):
     return wrapper
 
 
+def _load_json(path: Path, default):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return default
+
+
+def _atomic_write_json(path: Path, data: dict) -> None:
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp_name = tempfile.mkstemp(prefix="tgsec_", suffix=".tmp", dir=str(path.parent))
+        os.close(fd)
+        tmp = Path(tmp_name)
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp.replace(path)
+    except Exception as e:
+        logger.warning("atomic write 실패: %s", e)
+
+
+def _sha(content: str) -> str:
+    return hashlib.sha256(content.encode("utf-8", errors="ignore")).hexdigest()
+
+
 class TelegramSecretaryV6:
     def __init__(self, bot_token: str):
         self.bot_token = bot_token
@@ -110,6 +142,15 @@ class TelegramSecretaryV6:
         self.classifier = get_intent_classifier()
         self.youtube = YouTubeAnalyzer()
         self.image = ImageAnalyzer()
+        self.job_queue = None
+        self.signal_index: Dict[str, str] = _load_json(SIGNAL_INDEX_PATH, {})
+        self.reminders: Dict[str, dict] = _load_json(REMINDER_PATH, {})
+        self.suggestions: Dict[str, dict] = {}
+        self.dialog_logger = AgentLogger(
+            name="telegram_dialog",
+            log_dir=PROJECT_ROOT / ".infra" / "logs",
+            filename="telegram_dialog.jsonl",
+        )
 
         # Gardener (선택적 — 없어도 봇 동작)
         try:
@@ -490,7 +531,10 @@ class TelegramSecretaryV6:
                 },
             }
 
-            _, queue_ok = self._save_signal(signal_data)
+            _, queue_ok, duplicate = self._save_signal(signal_data)
+            if duplicate:
+                await status_msg.edit_text("⚠️ 동일한 이미지/메모가 이미 저장되어 있습니다.")
+                return
             if not queue_ok:
                 logger.warning("SA 큐 전달 실패 (이미지): %s", signal_id)
 
@@ -588,7 +632,12 @@ class TelegramSecretaryV6:
                 },
             }
 
-            self._save_signal(signal_data)
+            _, queue_ok, duplicate = self._save_signal(signal_data)
+            if duplicate:
+                await status_msg.edit_text("⚠️ 동일한 PDF가 이미 저장되어 있습니다.")
+                return
+            if not queue_ok:
+                logger.warning("SA 큐 전달 실패 (PDF): %s", signal_id)
 
             extract_info = ""
             if pages_extracted:
@@ -747,9 +796,43 @@ class TelegramSecretaryV6:
     async def process_text(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = update.message.text
         try:
+            # 대화 로그 캡처
+            self.dialog_logger.log({
+                "type": "user_message",
+                "user_id": update.effective_user.id,
+                "username": update.effective_user.username,
+                "text": text,
+                "ts": datetime.now().isoformat()
+            })
             # 의도 분류
             intent_data = self.classifier.classify(text)
             intent = intent_data['intent']
+
+            # 자연어 제안/자동 처리 (명령어 없이)
+            detected = self._detect_action(text)
+            if detected == "publish":
+                # 바로 발행 요청 신호 저장 + 안내
+                signal_id = f"pubreq_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                sd = {
+                    "signal_id": signal_id,
+                    "type": "publish_request",
+                    "status": "captured",
+                    "content": text,
+                    "captured_at": datetime.now().isoformat(),
+                    "from_user": update.effective_user.username or update.effective_user.first_name,
+                    "source_channel": "telegram",
+                    "metadata": {"intent": "publish_request"},
+                }
+                _, queue_ok, duplicate = self._save_signal(sd)
+                msg = "⚠️ 이미 저장된 요청입니다." if duplicate else f"✅ 발행 요청 저장 ({signal_id})"
+                msg += " | SA 큐 전달" if queue_ok else " | SA 큐 실패"
+                msg += "\n/approve 로 최종 발행 승인 가능합니다."
+                await update.message.reply_text(msg)
+                return
+            if detected:
+                sent = await self._send_suggestion(update, detected, text)
+                if sent:
+                    return
 
             if intent == 'insight':
                 # URL이면 페이지 본문 fetch 후 풍부한 신호로 저장
@@ -775,7 +858,13 @@ class TelegramSecretaryV6:
                             "fetch_ok": fetched["ok"],
                         },
                     }
-                    _, queue_ok = self._save_signal(signal_data)
+                    _, queue_ok, duplicate = self._save_signal(signal_data)
+                    if duplicate:
+                        await status_msg.edit_text(
+                            "⚠️ 동일한 URL/본문이 이미 저장되어 있습니다.",
+                            parse_mode=constants.ParseMode.HTML,
+                        )
+                        return
                     fetch_note = f"제목: {_escape_html(fetched['title'][:80])}\n" if fetched["title"] else ""
                     fetch_status = f"본문 {len(fetched['content'])}자 수집" if fetched["ok"] else "⚠️ 본문 수집 실패 (URL만 저장)"
                     sa_status = "SA 분석 중." if queue_ok else "⚠️ SA 큐 전달 실패"
@@ -788,7 +877,7 @@ class TelegramSecretaryV6:
                     )
                     return
 
-                queue_ok = self._save_insight(text, update.effective_user)
+                queue_ok, duplicate = self._save_insight(text, update.effective_user)
                 timestamp = datetime.now().strftime('%H:%M:%S')
                 preview = _escape_html(text[:150])
                 sa_status = (
@@ -798,7 +887,7 @@ class TelegramSecretaryV6:
                 await update.message.reply_text(
                     f"💾 <b>Captured</b> (<code>{timestamp}</code>)\n\n"
                     f"\"{preview}\"\n\n"
-                    f"signals/ 저장 완료. {sa_status}",
+                    f"{'⚠️ 이미 저장된 내용입니다.' if duplicate else 'signals/ 저장 완료.'} {sa_status}",
                     parse_mode=constants.ParseMode.HTML
                 )
             else:
@@ -821,13 +910,28 @@ class TelegramSecretaryV6:
     def _save_signal(self, signal_data: dict) -> tuple:
         """
         signals/ JSON 저장 + SA 큐 전달.
-        Returns: (signal_id: str, queue_ok: bool)
+        Returns: (signal_id: str, queue_ok: bool, duplicate: bool)
         """
-        signal_id = signal_data["signal_id"]
-        signals_dir = PROJECT_ROOT / "knowledge" / "signals"
-        signals_dir.mkdir(parents=True, exist_ok=True)
-        with open(signals_dir / ("%s.json" % signal_id), "w", encoding="utf-8") as f:
+        content_for_hash = signal_data.get("content", "") or json.dumps(signal_data, ensure_ascii=False)
+        digest = _sha((signal_data.get("type", "") or "") + "|" + content_for_hash[:50000])
+
+        # 중복 차단
+        existing = self.signal_index.get(digest)
+        if existing:
+            logger.info("중복 신호 감지: %s -> %s", digest[:8], existing)
+            return existing, False, True
+
+        signal_id = signal_data.get("signal_id") or f"{signal_data.get('type','sig')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        signal_data["signal_id"] = signal_id
+
+        # 저장
+        SIGNALS_DIR.mkdir(parents=True, exist_ok=True)
+        with open(SIGNALS_DIR / f"{signal_id}.json", "w", encoding="utf-8") as f:
             json.dump(signal_data, f, ensure_ascii=False, indent=2)
+
+        # 인덱스 갱신
+        self.signal_index[digest] = signal_id
+        _atomic_write_json(SIGNAL_INDEX_PATH, self.signal_index)
 
         queue_ok = False
         try:
@@ -838,7 +942,7 @@ class TelegramSecretaryV6:
                 task_type="analyze_signal",
                 payload={
                     "signal_id": signal_id,
-                    "signal_path": str(signals_dir / ("%s.json" % signal_id)),
+                    "signal_path": str(SIGNALS_DIR / f"{signal_id}.json"),
                 },
             )
             queue_ok = True
@@ -846,12 +950,12 @@ class TelegramSecretaryV6:
         except Exception as q_e:
             logger.warning("SA 큐 전달 실패: %s", q_e)
 
-        return signal_id, queue_ok
+        return signal_id, queue_ok, False
 
-    def _save_insight(self, text: str, user) -> bool:
+    def _save_insight(self, text: str, user) -> tuple:
         """
         인사이트 저장 + SA 에이전트 분석 큐에 전달.
-        Returns: queue_ok — False면 경고 표시 필요
+        Returns: (queue_ok: bool, duplicate: bool)
         """
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         signal_id = "text_%s" % timestamp
@@ -865,8 +969,299 @@ class TelegramSecretaryV6:
             'source_channel': 'telegram',
             'metadata': {},
         }
-        _, queue_ok = self._save_signal(signal_data)
-        return queue_ok
+        _, queue_ok, duplicate = self._save_signal(signal_data)
+        return queue_ok, duplicate
+
+    # ── 내부 유틸 (signals / reminders) ─────────────────────────────
+
+    def _load_recent_signals(self, limit: int = 300) -> List[dict]:
+        if not SIGNALS_DIR.exists():
+            return []
+        files = sorted(SIGNALS_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+        records = []
+        for f in files[:limit]:
+            try:
+                records.append(json.loads(f.read_text()))
+            except Exception:
+                continue
+        return records
+
+    def _search_signals(self, query: str, limit: int = 5) -> List[dict]:
+        q = query.lower()
+        results: List[dict] = []
+        for rec in self._load_recent_signals():
+            hay = " ".join([
+                rec.get("content", "") or "",
+                json.dumps(rec.get("metadata", {}), ensure_ascii=False)
+            ]).lower()
+            if q in hay:
+                results.append(rec)
+            if len(results) >= limit:
+                break
+        return results
+
+    def _update_signal_tags(self, signal_id: str, tags: List[str]) -> bool:
+        path = SIGNALS_DIR / f"{signal_id}.json"
+        if not path.exists():
+            return False
+        try:
+            data = json.loads(path.read_text())
+            meta = data.setdefault("metadata", {})
+            existing = set(meta.get("tags", []))
+            updated = list(existing.union(tags))
+            meta["tags"] = sorted(updated)
+            _atomic_write_json(path, data)
+            return True
+        except Exception as e:
+            logger.warning("태그 업데이트 실패: %s", e)
+            return False
+
+    def _schedule_reminder(self, reminder_id: str, due: datetime):
+        if not self.job_queue:
+            return
+        delay = max(0, (due - datetime.now()).total_seconds())
+        self.job_queue.run_once(
+            self._reminder_callback,
+            when=delay,
+            name=f"rem_{reminder_id}",
+            data={"rid": reminder_id},
+        )
+
+    def _add_reminder(self, text: str, due: datetime, ref_id: Optional[str] = None) -> str:
+        rid = f"rem_{int(due.timestamp())}"
+        self.reminders[rid] = {
+            "id": rid,
+            "text": text,
+            "ref_id": ref_id,
+            "due": due.isoformat(),
+            "created_at": datetime.now().isoformat(),
+            "status": "pending",
+        }
+        _atomic_write_json(REMINDER_PATH, self.reminders)
+        self._schedule_reminder(rid, due)
+        return rid
+
+    async def _reminder_callback(self, context: ContextTypes.DEFAULT_TYPE):
+        rid = context.job.data.get("rid") if context.job and context.job.data else None
+        if not rid:
+            return
+        reminder = self.reminders.get(rid)
+        if not reminder or reminder.get("status") == "sent":
+            return
+        admin_id = os.getenv("ADMIN_TELEGRAM_ID")
+        if admin_id:
+            try:
+                text = reminder.get("text", "")
+                ref = reminder.get("ref_id")
+                lines = [f"⏰ 리마인드 ({reminder['due']})", text]
+                if ref:
+                    lines.append(f"ref: {ref}")
+                await context.bot.send_message(
+                    chat_id=int(admin_id),
+                    text="\n".join(lines),
+                )
+            except Exception as e:
+                logger.warning("리마인드 전송 실패: %s", e)
+                return
+        reminder["status"] = "sent"
+        reminder["sent_at"] = datetime.now().isoformat()
+        _atomic_write_json(REMINDER_PATH, self.reminders)
+
+    def _restore_reminders(self):
+        if not self.job_queue:
+            return
+        now = datetime.now()
+        for rid, rem in self.reminders.items():
+            if rem.get("status") != "pending":
+                continue
+            try:
+                due = datetime.fromisoformat(rem["due"])
+            except Exception:
+                continue
+            if due < now:
+                # 즉시 발송
+                self.job_queue.run_once(self._reminder_callback, when=0, data={"rid": rid})
+            else:
+                self._schedule_reminder(rid, due)
+
+    def _latest_backup(self) -> Optional[str]:
+        if not BACKUP_DIR.exists():
+            return None
+        tars = sorted(BACKUP_DIR.glob("telegram_backup_*.tar.gz"), key=lambda p: p.stat().st_mtime, reverse=True)
+        return str(tars[0]) if tars else None
+
+    def _run_backup(self):
+        try:
+            BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            dest = BACKUP_DIR / f"telegram_backup_{ts}"
+            base_dir = PROJECT_ROOT / "knowledge" / "signals"
+            if base_dir.exists():
+                shutil.make_archive(str(dest), "gztar", root_dir=PROJECT_ROOT, base_dir=str(base_dir.relative_to(PROJECT_ROOT)))
+        except Exception as e:
+            logger.warning("백업 실패: %s", e)
+
+    # ── 자연어 기반 제안 ─────────────────────────────────────────────
+    def _detect_action(self, text: str) -> Optional[str]:
+        lower = text.lower()
+        if any(k in lower for k in ["올려", "발행", "게시", "업로드", "웹에", "website"]):
+            return "publish"
+        if any(k in lower for k in ["리마", "알림", "remind", "나중", "때 알려", "시간 뒤", "분 뒤", "시간 후"]):
+            return "remind"
+        if any(k in lower for k in ["찾아", "검색", "search", "where"]):
+            return "find"
+        if any(k in lower for k in ["메모", "기억", "적어", "note"]):
+            return "note"
+        return None
+
+    def _register_suggestion(self, payload: dict) -> str:
+        key = _sha(json.dumps(payload, ensure_ascii=False))[:12]
+        self.suggestions[key] = payload
+        return key
+
+    async def _send_suggestion(self, update: Update, action: str, text: str):
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        if admin_id and str(update.effective_user.id) != str(admin_id):
+            return False
+        payload = {"action": action, "text": text}
+        key = self._register_suggestion(payload)
+
+        if action == "note":
+            buttons = [
+                [InlineKeyboardButton("저장", callback_data=f"suggest_note|{key}")],
+                [InlineKeyboardButton("취소", callback_data="suggest_cancel")],
+            ]
+            msg = f"📝 메모로 저장할까요?\n\n{_escape_html(text[:300])}"
+        elif action == "remind":
+            buttons = [
+                [
+                    InlineKeyboardButton("30분", callback_data=f"suggest_remind|{key}|30"),
+                    InlineKeyboardButton("2시간", callback_data=f"suggest_remind|{key}|120"),
+                ],
+                [InlineKeyboardButton("내일 09:00", callback_data=f"suggest_remind|{key}|tomorrow_morning")],
+                [InlineKeyboardButton("취소", callback_data="suggest_cancel")],
+            ]
+            msg = f"⏰ 알림 등록할까요?\n\n{_escape_html(text[:300])}"
+        elif action == "find":
+            buttons = [
+                [InlineKeyboardButton("검색", callback_data=f"suggest_find|{key}")],
+                [InlineKeyboardButton("취소", callback_data="suggest_cancel")],
+            ]
+            msg = f"🔎 찾아볼까요?\n\n{_escape_html(text[:200])}"
+        elif action == "publish":
+            buttons = [
+                [InlineKeyboardButton("발행 초안 생성", callback_data=f"suggest_publish|{key}")],
+                [InlineKeyboardButton("취소", callback_data="suggest_cancel")],
+            ]
+            msg = f"📰 웹 발행 초안으로 넘길까요?\n\n{_escape_html(text[:300])}"
+        else:
+            return False
+
+        await update.message.reply_text(
+            msg,
+            parse_mode=constants.ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        return True
+
+    async def handle_suggest_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = update.callback_query
+        if not query:
+            return
+        data = query.data or ""
+        admin_id = os.getenv('ADMIN_TELEGRAM_ID')
+        if admin_id and str(query.from_user.id) != str(admin_id):
+            await query.answer("권한 없음", show_alert=True)
+            return
+        if data == "suggest_cancel":
+            await query.answer("취소됨")
+            await query.edit_message_text("취소했습니다.")
+            return
+        parts = data.split("|")
+        if len(parts) < 2:
+            await query.answer()
+            return
+        action = parts[0]
+        key = parts[1]
+        payload = self.suggestions.get(key, {})
+        text = payload.get("text", "")
+
+        if action == "suggest_note":
+            signal_id = f"note_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            sd = {
+                "signal_id": signal_id,
+                "type": "note",
+                "status": "captured",
+                "content": text,
+                "captured_at": datetime.now().isoformat(),
+                "from_user": query.from_user.username or query.from_user.first_name,
+                "source_channel": "telegram",
+                "metadata": {"tags": ["note"]},
+            }
+            _, queue_ok, duplicate = self._save_signal(sd)
+            msg = "⚠️ 이미 저장된 내용입니다." if duplicate else f"✅ 메모 저장 ({signal_id})"
+            if not queue_ok:
+                msg += " | SA 큐 실패"
+            await query.edit_message_text(msg)
+            await query.answer("완료")
+            return
+
+        if action == "suggest_find":
+            results = self._search_signals(text, limit=5)
+            if not results:
+                await query.edit_message_text("검색 결과가 없습니다.")
+                await query.answer("완료")
+                return
+            lines = ["<b>🔎 검색 결과</b>", ""]
+            for r in results:
+                preview = _escape_html((r.get("content") or "")[:140])
+                lines.append(
+                    f"<code>{_escape_html(r.get('signal_id',''))}</code> | {r.get('type','')} | {r.get('captured_at','')[:16]}\n"
+                    f"{preview}"
+                )
+            await query.edit_message_text("\n".join(lines), parse_mode=constants.ParseMode.HTML)
+            await query.answer("완료")
+            return
+
+        if action == "suggest_remind":
+            if len(parts) < 3:
+                await query.answer()
+                return
+            slot = parts[2]
+            if slot == "tomorrow_morning":
+                due = datetime.now().replace(hour=9, minute=0, second=0, microsecond=0) + timedelta(days=1)
+            else:
+                try:
+                    minutes = int(slot)
+                    due = datetime.now() + timedelta(minutes=minutes)
+                except Exception:
+                    await query.answer("시간 파싱 실패", show_alert=True)
+                    return
+            rid = self._add_reminder(text, due)
+            await query.edit_message_text(f"⏰ 리마인더 등록: {due.strftime('%Y-%m-%d %H:%M')} ({rid})")
+            await query.answer("완료")
+            return
+
+        if action == "suggest_publish":
+            signal_id = f"pubreq_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            sd = {
+                "signal_id": signal_id,
+                "type": "publish_request",
+                "status": "captured",
+                "content": text,
+                "captured_at": datetime.now().isoformat(),
+                "from_user": query.from_user.username or query.from_user.first_name,
+                "source_channel": "telegram",
+                "metadata": {"intent": "publish_request"},
+            }
+            _, queue_ok, duplicate = self._save_signal(sd)
+            msg = "⚠️ 이미 저장된 요청입니다." if duplicate else f"✅ 발행 요청 저장 ({signal_id})"
+            msg += " | SA 큐 전달" if queue_ok else " | SA 큐 실패"
+            await query.edit_message_text(msg)
+            await query.answer("완료")
+            return
+
+        await query.answer()
 
     @admin_only
     async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1194,6 +1589,121 @@ class TelegramSecretaryV6:
         except Exception as e:
             logger.error("report_command error: %s", e)
             await update.message.reply_text(f"리포트 오류: {_escape_html(str(e))}", parse_mode=constants.ParseMode.HTML)
+
+    # ── 단일 사용자 세컨드브레인 확장 커맨드 ──────────────────────
+
+    def _parse_datetime(self, text: str) -> Optional[datetime]:
+        try:
+            return datetime.fromisoformat(text.replace("T", " "))
+        except Exception:
+            pass
+        try:
+            minutes = int(text)
+            return datetime.now() + timedelta(minutes=minutes)
+        except Exception:
+            return None
+
+    @admin_only
+    async def find_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = " ".join(context.args) if context.args else ""
+        if not query:
+            await update.message.reply_text("사용법: /find <검색어>")
+            return
+        results = self._search_signals(query, limit=5)
+        if not results:
+            await update.message.reply_text("검색 결과가 없습니다.")
+            return
+        lines = ["<b>🔎 검색 결과</b>", ""]
+        for r in results:
+            preview = _escape_html((r.get("content") or "")[:140])
+            lines.append(
+                f"<code>{_escape_html(r.get('signal_id',''))}</code> | {r.get('type','')} | {r.get('captured_at','')[:16]}\n"
+                f"{preview}"
+            )
+        await update.message.reply_text("\n".join(lines), parse_mode=constants.ParseMode.HTML)
+
+    @admin_only
+    async def note_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        text = " ".join(context.args) if context.args else ""
+        if not text:
+            await update.message.reply_text("사용법: /note <메모 내용>")
+            return
+        signal_id = f"note_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        signal_data = {
+            "signal_id": signal_id,
+            "type": "note",
+            "status": "captured",
+            "content": text,
+            "captured_at": datetime.now().isoformat(),
+            "from_user": update.effective_user.username or update.effective_user.first_name,
+            "source_channel": "telegram",
+            "metadata": {"tags": ["note"]},
+        }
+        _, queue_ok, duplicate = self._save_signal(signal_data)
+        if duplicate:
+            await update.message.reply_text("⚠️ 동일한 메모가 이미 저장되어 있습니다.")
+            return
+        await update.message.reply_text(
+            f"✅ 메모 저장됨 ({signal_id})\nSA 큐: {'전달' if queue_ok else '보류'}"
+        )
+
+    @admin_only
+    async def tag_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if len(context.args) < 2:
+            await update.message.reply_text("사용법: /tag <signal_id> <tag1> [tag2...]")
+            return
+        signal_id, *tags = context.args
+        if not self._update_signal_tags(signal_id, tags):
+            await update.message.reply_text("대상 신호를 찾을 수 없습니다.")
+            return
+        await update.message.reply_text(f"🏷️ 태그 추가: {', '.join(tags)}")
+
+    @admin_only
+    async def recent_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        n = 5
+        if context.args:
+            try:
+                n = max(1, min(20, int(context.args[0])))
+            except Exception:
+                pass
+        records = self._load_recent_signals(limit=n)
+        if not records:
+            await update.message.reply_text("신호가 없습니다.")
+            return
+        lines = ["<b>🗂️ 최근 신호</b>", ""]
+        for r in records[:n]:
+            lines.append(
+                f"<code>{_escape_html(r.get('signal_id',''))}</code> | {r.get('type','')} | {r.get('captured_at','')[:16]}"
+            )
+        await update.message.reply_text("\n".join(lines), parse_mode=constants.ParseMode.HTML)
+
+    @admin_only
+    async def remind_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if len(context.args) < 1:
+            await update.message.reply_text("사용법: /remind <YYYY-MM-DD HH:MM 또는 분단위> [메모]")
+            return
+        due = self._parse_datetime(context.args[0])
+        if not due:
+            await update.message.reply_text("시간 형식을 인식하지 못했습니다. 예) 2026-03-05 09:30 또는 45")
+            return
+        text = " ".join(context.args[1:]) if len(context.args) > 1 else "리마인드"
+        rid = self._add_reminder(text, due)
+        await update.message.reply_text(f"⏰ 리마인더 등록: {due.isoformat()} ({rid})")
+
+    @admin_only
+    async def health_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        total_signals = len(list(SIGNALS_DIR.glob("*.json"))) if SIGNALS_DIR.exists() else 0
+        duplicates = len(self.signal_index)
+        pending_reminders = len([r for r in self.reminders.values() if r.get("status") == "pending"])
+        latest_backup = self._latest_backup() or "없음"
+        lines = [
+            "<b>🩺 Health</b>",
+            f"signals: {total_signals}",
+            f"hash index: {duplicates}",
+            f"pending reminders: {pending_reminders}",
+            f"latest backup: {latest_backup}",
+        ]
+        await update.message.reply_text("\n".join(lines), parse_mode=constants.ParseMode.HTML)
 
     @admin_only
     async def approve_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1559,8 +2069,15 @@ class TelegramSecretaryV6:
         application.add_handler(CommandHandler("approve", self.approve_command))
         application.add_handler(CommandHandler("reject", self.reject_command))
         application.add_handler(CommandHandler("pending", self.pending_command))
+        application.add_handler(CommandHandler("find", self.find_command))
+        application.add_handler(CommandHandler("tag", self.tag_command))
+        application.add_handler(CommandHandler("note", self.note_command))
+        application.add_handler(CommandHandler("recent", self.recent_command))
+        application.add_handler(CommandHandler("remind", self.remind_command))
+        application.add_handler(CommandHandler("health", self.health_command))
         application.add_handler(CommandHandler("client", self.client_command))
         application.add_handler(CommandHandler("visit", self.visit_command))
+        application.add_handler(CallbackQueryHandler(self.handle_suggest_callback, pattern=r'^suggest_'))
         application.add_handler(CallbackQueryHandler(self.handle_draft_callback, pattern=r'^draft_'))
         application.add_handler(CallbackQueryHandler(self.handle_council_callback, pattern=r'^council_'))
         application.add_handler(CallbackQueryHandler(self.handle_action_callback, pattern=r'^action_'))
@@ -1569,7 +2086,9 @@ class TelegramSecretaryV6:
         # 매일 08:00 브리핑 자동 푸시
         from datetime import time as _time
         job_queue = application.job_queue
+        self.job_queue = job_queue
         if job_queue:
+            self._restore_reminders()
             job_queue.run_daily(
                 lambda ctx: asyncio.create_task(self.send_daily_briefing(application)),
                 time=_time(hour=8, minute=0, second=0),
@@ -1638,6 +2157,12 @@ class TelegramSecretaryV6:
                 _duel_proposal_check_job,
                 interval=300,  # 5분
                 name="duel_proposal_check"
+            )
+
+            job_queue.run_daily(
+                lambda ctx: self._run_backup(),
+                time=_time(hour=3, minute=30, second=0),
+                name="daily_backup"
             )
 
         logger.info("🚀 V6 Secretary Service Started")

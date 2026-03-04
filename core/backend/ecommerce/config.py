@@ -8,8 +8,28 @@ Environment variables should be set in production:
 - TOSSPAYMENTS_SECRET_KEY: TossPayments secret key
 - TOSSPAYMENTS_CLIENT_KEY: TossPayments client key
 """
+import logging
 import os
+import secrets
 from typing import Optional
+
+logger = logging.getLogger(__name__)
+
+
+def _debug_enabled() -> bool:
+    return os.getenv("DEBUG", "False").lower() == "true"
+
+
+def _load_jwt_secret() -> str:
+    secret = os.getenv("JWT_SECRET_KEY", "").strip()
+    if secret:
+        return secret
+    if _debug_enabled():
+        # Local debug fallback only.
+        generated = secrets.token_urlsafe(48)
+        logger.warning("JWT_SECRET_KEY missing in DEBUG mode; using ephemeral in-memory secret")
+        return generated
+    raise RuntimeError("JWT_SECRET_KEY environment variable is required")
 
 
 class Settings:
@@ -18,7 +38,7 @@ class Settings:
     # Database
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        "postgresql://user:password@localhost:5432/woohwahae_ecommerce"
+        "sqlite:///./woohwahae_ecommerce.db"
     )
 
     # Redis
@@ -28,22 +48,20 @@ class Settings:
     REDIS_PASSWORD: Optional[str] = os.getenv("REDIS_PASSWORD", None)
 
     # JWT
-    JWT_SECRET_KEY: str = os.getenv(
-        "JWT_SECRET_KEY",
-        "your-secret-key-here-replace-in-production"
-    )
+    JWT_SECRET_KEY: str = _load_jwt_secret()
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", str(60 * 24 * 7)))
 
     # Payment Gateways
-    STRIPE_API_KEY: str = os.getenv("STRIPE_API_KEY", "sk_test_stub")
-    TOSSPAYMENTS_SECRET_KEY: str = os.getenv("TOSSPAYMENTS_SECRET_KEY", "test_sk_stub")
-    TOSSPAYMENTS_CLIENT_KEY: str = os.getenv("TOSSPAYMENTS_CLIENT_KEY", "test_ck_stub")
+    STRIPE_API_KEY: str = os.getenv("STRIPE_API_KEY", "").strip()
+    TOSSPAYMENTS_SECRET_KEY: str = os.getenv("TOSSPAYMENTS_SECRET_KEY", "").strip()
+    TOSSPAYMENTS_CLIENT_KEY: str = os.getenv("TOSSPAYMENTS_CLIENT_KEY", "").strip()
 
     # Application
     APP_NAME: str = "WOOHWAHAE E-commerce"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
+    SQL_ECHO: bool = os.getenv("SQL_ECHO", "False").lower() == "true"
 
     # CORS
     CORS_ORIGINS: list = [

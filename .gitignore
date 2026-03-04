@@ -98,3 +98,8 @@ woohwahae_cms.db
 
 # 개인 참고 자료 (로컬 전용)
 knowledge/rawrwa/
+
+# 로컬 도구 캐시
+.local_node/
+.playwright-cli/
+output/

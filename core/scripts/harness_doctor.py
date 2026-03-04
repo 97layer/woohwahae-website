@@ -31,7 +31,11 @@ REQUIRED_FILES = (
     "core/scripts/run_web_rebuild_prep.sh",
     "core/scripts/web_rebuild_prep.py",
     "core/scripts/plan_dispatch.sh",
+    "core/scripts/plan_dispatch_daily_report.py",
+    "core/scripts/skill_tool_audit.py",
     "core/system/plan_council.py",
+    "core/system/plan_dispatch_metrics.py",
+    "core/system/plan_dispatch_replay.py",
     ".claude/hooks/plan-council.sh",
     ".claude/rules/plan-council.md",
     ".claude/rules/model-role-routing.md",
@@ -76,6 +80,30 @@ def run_command(cmd: List[str]) -> Tuple[int, str, str]:
         text=True,
     )
     return proc.returncode, proc.stdout.strip(), proc.stderr.strip()
+
+
+def parse_json_output(raw: str) -> dict:
+    text = (raw or "").strip()
+    if not text:
+        raise ValueError("empty output")
+    try:
+        payload = json.loads(text)
+        if isinstance(payload, dict):
+            return payload
+    except Exception:
+        pass
+
+    for line in reversed(text.splitlines()):
+        candidate = line.strip()
+        if not candidate:
+            continue
+        try:
+            payload = json.loads(candidate)
+            if isinstance(payload, dict):
+                return payload
+        except Exception:
+            continue
+    raise ValueError("no json object found in output")
 
 
 def check_files() -> CheckResult:
@@ -161,6 +189,45 @@ def check_work_lock() -> CheckResult:
     return CheckResult("work-lock", "pass", "web_work_lock.json present (legacy work_lock omitted)")
 
 
+def check_asset_registry_integrity() -> CheckResult:
+    registry_path = PROJECT_ROOT / "knowledge" / "system" / "asset_registry.json"
+    if not registry_path.exists():
+        return CheckResult("asset-registry", "warn", "asset_registry.json missing")
+
+    try:
+        payload = json.loads(registry_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult("asset-registry", "fail", f"invalid json ({exc})")
+
+    assets = payload.get("assets")
+    if not isinstance(assets, list):
+        return CheckResult("asset-registry", "fail", "assets must be list")
+
+    ast_ids = []
+    for item in assets:
+        if not isinstance(item, dict):
+            continue
+        value = item.get("id")
+        if isinstance(value, str) and value.startswith("AST-"):
+            ast_ids.append(value)
+    dup_ast = sorted({x for x in ast_ids if ast_ids.count(x) > 1})
+    if dup_ast:
+        return CheckResult(
+            "asset-registry",
+            "fail",
+            f"duplicate AST ids: {', '.join(dup_ast[:5])}",
+        )
+
+    stats = payload.get("stats", {})
+    if not isinstance(stats, dict):
+        return CheckResult("asset-registry", "warn", "stats missing")
+    total = stats.get("total")
+    if isinstance(total, int) and total != len(assets):
+        return CheckResult("asset-registry", "warn", f"stats.total={total} assets={len(assets)}")
+
+    return CheckResult("asset-registry", "pass", f"assets={len(assets)} ast_ids={len(ast_ids)}")
+
+
 def check_plan_council() -> CheckResult:
     code, out, err = run_command(
         ["python3", "core/system/plan_council.py", "--self-check", "--require-both"]
@@ -194,10 +261,29 @@ def check_gateway_contract() -> CheckResult:
 
 
 def check_plan_dispatch() -> CheckResult:
-    auto_cmd = ["bash", "core/scripts/plan_dispatch.sh", "ok", "--auto"]
-    manual_cmd = ["bash", "core/scripts/plan_dispatch.sh", "하네스 구조 리팩토링 계획 점검", "--manual"]
+    simple_auto_task = "ok"
+    manual_task = (
+        "다중 파일 웹 개편 작업: website/archive/index.html, website/practice/index.html, "
+        "website/lab/index.html의 레이아웃 간격/타이포 일관성만 조정하고 "
+        "about 텍스트 및 백엔드/인프라는 변경하지 않는다. "
+        "변경 후 visual_validator와 build_components로 검증한다."
+    )
+    nontrivial_auto_task = "스킬 및 기본 툴 체계를 분석하고 업그레이드 항목을 구현한다"
+    auto_cmd = ["bash", "core/scripts/plan_dispatch.sh", simple_auto_task, "--auto", "--smoke"]
+    auto_nontrivial_cmd = [
+        "bash",
+        "core/scripts/plan_dispatch.sh",
+        nontrivial_auto_task,
+        "--auto",
+        "--smoke",
+    ]
+    manual_cmd = ["bash", "core/scripts/plan_dispatch.sh", manual_task, "--manual", "--smoke"]
 
-    for label, cmd in (("auto", auto_cmd), ("manual", manual_cmd)):
+    for label, cmd in (
+        ("auto-simple", auto_cmd),
+        ("auto-nontrivial", auto_nontrivial_cmd),
+        ("manual", manual_cmd),
+    ):
         code, out, err = run_command(cmd)
         if code != 0:
             short = (err or out or f"plan dispatch {label} failed").splitlines()
@@ -213,10 +299,204 @@ def check_plan_dispatch() -> CheckResult:
         if not isinstance(dispatcher, dict) or not isinstance(consensus, dict):
             return CheckResult("plan-dispatch", "fail", f"{label}: missing dispatcher/consensus")
 
+        if label == "auto-simple":
+            if dispatcher.get("executed") is not False:
+                return CheckResult("plan-dispatch", "fail", "auto-simple: expected skip path")
+            if dispatcher.get("reason") != "simple_task":
+                return CheckResult("plan-dispatch", "fail", "auto-simple: expected reason=simple_task")
+
+        if label == "auto-nontrivial":
+            if dispatcher.get("executed") is not True:
+                return CheckResult("plan-dispatch", "fail", "auto-nontrivial: expected execute path")
+            if dispatcher.get("complexity") not in {"medium", "high"}:
+                return CheckResult("plan-dispatch", "fail", "auto-nontrivial: complexity must be medium/high")
+
         if label == "manual" and dispatcher.get("executed") is not True:
             return CheckResult("plan-dispatch", "fail", "manual: dispatcher did not execute council")
 
-    return CheckResult("plan-dispatch", "pass", "auto skip + manual execution paths ready")
+    return CheckResult("plan-dispatch", "pass", "auto simple/nontrivial + manual paths ready")
+
+
+def check_plan_dispatch_observability() -> CheckResult:
+    code, out, err = run_command(
+        ["python3", "core/system/plan_dispatch_metrics.py", "--summary", "--window", "200", "--json"]
+    )
+    if code != 0:
+        short = (err or out or "plan_dispatch_metrics summary failed").splitlines()
+        msg = (short[-1] if short else "plan_dispatch_metrics summary failed")[:180]
+        return CheckResult("plan-observe", "warn", msg)
+
+    try:
+        payload = parse_json_output(out)
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult("plan-observe", "warn", f"invalid json ({exc})")
+
+    total = int(payload.get("total", 0))
+    fallback_rate = float(payload.get("fallback_rate", 0.0))
+    threshold = float(os.getenv("PLAN_DISPATCH_FALLBACK_WARN_RATE", "0.30"))
+    min_samples = int(os.getenv("PLAN_DISPATCH_FALLBACK_MIN_SAMPLES", "20"))
+
+    if total < min_samples:
+        return CheckResult(
+            "plan-observe",
+            "warn",
+            f"insufficient samples total={total} (<{min_samples})",
+        )
+
+    if fallback_rate >= threshold:
+        return CheckResult(
+            "plan-observe",
+            "fail",
+            f"fallback_rate={fallback_rate:.3f} >= threshold={threshold:.3f}",
+        )
+
+    return CheckResult(
+        "plan-observe",
+        "pass",
+        f"fallback_rate={fallback_rate:.3f} threshold={threshold:.3f} total={total}",
+    )
+
+
+def check_plan_dispatch_replay() -> CheckResult:
+    drift_window = os.getenv("PLAN_DISPATCH_REPLAY_DRIFT_WINDOW", "14")
+    drift_min_samples = os.getenv("PLAN_DISPATCH_REPLAY_DRIFT_MIN_SAMPLES", "5")
+    allowed_drift = os.getenv("PLAN_DISPATCH_REPLAY_ALLOWED_DRIFT", "0.20")
+    complexity_drift = os.getenv("PLAN_DISPATCH_REPLAY_COMPLEXITY_DRIFT", "0.25")
+    code, out, err = run_command(
+        [
+            "python3",
+            "core/system/plan_dispatch_replay.py",
+            "--limit",
+            "30",
+            "--min-complexity",
+            "medium",
+            "--drift-window",
+            drift_window,
+            "--drift-min-samples",
+            drift_min_samples,
+            "--allowed-rate-drift-threshold",
+            allowed_drift,
+            "--complexity-rate-drift-threshold",
+            complexity_drift,
+            "--append-report",
+            "--json",
+        ]
+    )
+    if code != 0:
+        short = (err or out or "plan_dispatch_replay failed").splitlines()
+        msg = (short[-1] if short else "plan_dispatch_replay failed")[:180]
+        return CheckResult("plan-replay", "warn", msg)
+
+    try:
+        payload = parse_json_output(out)
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult("plan-replay", "warn", f"invalid json ({exc})")
+
+    total = int(payload.get("total", 0))
+    allowed_rate = float(payload.get("allowed_rate", 0.0))
+    if total <= 0:
+        return CheckResult("plan-replay", "warn", "no replay tasks available")
+
+    drift = payload.get("drift", {})
+    if isinstance(drift, dict) and drift.get("detected") is True:
+        reason = str(drift.get("reason", "threshold_exceeded"))
+        allowed_delta = drift.get("allowed_delta")
+        max_complexity_delta = drift.get("max_complexity_delta")
+        detail = (
+            f"drift detected reason={reason} "
+            f"allowed_delta={allowed_delta} "
+            f"max_complexity_delta={max_complexity_delta}"
+        )
+        if os.getenv("PLAN_DISPATCH_REPLAY_DRIFT_FAIL", "0") == "1":
+            return CheckResult("plan-replay", "fail", detail)
+        return CheckResult("plan-replay", "warn", detail)
+
+    return CheckResult(
+        "plan-replay",
+        "pass",
+        f"total={total} allowed_rate={allowed_rate:.3f}",
+    )
+
+
+def check_plan_dispatch_daily_report() -> CheckResult:
+    code, out, err = run_command(
+        [
+            "python3",
+            "core/scripts/plan_dispatch_daily_report.py",
+            "--write",
+            "--json",
+        ]
+    )
+    if code != 0:
+        short = (err or out or "plan_dispatch_daily_report failed").splitlines()
+        msg = (short[-1] if short else "plan_dispatch_daily_report failed")[:180]
+        return CheckResult("plan-daily", "warn", msg)
+
+    try:
+        payload = parse_json_output(out)
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult("plan-daily", "warn", f"invalid json ({exc})")
+
+    required = ("generated_at", "type", "metrics", "replay", "health", "report_path")
+    missing = [key for key in required if key not in payload]
+    if missing:
+        return CheckResult("plan-daily", "warn", f"missing keys: {', '.join(missing)}")
+    if payload.get("type") != "plan_dispatch_daily":
+        return CheckResult("plan-daily", "warn", "invalid report type")
+
+    report_path_raw = str(payload.get("report_path", "")).strip()
+    if not report_path_raw:
+        return CheckResult("plan-daily", "warn", "report_path empty")
+    report_path = Path(report_path_raw)
+    if not report_path.exists():
+        return CheckResult("plan-daily", "warn", f"report file missing: {report_path}")
+
+    health = payload.get("health", {})
+    if not isinstance(health, dict):
+        return CheckResult("plan-daily", "warn", "health section missing")
+    status = str(health.get("status", "warn")).lower()
+    issues = health.get("issues", [])
+    warnings = health.get("warnings", [])
+    issue_text = ", ".join(str(x) for x in (issues or []))[:180]
+    warn_text = ", ".join(str(x) for x in (warnings or []))[:180]
+
+    if status == "fail":
+        detail = issue_text or "daily report health fail"
+        return CheckResult("plan-daily", "fail", detail)
+    if status == "warn":
+        detail = warn_text or issue_text or "daily report health warn"
+        return CheckResult("plan-daily", "warn", detail)
+
+    metrics = payload.get("metrics", {})
+    replay = payload.get("replay", {})
+    fallback_rate = float(metrics.get("fallback_rate", 0.0)) if isinstance(metrics, dict) else 0.0
+    allowed_rate = float(replay.get("allowed_rate", 0.0)) if isinstance(replay, dict) else 0.0
+    return CheckResult(
+        "plan-daily",
+        "pass",
+        f"fallback_rate={fallback_rate:.3f} allowed_rate={allowed_rate:.3f}",
+    )
+
+
+def check_skill_tool_audit() -> CheckResult:
+    code, out, err = run_command(["python3", "core/scripts/skill_tool_audit.py", "--json"])
+    if code != 0 and not out:
+        short = (err or "skill_tool_audit failed").splitlines()
+        msg = (short[-1] if short else "skill_tool_audit failed")[:180]
+        return CheckResult("skill-tool-audit", "fail", msg)
+    try:
+        payload = parse_json_output(out)
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult("skill-tool-audit", "fail", f"invalid json ({exc})")
+
+    overall = str(payload.get("overall", "")).lower()
+    score = payload.get("score")
+    if overall == "pass":
+        return CheckResult("skill-tool-audit", "pass", f"score={score}")
+    if overall == "warn":
+        return CheckResult("skill-tool-audit", "warn", f"score={score}")
+    details = payload.get("summary", "audit reported failures")
+    return CheckResult("skill-tool-audit", "fail", f"score={score} {details}")
 
 
 def check_model_role_routing() -> CheckResult:
@@ -253,7 +533,19 @@ def check_tests(run_tests: bool) -> CheckResult:
 
     env = dict(**{"LAYER_DISABLE_FILESYSTEM_GUARD": "1"}, **dict())
     code, out, err = subprocess_run_with_env(
-        ["pytest", "-q", "core/tests/test_queue_manager.py", "core/tests/test_handoff.py"],
+        [
+            "pytest",
+            "-q",
+            "core/tests/test_queue_manager.py",
+            "core/tests/test_handoff.py",
+            "core/tests/test_plan_dispatch_classifier.py",
+            "core/tests/test_plan_dispatch_smoke.py",
+            "core/tests/test_plan_dispatch_metrics.py",
+            "core/tests/test_plan_dispatch_replay.py",
+            "core/tests/test_plan_dispatch_daily_report.py",
+            "core/tests/test_monitor_dashboard.py",
+            "core/tests/test_harness_doctor_asset_registry.py",
+        ],
         extra_env=env,
     )
     if code != 0:
@@ -329,8 +621,13 @@ def main() -> int:
         check_gateway_contract(),
         check_plan_council(),
         check_plan_dispatch(),
+        check_plan_dispatch_observability(),
+        check_plan_dispatch_replay(),
+        check_plan_dispatch_daily_report(),
+        check_skill_tool_audit(),
         check_model_role_routing(),
         check_work_lock(),
+        check_asset_registry_integrity(),
         check_tests(args.run_tests),
     ]
 

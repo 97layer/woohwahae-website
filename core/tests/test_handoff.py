@@ -8,6 +8,7 @@ HandoffEngine 단위 테스트
 """
 
 import sys
+import json
 import pytest
 from pathlib import Path
 
@@ -80,6 +81,41 @@ def test_register_and_retrieve_asset(engine):
     )
     assert asset_id is not None
     assert asset_id.startswith("AST-")
+
+
+def test_repair_asset_registry_recovers_trailing_garbage(tmp_path: Path):
+    local_engine = HandoffEngine()
+    local_engine.asset_registry_path = tmp_path / "asset_registry.json"
+    local_engine.asset_registry_lock_path = tmp_path / "asset_registry.lock"
+
+    local_engine.asset_registry_path.write_text(
+        (
+            '{"version":"2.0","assets":[],"stats":{"total":0,"by_type":{},'
+            '"by_status":{},"by_source":{}}}\n}\n'
+        ),
+        encoding="utf-8",
+    )
+    assert local_engine.repair_asset_registry() is True
+
+    payload = json.loads(local_engine.asset_registry_path.read_text(encoding="utf-8"))
+    assert payload["version"] == "2.0"
+    assert isinstance(payload["assets"], list)
+    assert isinstance(payload["stats"], dict)
+
+
+def test_register_asset_generates_unique_ids(tmp_path: Path):
+    local_engine = HandoffEngine()
+    local_engine.asset_registry_path = tmp_path / "asset_registry.json"
+    local_engine.asset_registry_lock_path = tmp_path / "asset_registry.lock"
+
+    first = local_engine.register_asset("tests/a.json", "test", "unit_test")
+    second = local_engine.register_asset("tests/b.json", "test", "unit_test")
+
+    assert first != second
+    payload = json.loads(local_engine.asset_registry_path.read_text(encoding="utf-8"))
+    ids = [a["id"] for a in payload["assets"]]
+    assert ids == [first, second]
+    assert payload["stats"]["total"] == 2
 
 
 if __name__ == "__main__":

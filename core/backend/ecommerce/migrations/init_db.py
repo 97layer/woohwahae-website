@@ -4,6 +4,7 @@ Run this script to create all tables in the database.
 For production, use Alembic migrations instead.
 """
 import sys
+import os
 from pathlib import Path
 
 # Add parent directory to path
@@ -15,20 +16,28 @@ from utils import get_password_hash
 
 def create_admin_user(db):
     """Create default admin user."""
-    admin = db.query(User).filter(User.email == "admin@woohwahae.kr").first()
+    admin_email = os.getenv("ECOMMERCE_ADMIN_EMAIL", "").strip()
+    admin_password = os.getenv("ECOMMERCE_ADMIN_PASSWORD", "").strip()
+
+    if not admin_email or not admin_password:
+        print("⚠️  ECOMMERCE_ADMIN_EMAIL / ECOMMERCE_ADMIN_PASSWORD 미설정: 관리자 시드 건너뜀")
+        return
+    if len(admin_password) < 12:
+        raise RuntimeError("ECOMMERCE_ADMIN_PASSWORD는 최소 12자 이상이어야 합니다.")
+
+    admin = db.query(User).filter(User.email == admin_email).first()
     if not admin:
         admin = User(
-            email="admin@woohwahae.kr",
+            email=admin_email,
             full_name="WOOHWAHAE Admin",
-            hashed_password=get_password_hash("changeme123"),
+            hashed_password=get_password_hash(admin_password),
             is_active=True,
             is_verified=True,
             is_admin=True
         )
         db.add(admin)
         db.commit()
-        print("✓ Created admin user: admin@woohwahae.kr / changeme123")
-        print("⚠️  CHANGE PASSWORD IMMEDIATELY IN PRODUCTION")
+        print(f"✓ Created admin user: {admin_email}")
     else:
         print("✓ Admin user already exists")
 
