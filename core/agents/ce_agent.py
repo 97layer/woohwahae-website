@@ -22,8 +22,10 @@ import os
 import sys
 import json
 import logging
+import socket
+import re
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 # Project setup
@@ -97,6 +99,7 @@ class ChiefEditor(ProactiveScan):
 
         self.client = genai.Client(api_key=api_key)
         self._model_name = 'gemini-2.5-pro'
+        self._force_fallback = str(os.getenv('CE_FORCE_FALLBACK', '0')).lower() in ('1', 'true', 'yes')
 
         # NotebookLM 브릿지 (선택적 — 없어도 동작)
         self.nlm = None
@@ -159,6 +162,167 @@ class ChiefEditor(ProactiveScan):
         self._brand_voice_cache = _load_brand_directives()
         return self._brand_voice_cache
 
+    def _model_reachable(self) -> bool:
+        """경량 DNS 점검: 모델 API 호스트 해석 가능 여부."""
+        host = "generativelanguage.googleapis.com"
+        previous_timeout = socket.getdefaulttimeout()
+        try:
+            socket.setdefaulttimeout(2.0)
+            socket.getaddrinfo(host, 443)
+            return True
+        except OSError:
+            return False
+        finally:
+            socket.setdefaulttimeout(previous_timeout)
+
+    def _fallback_write_content(
+        self,
+        analysis: Dict[str, Any],
+        signal_id: str,
+        retry_count: int,
+        brand_source: str,
+        reason: str,
+    ) -> Dict[str, Any]:
+        """모델 호출 실패 시 사용하는 로컬 초안 생성기."""
+        themes = analysis.get("themes", []) if isinstance(analysis.get("themes"), list) else []
+        theme_text = ", ".join(str(x) for x in themes[:2]) if themes else "기록"
+        insights = analysis.get("key_insights", []) if isinstance(analysis.get("key_insights"), list) else []
+        lead_insight = str(insights[0]).strip() if insights else ""
+        summary = str(analysis.get("summary", "")).strip()
+
+        if not lead_insight:
+            lead_insight = summary or "과잉을 덜어내고 남는 핵심을 따라갑니다."
+
+        headline_base = re.sub(r"\s+", " ", str(themes[0]) if themes else "기록의 밀도").strip()
+        headline = headline_base[:18] if headline_base else "기록의 밀도"
+
+        caption_lines = [
+            f"{theme_text}을 중심으로 장면을 정리합니다.",
+            f"{lead_insight[:56]}",
+            "말을 줄이고 본질만 남깁니다.",
+        ]
+        instagram_caption = " ".join(x.strip() for x in caption_lines if x.strip())[:150]
+
+        hashtags = ["#woohwahae", "#archive", "#기록", "#소거", "#밀도"]
+        for t in themes[:3]:
+            tag = re.sub(r"\s+", "", str(t))
+            if tag and len(tag) <= 10:
+                hashtags.append(f"#{tag}")
+        hashtags = " ".join(dict.fromkeys(hashtags))
+
+        archive_essay = (
+            "처음에는 무엇을 더할지보다 무엇을 덜어낼지부터 본다.\n\n"
+            f"{theme_text}이라는 단어를 붙잡고 신호를 다시 읽으면, 공통된 결은 선명해진다. "
+            f"{lead_insight} 이 문장을 중심에 두고 나머지를 정리하면 흐름이 가벼워진다.\n\n"
+            "좋은 문장은 새로운 장식을 붙이는 순간이 아니라, 불필요한 문장을 지운 뒤에도 "
+            "의미가 남아 있을 때 완성된다. 그래서 우리는 빠르게 결론을 내리지 않고, 장면과 리듬을 "
+            "한 단계씩 고른다. 남겨야 할 것과 지워도 되는 것을 분리하면 문장이 스스로 서기 시작한다.\n\n"
+            "오늘의 기록은 완성보다 정렬에 가깝다. 다음 장면으로 넘어가도 같은 기준이 유지되는지, "
+            "그 질문만 남긴다."
+        )
+        # Fallback도 기본 품질 게이트(500자+)를 넘기도록 길이를 보강한다.
+        min_essay_len = 500
+        if len(archive_essay) < min_essay_len:
+            supplements = [
+                "빠른 답을 찾는 대신 같은 질문을 반복한다.",
+                "무엇이 핵심인지가 선명해지면 문장은 자연스럽게 짧아진다.",
+                "짧아진 문장은 다음 선택의 기준을 더 분명하게 만든다.",
+                "오늘의 기록은 결론을 닫지 않고 기준의 지속 여부를 확인한다.",
+            ]
+            idx = 0
+            archive_essay += "\n\n"
+            while len(archive_essay) < min_essay_len:
+                archive_essay += supplements[idx % len(supplements)] + " "
+                idx += 1
+            archive_essay = archive_essay.strip()
+
+        return {
+            "instagram_caption": instagram_caption,
+            "hashtags": hashtags,
+            "archive_essay": archive_essay,
+            "headline": headline,
+            "tone": "grounded",
+            "brand_voice_source": f"{brand_source} (fallback)",
+            "signal_id": signal_id,
+            "written_by": self.agent_id,
+            "written_at": datetime.now().isoformat(),
+            "model": "fallback_local",
+            "retry_count": retry_count,
+            "status": "draft_for_cd",
+            "analysis_mode": "fallback_local",
+            "fallback_reason": reason,
+        }
+
+    def _fallback_corpus_result(
+        self,
+        theme: str,
+        content_type: str,
+        content_category: str,
+        entry_count: int,
+        rag_context: List[Dict[str, Any]],
+        reason: str,
+    ) -> Dict[str, Any]:
+        """write_corpus_essay 실패 시 멀티포맷 폴백 생성."""
+        is_journal = content_type in ("magazine", "journal")
+        tg_tone = "한다체 (단문 선언형)" if content_type in ("essay", "lookbook") else "합니다체 (간결 안내형)"
+        type_label = "journal" if is_journal else "essay"
+
+        summaries = []
+        for entry in rag_context[:3]:
+            text = str(entry.get("summary", "")).strip()
+            if text:
+                summaries.append(text)
+        stitched = " ".join(summaries) if summaries else f"{theme} 관련 신호를 재정렬했습니다."
+
+        essay_title = (theme or "기록").strip()[:10] or "기록"
+        pull_quote = "덜어내면 남는 결이 기준이 됩니다."
+        archive_essay = (
+            f"{theme or '기록'}의 흐름을 다시 읽는다.\n\n"
+            f"신호 {entry_count}개를 한 줄로 세우면 공통된 문장 구조가 보인다. {stitched[:180]} "
+            "핵심은 설명을 늘리는 일이 아니라 기준을 선명하게 유지하는 데 있다.\n\n"
+            "기준이 선명할수록 장면은 단순해지고, 단순해질수록 다음 선택은 빨라진다. "
+            "그래서 오늘의 초안은 완결보다 방향을 확보하는 데 집중한다.\n\n"
+            "남겨야 할 문장을 확인했고, 다음 기록은 그 문장을 더 짧게 증명한다."
+        )
+        instagram_caption = (
+            f"{theme or '기록'}의 결을 다시 맞췄습니다. "
+            "과잉을 줄이고 남는 핵심만 기록합니다."
+        )[:150]
+        carousel_slides = [
+            "첫 문장은 관찰로 시작합니다.",
+            "신호를 한 줄의 기준으로 묶습니다.",
+            "과잉을 덜어 구조를 선명히 합니다.",
+            "다음 기록도 같은 기준을 유지합니다.",
+        ]
+        if content_type in ("essay", "lookbook"):
+            telegram_summary = "\n".join([
+                essay_title,
+                "핵심 결을 짧게 정리한다.",
+                "아카이브에서 이어서 읽는다.",
+            ])
+        else:
+            telegram_summary = "\n".join([
+                essay_title,
+                "핵심 결을 짧게 정리합니다.",
+                "아카이브에서 이어서 읽어봅니다.",
+            ])
+
+        return {
+            "essay_title": essay_title,
+            "pull_quote": pull_quote,
+            "archive_essay": archive_essay,
+            "instagram_caption": instagram_caption,
+            "carousel_slides": carousel_slides,
+            "telegram_summary": telegram_summary,
+            "telegram_summary_tone": tg_tone,
+            "theme": theme,
+            "content_category": content_category,
+            "content_type": type_label,
+            "entry_count": entry_count,
+            "analysis_mode": "fallback_local",
+            "fallback_reason": reason,
+        }
+
     def write_content(self, analysis: Dict[str, Any], visual_concept: Dict[str, Any],
                       retry_count: int = 0, feedback: str = "", previous_output: Dict = None) -> Dict[str, Any]:
         """
@@ -183,7 +347,12 @@ class ChiefEditor(ProactiveScan):
         logger.info("CE: %s 초안 작업.%s", signal_id, retry_msg)
 
         # ── 능동 사고 스캔 ──────────────────────────────────────
-        signal_text = analysis.get('content', '') + ' ' + analysis.get('themes', '')
+        raw_themes = analysis.get('themes', '')
+        if isinstance(raw_themes, list):
+            themes_text = " ".join(str(x) for x in raw_themes)
+        else:
+            themes_text = str(raw_themes or '')
+        signal_text = str(analysis.get('content', '')) + ' ' + themes_text
         self.scan("write_content", {
             "signal_id": signal_id,
             "text": signal_text,
@@ -262,6 +431,25 @@ WOOHWAHAE의 SAGE-ARCHITECT 인격으로 콘텐츠를 작성한다.
 JSON만 반환.
 """
 
+        if self._force_fallback:
+            logger.warning("CE: CE_FORCE_FALLBACK=1, 로컬 초안 생성 사용")
+            return self._fallback_write_content(
+                analysis=analysis,
+                signal_id=signal_id,
+                retry_count=retry_count,
+                brand_source=brand_source,
+                reason="forced_fallback_mode",
+            )
+        if not self._model_reachable():
+            logger.warning("CE: 모델 호스트 DNS 실패, 로컬 초안으로 폴백")
+            return self._fallback_write_content(
+                analysis=analysis,
+                signal_id=signal_id,
+                retry_count=retry_count,
+                brand_source=brand_source,
+                reason="model_host_unreachable",
+            )
+
         try:
             response = self.client.models.generate_content(
                 model=self._model_name,
@@ -291,6 +479,7 @@ JSON만 반환.
                 'brand_voice_source': brand_source,
                 'retry_count': retry_count,
                 'status': 'draft_for_cd',
+                'analysis_mode': 'model',
             })
 
             caption_len = len(content.get('instagram_caption', ''))
@@ -300,7 +489,13 @@ JSON만 반환.
 
         except Exception as e:
             logger.error("%s: 콘텐츠 생성 실패: %s", self.agent_id, e)
-            return {'signal_id': signal_id, 'error': str(e), 'status': 'failed'}
+            return self._fallback_write_content(
+                analysis=analysis,
+                signal_id=signal_id,
+                retry_count=retry_count,
+                brand_source=brand_source,
+                reason=str(e),
+            )
 
     def process_task(self, task: Task) -> Dict[str, Any]:
         task_type = task.task_type
@@ -362,7 +557,7 @@ JSON만 반환.
         rag_context = payload.get("rag_context", [])
         entry_count = payload.get("entry_count", 0)
         instruction = payload.get("instruction", "")
-        content_type = payload.get("content_type", "archive")
+        content_type = str(payload.get("content_type", "archive")).lower()
         content_category = payload.get("content_category", "")
 
         # AgentLogger: 에세이 작성 시작
@@ -388,6 +583,9 @@ JSON만 반환.
                 "마무리: 결론 없이 여운. 열린 질문 또는 여백. 금지: 강한 호소, 행동 유도."
             )
             essay_length_spec = "300~800자. Hook-Story-Core-Echo 구조."
+
+        # 텔레그램 요약 어미 규칙: 에세이/룩북=한다체, 그 외=합니다체
+        tg_tone = "한다체 (단문 선언형)" if content_type in ("essay", "lookbook") else "합니다체 (간결 안내형)"
 
         # RAG 컨텍스트 직렬화
         context_text = ""
@@ -511,6 +709,7 @@ JSON만 반환.
     "슬라이드 4: 마무리 단언 (30자 이내)"
   ],
   "telegram_summary": "봇 푸시 3줄. 각 줄 40자 이내. 첫 줄: 제목. 둘째 줄: 핵심. 셋째 줄: 링크 유도.",
+  "telegram_summary_tone": "{tg_tone}",
   "theme": "{theme}",
   "content_category": "{content_category}",
   "content_type": "{"journal" if is_journal else "essay"}",
@@ -519,11 +718,31 @@ JSON만 반환.
 
 JSON만 출력."""
 
+        if self._force_fallback:
+            logger.warning("CE: CE_FORCE_FALLBACK=1, corpus 로컬 초안 생성 사용")
+            result = self._fallback_corpus_result(
+                theme=theme,
+                content_type=content_type,
+                content_category=content_category,
+                entry_count=entry_count,
+                rag_context=rag_context,
+                reason="forced_fallback_mode",
+            )
+            return result
+        if not self._model_reachable():
+            logger.warning("CE: 모델 호스트 DNS 실패, corpus 로컬 초안으로 폴백")
+            result = self._fallback_corpus_result(
+                theme=theme,
+                content_type=content_type,
+                content_category=content_category,
+                entry_count=entry_count,
+                rag_context=rag_context,
+                reason="model_host_unreachable",
+            )
+            return result
+
         try:
-            import google.genai as genai
-            import os, re
-            client = genai.Client(api_key=os.getenv('GOOGLE_API_KEY'))
-            response = client.models.generate_content(
+            response = self.client.models.generate_content(
                 model='gemini-2.5-pro',
                 contents=[prompt]
             )
@@ -539,8 +758,11 @@ JSON만 출력."""
                     "archive_essay": text,
                     "essay_title": theme,
                     "theme": theme,
-                    "entry_count": entry_count
+                    "entry_count": entry_count,
+                    "analysis_mode": "model",
                 }
+            if "analysis_mode" not in result:
+                result["analysis_mode"] = "model"
 
             # ── HTML 저장 ──────────────────────────────────────────
             try:
@@ -594,7 +816,14 @@ JSON만 출력."""
 
         except Exception as e:
             logger.error("CE: corpus 에세이 실패 -- %s", e)
-            return {"error": str(e), "theme": theme}
+            return self._fallback_corpus_result(
+                theme=theme,
+                content_type=content_type,
+                content_category=content_category,
+                entry_count=entry_count,
+                rag_context=rag_context,
+                reason=str(e),
+            )
 
     def _save_essay_html(self, result: dict, theme: str):
         """CE 에세이 결과를 website/archive/essay-NNN-slug/index.html 로 저장."""

@@ -5,6 +5,9 @@
 VENV="/home/skyto5339_gmail_com/97layerOS/.venv/bin/python3"
 LOGS=".infra/logs"
 
+# Ensure `core.*` imports work regardless of caller cwd/service wrapper.
+export PYTHONPATH="$(pwd)${PYTHONPATH:+:${PYTHONPATH}}"
+
 # 로컬 실행 시 venv 경로 fallback
 if [ ! -f "$VENV" ]; then
     VENV="python3"

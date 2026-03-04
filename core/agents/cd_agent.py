@@ -15,6 +15,7 @@ Output: approve/revise/reject + brand_score + concerns[]
 import os
 import sys
 import json
+import socket
 from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
@@ -48,15 +49,18 @@ class CreativeDirector(ProactiveScan):
     def __init__(self, agent_id: str = "cd-worker-1", api_key: Optional[str] = None):
         self.agent_id = agent_id
         self.agent_type = "CD"
-        
-        if not CLAUDE_AVAILABLE:
-            raise ImportError("anthropic required: pip install anthropic")
-        
+
+        self._force_fallback = str(os.getenv('CD_FORCE_FALLBACK', '0')).lower() in ('1', 'true', 'yes')
+        self._fallback_min_score = int(os.getenv('CD_FALLBACK_MIN_SCORE', '80'))
+
         api_key = api_key or os.getenv('ANTHROPIC_API_KEY')
-        if not api_key:
+        self.client = None
+        if CLAUDE_AVAILABLE and api_key:
+            self.client = anthropic.Anthropic(api_key=api_key)
+        elif not self._force_fallback:
+            if not CLAUDE_AVAILABLE:
+                raise ImportError("anthropic required: pip install anthropic")
             raise ValueError("ANTHROPIC_API_KEY not found")
-        
-        self.client = anthropic.Anthropic(api_key=api_key)
 
         # 순호의 판단 기준 + IDENTITY 로드
         self._criteria = self._load_criteria()
@@ -84,6 +88,79 @@ class CreativeDirector(ProactiveScan):
         except ImportError:
             pass
         return "본질 우선. 동작이 진실. 단순함이 답."
+
+    def _model_reachable(self) -> bool:
+        """경량 DNS 점검: Claude API 호스트 해석 가능 여부."""
+        host = "api.anthropic.com"
+        previous_timeout = socket.getdefaulttimeout()
+        try:
+            socket.setdefaulttimeout(2.0)
+            socket.getaddrinfo(host, 443)
+            return True
+        except OSError:
+            return False
+        finally:
+            socket.setdefaulttimeout(previous_timeout)
+
+    def _fallback_review(self, content_draft: Dict[str, Any], reason: str) -> Dict[str, Any]:
+        """
+        모델 호출 실패 시 운영 연속성을 위한 로컬 결정.
+        점수와 필수 필드 최소 기준을 통과하면 조건부 승인한다.
+        """
+        signal_id = content_draft.get('signal_id', 'unknown')
+        ralph_score_raw = content_draft.get('ralph_score', 0)
+        try:
+            ralph_score = int(float(ralph_score_raw))
+        except Exception:
+            ralph_score = 0
+
+        essay = str(content_draft.get('archive_essay', content_draft.get('body', '')))
+        caption = str(content_draft.get('instagram_caption', content_draft.get('social_caption', '')))
+        has_required_fields = bool(essay.strip()) and bool(caption.strip())
+
+        should_approve = has_required_fields and len(essay) >= 500 and ralph_score >= self._fallback_min_score
+        decision = 'approve' if should_approve else 'revise'
+
+        if should_approve:
+            feedback = None
+            revision_notes = "모델 검토 불가 상황에서 fallback 기준(필수 필드/길이/점수)을 통과했습니다."
+            concerns = [f"모델 미사용 fallback 검토: {reason}"]
+            brand_score = max(ralph_score, self._fallback_min_score)
+            rationale = "네트워크/모델 장애 상황이므로 로컬 기준으로 조건부 승인합니다."
+            strengths = [
+                "필수 포맷 필드가 모두 존재합니다.",
+                "에세이 길이와 Ralph 점수가 최소 기준을 통과했습니다.",
+            ]
+        else:
+            feedback = (
+                "모델 검토 불가 상태입니다. 필수 필드 존재 여부, 에세이 500자 이상, "
+                f"Ralph {self._fallback_min_score}+를 충족하도록 재작성하십시오."
+            )
+            revision_notes = "fallback 기준 미달: 필드/길이/점수 보강 후 재검토 필요."
+            concerns = [
+                f"모델 미사용 fallback 검토: {reason}",
+                "최소 품질 게이트 미통과",
+            ]
+            brand_score = min(ralph_score, self._fallback_min_score - 5)
+            rationale = "운영 연속성은 유지하되 품질 미달 상태라 자동 승인하지 않습니다."
+            strengths = ["기본 초안 구조는 확보되었습니다."]
+
+        return {
+            'decision': decision,
+            'approved': should_approve,
+            'brand_score': max(0, min(100, brand_score)),
+            'strengths': strengths,
+            'concerns': concerns,
+            'feedback': feedback,
+            'revision_notes': revision_notes,
+            'strategic_rationale': rationale,
+            'signal_id': signal_id,
+            'reviewed_by': self.agent_id,
+            'reviewed_at': datetime.now().isoformat(),
+            'model': 'fallback_local',
+            'review_mode': 'fallback_local',
+            'fallback_reason': reason,
+        }
 
     def review_content(self, content_draft: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -145,6 +222,18 @@ JSON 형식으로 결정:
 JSON만 출력.
 """
 
+        if self._force_fallback:
+            print("CD: CD_FORCE_FALLBACK=1, 로컬 기준으로 판정합니다.")
+            return self._fallback_review(content_draft, reason="forced_fallback_mode")
+
+        if not self.client:
+            print("CD: API 클라이언트 미구성, 로컬 기준으로 판정합니다.")
+            return self._fallback_review(content_draft, reason="api_client_not_configured")
+
+        if not self._model_reachable():
+            print("CD: 모델 호스트 DNS 실패, 로컬 기준으로 판정합니다.")
+            return self._fallback_review(content_draft, reason="model_host_unreachable")
+
         try:
             message = self.client.messages.create(
                 model="claude-sonnet-4-5",
@@ -183,7 +272,7 @@ JSON만 출력.
             
         except Exception as e:
             print(f"CD: 검토 실패. {e}")
-            return {'signal_id': signal_id, 'error': str(e), 'status': 'failed'}
+            return self._fallback_review(content_draft, reason=str(e))
 
     def process_task(self, task: Task) -> Dict[str, Any]:
         task_type = task.task_type

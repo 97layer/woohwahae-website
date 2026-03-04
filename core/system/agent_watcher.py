@@ -149,6 +149,7 @@ class AgentWatcher:
                 print(f"✅ {self.agent_id}: Max iterations reached, stopping")
                 break
 
+            processed_task = False
             try:
                 # Get pending tasks for this agent type
                 pending_tasks = self.queue.get_pending_tasks(agent_type=self.agent_type)
@@ -166,14 +167,15 @@ class AgentWatcher:
                         if claimed_task:
                             print(f"✅ {self.agent_id}: Claimed task {claimed_task.task_id}")
                             self._execute_task(claimed_task, callback)
+                            processed_task = True
                             break  # Process one task per iteration
                         else:
                             print(f"⏭️  {self.agent_id}: Task {task.task_id} already claimed by another agent")
 
-                # Emit idle event if no tasks processed
-                if not pending_tasks or not any(
-                    self.queue.claim_task(self.agent_id, t.task_id) for t in pending_tasks
-                ):
+                # Emit idle event only when no task was executed in this loop.
+                # Never call claim_task() here: it would move tasks to processing
+                # without running callbacks.
+                if not processed_task:
                     self.queue.emit_event(
                         event_type=EventType.AGENT_IDLE,
                         agent_id=self.agent_id,

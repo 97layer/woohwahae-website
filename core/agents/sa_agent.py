@@ -34,7 +34,7 @@ try:
 except Exception:
     pass
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -79,6 +79,7 @@ class StrategyAnalyst(ProactiveScan):
 
         self._model_name = 'gemini-2.5-flash'
         self._api_url = 'https://generativelanguage.googleapis.com/v1beta/models'
+        self._force_fallback = str(os.getenv('SA_FORCE_FALLBACK', '0')).lower() in ('1', 'true', 'yes')
 
         # SA 에이전트 지침 로드
         self._persona = self._load_directive()
@@ -119,6 +120,14 @@ class StrategyAnalyst(ProactiveScan):
         # Construct prompt for strategic analysis
         prompt = self._build_analysis_prompt(content, source)
 
+        if self._force_fallback:
+            logger.warning("SA: SA_FORCE_FALLBACK=1, 로컬 휴리스틱 분석 사용")
+            fallback = self._build_fallback_analysis(
+                signal_data,
+                error=RuntimeError("forced_fallback_mode"),
+            )
+            return self._finalize_analysis(signal_data, fallback)
+
         try:
             # Call Gemini API (REST API 직접 호출)
             import requests
@@ -126,74 +135,137 @@ class StrategyAnalyst(ProactiveScan):
             headers = {"Content-Type": "application/json"}
             payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
-            response = requests.post(f"{api_url}?key={self.api_key}",
-                                    headers=headers, json=payload, timeout=60)
+            response = requests.post(
+                f"{api_url}?key={self.api_key}",
+                headers=headers,
+                json=payload,
+                timeout=20,
+            )
             response.raise_for_status()
             analysis_text = response.json()['candidates'][0]['content']['parts'][0]['text']
 
             # Parse structured response
             analysis = self._parse_analysis(analysis_text)
-
-            # Add metadata
-            analysis.update({
-                'signal_id': signal_id,
-                'analyzed_by': self.agent_id,
-                'analyzed_at': datetime.now().isoformat(),
-                'model': self._model_name,
-                'source': source
-            })
-
-            score = analysis.get('strategic_score', 0)
-            category = analysis.get('category', '')
-            themes = ', '.join(analysis.get('themes', [])[:3])
-            logger.info("SA: 완료. 점수 %s. 카테고리: %s. 테마: %s.", score, category, themes)
-
-            # 자가발전: SA 분석 완료 → long_term_memory 피드백
-            try:
-                self._feedback_to_memory(analysis, content)
-            except Exception as mem_e:
-                logger.warning("Memory feedback skipped: %s", mem_e)
-
-            # 자가발전: SA 분석 완료 → NotebookLM Signal Archive 저장
-            try:
-                self._save_to_notebooklm(analysis, content, source)
-            except Exception as nlm_e:
-                logger.warning("NotebookLM skipped: %s", nlm_e)
-
-            # Corpus 누적: 신호 → 지식 풀 (군집 기반 발행을 위한 축적)
-            try:
-                from core.system.corpus_manager import CorpusManager
-                corpus = CorpusManager()
-                corpus.add_entry(signal_id, analysis, signal_data)
-                logger.info("SA: Corpus 누적 완료 → %s", signal_id)
-            except Exception as corpus_e:
-                logger.warning("Corpus skipped: %s", corpus_e)
-
-            # 신호 파일 status → analyzed (Orchestrator 중복 투입 방지)
-            try:
-                import pathlib
-                signal_path = signal_data.get('signal_path') or str(
-                    PROJECT_ROOT / 'knowledge' / 'signals' / f"{signal_id}.json"
-                )
-                sp = pathlib.Path(str(signal_path))
-                if sp.exists():
-                    sig_json = json.loads(sp.read_text())
-                    sig_json['status'] = 'analyzed'
-                    sig_json['analyzed_at'] = datetime.now().isoformat()
-                    sp.write_text(json.dumps(sig_json, indent=2, ensure_ascii=False))
-                    logger.info("SA: 신호 status -> analyzed: %s", signal_id)
-            except Exception as upd_e:
-                logger.warning("Signal status update skipped: %s", upd_e)
-
-            return analysis
+            analysis['analysis_mode'] = 'model'
+            return self._finalize_analysis(signal_data, analysis)
 
         except Exception as e:
             logger.error("SA: 분석 실패. %s", e)
-            return {
-                'signal_id': signal_id,
-                'error': str(e),
-                'status': 'failed'
-            }
+            fallback = self._build_fallback_analysis(signal_data, error=e)
+            return self._finalize_analysis(signal_data, fallback)
+
+    def _build_fallback_analysis(self, signal_data: Dict[str, Any], error: Exception) -> Dict[str, Any]:
+        """네트워크/API 실패 시 로컬 휴리스틱 분석."""
+        content = str(signal_data.get('content') or '').strip()
+        preferred = str((signal_data.get('metadata') or {}).get('preferred_content_type', '')).lower()
+
+        if preferred == 'lookbook':
+            content_category = 'visual'
+        elif preferred == 'playlist':
+            content_category = 'sound'
+        elif preferred == 'journal':
+            content_category = 'journal'
+        elif preferred == 'essay':
+            content_category = 'archive'
+        else:
+            content_category = 'insight'
+
+        raw_tokens = re.split(r"[.\n,]+", content)
+        insights = [t.strip() for t in raw_tokens if t.strip()]
+        key_insights = insights[:2] if insights else ['신호 원문 기반 폴백 분석']
+
+        theme_pairs = [
+            ("소거", "소거"),
+            ("비움", "비움"),
+            ("리듬", "리듬"),
+            ("질감", "질감"),
+            ("집중", "집중"),
+            ("시간", "시간의 흐름"),
+            ("룩북", "시각 기록"),
+            ("플레이리스트", "사운드 큐레이션"),
+        ]
+        themes: List[str] = []
+        lowered = content.lower()
+        for needle, label in theme_pairs:
+            if needle in content or needle in lowered:
+                themes.append(label)
+            if len(themes) >= 3:
+                break
+        if not themes:
+            themes = ['기록']
+
+        score = 65 if len(content) >= 80 else 55
+        summary = " ".join(content.split())[:140] or "원문이 짧아 폴백 요약을 생성했습니다."
+
+        return {
+            'signal_id': signal_data.get('signal_id', 'unknown'),
+            'strategic_score': score,
+            'category': 'insight',
+            'content_category': content_category,
+            'themes': themes,
+            'key_insights': key_insights,
+            'summary': summary,
+            'raw_response': '',
+            'analysis_mode': 'fallback_local',
+            'fallback_reason': str(error),
+        }
+
+    def _finalize_analysis(self, signal_data: Dict[str, Any], analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """공통 후처리: 메타데이터 보강, memory/corpus 반영, status 업데이트."""
+        signal_id = signal_data.get('signal_id', 'unknown')
+        source = signal_data.get('source', 'unknown')
+        content = signal_data.get('content', '')
+
+        analysis.update({
+            'signal_id': signal_id,
+            'analyzed_by': self.agent_id,
+            'analyzed_at': datetime.now().isoformat(),
+            'model': self._model_name,
+            'source': source,
+        })
+
+        score = analysis.get('strategic_score', 0)
+        category = analysis.get('category', '')
+        themes = ', '.join(analysis.get('themes', [])[:3])
+        logger.info("SA: 완료. 점수 %s. 카테고리: %s. 테마: %s.", score, category, themes)
+
+        try:
+            self._feedback_to_memory(analysis, content)
+        except Exception as mem_e:
+            logger.warning("Memory feedback skipped: %s", mem_e)
+
+        try:
+            self._save_to_notebooklm(analysis, content, source)
+        except Exception as nlm_e:
+            logger.warning("NotebookLM skipped: %s", nlm_e)
+
+        try:
+            from core.system.corpus_manager import CorpusManager
+            corpus = CorpusManager()
+            corpus.add_entry(signal_id, analysis, signal_data)
+            logger.info("SA: Corpus 누적 완료 → %s", signal_id)
+        except Exception as corpus_e:
+            logger.warning("Corpus skipped: %s", corpus_e)
+
+        try:
+            import pathlib
+            signal_path = signal_data.get('signal_path') or str(
+                PROJECT_ROOT / 'knowledge' / 'signals' / f"{signal_id}.json"
+            )
+            sp = pathlib.Path(str(signal_path))
+            if sp.exists():
+                sig_json = json.loads(sp.read_text())
+                sig_json['status'] = 'analyzed'
+                sig_json['analyzed_at'] = datetime.now().isoformat()
+                meta = sig_json.get('metadata') or {}
+                meta['analysis_mode'] = analysis.get('analysis_mode', 'model')
+                sig_json['metadata'] = meta
+                sp.write_text(json.dumps(sig_json, indent=2, ensure_ascii=False))
+                logger.info("SA: 신호 status -> analyzed: %s", signal_id)
+        except Exception as upd_e:
+            logger.warning("Signal status update skipped: %s", upd_e)
+
+        return analysis
 
     # ── ProactiveScan 오버라이드 ──────────────────────────────────
 
