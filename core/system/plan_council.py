@@ -20,9 +20,13 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+_RETRY_COUNT = int(os.getenv("PLAN_COUNCIL_RETRIES", "3"))
+_RETRY_DELAY = float(os.getenv("PLAN_COUNCIL_RETRY_DELAY", "2.0"))
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -158,19 +162,24 @@ def _call_gemini(task: str) -> Tuple[Optional[Dict[str, Any]], str]:
     if not api_key:
         return None, "gemini key missing"
 
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=DEFAULT_GEMINI_MODEL,
-            contents=[_build_prompt(task)],
-        )
-        text = getattr(response, "text", "") or ""
-        parsed = _extract_json(text)
-        if not parsed:
-            return None, "gemini parse failed"
-        return _normalize_plan(parsed), ""
-    except Exception as exc:  # noqa: BLE001
-        return None, f"gemini call failed: {exc}"
+    last_err = ""
+    for attempt in range(1, _RETRY_COUNT + 1):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model=DEFAULT_GEMINI_MODEL,
+                contents=[_build_prompt(task)],
+            )
+            text = getattr(response, "text", "") or ""
+            parsed = _extract_json(text)
+            if not parsed:
+                return None, "gemini parse failed"
+            return _normalize_plan(parsed), ""
+        except Exception as exc:  # noqa: BLE001
+            last_err = f"gemini call failed: {exc}"
+            if attempt < _RETRY_COUNT:
+                time.sleep(_RETRY_DELAY)
+    return None, last_err
 
 
 def _call_claude(task: str) -> Tuple[Optional[Dict[str, Any]], str]:
@@ -183,26 +192,30 @@ def _call_claude(task: str) -> Tuple[Optional[Dict[str, Any]], str]:
     if not api_key:
         return None, "claude key missing"
 
-    try:
-        client = anthropic.Anthropic(api_key=api_key)
-        message = client.messages.create(
-            model=DEFAULT_CLAUDE_MODEL,
-            max_tokens=900,
-            messages=[{"role": "user", "content": _build_prompt(task)}],
-        )
-
-        chunks: List[str] = []
-        for block in getattr(message, "content", []):
-            block_text = getattr(block, "text", "")
-            if block_text:
-                chunks.append(block_text)
-        text = "\n".join(chunks).strip()
-        parsed = _extract_json(text)
-        if not parsed:
-            return None, "claude parse failed"
-        return _normalize_plan(parsed), ""
-    except Exception as exc:  # noqa: BLE001
-        return None, f"claude call failed: {exc}"
+    last_err = ""
+    for attempt in range(1, _RETRY_COUNT + 1):
+        try:
+            client = anthropic.Anthropic(api_key=api_key)
+            message = client.messages.create(
+                model=DEFAULT_CLAUDE_MODEL,
+                max_tokens=900,
+                messages=[{"role": "user", "content": _build_prompt(task)}],
+            )
+            chunks: List[str] = []
+            for block in getattr(message, "content", []):
+                block_text = getattr(block, "text", "")
+                if block_text:
+                    chunks.append(block_text)
+            text = "\n".join(chunks).strip()
+            parsed = _extract_json(text)
+            if not parsed:
+                return None, "claude parse failed"
+            return _normalize_plan(parsed), ""
+        except Exception as exc:  # noqa: BLE001
+            last_err = f"claude call failed: {exc}"
+            if attempt < _RETRY_COUNT:
+                time.sleep(_RETRY_DELAY)
+    return None, last_err
 
 
 def _build_consensus(
