@@ -1,0 +1,11 @@
+[Unit]
+Description=Plan Council Worker Timer (every 2 minutes)
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=2min
+Persistent=true
+Unit=council-worker.service
+
+[Install]
+WantedBy=timers.target
