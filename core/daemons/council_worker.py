@@ -17,6 +17,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from core.system.plan_council import run_council  # 계획 합의 실행기
+import requests
 
 QUEUE_ROOT = PROJECT_ROOT / ".infra/queue/council"
 PENDING = QUEUE_ROOT / "pending"
@@ -25,6 +26,8 @@ COMPLETED = QUEUE_ROOT / "completed"
 
 REPORTS = PROJECT_ROOT / "knowledge/system/plan_council_reports.jsonl"
 COUNCIL_ROOM = PROJECT_ROOT / "knowledge/agent_hub/council_room.md"
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 
 def load_env():
@@ -63,6 +66,24 @@ def append_council_room(entry: Dict):
     lines.append("")
     with COUNCIL_ROOM.open("a", encoding="utf-8") as f:
         f.write("\n".join(lines))
+
+
+def notify_telegram(entry: Dict):
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        return
+    text = (
+        f"[Council] {entry['task']}\n"
+        f"status: {entry['status']} gate: {entry.get('gate','')}\n"
+        f"models: {', '.join(entry.get('models_used', []))}"
+    )
+    try:
+        requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+            json={"chat_id": TELEGRAM_CHAT_ID, "text": text},
+            timeout=5,
+        )
+    except Exception:
+        pass
 
 
 def process_task(task_path: Path):
