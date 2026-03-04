@@ -3,8 +3,12 @@
 practice.md 역할 섹션 슬라이스 유틸
 
 사용법:
+  # 표준 출력
   python3 core/scripts/render_directives.py --agent CE
   python3 core/scripts/render_directives.py --section II-10 --max-chars 4000
+
+  # 캐시 파일 저장
+  python3 core/scripts/render_directives.py --agent SA --cache
 """
 
 import argparse
@@ -15,7 +19,7 @@ from typing import Optional
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from core.system.directive_loader import load_section
+from core.system.directive_loader import load_section  # noqa: E402
 
 
 DEFAULT_SECTIONS = {
@@ -37,10 +41,21 @@ def main():
     parser.add_argument("--agent", choices=["AD", "CE", "SA"], help="에이전트 키")
     parser.add_argument("--section", help="섹션 ID 예: I-10, II-10, II-11")
     parser.add_argument("--max-chars", type=int, default=3000, help="최대 출력 길이")
+    parser.add_argument("--cache", action="store_true", help="슬라이스를 캐시에 저장(.infra/cache/directives/<agent>.md)")
+    parser.add_argument("--cache-dir", default=".infra/cache/directives", help="캐시 디렉토리 경로")
     args = parser.parse_args()
 
     text = render(args.agent, args.section, args.max_chars)
-    print(text)
+
+    if args.cache:
+        cache_dir = PROJECT_ROOT / args.cache_dir
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        key = (args.agent or "section").lower()
+        outfile = cache_dir / f"{key}.md"
+        outfile.write_text(text, encoding="utf-8")
+        print(f"cached: {outfile}")
+    else:
+        print(text)
 
 
 if __name__ == "__main__":

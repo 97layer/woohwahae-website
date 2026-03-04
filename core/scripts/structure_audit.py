@@ -7,10 +7,12 @@ Structure Audit — 세션 시작 시 구조적 비효율 선제 탐지.
 2. 파일명 대소문자 비일관성
 3. practice.md ↔ 코드 경로 동기화
 4. 고아 파일 (directives/ 내 어디서도 참조되지 않는 파일)
+옵션: --links 사용 시 내부 .md 링크도 검증
 
 session-start.sh에서 호출됨.
 """
 
+import argparse
 import re
 import sys
 from pathlib import Path
@@ -102,6 +104,36 @@ def check_dead_references() -> List[str]:
                             and ref_basename not in known_filenames):
                         rel = str(fpath.relative_to(PROJECT_ROOT))
                         issues.append("죽은 참조: %s → %s" % (rel, ref))
+    return issues
+
+
+def check_md_links() -> List[str]:
+    """마크다운 내부 링크(.md) 존재 여부 검증."""
+    issues = []
+    md_files = [
+        p for p in PROJECT_ROOT.rglob("*.md")
+        if ".venv" not in str(p) and ".git/" not in str(p)
+    ]
+    link_pattern = re.compile(r"\\[[^\\]]*\\]\\(([^)]+)\\)")
+    for fpath in md_files:
+        try:
+            content = fpath.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        links = link_pattern.findall(content)
+        for link in links:
+            if link.startswith("http") or link.startswith("#"):
+                continue
+            target = link.split("#")[0]
+            if not target.endswith(".md"):
+                continue
+            if target.startswith("/"):
+                cand = PROJECT_ROOT / target.lstrip("/")
+            else:
+                cand = fpath.parent / target
+            if not cand.exists():
+                rel = str(fpath.relative_to(PROJECT_ROOT))
+                issues.append(f"링크 깨짐: {rel} → {link}")
     return issues
 
 
@@ -217,7 +249,7 @@ def check_root_violations() -> List[str]:
     return issues
 
 
-def run_audit() -> Tuple[List[str], int]:
+def run_audit(check_links: bool = False) -> Tuple[List[str], int]:
     """전체 감사 실행. (이슈 목록, 총 건수) 반환."""
     all_issues = []
 
@@ -245,12 +277,25 @@ def run_audit() -> Tuple[List[str], int]:
         if len(sync) > 10:
             all_issues.append("  ... 외 %d건" % (len(sync) - 10))
 
-    total = len(root) + len(dead) + len(case) + len(sync)
+    links = []
+    if check_links:
+        links = check_md_links()
+        if links:
+            all_issues.append("── 링크 깨짐 (%d건) ──" % len(links))
+            all_issues.extend(links[:10])
+            if len(links) > 10:
+                all_issues.append("  ... 외 %d건" % (len(links) - 10))
+
+    total = len(root) + len(dead) + len(case) + len(sync) + len(links)
     return all_issues, total
 
 
 if __name__ == "__main__":
-    issues, total = run_audit()
+    parser = argparse.ArgumentParser(description="Structure audit")
+    parser.add_argument("--links", action="store_true", help="내부 .md 링크까지 검증")
+    args = parser.parse_args()
+
+    issues, total = run_audit(check_links=args.links)
     if total == 0:
         print("✅ 구조 감사 통과 — 이슈 0건")
     else:
