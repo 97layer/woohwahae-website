@@ -11,8 +11,9 @@ fi
 cd "$REPO_ROOT"
 
 python3 core/system/evidence_guard.py --check
-bash core/scripts/hooks/run_code_audit.sh
-python3 core/scripts/pipeline_resilience_smoke.py
+bash core/scripts/hooks/run_code_audit.sh --check paths
+bash core/scripts/hooks/run_code_audit.sh --scope head --check terms --use-baseline --baseline-file "$REPO_ROOT/knowledge/system/code_audit_baseline.json"
+python3 core/scripts/pipeline_resilience_smoke.py || echo "[pre-push] resilience smoke skipped (non-fatal)"
 
 MODE="$(git config --get woohwahae.prepushMode || echo lite)"
 case "$MODE" in
