@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}에이전트{% endblock %}
+{% block content %}
+<div class="agents-wrap">
+  <div class="agents-header">
+    <span class="agents-title">에이전트 채널</span>
+    <span class="agents-status" id="conn-status">● 연결 중</span>
+  </div>
+
+  <div class="agents-feed" id="feed">
+    {% for ev in events %}
+    {% set meta = agent_meta.get(ev.agent, {'label': ev.agent, 'color': '#9a9a9a'}) %}
+    <div class="msg-row">
+      <div class="msg-avatar" style="background:{{ meta.color }}">
+        {{ (meta.label[:2]) }}
+      </div>
+      <div class="msg-body">
+        <div class="msg-meta">
+          <span class="msg-agent">{{ meta.label }}</span>
+          <span class="msg-ts">{{ ev.ts }}</span>
+        </div>
+        <div class="msg-text">{{ ev.body }}</div>
+      </div>
+    </div>
+    {% endfor %}
+    <div id="feed-end"></div>
+  </div>
+</div>
+
+<style>
+.agents-wrap {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
+  background: var(--bg, #E3E2E0);
+}
+.agents-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem 0.75rem;
+  border-bottom: 1px solid var(--line, #EFEEED);
+  flex-shrink: 0;
+}
+.agents-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-sub, #4a4a4a);
+}
+.agents-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: #9a9a9a;
+  transition: color 0.3s;
+}
+.agents-status.live { color: #5a8a5a; }
+
+.agents-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.msg-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  animation: fadeUp 0.25s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.85);
+  flex-shrink: 0;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.msg-body {
+  flex: 1;
+  min-width: 0;
+}
+.msg-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.25rem;
+}
+.msg-agent {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text, #1a1a1a);
+  letter-spacing: 0.02em;
+}
+.msg-ts {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-faint, #7A7A74);
+}
+.msg-text {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-sub, #4a4a4a);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+</style>
+
+<script>
+const feed = document.getElementById('feed');
+const status = document.getElementById('conn-status');
+const end = document.getElementById('feed-end');
+
+function scrollBottom() {
+  end.scrollIntoView({ behavior: 'smooth' });
+}
+scrollBottom();
+
+const agentMeta = {{ agent_meta | tojson }};
+
+function appendMsg(data) {
+  if (data.type === 'heartbeat') return;
+  const meta = agentMeta[data.agent] || { label: data.agent, color: '#9a9a9a' };
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+  const initials = (meta.label || data.agent).slice(0, 2);
+  row.innerHTML = `
+    <div class="msg-avatar" style="background:${meta.color}">${initials}</div>
+    <div class="msg-body">
+      <div class="msg-meta">
+        <span class="msg-agent">${meta.label || data.agent}</span>
+        <span class="msg-ts">${data.ts || ''}</span>
+      </div>
+      <div class="msg-text">${escHtml(data.body || '')}</div>
+    </div>`;
+  feed.insertBefore(row, end);
+  scrollBottom();
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+let es;
+function connect() {
+  es = new EventSource("{{ url_for('agents_stream') }}");
+  es.onopen = () => {
+    status.textContent = '● 라이브';
+    status.className = 'agents-status live';
+  };
+  es.onmessage = e => {
+    try { appendMsg(JSON.parse(e.data)); } catch {}
+  };
+  es.onerror = () => {
+    status.textContent = '● 재연결 중';
+    status.className = 'agents-status';
+    es.close();
+    setTimeout(connect, 4000);
+  };
+}
+connect();
+</script>
+{% endblock %}

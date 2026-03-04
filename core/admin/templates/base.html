@@ -96,6 +96,9 @@
         <!-- SYSTEM -->
         <div class="sidebar-group">
           <div class="sidebar-group-label">SYSTEM</div>
+          <a href="{{ url_for('agents_panel') }}" class="sidebar-link {% if request.path == '/agents' %}active{% endif %}">
+            에이전트
+          </a>
           <a href="{{ url_for('tools_panel') }}"
             class="sidebar-link {% if request.path == '/tools' %}active{% endif %}">
             도구

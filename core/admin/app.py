@@ -1100,6 +1100,133 @@ def about_edit():
     return render_template('about_edit.html', content=content, error=error)
 
 
+# ─── 에이전트 채팅 모니터 ───
+
+# 에이전트 메타 (이름, 색상, 아이콘)
+_AGENT_META = {
+    'SA':          {'label': 'SA · 신호 분석',    'color': '#7A6E5A'},
+    'CE':          {'label': 'CE · 편집장',       'color': '#4a4a4a'},
+    'Gardener':    {'label': 'Gardener · 군집',   'color': '#8B7355'},
+    'PlanCouncil': {'label': 'Plan Council',      'color': '#1B2D4F'},
+    'Telegram':    {'label': 'Telegram · 입력',   'color': '#5a6a7a'},
+    'HarnessDoctor':{'label': 'Harness Doctor',  'color': '#6a5a4a'},
+    'System':      {'label': 'System',            'color': '#9a9a9a'},
+}
+
+_AGENT_JSONL_SOURCES = [
+    ('web_work_history',       BASE_DIR / 'knowledge' / 'system' / 'web_work_history.jsonl'),
+    ('plan_council_reports',   BASE_DIR / 'knowledge' / 'system' / 'plan_council_reports.jsonl'),
+    ('evidence_log',           BASE_DIR / 'knowledge' / 'system' / 'evidence_log.jsonl'),
+    ('harness_doctor_reports', BASE_DIR / 'knowledge' / 'system' / 'harness_doctor_reports.jsonl'),
+]
+
+def _parse_agent_events(limit: int = 80) -> list:
+    """JSONL 소스에서 최근 이벤트를 에이전트 채팅 메시지로 변환."""
+    events = []
+    for source_key, path in _AGENT_JSONL_SOURCES:
+        if not path.exists():
+            continue
+        try:
+            lines = path.read_text(encoding='utf-8').strip().splitlines()
+        except (IOError, OSError):
+            continue
+        for line in lines[-30:]:
+            try:
+                d = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            ts_raw = d.get('timestamp') or d.get('ts') or d.get('created_at') or ''
+            # timestamp 정규화
+            ts_str = ts_raw[:19].replace('T', ' ') if ts_raw else ''
+            try:
+                ts_sort = ts_raw[:19]
+            except Exception:
+                ts_sort = ''
+
+            if source_key == 'web_work_history':
+                agent = d.get('agent', 'System')
+                action = d.get('action', '')
+                detail = d.get('detail', '')
+                body = action
+                if detail:
+                    body = '%s — %s' % (action, str(detail)[:120])
+                events.append({'agent': agent, 'body': body, 'ts': ts_str, 'sort': ts_sort, 'source': source_key})
+
+            elif source_key == 'plan_council_reports':
+                task = str(d.get('task', ''))[:80]
+                status = d.get('status', '')
+                steps = d.get('steps', [])
+                body = '[%s] %s' % (status, task)
+                if steps:
+                    body += '\n' + '\n'.join('• %s' % s for s in steps[:3])
+                events.append({'agent': 'PlanCouncil', 'body': body, 'ts': ts_str, 'sort': ts_sort, 'source': source_key})
+
+            elif source_key == 'evidence_log':
+                claim = str(d.get('claim', ''))[:100]
+                ev_type = d.get('evidence_type', '')
+                body = '[%s] %s' % (ev_type, claim)
+                events.append({'agent': 'System', 'body': body, 'ts': ts_str, 'sort': ts_sort, 'source': source_key})
+
+            elif source_key == 'harness_doctor_reports':
+                status = d.get('status', '')
+                issues = d.get('issues', [])
+                body = 'Harness Doctor: %s' % status
+                if issues:
+                    body += '\n' + '\n'.join('⚠ %s' % i for i in issues[:3])
+                events.append({'agent': 'HarnessDoctor', 'body': body, 'ts': ts_str, 'sort': ts_sort, 'source': source_key})
+
+    events.sort(key=lambda e: e.get('sort', ''), reverse=False)
+    return events[-limit:]
+
+
+@app.route('/agents')
+@login_required
+def agents_panel():
+    events = _parse_agent_events(limit=80)
+    return render_template('agents.html', events=events, agent_meta=_AGENT_META)
+
+
+@app.route('/api/agents/stream')
+@login_required
+def agents_stream():
+    """SSE: 에이전트 이벤트 실시간 스트림 (5초 폴링)."""
+    # 마지막으로 전송한 이벤트 개수 추적
+    sent_count = [0]
+
+    @stream_with_context
+    def generate():
+        while True:
+            try:
+                events = _parse_agent_events(limit=100)
+                new_events = events[sent_count[0]:]
+                if new_events:
+                    for ev in new_events:
+                        meta = _AGENT_META.get(ev['agent'], _AGENT_META['System'])
+                        payload = {
+                            'agent': ev['agent'],
+                            'label': meta['label'],
+                            'color': meta['color'],
+                            'body': ev['body'],
+                            'ts': ev['ts'],
+                            'source': ev['source'],
+                        }
+                        yield 'data: %s\n\n' % json.dumps(payload, ensure_ascii=False)
+                    sent_count[0] = len(events)
+                else:
+                    yield 'data: %s\n\n' % json.dumps({'type': 'heartbeat', 'ts': int(time.time())}, ensure_ascii=False)
+            except GeneratorExit:
+                break
+            except Exception as e:
+                logger.error("agents_stream error: %s", e)
+            time.sleep(5)
+
+    return Response(
+        generate(),
+        mimetype='text/event-stream',
+        headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no', 'Connection': 'keep-alive'}
+    )
+
+
 # ─── B11: 에러 핸들러 ───
 @app.errorhandler(400)
 def bad_request(e):
