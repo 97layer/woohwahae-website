@@ -7,6 +7,7 @@
 #   ./deploy.sh all          코드 pull + active 서비스 전체 재시작
 #   ./deploy.sh web          Cloudflare Pages 안내
 #   ./deploy.sh <서비스명>   특정 서비스 재시작 (active만 허용)
+#   ./deploy.sh --skip-gate <명령>  운영 게이트 사전검증 생략(긴급용)
 #   ./deploy.sh council-worker-install  council-worker systemd 타이머 설치
 #   ./deploy.sh gateway-install  unified gateway(systemd) 설치/재시작
 #   ./deploy.sh gateway-status   unified gateway 상태 확인
@@ -31,6 +32,16 @@ VM_PATH=$(python3 -c "import json; d=json.load(open('$VM_SERVICES_JSON')); print
 VM_USER=$(python3 -c "import json; d=json.load(open('$VM_SERVICES_JSON')); print(d['vm'].get('user', ''))")
 SERVICES_ACTIVE=$(python3 -c "import json; d=json.load(open('$VM_SERVICES_JSON')); print(' '.join(d['active'].keys()))")
 
+SKIP_GATE=0
+if [ "${DEPLOY_SKIP_GATE:-0}" = "1" ]; then
+  SKIP_GATE=1
+fi
+while [ "${1:-}" = "--skip-gate" ]; do
+  SKIP_GATE=1
+  shift
+done
+DEPLOY_ACTION="${1:-pull}"
+
 # 서비스가 active 목록에 있는지 확인
 is_active_service() {
   python3 -c "
@@ -38,6 +49,32 @@ import json, sys
 d = json.load(open('$VM_SERVICES_JSON'))
 sys.exit(0 if '$1' in d['active'] else 1)
 " 2>/dev/null
+}
+
+should_run_precheck() {
+  case "$DEPLOY_ACTION" in
+    pull|all|council-worker-install)
+      return 0
+      ;;
+  esac
+  if is_active_service "$DEPLOY_ACTION"; then
+    return 0
+  fi
+  return 1
+}
+
+run_ops_gate_precheck() {
+  if [ "$SKIP_GATE" = "1" ]; then
+    echo "[deploy] --skip-gate enabled: precheck 생략"
+    return 0
+  fi
+  local gate_script="$PROJECT_ROOT/core/scripts/ops_gate.sh"
+  if [ ! -x "$gate_script" ]; then
+    echo "[deploy] ERROR: ops gate script missing or not executable: $gate_script" >&2
+    exit 1
+  fi
+  echo "[deploy] precheck: ops_gate.sh"
+  bash "$gate_script"
 }
 
 gateway_install_remote() {
@@ -142,7 +179,11 @@ fi
 EOF
 }
 
-case "${1:-pull}" in
+if should_run_precheck; then
+  run_ops_gate_precheck
+fi
+
+case "$DEPLOY_ACTION" in
   web)
     echo "웹은 git push만 하면 Cloudflare Pages가 자동 배포합니다."
     echo "  git push origin main → 30초 내 woohwahae.kr 반영"
@@ -540,8 +581,8 @@ else:
 
   *)
     # 서비스명 검증
-    if ! is_active_service "$1"; then
-      echo "ERROR: '$1'은(는) active 서비스가 아닙니다." >&2
+    if ! is_active_service "$DEPLOY_ACTION"; then
+      echo "ERROR: '$DEPLOY_ACTION'은(는) active 서비스가 아닙니다." >&2
       echo "배포 가능 목록: ${SERVICES_ACTIVE}" >&2
       echo "전체 목록: ./deploy.sh --list" >&2
       exit 1
@@ -549,9 +590,9 @@ else:
 
     echo "[1/2] git pull..."
     ssh ${VM_HOST} "cd ${VM_PATH} && git fetch origin main && git reset --hard origin/main"
-    echo "[2/2] ${1} 재시작..."
-    ssh ${VM_HOST} "sudo systemctl restart ${1}"
+    echo "[2/2] ${DEPLOY_ACTION} 재시작..."
+    ssh ${VM_HOST} "sudo systemctl restart ${DEPLOY_ACTION}"
     sleep 2
-    ssh ${VM_HOST} "systemctl is-active ${1}"
+    ssh ${VM_HOST} "systemctl is-active ${DEPLOY_ACTION}"
     ;;
 esac

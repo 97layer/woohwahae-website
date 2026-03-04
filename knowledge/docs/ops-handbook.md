@@ -21,7 +21,8 @@
 
 ## 5. 빌드/배포
 - 빌드: python3 core/scripts/build.py [--components|--bust]
-- 배포: core/scripts/deploy/deploy.sh <target> (또는 /deploy 스킬)
+- 배포: core/scripts/deploy/deploy.sh <target> (기본 precheck: ops_gate)
+- 긴급 배포 우회: core/scripts/deploy/deploy.sh --skip-gate <target>
 - 캐시 버스트: build.py --bust
 
 ## 6. 긴급 복구
