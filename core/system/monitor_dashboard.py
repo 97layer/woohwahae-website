@@ -17,6 +17,13 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+try:
+    from core.system.progress_graph import build_progress_payload
+except Exception:  # noqa: BLE001
+    build_progress_payload = None
 
 
 class MonitorDashboard:
@@ -151,6 +158,19 @@ class MonitorDashboard:
             'allowed_rate': float(replay.get('allowed_rate', 0.0)),
             'file': self._display_path(latest),
         }
+
+    def get_progress_trend(self) -> Dict:
+        """Get compact trend graph payload."""
+        if build_progress_payload is None:
+            return {"available": False}
+        try:
+            payload = build_progress_payload(limit=30, graph_width=28)
+        except Exception:
+            return {"available": False}
+        if not isinstance(payload, dict):
+            return {"available": False}
+        payload["available"] = True
+        return payload
 
     def get_recent_files(self, limit: int = 5) -> List[Dict]:
         """Get recently modified files"""
@@ -298,6 +318,28 @@ class MonitorDashboard:
             if pd_status.get('generated_at'):
                 print(f"  Generated: {pd_status.get('generated_at')}")
             print(f"  File: {pd_status.get('file')}")
+        print()
+
+        # Progress Trend
+        trend = self.get_progress_trend()
+        print("━━━ 📈 Progress Trend ━━━")
+        if not trend.get('available'):
+            print("  ⏳ Trend graph unavailable")
+        else:
+            graphs = trend.get('graphs', {})
+            metrics = trend.get('metrics', {})
+            score = metrics.get('score', {})
+            fallback = metrics.get('fallback_rate', {})
+            blocked = metrics.get('blocked_rate', {})
+            print(f"  Score    {graphs.get('score', '·')}  {score.get('latest', 0):.1f}")
+            print(
+                f"  Fallback {graphs.get('fallback_rate', '·')}  "
+                f"{float(fallback.get('latest', 0.0))*100:.1f}%"
+            )
+            print(
+                f"  Blocked  {graphs.get('blocked_rate', '·')}  "
+                f"{float(blocked.get('latest', 0.0))*100:.1f}%"
+            )
         print()
 
         # Recent File Changes

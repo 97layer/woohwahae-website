@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "created_at": "2026-02-16T18:01:14.427889",
-  "last_updated": "2026-03-04T18:11:16",
+  "last_updated": "2026-03-04T19:00:23",
   "assets": [
     {
       "id": "image_tmp2t4zprye_20260217_002322",
@@ -2198,10 +2198,318 @@
           "by": "unit_test"
         }
       ]
+    },
+    {
+      "id": "AST-2026-03-161",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:11:43.659397",
+      "path": "core/system/handoff.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:11:43.659397",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-162",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:11:43.764602",
+      "path": "core/scripts/harness_doctor.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:11:43.764602",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-163",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:11:43.864783",
+      "path": "core/tests/test_harness_doctor_asset_registry.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:11:43.864783",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-164",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:18:11.018191",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:18:11.018191",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-165",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:18:15.323058",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:18:15.323058",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-166",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:31:01.806753",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:31:01.806753",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-167",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:36:41.972041",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:36:41.972041",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-168",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:38:05.983797",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:38:05.983797",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-169",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:38:31.035758",
+      "path": "core/system/progress_graph.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:38:31.035758",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-170",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:38:31.132957",
+      "path": "core/system/monitor_dashboard.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:38:31.132957",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-171",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:38:31.228729",
+      "path": "core/scripts/harness_doctor.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:38:31.228729",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-172",
+      "type": "code",
+      "source": "codex",
+      "created_at": "2026-03-04T18:38:31.323947",
+      "path": "core/tests/test_progress_graph.py",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:38:31.323947",
+          "by": "codex"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-173",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:40:03.076829",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:40:03.076829",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-174",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:41:36.245945",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:41:36.245945",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-175",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:42:43.684904",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:42:43.684904",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-176",
+      "type": "script",
+      "source": "codex-progress-auto-hook",
+      "created_at": "2026-03-04T18:45:35.316507",
+      "path": ".claude/hooks/progress-snapshot.sh",
+      "status": "captured",
+      "metadata": {},
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:45:35.316507",
+          "by": "codex-progress-auto-hook"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-177",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T18:59:01.432927",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T18:59:01.432927",
+          "by": "unit_test"
+        }
+      ]
+    },
+    {
+      "id": "AST-2026-03-178",
+      "type": "test",
+      "source": "unit_test",
+      "created_at": "2026-03-04T19:00:23.094825",
+      "path": "tests/test_asset_temp.json",
+      "status": "captured",
+      "metadata": {
+        "automated": true
+      },
+      "lifecycle": [
+        {
+          "stage": "captured",
+          "at": "2026-03-04T19:00:23.094825",
+          "by": "unit_test"
+        }
+      ]
     }
   ],
   "stats": {
-    "total": 159,
+    "total": 177,
     "by_type": {
       "signal": 39,
       "content": 23,
@@ -2211,17 +2519,17 @@
       "report": 2,
       "document": 3,
       "page": 2,
-      "test": 58,
+      "test": 68,
       "directive": 1,
       "module": 1,
       "system": 1,
       "visual": 1,
-      "script": 4,
+      "script": 5,
       "data": 2,
-      "code": 7
+      "code": 14
     },
     "by_status": {
-      "captured": 106,
+      "captured": 124,
       "completed": 1,
       "analyzed": 14,
       "stored": 1,
@@ -2235,11 +2543,12 @@
       "audit": 1,
       "ux_plan": 1,
       "sa_agent": 4,
-      "unit_test": 54,
+      "unit_test": 64,
       "auto": 1,
       "bot_templates": 1,
       "agent": 2,
-      "codex": 17
+      "codex": 24,
+      "codex-progress-auto-hook": 1
     }
   }
 }

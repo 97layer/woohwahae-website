@@ -38,11 +38,15 @@ async def get_all_pages(request):
         "core/backend/photo_upload.py",
         """
 PHOTO_UPLOAD_ADMIN_TOKEN = ""
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
 MAX_UPLOAD_BYTES = 100
 MAX_UPLOAD_FILES = 10
 
 def _require_admin_auth(request):
     return None
+
+def _matches_image_signature(raw, suffix):
+    return True
 """,
     )
     _write(
@@ -76,6 +80,10 @@ app.include_router(payments_router, prefix=API_V1_PREFIX)
         root,
         "core/backend/ecommerce/api/payments.py",
         """
+_WEBHOOK_EVENT_CACHE_FILE = "cache.json"
+def _mark_webhook_event_processed(event_id):
+    return event_id
+
 @router.post(\"/intent\")
 def intent():
     pass
@@ -87,6 +95,20 @@ def webhook():
 @router.post(\"/orders/{order_id}/mark-paid\")
 def mark_paid():
     pass
+
+def done():
+    return {\"idempotent\": False}
+""",
+    )
+    _write(
+        root,
+        "core/backend/ecommerce/services/payment.py",
+        """
+def create_payment_intent(idempotency_key=None):
+    create_kwargs = {}
+    if idempotency_key:
+        create_kwargs[\"idempotency_key\"] = idempotency_key
+    return stripe.PaymentIntent.create(**create_kwargs)
 """,
     )
     _write(

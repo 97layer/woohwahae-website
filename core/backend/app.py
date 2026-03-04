@@ -27,6 +27,7 @@ from core.system.security import (
     apply_security_headers,
     sanitize_html_field,
     safe_path,
+    load_cors_origins,
     setup_audit_logger,
     RateLimiter,
 )
@@ -43,7 +44,8 @@ app = Flask(__name__)
 app.config.from_object(config)
 
 # CORS — 명시적 오리진만 허용, 메서드/헤더 제한
-CORS(app, origins=config.CORS_ORIGINS, methods=['GET', 'POST', 'PUT', 'DELETE'],
+_cors_origins = load_cors_origins(default=config.CORS_ORIGINS)
+CORS(app, origins=_cors_origins, methods=['GET', 'POST', 'PUT', 'DELETE'],
      allow_headers=['Content-Type', 'Authorization'])
 
 # 보안 쿠키 설정

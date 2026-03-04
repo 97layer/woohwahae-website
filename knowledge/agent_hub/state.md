@@ -80,6 +80,11 @@
 - ⏳ **practice/ 전체** — direction/project/contact 감사 및 재설계
 - ⏳ **모바일 전체** — 640px 이하 레이아웃 검증
 
+### [SYSTEM] 자동 리포트 안정화
+- ✅ handoff.py가 compact_report 자동 호출 (완료/개선/다음 3줄 요약)
+- ✅ plan_dispatch smoke 모드로 사전 점검 (라이브 Council는 네트워크 정책 탓에 대기)
+- ⏳ Plan Council 라이브 재실행 (네트워크 허용 환경에서)
+
 ### [CODE / INFRA]
 - ✅ **GITHUB_TOKEN .env 설정** — VM에 추가 완료, 파이프라인 end-to-end 개통
 - ✅ **세컨드 브레인 폐쇄 루프** — decision_log.jsonl + retrospective_analysis 구현

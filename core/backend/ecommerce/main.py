@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .api import auth_router, products_router, cart_router, orders_router, payments_router
 from .config import settings
 from .models import init_db
+from core.system.security import load_cors_origins
 
 
 @asynccontextmanager
@@ -29,7 +30,7 @@ app = FastAPI(
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=load_cors_origins(default=settings.CORS_ORIGINS),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Session-ID"],

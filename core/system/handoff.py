@@ -156,6 +156,41 @@ class HandoffEngine:
 
         print(f"✅ State saved to state.md")
         print(f"✅ Work lock released (if held by {agent_id})")
+
+        # Generate compact report (완료/개선/다음) for every handoff call
+        try:
+            report_script = self.project_root / "core" / "system" / "compact_report.py"
+            evidence_guard = self.project_root / "core" / "system" / "evidence_guard.py"
+            if report_script.exists():
+                cmd = ["python3", str(report_script), "--agent-id", agent_id, "--summary", summary, "--improvement-from-next"]
+                for step in next_steps:
+                    cmd.extend(["--next-step", step])
+                # subprocess.run is already imported above
+                out = subprocess.check_output(cmd + ["--quiet"], text=True).strip()
+                if out:
+                    print(f"✅ Compact report generated: {out}")
+                    if evidence_guard.exists():
+                        subprocess.run(
+                            [
+                                "python3",
+                                str(evidence_guard),
+                                "--append",
+                                "--claim",
+                                "Compact report generated (handoff)",
+                                "--evidence-type",
+                                "file",
+                                "--source",
+                                out,
+                                "--detail",
+                                f"agent={agent_id}",
+                            ],
+                            check=False,
+                        )
+            else:
+                print("⚠️  compact_report.py not found; skipped compact report generation")
+        except Exception as exc:  # non-blocking
+            print(f"⚠️  Compact report generation failed: {exc}")
+
         print("="*70 + "\n")
 
         return True

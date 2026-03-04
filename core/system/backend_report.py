@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import re
 import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -195,26 +196,39 @@ def check_photo_upload_security(root: Path) -> Finding:
     required = (
         "PHOTO_UPLOAD_ADMIN_TOKEN",
         "def _require_admin_auth",
+        "def _matches_image_signature",
         "MAX_UPLOAD_BYTES",
         "MAX_UPLOAD_FILES",
     )
     missing = [token for token in required if token not in text]
-    if not missing:
+    forbidden_found: list[str] = []
+    if "image/svg+xml" in text:
+        forbidden_found.append("image/svg+xml")
+    ext_match = re.search(r"ALLOWED_EXTENSIONS\\s*=\\s*\\{([^}]*)\\}", text)
+    if ext_match and "svg" in ext_match.group(1).lower():
+        forbidden_found.append("ALLOWED_EXTENSIONS contains svg")
+
+    if not missing and not forbidden_found:
         return _ok(
             "photo-upload-security",
             "사진 업로드 인증/제한",
             "high",
             rel,
-            "업로드 API에 관리자 인증과 파일 제한(개수/용량)이 적용되어 있습니다.",
+            "업로드 API에 관리자 인증, 파일 제한, 시그니처 검증, SVG 차단이 적용되어 있습니다.",
             "현재 제한값이 운영 정책과 맞는지만 주기 점검하세요.",
         )
+    details: list[str] = []
+    if missing:
+        details.append(f"누락: {', '.join(missing)}")
+    if forbidden_found:
+        details.append(f"금지 패턴 존재: {', '.join(forbidden_found)}")
     return _fail(
         "photo-upload-security",
         "사진 업로드 인증/제한",
         "high",
         rel,
-        f"누락: {', '.join(missing)}",
-        "업로드 API에 관리자 인증과 용량/개수 제한 상수를 추가하세요.",
+        " / ".join(details),
+        "업로드 API에 관리자 인증, 용량/개수 제한, 시그니처 검증, SVG 차단을 적용하세요.",
     )
 
 
@@ -320,18 +334,20 @@ def check_admin_seed_policy(root: Path) -> Finding:
 def check_payments_router(root: Path) -> Finding:
     rel_main = "core/backend/ecommerce/main.py"
     rel_api = "core/backend/ecommerce/api/payments.py"
+    rel_service = "core/backend/ecommerce/services/payment.py"
     main_text = _read_text(root, rel_main)
     api_text = _read_text(root, rel_api)
-    target = f"{rel_main}, {rel_api}"
+    service_text = _read_text(root, rel_service)
+    target = f"{rel_main}, {rel_api}, {rel_service}"
 
-    if main_text is None or api_text is None:
+    if main_text is None or api_text is None or service_text is None:
         return _fail(
             "ecommerce-payments-router",
             "결제 MVP 라우팅",
             "medium",
             target,
             "결제 라우터 파일 일부가 없습니다.",
-            "결제 API 파일과 라우터 연결(include_router)을 복구하세요.",
+            "결제 API/서비스 파일과 라우터 연결(include_router)을 복구하세요.",
         )
 
     missing: list[str] = []
@@ -341,10 +357,21 @@ def check_payments_router(root: Path) -> Finding:
         "@router.post(\"/intent\")",
         "@router.post(\"/webhook\")",
         "@router.post(\"/orders/{order_id}/mark-paid\")",
+        "_WEBHOOK_EVENT_CACHE_FILE",
+        "_mark_webhook_event_processed",
+        "\"idempotent\"",
     )
     for token in required_api:
         if token not in api_text:
             missing.append(f"payments.py: {token}")
+    required_service = (
+        "idempotency_key",
+        "create_kwargs",
+        "stripe.PaymentIntent.create",
+    )
+    for token in required_service:
+        if token not in service_text:
+            missing.append(f"services/payment.py: {token}")
 
     if not missing:
         return _ok(
@@ -352,8 +379,8 @@ def check_payments_router(root: Path) -> Finding:
             "결제 MVP 라우팅",
             "medium",
             target,
-            "결제 의도 생성/웹훅/수동 완료 라우트가 등록되어 있습니다.",
-            "웹훅 서명키 운영값만 주기 점검하세요.",
+            "결제 라우트 + 웹훅 멱등성 + PaymentIntent 멱등키가 적용되어 있습니다.",
+            "웹훅 서명키/이벤트 캐시 파일 경로를 운영값으로 주기 점검하세요.",
         )
 
     return _fail(
@@ -362,7 +389,7 @@ def check_payments_router(root: Path) -> Finding:
         "medium",
         target,
         f"누락: {', '.join(missing)}",
-        "결제 라우트 3종(intent/webhook/mark-paid)과 main 라우터 연결을 복구하세요.",
+        "결제 라우트 3종(intent/webhook/mark-paid), 웹훅 멱등성, 서비스 멱등키 적용을 복구하세요.",
     )
 
 

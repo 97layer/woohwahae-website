@@ -24,6 +24,7 @@ import os
 import sys
 import time
 import tempfile
+import logging
 from pathlib import Path
 
 import pytest
@@ -154,6 +155,15 @@ class TestAuditLogger:
         content = log_file.read_text()
         assert 'test_action' in content
         assert '127.0.0.1' in content
+
+    def test_audit_logger_fallback_stream_handler(self, monkeypatch, tmp_path):
+        """파일 핸들러 실패 시 stderr 핸들러로 폴백."""
+        def _raise_file_handler(*_args, **_kwargs):
+            raise OSError("denied")
+
+        monkeypatch.setattr(logging, "FileHandler", _raise_file_handler)
+        logger = setup_audit_logger(f"test_audit_fallback_{time.time_ns()}", tmp_path / "audit.log")
+        assert any(isinstance(h, logging.StreamHandler) for h in logger.handlers)
 
 
 # ─── #12: 보안 헤더 (단위 테스트) ─────────────────────────────

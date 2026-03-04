@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import core.system.monitor_dashboard as md
 from core.system.monitor_dashboard import MonitorDashboard
 
 
@@ -66,3 +67,23 @@ def test_plan_dispatch_daily_status_invalid_json(tmp_path: Path):
     status = dashboard.get_plan_dispatch_daily_status()
     assert status["available"] is True
     assert status["status"] == "invalid"
+
+
+def test_progress_trend_uses_progress_payload(monkeypatch):
+    dashboard = MonitorDashboard()
+
+    monkeypatch.setattr(
+        md,
+        "build_progress_payload",
+        lambda **_: {
+            "graphs": {"score": "▁▂▃", "fallback_rate": "▁▁▂", "blocked_rate": "▁▁▁"},
+            "metrics": {
+                "score": {"latest": 100.0},
+                "fallback_rate": {"latest": 0.1},
+                "blocked_rate": {"latest": 0.0},
+            },
+        },
+    )
+    trend = dashboard.get_progress_trend()
+    assert trend["available"] is True
+    assert trend["graphs"]["score"] == "▁▂▃"

@@ -6,24 +6,30 @@ PLAN_COUNCIL_SCRIPT="$PROJECT_ROOT/core/system/plan_council.py"
 PLAN_CLASSIFIER_SCRIPT="${PLAN_DISPATCH_CLASSIFIER_SCRIPT:-$PROJECT_ROOT/core/system/plan_dispatch_classifier.py}"
 PLAN_METRICS_SCRIPT="$PROJECT_ROOT/core/system/plan_dispatch_metrics.py"
 ENV_FILE="$PROJECT_ROOT/.env"
+SAFE_ENV_EXPORT_SCRIPT="$PROJECT_ROOT/core/scripts/safe_env_export.py"
 
 # Load .env safely (KEY=VALUE lines only) to avoid command execution side effects.
 if [[ -f "$ENV_FILE" ]]; then
-  while IFS= read -r raw || [[ -n "$raw" ]]; do
-    line="${raw#"${raw%%[![:space:]]*}"}"
-    [[ -z "$line" ]] && continue
-    [[ "$line" == \#* ]] && continue
-    if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
-      key="${BASH_REMATCH[1]}"
-      value="${BASH_REMATCH[2]}"
-      if [[ "$value" =~ ^\"(.*)\"$ ]]; then
-        value="${BASH_REMATCH[1]}"
-      elif [[ "$value" =~ ^\'(.*)\'$ ]]; then
-        value="${BASH_REMATCH[1]}"
+  if [[ -f "$SAFE_ENV_EXPORT_SCRIPT" ]]; then
+    # shellcheck disable=SC2046
+    eval "$(python3 "$SAFE_ENV_EXPORT_SCRIPT" --file "$ENV_FILE")"
+  else
+    while IFS= read -r raw || [[ -n "$raw" ]]; do
+      line="${raw#"${raw%%[![:space:]]*}"}"
+      [[ -z "$line" ]] && continue
+      [[ "$line" == \#* ]] && continue
+      if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+        key="${BASH_REMATCH[1]}"
+        value="${BASH_REMATCH[2]}"
+        if [[ "$value" =~ ^\"(.*)\"$ ]]; then
+          value="${BASH_REMATCH[1]}"
+        elif [[ "$value" =~ ^\'(.*)\'$ ]]; then
+          value="${BASH_REMATCH[1]}"
+        fi
+        export "${key}=${value}"
       fi
-      export "${key}=${value}"
-    fi
-  done < "$ENV_FILE"
+    done < "$ENV_FILE"
+  fi
 fi
 
 if [[ $# -lt 1 ]]; then

@@ -11,6 +11,10 @@
           {
             "type": "command",
             "command": ".claude/hooks/proactive-advisor.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/progress-snapshot.sh"
           }
         ]
       }

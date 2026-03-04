@@ -31,6 +31,7 @@ def create_payment_intent(
     amount: int,
     currency: str = "krw",
     metadata: Optional[dict] = None,
+    idempotency_key: Optional[str] = None,
 ) -> stripe.PaymentIntent:
     """PaymentIntent 생성.
 
@@ -43,10 +44,16 @@ def create_payment_intent(
         생성된 PaymentIntent 객체
     """
     _init_stripe()
+    create_kwargs = {
+        "amount": amount,
+        "currency": currency,
+        "metadata": metadata or {},
+    }
+    if idempotency_key:
+        create_kwargs["idempotency_key"] = idempotency_key
+
     intent = stripe.PaymentIntent.create(
-        amount=amount,
-        currency=currency,
-        metadata=metadata or {},
+        **create_kwargs,
     )
     logger.info(
         "PaymentIntent created: id=%s, amount=%s, currency=%s",

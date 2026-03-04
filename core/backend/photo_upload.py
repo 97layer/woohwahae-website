@@ -10,6 +10,7 @@ import json
 import os
 import re
 import secrets
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -19,13 +20,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(_PROJECT_ROOT))
+
+from core.system.security import load_cors_origins
+
 # FastAPI 앱 초기화
 app = FastAPI(title="WOOHWAHAE Photo Upload", version="1.0.0")
 
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://woohwahae.kr", "http://localhost:8082"],
+    allow_origins=load_cors_origins(default=["https://woohwahae.kr", "http://localhost:8082"]),
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["Authorization", "X-Admin-Token", "Content-Type"],
@@ -45,13 +51,12 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 # 이미지 메타데이터 저장 파일
 METADATA_FILE = UPLOAD_DIR / "metadata.json"
-ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp", "svg"}
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
 ALLOWED_MIME_TYPES = {
     "image/jpeg",
     "image/png",
     "image/gif",
     "image/webp",
-    "image/svg+xml",
 }
 MAX_UPLOAD_BYTES = int(os.getenv("PHOTO_UPLOAD_MAX_BYTES", str(10 * 1024 * 1024)))
 MAX_UPLOAD_FILES = int(os.getenv("PHOTO_UPLOAD_MAX_FILES", "10"))
@@ -87,6 +92,18 @@ def _safe_filename_parts(original_name: str) -> tuple[str, str]:
     if not stem:
         stem = "upload"
     return stem[:80], suffix
+
+
+def _matches_image_signature(raw: bytes, suffix: str) -> bool:
+    if suffix in {"jpg", "jpeg"}:
+        return raw.startswith(b"\xff\xd8\xff")
+    if suffix == "png":
+        return raw.startswith(b"\x89PNG\r\n\x1a\n")
+    if suffix == "gif":
+        return raw.startswith(b"GIF87a") or raw.startswith(b"GIF89a")
+    if suffix == "webp":
+        return len(raw) >= 12 and raw[:4] == b"RIFF" and raw[8:12] == b"WEBP"
+    return False
 
 
 def _safe_upload_path(relative_path: str) -> Path:
@@ -145,6 +162,8 @@ async def upload_photos(
         await photo.close()
         if len(raw) > MAX_UPLOAD_BYTES:
             raise HTTPException(status_code=400, detail="File too large")
+        if not _matches_image_signature(raw, suffix):
+            raise HTTPException(status_code=400, detail="Invalid image signature")
 
         # 파일명 생성 (UTC 타임스탬프 + 랜덤 토큰)
         now_utc = datetime.now(timezone.utc)

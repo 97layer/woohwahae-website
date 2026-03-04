@@ -14,8 +14,40 @@ from typing import Optional
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
+DEFAULT_CORS_ORIGINS = ("https://woohwahae.kr",)
 
-# ─── 환경변수 강제 ────────────────────────────────────────────
+
+def _dedupe_preserve_order(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for value in values:
+        if value and value not in seen:
+            seen.add(value)
+            out.append(value)
+    return out
+
+
+def load_cors_origins(
+    default: Optional[list[str]] = None,
+    env_keys: tuple[str, ...] = (
+        "BACKEND_CORS_ORIGINS",
+        "FASTAPI_CORS_ORIGINS",
+        "CORS_ORIGINS",
+    ),
+) -> list[str]:
+    """CORS 오리진 목록 로드 (단일 환경변수 우선 + 레거시 호환)."""
+    for key in env_keys:
+        raw = os.getenv(key, "").strip()
+        if not raw:
+            continue
+        parsed = [item.strip() for item in raw.split(",") if item.strip()]
+        if parsed:
+            return _dedupe_preserve_order(parsed)
+
+    if default:
+        return _dedupe_preserve_order([item.strip() for item in default if item.strip()])
+    return list(DEFAULT_CORS_ORIGINS)
+
 
 def require_env(name: str) -> str:
     """환경변수 필수 로드. 없으면 RuntimeError."""
@@ -181,6 +213,12 @@ def setup_audit_logger(
             handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
-        except Exception:
-            pass  # 로그 파일 생성 실패해도 서버 중단 방지
+        except Exception as exc:
+            # 파일 핸들러 실패 시에도 stderr 경로로 최소 감사 로그를 남긴다.
+            if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+                fallback = logging.StreamHandler()
+                fallback.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+                logger.addHandler(fallback)
+            logger.setLevel(logging.INFO)
+            logger.warning("audit file logger disabled: %s", exc)
     return logger

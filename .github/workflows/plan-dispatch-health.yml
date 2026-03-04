@@ -1,0 +1,80 @@
+name: plan-dispatch-health
+
+on:
+  push:
+    paths:
+      - "core/scripts/plan_dispatch_daily_report.py"
+      - "core/system/plan_dispatch_classifier.py"
+      - "core/system/plan_dispatch_metrics.py"
+      - "core/system/plan_dispatch_replay.py"
+      - "core/system/monitor_dashboard.py"
+      - "core/scripts/harness_doctor.py"
+      - "core/tests/test_plan_dispatch_*.py"
+      - "core/tests/test_monitor_dashboard.py"
+      - "core/tests/test_harness_doctor_asset_registry.py"
+      - "core/tests/test_progress_graph.py"
+      - ".github/workflows/plan-dispatch-health.yml"
+  pull_request:
+    paths:
+      - "core/scripts/plan_dispatch_daily_report.py"
+      - "core/system/plan_dispatch_classifier.py"
+      - "core/system/plan_dispatch_metrics.py"
+      - "core/system/plan_dispatch_replay.py"
+      - "core/system/monitor_dashboard.py"
+      - "core/scripts/harness_doctor.py"
+      - "core/tests/test_plan_dispatch_*.py"
+      - "core/tests/test_monitor_dashboard.py"
+      - "core/tests/test_harness_doctor_asset_registry.py"
+      - "core/tests/test_progress_graph.py"
+      - ".github/workflows/plan-dispatch-health.yml"
+  schedule:
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  health-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest requests jinja2
+
+      - name: Run plan_dispatch stability tests
+        env:
+          LAYER_DISABLE_FILESYSTEM_GUARD: "1"
+        run: |
+          pytest -q \
+            core/tests/test_handoff.py \
+            core/tests/test_plan_dispatch_classifier.py \
+            core/tests/test_plan_dispatch_smoke.py \
+            core/tests/test_plan_dispatch_metrics.py \
+            core/tests/test_plan_dispatch_replay.py \
+            core/tests/test_plan_dispatch_daily_report.py \
+            core/tests/test_monitor_dashboard.py \
+            core/tests/test_harness_doctor_asset_registry.py \
+            core/tests/test_progress_graph.py
+
+      - name: Generate daily health report (strict)
+        run: |
+          python3 core/scripts/plan_dispatch_daily_report.py \
+            --write \
+            --json \
+            --fail-on-health > /tmp/plan_dispatch_daily_report.json
+
+      - name: Upload daily report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plan-dispatch-daily-report
+          path: |
+            /tmp/plan_dispatch_daily_report.json
+            knowledge/system/plan_dispatch_daily/*.json

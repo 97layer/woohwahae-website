@@ -50,6 +50,30 @@ def test_upload_rejects_invalid_extension(photo_upload_client):
     assert resp.status_code == 400
 
 
+def test_upload_rejects_svg(photo_upload_client):
+    client, _ = photo_upload_client
+    resp = client.post(
+        "/api/upload",
+        headers=_auth_headers(),
+        data={"category": "hair"},
+        files=[("photos", ("vector.svg", b"<svg></svg>", "image/svg+xml"))],
+    )
+    assert resp.status_code == 400
+    assert "Invalid file extension" in resp.json()["detail"]
+
+
+def test_upload_rejects_mismatched_signature(photo_upload_client):
+    client, _ = photo_upload_client
+    resp = client.post(
+        "/api/upload",
+        headers=_auth_headers(),
+        data={"category": "hair"},
+        files=[("photos", ("fake.png", b"not-a-real-png", "image/png"))],
+    )
+    assert resp.status_code == 400
+    assert "Invalid image signature" in resp.json()["detail"]
+
+
 def test_upload_and_list_with_auth(photo_upload_client):
     client, _ = photo_upload_client
 

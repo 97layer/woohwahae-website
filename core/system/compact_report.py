@@ -59,6 +59,11 @@ def main() -> int:
         "--out",
         help="출력 파일 경로 (기본: knowledge/reports/daily/compact_<TS>.md)",
     )
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="경로만 출력하고 본문은 표시하지 않음",
+    )
     args = parser.parse_args()
 
     ts = datetime.now()
@@ -70,11 +75,22 @@ def main() -> int:
     report_text = build_report(ts, args.agent_id, args.summary, improvements, args.next_step)
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = Path(args.out) if args.out else REPORT_DIR / f"compact_{ts.strftime('%Y%m%d_%H%M%S')}.md"
+    # 파일명 충돌 방지를 위해 밀리초 + 4자리 난수 접미사를 사용한다.
+    suffix = ts.strftime('%f')[:3]  # milliseconds
+    try:
+        import random
+        rand = f"{random.randint(0, 9999):04d}"
+    except Exception:
+        rand = "0000"
+    fname = f"compact_{ts.strftime('%Y%m%d_%H%M%S')}_{suffix}_{rand}.md"
+    out_path = Path(args.out) if args.out else REPORT_DIR / fname
     out_path.write_text(report_text, encoding="utf-8")
 
-    print(f"✅ Compact report saved: {out_path}")
-    print(report_text.strip())
+    if args.quiet:
+        print(out_path)
+    else:
+        print(f"✅ Compact report saved: {out_path}")
+        print(report_text.strip())
     return 0
 
 

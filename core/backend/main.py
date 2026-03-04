@@ -32,6 +32,7 @@ from core.system.security import (
     verify_password,
     generate_token,
     sanitize_html_field,
+    load_cors_origins,
     SecurityHeadersMiddleware,
     setup_audit_logger,
     RateLimiter,
@@ -164,7 +165,7 @@ app = FastAPI(
 app.add_middleware(SecurityHeadersMiddleware)
 
 # CORS — 허용 오리진 명시, 메서드/헤더 제한
-_cors_origins = os.getenv('FASTAPI_CORS_ORIGINS', 'https://woohwahae.kr').split(',')
+_cors_origins = load_cors_origins(default=["https://woohwahae.kr"])
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,

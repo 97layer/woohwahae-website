@@ -183,9 +183,59 @@ def check_code_path_sync() -> List[str]:
     return issues
 
 
+def check_root_violations() -> List[str]:
+    """루트(/) 레벨 파일/폴더 중 AGENTS.md Filesystem Hard Rules 위반 탐지."""
+    issues = []
+
+    # 허용 파일 (루트)
+    ALLOWED_ROOT_FILES = {
+        "CLAUDE.md", "README.md", "AGENTS.md", "requirements.txt",
+        ".gitignore", ".dockerignore", ".env", ".env.example", ".eleventy.js",
+        ".DS_Store",
+    }
+    # 허용 폴더 (루트)
+    ALLOWED_ROOT_DIRS = {
+        "core", "directives", "knowledge", "website",
+        ".claude", ".github", ".git", ".venv", ".pytest_cache",
+        ".infra", ".local_node", ".playwright-cli",
+    }
+    # 명시적 금지 폴더
+    BANNED_DIRS = {"src", "output", "node_modules", "tests", "scripts"}
+    # 금지 파일 패턴
+    BANNED_SUFFIXES = (".db", ".png", ".jpg", ".jpeg", ".gif", ".sql")
+    BANNED_PREFIXES = ("SESSION_SUMMARY_", "WAKEUP_REPORT", "DEPLOY_", "NEXT_STEPS", "temp_", "untitled_")
+    BANNED_FILENAMES = {"package.json", "package-lock.json"}
+
+    for item in PROJECT_ROOT.iterdir():
+        name = item.name
+        if item.is_dir():
+            if name not in ALLOWED_ROOT_DIRS:
+                if name in BANNED_DIRS:
+                    issues.append("🚫 루트 금지 폴더: %s/" % name)
+                else:
+                    issues.append("⚠️  루트 미등록 폴더: %s/" % name)
+        else:
+            if name in BANNED_FILENAMES:
+                issues.append("🚫 루트 금지 파일: %s" % name)
+            elif name not in ALLOWED_ROOT_FILES:
+                if any(name.endswith(s) for s in BANNED_SUFFIXES):
+                    issues.append("🚫 루트 금지 파일 (확장자): %s" % name)
+                elif any(name.startswith(p) for p in BANNED_PREFIXES):
+                    issues.append("🚫 루트 금지 파일명 패턴: %s" % name)
+                else:
+                    issues.append("⚠️  루트 미등록 파일: %s" % name)
+
+    return issues
+
+
 def run_audit() -> Tuple[List[str], int]:
     """전체 감사 실행. (이슈 목록, 총 건수) 반환."""
     all_issues = []
+
+    root = check_root_violations()
+    if root:
+        all_issues.append("── 루트 위반 (%d건) ──" % len(root))
+        all_issues.extend(root)
 
     dead = check_dead_references()
     if dead:
@@ -206,7 +256,7 @@ def run_audit() -> Tuple[List[str], int]:
         if len(sync) > 10:
             all_issues.append("  ... 외 %d건" % (len(sync) - 10))
 
-    total = len(dead) + len(case) + len(sync)
+    total = len(root) + len(dead) + len(case) + len(sync)
     return all_issues, total
 
 

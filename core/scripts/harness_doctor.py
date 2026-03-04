@@ -23,6 +23,8 @@ from pathlib import Path
 from typing import List, Tuple
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 REPORT_FILE = PROJECT_ROOT / "knowledge" / "system" / "harness_doctor_reports.jsonl"
 
 REQUIRED_FILES = (
@@ -36,7 +38,9 @@ REQUIRED_FILES = (
     "core/system/plan_council.py",
     "core/system/plan_dispatch_metrics.py",
     "core/system/plan_dispatch_replay.py",
+    "core/system/progress_graph.py",
     ".claude/hooks/plan-council.sh",
+    ".claude/hooks/progress-snapshot.sh",
     ".claude/rules/plan-council.md",
     ".claude/rules/model-role-routing.md",
     ".claude/commands/plan.md",
@@ -63,6 +67,11 @@ OPTIONAL_MODULES = (
 )
 
 REQUIRED_MCP = ("context7", "sequential-thinking", "notebooklm")
+
+try:
+    from core.system.progress_graph import build_progress_payload
+except Exception:  # noqa: BLE001
+    build_progress_payload = None
 
 
 @dataclass
@@ -545,6 +554,7 @@ def check_tests(run_tests: bool) -> CheckResult:
             "core/tests/test_plan_dispatch_daily_report.py",
             "core/tests/test_monitor_dashboard.py",
             "core/tests/test_harness_doctor_asset_registry.py",
+            "core/tests/test_progress_graph.py",
         ],
         extra_env=env,
     )
@@ -593,6 +603,29 @@ def print_report(results: List[CheckResult], readiness_score: int, overall: str)
         print(f"{icon[r.status]} {r.name:<15} [{r.status}] {r.detail}")
     print(f"Readiness Score: {readiness_score}/100")
     print(f"Overall: {overall.upper()}")
+    if build_progress_payload is not None:
+        try:
+            trend = build_progress_payload(limit=30, graph_width=24)
+            graphs = trend.get("graphs", {})
+            metrics = trend.get("metrics", {})
+            print("Progress Trend:")
+            print(
+                "  score     "
+                f"{graphs.get('score', '·')} "
+                f"{float(metrics.get('score', {}).get('latest', 0.0)):.1f}"
+            )
+            print(
+                "  fallback  "
+                f"{graphs.get('fallback_rate', '·')} "
+                f"{float(metrics.get('fallback_rate', {}).get('latest', 0.0))*100:.1f}%"
+            )
+            print(
+                "  blocked   "
+                f"{graphs.get('blocked_rate', '·')} "
+                f"{float(metrics.get('blocked_rate', {}).get('latest', 0.0))*100:.1f}%"
+            )
+        except Exception:
+            pass
     print(f"Report: {REPORT_FILE}")
 
 
