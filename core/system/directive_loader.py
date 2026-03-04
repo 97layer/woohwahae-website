@@ -20,6 +20,8 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from core.system.context_profile import load_profile, recommend_sections
+
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -209,6 +211,13 @@ def load_for_agent(agent_id: str, max_total: int = 6000) -> str:
     if not sections:
         logger.warning("알 수 없는 에이전트: %s", agent_id)
         return ""
+
+    # 프로파일 기반 추가 섹션
+    profile_intents = load_profile()
+    for item in recommend_sections(profile_intents):
+        if ":" in item:
+            file, section = item.split(":", 1)
+            sections.append({"file": file, "section": section})
 
     parts = []
     total = 0
