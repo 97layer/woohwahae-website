@@ -608,7 +608,9 @@ async def admin_overview(
 
 # ─── 관리자 패널 ──────────────────────────────────────────────
 
+# Keep both routes to avoid /admin <-> /admin/ redirect loops behind nginx.
 @app.get("/admin", response_class=HTMLResponse)
+@app.get("/admin/", response_class=HTMLResponse)
 async def admin_panel():
     return """
 <!DOCTYPE html>
