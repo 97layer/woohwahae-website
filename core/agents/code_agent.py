@@ -4,13 +4,14 @@ code_agent.py — 텔레그램 지시 → VM 코드 수정 자동화
 
 흐름:
   1. 태스크 수신 (텔레그램 → queue)
-  2. 관련 파일 특정 (Grep/Glob)
-  3. Flash → Claude 에스컬레이션으로 변경 생성
-  4. ProposeGate diff 전송 → 순호 ok/no 대기
-  5. 승인 시 파일 적용. Production 재시작은 별도 PROPOSE.
+  2. Plan Dispatcher 선행 (복잡도 기반 auto/manual)
+  3. 관련 파일 특정 (Grep/Glob)
+  4. Codex로 변경 생성 (코딩 전담)
+  5. Gemini Critic 검증 (검증 전담)
+  6. ProposeGate diff 전송 → 순호 ok/no 대기
+  7. 승인 시 파일 적용. Production 재시작은 별도 PROPOSE.
 
 비용 제어:
-  - Flash 2회 재시도 후 Claude 에스컬레이션
   - 일일 $3 캡 (CODE_AGENT_DAILY_CAP 환경변수)
   - 전체 호출 하드캡: 5회/태스크
 """
@@ -19,8 +20,10 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,14 +37,19 @@ if str(PROJECT_ROOT) not in sys.path:
 logger = logging.getLogger(__name__)
 
 PRIMARY_MODEL = "gemini-2.5-flash"
-FALLBACK_MODEL = "claude-sonnet-4-6"
 MAX_FLASH_RETRIES = 2
 MAX_API_CALLS_TOTAL = 5
 DAILY_COST_CAP_USD = float(os.getenv("CODE_AGENT_DAILY_CAP", "3"))
 
 # Dual-model 설정
 DUEL_ENABLED = os.getenv("CODE_AGENT_DUEL", "1") == "1"  # 기본 활성화
+CODE_GENERATOR = os.getenv("CODE_AGENT_GENERATOR", "codex").lower()
+ALLOW_GEMINI_GENERATION_FALLBACK = os.getenv("CODE_AGENT_ALLOW_GEMINI_FALLBACK", "0") == "1"
 COST_LOG_PATH = PROJECT_ROOT / "knowledge" / "system" / "code_agent_cost.json"
+CODEX_CHANGE_SCHEMA = (
+    PROJECT_ROOT / "knowledge" / "system" / "schemas" / "code_agent_changes.schema.json"
+)
+PLAN_DISPATCH_SCRIPT = PROJECT_ROOT / "core" / "scripts" / "plan_dispatch.sh"
 
 # 변경 불가 경로 (FROZEN)
 FROZEN_PATHS = {
@@ -125,7 +133,7 @@ def _estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     """대략적 비용 추정 (USD)."""
     rates = {
         "gemini-2.5-flash": (0.0000003, 0.0000025),   # $0.3/$2.5 per 1M
-        "claude-sonnet-4-6": (0.000003, 0.000015),     # $3/$15 per 1M
+        "gpt-5-codex": (0.0, 0.0),                    # local accounting placeholder
     }
     inp_rate, out_rate = rates.get(model, (0.000003, 0.000015))
     return inp_rate * input_tokens + out_rate * output_tokens
@@ -222,11 +230,13 @@ def _is_editable(rel_path: str) -> bool:
 # ─── LLM 호출 ────────────────────────────────────────────────────────────────
 
 def _call_gemini(prompt: str, system: str = SYSTEM_PROMPT) -> Optional[dict]:
-    """Gemini Flash로 변경 생성. 실패 시 None."""
+    """Gemini 호출(JSON 응답 기대). 실패 시 None."""
     try:
         from google import genai
         from google.genai import types as genai_types
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            return None
         client = genai.Client(api_key=api_key)
         resp = client.models.generate_content(
             model=PRIMARY_MODEL,
@@ -252,52 +262,95 @@ def _call_gemini(prompt: str, system: str = SYSTEM_PROMPT) -> Optional[dict]:
         return None
 
 
-def _call_claude(prompt: str, system: str = SYSTEM_PROMPT) -> Optional[dict]:
-    """Claude Sonnet 호출 (Proposer 또는 Critic). 실패 시 None."""
-    try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        msg = client.messages.create(
-            model=FALLBACK_MODEL,
-            max_tokens=4096,
-            system=system,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        raw = msg.content[0].text.strip()
-        m = re.search(r'```json\s*([\s\S]+?)\s*```', raw)
-        if m:
-            raw = m.group(1)
-        result = json.loads(raw)
-        inp = msg.usage.input_tokens
-        out = msg.usage.output_tokens
-        cost = _estimate_cost(FALLBACK_MODEL, inp, out)
-        _add_cost(cost)
-        logger.info("Claude 호출 완료: in=%s out=%s cost=$%.4f", inp, out, cost)
-        return result
-    except Exception as e:
-        logger.error("Claude 호출 실패: %s", e)
+def _call_codex(prompt: str, system: str = SYSTEM_PROMPT) -> Optional[dict]:
+    """Codex CLI non-interactive 호출로 변경안 생성."""
+    codex_bin = shutil.which("codex")
+    if not codex_bin:
+        logger.warning("Codex CLI 없음 (PATH): codex")
+        return None
+    if not CODEX_CHANGE_SCHEMA.exists():
+        logger.warning("Codex schema 없음: %s", CODEX_CHANGE_SCHEMA)
         return None
 
+    full_prompt = f"{system}\n\n{prompt}"
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            prefix="code-agent-codex-",
+            suffix=".json",
+            delete=False,
+        ) as tmp:
+            temp_path = Path(tmp.name)
 
-def _critique_with_claude(draft: dict, instruction: str) -> Optional[dict]:
-    """Claude가 Gemini 초안을 비판. score/issues/suggestions/verdict 반환."""
+        cmd = [
+            codex_bin,
+            "exec",
+            "--cd",
+            str(PROJECT_ROOT),
+            "--sandbox",
+            "read-only",
+            "--skip-git-repo-check",
+            "--output-schema",
+            str(CODEX_CHANGE_SCHEMA),
+            "--output-last-message",
+            str(temp_path),
+            full_prompt,
+        ]
+        proc = subprocess.run(
+            cmd,
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=180,
+            check=False,
+        )
+        if proc.returncode != 0:
+            stderr = (proc.stderr or "").strip()
+            stdout = (proc.stdout or "").strip()
+            logger.warning("Codex 호출 실패 rc=%s err=%s out=%s", proc.returncode, stderr[:160], stdout[:160])
+            return None
+
+        if not temp_path.exists():
+            logger.warning("Codex output file 없음: %s", temp_path)
+            return None
+        raw = temp_path.read_text(encoding="utf-8").strip()
+        if not raw:
+            logger.warning("Codex output empty")
+            return None
+        obj = json.loads(raw)
+        if isinstance(obj, dict) and "files" in obj:
+            logger.info("Codex 변경안 생성 완료")
+            return obj
+        logger.warning("Codex output malformed: files key missing")
+        return None
+    except Exception as e:
+        logger.warning("Codex 호출 실패: %s", e)
+        return None
+    finally:
+        if temp_path and temp_path.exists():
+            try:
+                temp_path.unlink()
+            except Exception:
+                pass
+
+
+def _critique_with_gemini(draft: dict, instruction: str) -> Optional[dict]:
+    """Gemini가 변경안을 비평. score/issues/suggestions/verdict 반환."""
     draft_text = json.dumps(draft, ensure_ascii=False, indent=2)
     prompt = (
         f"지시: {instruction}\n\n"
-        f"Gemini가 생성한 코드 변경안:\n```json\n{draft_text}\n```\n\n"
+        f"Codex가 생성한 코드 변경안:\n```json\n{draft_text}\n```\n\n"
         f"이 변경안을 검토하고 JSON으로만 응답:"
     )
-    return _call_claude(prompt, system=CRITIC_PROMPT)
+    return _call_gemini(prompt, system=CRITIC_PROMPT)
 
 
 def _generate_changes(instruction: str, context_files: list[dict]) -> Optional[dict]:
     """
-    Dual-model 생성:
-      Round 1) Gemini Flash → 초안
-      Round 2) Claude Critic → score/issues/suggestions
-               score >= 85 → APPROVE (초안 채택)
-               score < 85  → Gemini Flash → 피드백 반영 최종안
-      Fallback) Gemini 연속 실패 시 Claude Proposer 에스컬레이션
+    Role routing:
+      Plan  : Claude (Plan Council에서 선행)
+      Code  : Codex 생성
+      Verify: Gemini Critic
     """
     today_cost = _get_today_cost()
     if today_cost >= DAILY_COST_CAP_USD:
@@ -314,73 +367,80 @@ def _generate_changes(instruction: str, context_files: list[dict]) -> Optional[d
         f"JSON만 반환:"
     )
 
-    # ── Round 1: Gemini 초안 생성 ──────────────────────────────────────
+    # ── Round 1: 코드 생성 (Codex 우선) ─────────────────────────────────
     draft = None
-    for attempt in range(MAX_FLASH_RETRIES):
-        draft = _call_gemini(base_prompt)
-        if draft and "files" in draft:
-            cost = _estimate_cost(PRIMARY_MODEL, len(base_prompt) // 4, 500)
-            _add_cost(cost)
-            logger.info("Gemini 초안 생성 (attempt %s)", attempt + 1)
-            break
-        logger.warning("Gemini attempt %s 실패", attempt + 1)
+    if CODE_GENERATOR == "codex":
+        draft = _call_codex(base_prompt)
+        if not draft and ALLOW_GEMINI_GENERATION_FALLBACK:
+            logger.warning("Codex 생성 실패 → Gemini fallback 사용")
+            for attempt in range(MAX_FLASH_RETRIES):
+                draft = _call_gemini(base_prompt)
+                if draft and "files" in draft:
+                    cost = _estimate_cost(PRIMARY_MODEL, len(base_prompt) // 4, 500)
+                    _add_cost(cost)
+                    logger.info("Gemini fallback 생성 성공 (attempt %s)", attempt + 1)
+                    break
+                logger.warning("Gemini fallback attempt %s 실패", attempt + 1)
+    else:
+        for attempt in range(MAX_FLASH_RETRIES):
+            draft = _call_gemini(base_prompt)
+            if draft and "files" in draft:
+                cost = _estimate_cost(PRIMARY_MODEL, len(base_prompt) // 4, 500)
+                _add_cost(cost)
+                logger.info("Gemini 생성 성공 (attempt %s)", attempt + 1)
+                break
+            logger.warning("Gemini attempt %s 실패", attempt + 1)
 
     if not draft or not draft.get("files"):
-        logger.info("Gemini 실패 → Claude Proposer 에스컬레이션")
-        return _call_claude(base_prompt)
+        logger.warning("코드 생성 실패 (generator=%s)", CODE_GENERATOR)
+        return None
 
     if not DUEL_ENABLED:
         return draft
 
-    # ── Round 2: Claude Critic ──────────────────────────────────────────
-    critique = _critique_with_claude(draft, instruction)
+    # ── Round 2: Gemini Critic 검증 ─────────────────────────────────────
+    critique = _critique_with_gemini(draft, instruction)
     if not critique:
-        logger.warning("Critic 호출 실패 → Gemini 초안 채택")
+        logger.warning("Gemini Critic 호출 실패 → 초안 채택")
         return draft
 
     score = critique.get("score", 0)
     verdict = critique.get("verdict", "REVISE")
     issues = critique.get("issues", [])
     suggestions = critique.get("suggestions", [])
-    logger.info("Critic 결과: score=%s verdict=%s issues=%s", score, verdict, len(issues))
+    logger.info("Gemini Critic: score=%s verdict=%s issues=%s", score, verdict, len(issues))
 
     if verdict == "APPROVE" or score >= 85:
         logger.info("Critic APPROVE → 초안 채택")
         draft["_critic"] = {"score": score, "verdict": "APPROVE"}
         return draft
 
-    # ── Round 3: Gemini 재생성 (Critic 피드백 반영, context 제외로 토큰 절감) ───
+    # ── Round 3: Critic 피드백 반영 재생성 (Codex 우선) ───────────────────
     feedback_block = "\n".join(f"- {s}" for s in suggestions) or "\n".join(f"- {i}" for i in issues)
     draft_text = json.dumps(draft, ensure_ascii=False, indent=2)
-    revised_prompt = (
+    revise_prompt = (
         f"지시: {instruction}\n\n"
         f"이전 코드 (수정 대상):\n```json\n{draft_text}\n```\n\n"
         f"검토 결과 (score={score}/100) — 반드시 반영:\n{feedback_block}\n\n"
         f"위 피드백을 모두 반영한 개선된 JSON만 반환:"
     )
-    revised = _call_gemini(revised_prompt)
+
+    revised = None
+    if CODE_GENERATOR == "codex":
+        revised = _call_codex(revise_prompt)
+        if not revised and ALLOW_GEMINI_GENERATION_FALLBACK:
+            revised = _call_gemini(revise_prompt)
+    else:
+        revised = _call_gemini(revise_prompt)
+
     if revised and revised.get("files"):
-        cost = _estimate_cost(PRIMARY_MODEL, len(revised_prompt) // 4, 500)
+        cost = _estimate_cost(PRIMARY_MODEL, len(revise_prompt) // 4, 500)
         _add_cost(cost)
         revised["_critic"] = {"score": score, "verdict": "REVISED", "issues": issues}
-        logger.info("Gemini 수정안 생성 완료 (critic score=%s)", score)
+        logger.info("수정안 생성 완료 (critic score=%s)", score)
         return revised
 
-    # Round 3 Gemini 실패 → Claude가 직접 Critic 피드백 반영
-    logger.info("Gemini Round 3 실패 → Claude Reviser 에스컬레이션")
-    claude_revised_prompt = (
-        f"지시: {instruction}\n\n"
-        f"현재 코드:\n```json\n{draft_text}\n```\n\n"
-        f"코드 리뷰 결과 (score={score}/100) — 아래 모든 항목을 반드시 반영:\n{feedback_block}\n\n"
-        f"피드백을 모두 반영한 개선된 JSON만 반환:"
-    )
-    claude_revised = _call_claude(claude_revised_prompt)
-    if claude_revised and claude_revised.get("files"):
-        claude_revised["_critic"] = {"score": score, "verdict": "CLAUDE_REVISED", "issues": issues}
-        logger.info("Claude 수정안 생성 완료 (critic score=%s)", score)
-        return claude_revised
-
-    logger.warning("모든 재생성 실패 → 초안 채택")
+    logger.warning("재생성 실패 → 초안 채택")
     return draft
 
 
@@ -446,6 +506,119 @@ def _build_diff_text(changes: dict) -> str:
     return "\n".join(lines)
 
 
+def _parse_json_payload(raw: str) -> Optional[dict]:
+    text = (raw or "").strip()
+    if not text:
+        return None
+    try:
+        obj = json.loads(text)
+        if isinstance(obj, dict):
+            return obj
+    except Exception:
+        pass
+
+    start = text.find("{")
+    end = text.rfind("}")
+    if start == -1 or end == -1 or end <= start:
+        return None
+    try:
+        obj = json.loads(text[start : end + 1])
+        return obj if isinstance(obj, dict) else None
+    except Exception:
+        return None
+
+
+def _run_plan_dispatch(instruction: str, mode: str = "auto") -> Optional[dict]:
+    """Plan Dispatcher 경유로 계획 협의 실행(auto/manual 통합)."""
+    if not PLAN_DISPATCH_SCRIPT.exists():
+        logger.warning("Plan Dispatch 스크립트 없음: %s", PLAN_DISPATCH_SCRIPT)
+        return None
+
+    mode_flag = "--manual" if mode == "manual" else "--auto"
+    try:
+        proc = subprocess.run(
+            ["bash", str(PLAN_DISPATCH_SCRIPT), instruction, mode_flag],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=90,
+            check=False,
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Plan Dispatch 실행 실패: %s", exc)
+        return None
+
+    stdout = (proc.stdout or "").strip()
+    if proc.returncode != 0:
+        logger.warning(
+            "Plan Dispatch non-zero exit: %s | %s",
+            proc.returncode,
+            (proc.stderr or "").strip(),
+        )
+        return None
+
+    payload = _parse_json_payload(stdout)
+    if not payload:
+        logger.warning("Plan Dispatch JSON 파싱 실패")
+        return None
+    if not isinstance(payload.get("consensus"), dict):
+        logger.warning("Plan Dispatch payload missing consensus")
+        return None
+    return payload
+
+
+def _compose_instruction_with_plan(instruction: str, plan_payload: Optional[dict]) -> str:
+    """실행된 Plan Council 합의 내용을 instruction에 주입."""
+    if not plan_payload:
+        return instruction
+    dispatcher = plan_payload.get("dispatcher", {})
+    if isinstance(dispatcher, dict) and not dispatcher.get("executed"):
+        return instruction
+
+    consensus = plan_payload.get("consensus", {})
+    steps = consensus.get("steps", [])[:5]
+    risks = consensus.get("risks", [])[:4]
+    checks = consensus.get("checks", [])[:5]
+    tools = consensus.get("tools", [])[:5]
+
+    plan_lines = ["[Plan Council Consensus]"]
+    if consensus.get("intent"):
+        plan_lines.append(f"intent: {consensus['intent']}")
+    if consensus.get("approach"):
+        plan_lines.append(f"approach: {consensus['approach']}")
+    if steps:
+        plan_lines.append("steps:")
+        plan_lines.extend(f"- {s}" for s in steps)
+    if risks:
+        plan_lines.append("risks:")
+        plan_lines.extend(f"- {r}" for r in risks)
+    if checks:
+        plan_lines.append("checks:")
+        plan_lines.extend(f"- {c}" for c in checks)
+    if tools:
+        plan_lines.append("tools:")
+        plan_lines.extend(f"- {t}" for t in tools)
+
+    return instruction + "\n\n" + "\n".join(plan_lines)
+
+
+def _summarize_plan_for_user(plan_payload: Optional[dict]) -> str:
+    if not plan_payload:
+        return "🧭 Plan Dispatcher: 미연결 (로컬 기본 경로 진행)"
+    dispatcher = plan_payload.get("dispatcher", {})
+    if isinstance(dispatcher, dict) and not dispatcher.get("executed"):
+        reason = dispatcher.get("reason", "policy")
+        complexity = dispatcher.get("complexity", "simple")
+        return f"🧭 Plan Dispatcher: skipped ({reason}, {complexity})"
+
+    consensus = plan_payload.get("consensus", {})
+    status = str(consensus.get("status", "degraded")).upper()
+    models = ", ".join(consensus.get("models_used", [])) or "none"
+    risks = consensus.get("risks", [])[:2]
+    risk_text = " / ".join(risks) if risks else "리스크 없음"
+    return f"🧭 Plan Council [{status}] models={models}\n⚠️ 예상 리스크: {risk_text}"
+
+
 # ─── 메인 에이전트 ────────────────────────────────────────────────────────────
 
 class CodeAgent:
@@ -483,8 +656,25 @@ class CodeAgent:
             )
             return
 
+        # 0. 실행 전 계획 협의 (Plan Dispatcher auto)
+        status_msg = await send_fn("🧭 Plan Dispatcher 분석 중...")
+        plan_payload = _run_plan_dispatch(instruction, mode="auto")
+        plan_summary = _summarize_plan_for_user(plan_payload)
+        effective_instruction = _compose_instruction_with_plan(instruction, plan_payload)
+
+        if plan_payload:
+            dispatcher = plan_payload.get("dispatcher", {})
+            consensus = plan_payload.get("consensus", {})
+            council_executed = bool(isinstance(dispatcher, dict) and dispatcher.get("executed"))
+            if council_executed and consensus.get("decision") == "needs_clarification":
+                await status_msg.edit_text(
+                    f"{plan_summary}\n\n"
+                    "⚠️ 요구사항 추가 확인이 필요합니다. 세부 조건을 더 구체적으로 입력해주세요."
+                )
+                return
+
         # 1. 관련 파일 검색
-        status_msg = await send_fn("🔍 관련 파일 검색 중...")
+        await status_msg.edit_text(f"{plan_summary}\n\n🔍 관련 파일 검색 중...")
         context_files = _find_relevant_files(instruction)
 
         if not context_files:
@@ -492,10 +682,10 @@ class CodeAgent:
             return
 
         file_list = ", ".join(f["path"] for f in context_files)
-        await status_msg.edit_text(f"🔍 파일 특정: {file_list}\n\n⚙️ 변경 생성 중...")
+        await status_msg.edit_text(f"{plan_summary}\n\n🔍 파일 특정: {file_list}\n\n⚙️ 변경 생성 중...")
 
-        # 2. 변경 생성 (Flash → Claude)
-        changes = _generate_changes(instruction, context_files)
+        # 2. 변경 생성 (Codex 생성 + Gemini Critic)
+        changes = _generate_changes(effective_instruction, context_files)
 
         if not changes or not changes.get("files"):
             await status_msg.edit_text("❌ 변경 생성 실패. 지시를 재확인하거나 다시 시도하세요.")

@@ -17,7 +17,10 @@ import os
 from datetime import datetime
 from functools import wraps
 from werkzeug.utils import secure_filename
-import config
+try:
+    from . import config
+except ImportError:
+    import config
 
 from core.system.security import (
     verify_password,
@@ -319,7 +322,10 @@ def client_portal(token):
 
     total_paid = sum(v.get('amount', 0) for v in client.get('visits', []))
 
-    from silhouette_renderer import get_hair_style
+    try:
+        from .silhouette_renderer import get_hair_style
+    except ImportError:
+        from silhouette_renderer import get_hair_style
     hair_style = get_hair_style(client)
 
     return render_template('portal.html',

@@ -23,6 +23,7 @@ anthropic==0.79.0           # Claude API
 python-dotenv==1.0.1        # Environment variables
 pyyaml==6.0.1               # YAML parsing
 markdown==3.5.2             # Markdown processing
+jinja2==3.1.6               # Section page build templates
 youtube-transcript-api==1.2.4  # YouTube transcripts
 apscheduler==3.10.4          # APScheduler (PHASE 5: daily_routine.py 연결)
 

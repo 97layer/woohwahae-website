@@ -7,13 +7,16 @@ FastAPI 인라인 텍스트 편집 시스템 — 보안 강화 버전
 import os
 import sys
 import time
+import json
+import importlib
+import subprocess
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.wsgi import WSGIMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy import create_engine, Column, String, Text, DateTime, Integer
 from sqlalchemy.ext.declarative import declarative_base
@@ -33,6 +36,7 @@ from core.system.security import (
     setup_audit_logger,
     RateLimiter,
 )
+from core.system.queue_manager import QueueManager
 
 # Load .env
 try:
@@ -81,6 +85,118 @@ def _audit(request: Request, action: str, detail: str = '') -> None:
     _audit_logger.info("ip=%s action=%s detail=%s", ip, action, detail)
 
 
+_ALLOWED_QUEUE_AGENTS = {"SA", "AD", "CE", "CD", "Ralph"}
+
+_MOUNT_STATUS: dict[str, dict[str, Any]] = {
+    "cms": {"path": "/cms", "mounted": False, "error": ""},
+    "upload": {"path": "/upload", "mounted": False, "error": ""},
+    "commerce": {"path": "/commerce", "mounted": False, "error": ""},
+}
+
+
+def _read_json(path: Path, default: Any) -> Any:
+    try:
+        return json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return default
+
+
+def _is_process_running(pattern: str) -> bool:
+    """
+    운영 상태 확인용 최소 프로세스 체크.
+    pgrep 결과에 현재 PID만 있는 경우는 제외한다.
+    """
+    try:
+        proc = subprocess.run(
+            ["pgrep", "-f", pattern],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        return False
+
+    if proc.returncode != 0 or not proc.stdout.strip():
+        return False
+
+    current_pid = str(os.getpid())
+    for pid in proc.stdout.splitlines():
+        if pid.strip() and pid.strip() != current_pid:
+            return True
+    return False
+
+
+def _queue_counts() -> dict[str, int]:
+    tasks_root = _PROJECT_ROOT / '.infra' / 'queue' / 'tasks'
+    counts: dict[str, int] = {}
+    for state in ('pending', 'processing', 'completed'):
+        state_dir = tasks_root / state
+        counts[state] = len(list(state_dir.glob('*.json'))) if state_dir.exists() else 0
+    return counts
+
+
+def _queue_pending_summary(limit: int = 50) -> list[dict[str, str]]:
+    queue = QueueManager()
+    tasks = queue.get_pending_tasks()
+    tasks = sorted(tasks, key=lambda t: t.created_at, reverse=True)
+
+    summary: list[dict[str, str]] = []
+    for task in tasks[:limit]:
+        summary.append(
+            {
+                "task_id": task.task_id,
+                "agent_type": task.agent_type,
+                "task_type": task.task_type,
+                "created_at": task.created_at,
+            }
+        )
+    return summary
+
+
+def _load_plan_council_meta() -> dict[str, Any]:
+    report_path = _PROJECT_ROOT / 'knowledge' / 'system' / 'plan_council_reports.jsonl'
+    if not report_path.exists():
+        return {"status": "unknown"}
+
+    try:
+        last_line = report_path.read_text(encoding='utf-8').strip().splitlines()[-1]
+        payload = json.loads(last_line)
+    except Exception:
+        return {"status": "unknown"}
+
+    consensus = payload.get('consensus', {})
+    return {
+        "status": consensus.get('status', 'unknown'),
+        "models_used": consensus.get('models_used', []),
+        "timestamp": payload.get('timestamp'),
+    }
+
+
+def _mount_subapps() -> None:
+    mounts = (
+        ("cms", "/cms", "core.backend.app", True),
+        ("upload", "/upload", "core.backend.photo_upload", False),
+        ("commerce", "/commerce", "core.backend.ecommerce.main", False),
+    )
+    for name, mount_path, module_path, is_wsgi in mounts:
+        try:
+            module = importlib.import_module(module_path)
+            mounted_app = getattr(module, 'app')
+            app.mount(
+                mount_path,
+                WSGIMiddleware(mounted_app) if is_wsgi else mounted_app,
+                name=name,
+            )
+            _MOUNT_STATUS[name]["mounted"] = True
+            _MOUNT_STATUS[name]["error"] = ""
+        except Exception as exc:
+            _MOUNT_STATUS[name]["mounted"] = False
+            _MOUNT_STATUS[name]["error"] = str(exc)
+
+
+_mount_subapps()
+
+
 # ─── 데이터베이스 ─────────────────────────────────────────────
 
 DATABASE_URL = "sqlite:///./woohwahae_cms.db"
@@ -121,6 +237,12 @@ class AdminAuth(BaseModel):
     password: str = Field(..., max_length=200)
 
 
+class QueueTaskCreate(BaseModel):
+    agent_type: str = Field(..., min_length=2, max_length=16)
+    task_type: str = Field(..., min_length=2, max_length=120)
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
 # ─── 세션/토큰 ────────────────────────────────────────────────
 
 # {token: {'created': timestamp}} — secrets 기반, 1시간 만료
@@ -143,7 +265,7 @@ def get_db():
         db.close()
 
 
-def check_admin(request: Request, token: str = None):
+def check_admin(request: Request, token: Optional[str] = None):
     """관리자 권한 확인 — 토큰 유효성 + 만료 검증."""
     _cleanup_expired_sessions()
     if not token or token not in _admin_sessions:
@@ -244,6 +366,94 @@ async def update_content(
 async def get_all_pages(db: Session = Depends(get_db)):
     pages = db.query(Content.page).distinct().all()
     return [p[0] for p in pages]
+
+
+@app.get("/healthz")
+async def healthz():
+    queue_counts = _queue_counts()
+    orchestrator_running = _is_process_running("core/system/pipeline_orchestrator.py")
+    lock_state = _read_json(
+        _PROJECT_ROOT / "knowledge" / "system" / "web_work_lock.json",
+        {"locked": None},
+    )
+
+    status = "ok"
+    if not orchestrator_running or any(not svc["mounted"] for svc in _MOUNT_STATUS.values()):
+        status = "degraded"
+
+    return {
+        "status": status,
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "gateway": {"name": "fastapi-main", "version": "1.1.0"},
+        "services": _MOUNT_STATUS,
+        "queue": queue_counts,
+        "orchestrator": {"running": orchestrator_running},
+        "work_lock": lock_state,
+        "plan_council": _load_plan_council_meta(),
+    }
+
+
+@app.get("/harness/status")
+async def harness_status():
+    pending = _queue_pending_summary(limit=50)
+    return {
+        "status": "ok",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "queue": {
+            "counts": _queue_counts(),
+            "pending": pending,
+        },
+        "orchestrator": {
+            "running": _is_process_running("core/system/pipeline_orchestrator.py"),
+        },
+        "mounts": _MOUNT_STATUS,
+        "plan_council": _load_plan_council_meta(),
+    }
+
+
+@app.get("/status")
+async def status_alias():
+    return await harness_status()
+
+
+@app.get("/queue/pending")
+async def queue_pending(limit: int = 100):
+    safe_limit = max(1, min(limit, 500))
+    pending = _queue_pending_summary(limit=safe_limit)
+    return {
+        "count": len(pending),
+        "totals": _queue_counts(),
+        "items": pending,
+    }
+
+
+@app.post("/queue/task")
+async def queue_task_create(
+    data: QueueTaskCreate,
+    request: Request,
+    token: Optional[str] = None,
+):
+    check_admin(request, token)
+
+    if data.agent_type not in _ALLOWED_QUEUE_AGENTS:
+        raise HTTPException(status_code=400, detail="Unsupported agent_type")
+
+    task_type = sanitize_html_field(data.task_type).strip()
+    if not task_type:
+        raise HTTPException(status_code=400, detail="Invalid task_type")
+
+    queue = QueueManager()
+    task_id = queue.create_task(
+        agent_type=data.agent_type,
+        task_type=task_type,
+        payload=data.payload,
+    )
+    _audit(request, "queue_task_create", f"{data.agent_type}/{task_type}:{task_id}")
+
+    return {
+        "success": True,
+        "task_id": task_id,
+    }
 
 
 # ─── 관리자 패널 ──────────────────────────────────────────────

@@ -1,0 +1,156 @@
+{
+  "version": "2026-03-04",
+  "source_of_truth": "AGENTS.md",
+  "lock_file": "knowledge/system/web_work_lock.json",
+  "evidence_log_file": "knowledge/system/evidence_log.jsonl",
+  "plan_council_file": "core/system/plan_council.py",
+  "plan_dispatch_file": "core/scripts/plan_dispatch.sh",
+  "plan_council_hook_file": ".claude/hooks/plan-council.sh",
+  "plan_council_rule_file": ".claude/rules/plan-council.md",
+  "model_role_rule_file": ".claude/rules/model-role-routing.md",
+  "plan_council_report_file": "knowledge/system/plan_council_reports.jsonl",
+  "optional_lock_files": [
+    "knowledge/system/work_lock.json"
+  ],
+  "proactive_rule_file": ".claude/rules/proactive-tools.md",
+  "anti_hallucination_rule_file": ".claude/rules/anti-hallucination.md",
+  "required_proactive_tools": [
+    "sequential-thinking",
+    "context7",
+    "notebooklm"
+  ],
+  "anti_hallucination_contract": {
+    "require_evidence_for_facts": true,
+    "forbid_guessing": true,
+    "require_unknown_when_unverified": true,
+    "require_absolute_dates_for_relative_time": true,
+    "require_fresh_verification_for_time_sensitive": true
+  },
+  "plan_council_contract": {
+    "enabled": true,
+    "require_hook": true,
+    "require_both_models": true,
+    "require_preflight_for_nontrivial": true
+  },
+  "plan_dispatch_contract": {
+    "enabled": true,
+    "default_mode_auto": true,
+    "allow_manual": true,
+    "require_dispatch_for_nontrivial": true
+  },
+  "model_role_contract": {
+    "planner": "claude",
+    "coder": "codex",
+    "verifier": "gemini",
+    "forbid_role_inversion": true
+  },
+  "required_files": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".claude/settings.json",
+    ".claude/commands/plan.md",
+    ".claude/commands/plan-council.md",
+    ".claude/rules/proactive-tools.md",
+    ".claude/rules/plan-council.md",
+    ".claude/rules/model-role-routing.md",
+    ".claude/rules/anti-hallucination.md",
+    ".claude/hooks/plan-council.sh",
+    "knowledge/system/agent_runtime_contract.json",
+    "knowledge/agent_hub/state.md",
+    "knowledge/system/web_work_lock.json",
+    "knowledge/system/evidence_log.jsonl",
+    "knowledge/system/plan_council_reports.jsonl",
+    "knowledge/system/schemas/code_agent_changes.schema.json",
+    "knowledge/system/filesystem_cache.json",
+    "core/system/evidence_guard.py",
+    "core/system/plan_council.py",
+    "core/scripts/plan_dispatch.sh",
+    "directives/the_origin.md",
+    "directives/sage_architect.md",
+    "directives/practice.md",
+    "directives/system.md"
+  ],
+  "required_skills": [
+    "/Users/97layer/.codex/skills/playwright/SKILL.md",
+    "/Users/97layer/.codex/skills/screenshot/SKILL.md",
+    "/Users/97layer/.codex/skills/.system/skill-creator/SKILL.md",
+    "/Users/97layer/.codex/skills/.system/skill-installer/SKILL.md"
+  ],
+  "required_markers": {
+    "AGENTS.md": [
+      "## MCP Trigger Rule (Mandatory)",
+      "sequential-thinking",
+      "context7",
+      "notebooklm",
+      "## Communication Consistency (Mandatory)",
+      "존댓말(합니다체)",
+      "## Anti-Hallucination Protocol (Mandatory)",
+      "모름/검증 필요",
+      "core/system/evidence_guard.py --check",
+      "## Plan Council Protocol (Mandatory)",
+      "core/scripts/plan_dispatch.sh",
+      "core/system/plan_council.py --task",
+      "## Chat Alias Protocol (Mandatory)",
+      "/plan <요청>",
+      "## Model Role Routing (Mandatory)",
+      "Claude`: 기획/리스크 설계",
+      "Codex`: 코드 생성/수정",
+      "Gemini`: 검증/비평"
+    ],
+    "CLAUDE.md": [
+      ".claude/rules/proactive-tools.md",
+      "sequential-thinking",
+      "존댓말(합니다체)",
+      "모름/검증 필요",
+      "시간 민감 정보",
+      "core/system/evidence_guard.py --check",
+      "core/scripts/plan_dispatch.sh",
+      "/plan <intent>",
+      "core/system/plan_council.py --task",
+      "Claude=Plan",
+      "Codex=Code",
+      "Gemini=Verify"
+    ],
+    ".claude/rules/proactive-tools.md": [
+      "source_of_truth: AGENTS.md",
+      "plan-council",
+      "sequential-thinking",
+      "context7",
+      "notebooklm"
+    ],
+    ".claude/rules/plan-council.md": [
+      "source_of_truth: AGENTS.md",
+      "core/system/plan_council.py --task",
+      "Claude + Gemini"
+    ],
+    ".claude/rules/model-role-routing.md": [
+      "source_of_truth: AGENTS.md",
+      "Claude",
+      "Codex",
+      "Gemini",
+      "Hard Bans"
+    ],
+    ".claude/rules/anti-hallucination.md": [
+      "source_of_truth: AGENTS.md",
+      "Evidence-First",
+      "근거가 없으면 추측하지 않는다",
+      "모름/검증 필요",
+      "knowledge/system/evidence_log.jsonl"
+    ],
+    ".claude/settings.json": [
+      ".claude/hooks/plan-council.sh"
+    ],
+    ".claude/commands/plan-council.md": [
+      "/plan-council",
+      "core/system/plan_council.py --task"
+    ],
+    ".claude/commands/plan.md": [
+      "/plan",
+      "core/system/plan_council.py --task"
+    ],
+    "directives/system.md": [
+      "web_work_lock.json",
+      ".claude/rules/plan-council.md"
+    ]
+  }
+}
