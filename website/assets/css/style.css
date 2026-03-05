@@ -16787,63 +16787,126 @@ body.page-home {
   z-index: 1;
 }
 
-/* 홈페이지 전용 푸터 복구 및 프리미엄 정밀 폴리싱 */
+/* 홈페이지 전용 푸터 — Architectural Horizon (2026-03-05) */
 .page-home .site-footer {
   position: relative;
   z-index: 55;
   bottom: auto;
-  background: var(--bg);
-  padding: clamp(6rem, 12vw, 10rem) 0 clamp(4rem, 8vw, 6rem);
+  background: transparent;
+  /* 배경 소거: 상단 필드와 연결 */
+  padding: 120px 0 60px;
   border-top: none;
-  text-align: center;
-  /* 고요한 중앙 정렬 */
+}
+
+/* 필드와 푸터 사이의 부드러운 안개(Mist) 전이 */
+.page-home .site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
 }
 
 .page-home .footer-inner {
-  align-items: center;
-  gap: 3.2rem;
-}
-
-.page-home .footer-mid {
-  align-items: center;
-  gap: 1.4rem;
-}
-
-.page-home .footer-nav,
-.page-home .footer-contact-row {
-  justify-content: center;
-  gap: 1.6rem;
-}
-
-.page-home .footer-nav a,
-.page-home .footer-contact-row a,
-.page-home .footer-legal a,
-.page-home .footer-biz {
-  font-size: 0.64rem;
-  letter-spacing: 0.08em;
-  opacity: 0.42;
-  color: var(--text);
-  transition: opacity 0.6s var(--ease);
-}
-
-.page-home .footer-nav a:hover,
-.page-home .footer-contact-row a:hover,
-.page-home .footer-legal a:hover {
-  opacity: 0.85;
-  filter: blur(0.5px);
-}
-
-.page-home .footer-biz {
-  max-width: none;
-  margin: 1rem 0;
-  font-family: var(--font-mono);
+  max-width: var(--max-wide);
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  /* 비대칭 레이아웃: 동양적 여백 */
+  gap: 4rem;
+  align-items: end;
 }
 
 .page-home .footer-wordmark {
-  font-size: 18vw;
-  opacity: 0.03;
-  letter-spacing: -0.01em;
+  position: static;
+  transform: none;
+  font-size: 1.25rem;
+  /* 거대 배경에서 정교한 시그니처로 변경 */
   font-weight: 300;
+  letter-spacing: 0.35em;
+  opacity: 0.85;
+  color: var(--text);
+  margin-bottom: -4px;
+}
+
+.page-home .footer-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.page-home .footer-nav {
+  display: flex;
+  gap: 2.22rem;
+  width: 100%;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.05);
+  padding-bottom: 1rem;
+}
+
+.page-home .footer-contact-row {
+  display: flex;
+  gap: 2rem;
+}
+
+.page-home .footer-base {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 2.2rem;
+  border-top: 1px solid rgba(26, 26, 26, 0.03);
+}
+
+.page-home .footer-biz {
+  max-width: 42ch;
+  margin: 0;
+  text-align: left;
+  line-height: 2.1;
+  font-size: 0.62rem;
+  opacity: 0.35;
+}
+
+.page-home .footer-legal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
+.page-home .footer-time {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  opacity: 0.52;
+  color: var(--text);
+}
+
+@media (max-width: 1024px) {
+  .page-home .footer-inner {
+    grid-template-columns: 1fr;
+    padding: 0 var(--space-md);
+    gap: 3rem;
+  }
+
+  .page-home .footer-base {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .page-home .footer-biz {
+    text-align: center;
+  }
+
+  .page-home .footer-legal {
+    align-items: center;
+  }
 }
 
 /* ── 모바일 홈 우선 레이아웃 (2026-03-05) ── */
@@ -19613,8 +19676,26 @@ body.is-loaded .page-home .home-hero__elog-wrap {
   background-color: var(--bg);
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s ease;
-  will-change: opacity, visibility;
+  will-change: opacity;
+}
+
+body.is-loaded .home-preloader {
+  animation: preloader-fade-out 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes preloader-fade-out {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+  99% {
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 /* 시간대별 배경색 변조 */
@@ -19632,12 +19713,6 @@ body.time-evening .home-preloader {
 
 body.time-night .home-preloader {
   background-color: #E0DFDD;
-}
-
-body.is-loaded .home-preloader {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
 }
 
 /* ── Nav Overlay OAuth Panel (2026-03-05) ── */
