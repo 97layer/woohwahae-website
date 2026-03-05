@@ -57,7 +57,7 @@
 
       // 3. 강제 실행 (로딩 지연 대비: 2500ms)
       setTimeout(function () {
-        if (!preloader.getAttribute('data-revealed') && window.revealField) {
+        if (!preloader.getAttribute('data-revealed')) {
           window.revealField();
         }
       }, 2500);
@@ -243,7 +243,7 @@
               });
           }
           panel.classList.toggle('is-open', !isOpen);
-          panel.setAttribute('aria-hidden', String(isOpen));
+          panel.setAttribute('aria-hidden', String(!isOpen));
         });
       }
     })();
@@ -255,7 +255,6 @@
   <!-- COMPONENT:footer -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-wordmark">WOOHWAHAE</div>
       <div class="footer-mid">
         <nav class="footer-nav">
           <a href="/archive/">Archive</a>
