@@ -1,0 +1,19 @@
+{
+  "title": "Works — WOOHWAHAE",
+  "headline": "작업의 구조",
+  "section_label": "002. WORKS",
+  "description": "아틀리에, 오퍼링, 프로젝트. 실행 단위를 구조로 정리합니다.",
+  "og_url": "https://woohwahae.kr/works/",
+  "body_class": "page-practice page-works",
+  "preamble": "아틀리에, 오퍼링, 프로젝트. 실행 단위를 구조로 정리합니다.",
+  "controls": {
+    "id": "works-sections",
+    "aria": "웍스 섹션",
+    "layout": "list",
+    "items": [
+      { "label": "001. 아틀리에", "href": "#atelier" },
+      { "label": "002. 오퍼링", "href": "#offering" },
+      { "label": "003. 프로젝트", "href": "#projects" }
+    ]
+  }
+}

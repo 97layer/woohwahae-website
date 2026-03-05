@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """섹션 페이지 빌더 — Jinja2 템플릿 기반 조립.
 
-archive / practice / lab index.html 을 _templates/section-page.html 로
+archive / works / lab index.html 을 _templates/section-page.html 로
 조립한다. 조립 후 build_components.py 가 COMPONENT 마커를 주입한다.
 
 Usage:
@@ -36,7 +36,7 @@ _template_path = TMPL_DIR / "section-page.html"
 # 페이지 → 출력 경로 맵
 PAGE_MAP = {
     "archive": WEB / "archive" / "index.html",
-    "practice": WEB / "practice" / "index.html",
+    "works": WEB / "works" / "index.html",
     "lab": WEB / "lab" / "index.html",
 }
 

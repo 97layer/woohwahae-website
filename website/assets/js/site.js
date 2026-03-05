@@ -419,30 +419,29 @@
     }, 800 + i * 120);
   });
 
-  /* ─── Section Subnav 주입 ─── */
+  /* ─── Section Subnav (헤더 통합 네비게이션) ─── */
   (function () {
     var siteNav = document.getElementById('site-nav');
     if (!siteNav) return;
     if (document.querySelector('.site-subnav')) return;
 
     var path = window.location.pathname;
-    /* 홈(/)에서는 숨김 */
     if (path === '/' || path === '/index.html') return;
 
     var active = '';
     if (path.indexOf('/archive') === 0 || path.indexOf('/essay-') !== -1 || path.indexOf('/journal-') !== -1 || path.indexOf('/lookbook') !== -1 || path.indexOf('/playlist') !== -1) active = 'archive';
-    else if (path.indexOf('/practice') === 0) active = 'practice';
+    else if (path.indexOf('/works') === 0 || path.indexOf('/practice') === 0) active = 'works';
     else if (path.indexOf('/about') === 0) active = 'about';
     else if (path.indexOf('/lab') === 0) active = 'lab';
     if (active === 'lab') return;
 
     var sections = [
       { key: 'archive', label: 'Archive', href: '/archive/' },
-      { key: 'practice', label: 'Practice', href: '/practice/' },
-      { key: 'about', label: 'About', href: '/about/' }
+      { key: 'works', label: 'Works', href: '/works/' },
+      { key: 'about', label: 'About', href: '/about/' },
+      { key: 'lab', label: 'Lab', href: '/lab/' }
     ];
 
-    /* 상단 탭 active 통일: 현재 경로에 맞춰 nav/overlay 모두 강조 */
     document.querySelectorAll('.nav-links a, .nav-overlay a').forEach(function (a) {
       var href = a.getAttribute('href') || '';
       var isActive = href !== '/' && path.indexOf(href) === 0;
@@ -459,8 +458,177 @@
       return '<a href="' + s.href + '" class="site-subnav__link' + (s.key === active ? ' is-active' : '') + '">' + s.label + '</a>';
     }).join('');
 
-    document.body.appendChild(subnav);
+    // 헤더(site-nav) 내부에 삽입하여 하나로 묶음
+    siteNav.appendChild(subnav);
     document.body.classList.add('has-subnav');
+  })();
+
+  /* ─── Archive Ledger (Index / Notes / Curation) ─── */
+  (function () {
+    var ledgerEl = document.getElementById('archive-ledger');
+    if (!ledgerEl) return;
+
+    var TYPE_LABELS = {
+      essay: 'Essay',
+      journal: 'Journal',
+      lookbook: 'Lookbook',
+      playlist: 'Playlist'
+    };
+
+    var CURATION_RE = /(합니다|됩니다|입니다|하세요|드립니다)/;
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function dateValue(value) {
+      var text = String(value || '').trim();
+      if (!text) return 0;
+      var normalized = text.replace(/\./g, '-').replace(/\//g, '-');
+      var parsed = Date.parse(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function normalizeType(value) {
+      var type = String(value || '').trim().toLowerCase();
+      if (type === 'journal' || type === 'lookbook' || type === 'playlist') return type;
+      return 'essay';
+    }
+
+    function issueDisplay(value, index) {
+      var raw = String(value || '').trim();
+      if (!raw) return String(index + 1).padStart(3, '0');
+      var hit = raw.match(/(\d{1,4})/);
+      if (!hit) return String(index + 1).padStart(3, '0');
+      return hit[1].padStart(3, '0');
+    }
+
+    function toneFromText(text) {
+      if (!text) return 'log';
+      return CURATION_RE.test(text) ? 'curation' : 'log';
+    }
+
+    function resolveTone(post) {
+      var preview = String(post.preview || '').trim();
+      if (preview) return toneFromText(preview);
+      var title = String(post.title || '').trim();
+      if (title) return toneFromText(title);
+      return 'log';
+    }
+
+    function normalize(post, index) {
+      var slug = String(post.slug || '').replace(/^\//, '').replace(/\/$/, '');
+      var explicitUrl = String(post.url || '').trim();
+      var status = String(post.status || '').trim().toLowerCase();
+      var type = normalizeType(post.type);
+      var resolvedUrl = explicitUrl || (slug ? '/archive/' + slug + '/' : '#');
+      return {
+        index: index,
+        slug: slug,
+        url: resolvedUrl,
+        title: post.title || 'Untitled',
+        summary: post.preview || '',
+        date: post.date || '',
+        dateValue: dateValue(post.date),
+        type: type,
+        typeLabel: TYPE_LABELS[type] || TYPE_LABELS.essay,
+        issue: post.issue || ('Issue ' + String(index + 1).padStart(3, '0')),
+        issueDisplay: issueDisplay(post.issue, index),
+        readMin: typeof post.readMin === 'number' ? post.readMin : null,
+        status: status === 'pending' ? 'pending' : 'published',
+        tone: resolveTone(post)
+      };
+    }
+
+    function sortPosts(posts) {
+      return posts.slice().sort(function (a, b) {
+        if (b.dateValue !== a.dateValue) return b.dateValue - a.dateValue;
+        return a.index - b.index;
+      });
+    }
+
+    function isPending(post) {
+      return post.status === 'pending' || post.url === '#';
+    }
+
+    function metaTemplate(post, pending) {
+      var parts = [
+        '<span class="ledger__serial">', escapeHtml(post.issueDisplay), '</span>',
+        '<span class="ledger__type">', escapeHtml(post.typeLabel), '</span>',
+        '<span class="ledger__date">', escapeHtml(post.date), '</span>'
+      ];
+      if (pending) {
+        parts.push('<span class="pill is-pending">Pending</span>');
+      }
+      return parts.join('');
+    }
+
+    function ledgerItemTemplate(post) {
+      var pending = isPending(post);
+      var titleClass = pending ? 'is-disabled' : '';
+      var actionClass = 'ledger__action-link' + (pending ? ' is-disabled' : '');
+      var href = pending ? '#' : post.url;
+      var titleAttrs = pending ? ' aria-disabled="true" tabindex="-1"' : '';
+      var actionAttrs = pending ? ' aria-disabled="true" tabindex="-1"' : '';
+      var summary = post.summary ? '<p class="ledger__summary">' + escapeHtml(post.summary) + '</p>' : '';
+      return [
+        '<li class="ledger__item" data-status="', escapeHtml(post.status), '">',
+        '<div>',
+        '<div class="ledger__meta">', metaTemplate(post, pending), '</div>',
+        '<h3 class="ledger__title"><a class="', titleClass, '" href="', escapeHtml(href), '"', titleAttrs, '>', escapeHtml(post.title), '</a></h3>',
+        summary,
+        '</div>',
+        '<div class="ledger__action">',
+        '<a class="', actionClass, '" href="', escapeHtml(href), '"', actionAttrs, '>', pending ? 'Pending' : 'Open', '</a>',
+        '</div>',
+        '</li>'
+      ].join('');
+    }
+
+    function renderLedger(posts) {
+      if (!posts.length) {
+        ledgerEl.innerHTML = '<li class="ledger__placeholder">표시할 기록이 없습니다.</li>';
+        return;
+      }
+      ledgerEl.innerHTML = posts.map(ledgerItemTemplate).join('');
+    }
+
+    function resolveView() {
+      var attr = (document.body.getAttribute('data-archive-view') || '').trim().toLowerCase();
+      if (attr) {
+        if (attr === 'notes') return 'log';
+        return attr;
+      }
+      var path = window.location.pathname || '';
+      if (path.indexOf('/archive/notes') === 0) return 'log';
+      if (path.indexOf('/archive/curation') === 0) return 'curation';
+      return '';
+    }
+
+    fetch('/archive/index.json')
+      .then(function (response) { return response.json(); })
+      .then(function (raw) {
+        if (!Array.isArray(raw) || !raw.length) {
+          renderLedger([]);
+          return;
+        }
+        var posts = sortPosts(raw.map(normalize));
+        var view = resolveView();
+        if (view === 'log') {
+          posts = posts.filter(function (post) { return post.tone === 'log'; });
+        } else if (view === 'curation') {
+          posts = posts.filter(function (post) { return post.tone === 'curation'; });
+        }
+        renderLedger(posts);
+      })
+      .catch(function () {
+        renderLedger([]);
+      });
   })();
 
   /* ─── Nav Overlay 툴팁 터치 호환 ─── */
@@ -498,8 +666,11 @@
 
   /* ─── View Transitions: 방향 감지 ─── */
   (function () {
-    var NAV_ORDER = ['/', '/archive/', '/practice/', '/about/', '/lab/'];
+    var NAV_ORDER = ['/', '/archive/', '/works/', '/about/', '/lab/'];
     function navIdx(path) {
+      if (path === '/practice' || path.indexOf('/practice/') === 0) {
+        path = '/works/';
+      }
       for (var i = 0; i < NAV_ORDER.length; i++) {
         var p = NAV_ORDER[i];
         if (p === '/' ? path === p : path.indexOf(p) === 0) return i;
@@ -787,7 +958,7 @@
 
     function applyActionState(el, live) {
       var liveHref = el.getAttribute('data-release-live-href') || '';
-      var holdHref = el.getAttribute('data-release-hold-href') || '/practice/';
+      var holdHref = el.getAttribute('data-release-hold-href') || '/works/';
       var liveLabel = el.getAttribute('data-release-live-label') || '';
       var holdLabel = el.getAttribute('data-release-hold-label') || '준비 중';
 

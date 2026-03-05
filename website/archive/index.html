@@ -17,26 +17,28 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
   <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-  <link rel="stylesheet" href="/assets/css/style.css?v=61e56d36">
+  <link rel="stylesheet" href="/assets/css/style.css?v=322a3297">
   <script>(function () { var h = new Date().getHours(); var cls = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; var root = document.documentElement; root.classList.remove('time-dawn', 'time-day', 'time-evening', 'time-night'); root.classList.add(cls); })();</script>
   <!-- /COMPONENT:head -->
 </head>
 <body class="page-archive page-archive-index">
-<!-- GENERATED: section=archive source_hash=7f3d61b1af47 -->
+<!-- GENERATED: section=archive source_hash=561adf1a3cf6 -->
 <!-- COMPONENT:nav -->
 <nav class="site-nav" id="site-nav">
-  <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
-    <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
-  </a>
-  <ul class="nav-links" id="nav-links">
-    <li><a href="/archive/">Archive</a></li>
-    <li><a href="/practice/">Practice</a></li>
-    <li><a href="/about/">About</a></li>
-    <li><a href="/lab/">Lab</a></li>
-  </ul>
-  <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-controls="nav-overlay" aria-expanded="false">
-    <span></span><span></span>
-  </button>
+  <div class="site-nav__top">
+    <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+      <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/archive/">Archive</a></li>
+      <li><a href="/works/">Works</a></li>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/lab/">Lab</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-controls="nav-overlay" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
   <div class="read-progress" id="read-progress" aria-hidden="true"></div>
 </nav>
 <div class="nav-overlay" id="nav-overlay" aria-hidden="true">
@@ -44,34 +46,28 @@
     <div class="nav-overlay__sector">
       <h3 class="nav-overlay__label"><a href="/archive/">Archive</a></h3>
       <nav class="nav-overlay__subs">
-        <a href="/archive/#essay">Essay <span>에세이</span></a>
-        <a href="/archive/#journal">Journal <span>일지</span></a>
-        <a href="/archive/lookbook/">Lookbook <span>룩북</span></a>
-        <a href="/playlist.html">Playlist <span>재생목록</span></a>
+        <a href="/archive/notes/">Log <span>사유 / 기록</span></a>
+        <a href="/archive/curation/">Curation <span>시선 / 청음</span></a>
       </nav>
     </div>
     <div class="nav-overlay__sector">
-      <h3 class="nav-overlay__label"><a href="/practice/">Practice</a></h3>
+      <h3 class="nav-overlay__label"><a href="/works/">Works</a></h3>
       <nav class="nav-overlay__subs">
-        <a href="/practice/#atelier">Atelier <span>아틀리에</span></a>
-        <a href="/practice/#directing">Directing <span>디렉팅</span></a>
-        <a href="/practice/#projects">Project <span>프로젝트</span></a>
-        <a href="/practice/#product">Product <span>결과물</span></a>
+        <a href="/works/atelier/">Atelier <span>작업</span></a>
+        <a href="/works/offering/">Offering <span>서비스 / 제품</span></a>
+        <a href="/works/project/">Project <span>협업</span></a>
       </nav>
     </div>
     <div class="nav-overlay__sector">
       <h3 class="nav-overlay__label"><a href="/about/">About</a></h3>
       <nav class="nav-overlay__subs">
-        <a href="/about/#ch-2">The Origin <span>근원</span></a>
-        <a href="/about/woosunho/">Profile <span>프로필</span></a>
+        <a href="/about/">About <span>근원</span></a>
+        <a href="/about/woosunho/">Woosunho <span>기획자</span></a>
       </nav>
     </div>
     <div class="nav-overlay__sector">
       <h3 class="nav-overlay__label"><a href="/lab/">Lab</a></h3>
-      <nav class="nav-overlay__subs">
-        <a href="/lab/">Experiments <span>실험실</span></a>
-        <a href="/lab/changelog/">Changelog <span>변경이력</span></a>
-      </nav>
+      <nav class="nav-overlay__subs"></nav>
     </div>
   </div>
 </div>
@@ -95,141 +91,8 @@
 </section>
 
 </main>
-<script>
-  (function () {
-    var ledgerEl = document.getElementById('archive-ledger');
-    if (!ledgerEl) return;
 
-    var TYPE_LABELS = {
-      essay: 'Essay',
-      journal: 'Journal',
-      lookbook: 'Lookbook',
-      playlist: 'Playlist'
-    };
-
-    function escapeHtml(value) {
-      return String(value || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function dateValue(value) {
-      var text = String(value || '').trim();
-      if (!text) return 0;
-      var normalized = text.replace(/\./g, '-').replace(/\//g, '-');
-      var parsed = Date.parse(normalized);
-      return Number.isFinite(parsed) ? parsed : 0;
-    }
-
-    function normalizeType(value) {
-      var type = String(value || '').trim().toLowerCase();
-      if (type === 'journal' || type === 'lookbook' || type === 'playlist') return type;
-      return 'essay';
-    }
-
-    function issueDisplay(value, index) {
-      var raw = String(value || '').trim();
-      if (!raw) return String(index + 1).padStart(3, '0');
-      var hit = raw.match(/(\d{1,4})/);
-      if (!hit) return String(index + 1).padStart(3, '0');
-      return hit[1].padStart(3, '0');
-    }
-
-    function normalize(post, index) {
-      var slug = String(post.slug || '').replace(/^\//, '').replace(/\/$/, '');
-      var explicitUrl = String(post.url || '').trim();
-      var status = String(post.status || '').trim().toLowerCase();
-      var type = normalizeType(post.type);
-      var resolvedUrl = explicitUrl || (slug ? slug + '/' : '#');
-      return {
-        index: index,
-        slug: slug,
-        url: resolvedUrl,
-        title: post.title || 'Untitled',
-        summary: post.preview || '',
-        date: post.date || '',
-        dateValue: dateValue(post.date),
-        type: type,
-        typeLabel: TYPE_LABELS[type] || TYPE_LABELS.essay,
-        issue: post.issue || ('Issue ' + String(index + 1).padStart(3, '0')),
-        issueDisplay: issueDisplay(post.issue, index),
-        readMin: typeof post.readMin === 'number' ? post.readMin : null,
-        status: status === 'pending' ? 'pending' : 'published'
-      };
-    }
-
-    function sortPosts(posts) {
-      return posts.slice().sort(function (a, b) {
-        if (b.dateValue !== a.dateValue) return b.dateValue - a.dateValue;
-        return a.index - b.index;
-      });
-    }
-
-    function isPending(post) {
-      return post.status === 'pending' || post.url === '#';
-    }
-
-    function metaTemplate(post, pending) {
-      var parts = [
-        '<span class="ledger__serial">', escapeHtml(post.issueDisplay), '</span>',
-        '<span class="ledger__type">', escapeHtml(post.typeLabel), '</span>',
-        '<span class="ledger__date">', escapeHtml(post.date), '</span>'
-      ];
-      if (pending) {
-        parts.push('<span class="pill is-pending">Pending</span>');
-      }
-      return parts.join('');
-    }
-
-    function ledgerItemTemplate(post) {
-      var pending = isPending(post);
-      var titleClass = pending ? 'is-disabled' : '';
-      var actionClass = 'ledger__action-link' + (pending ? ' is-disabled' : '');
-      var href = pending ? '#' : post.url;
-      var titleAttrs = pending ? ' aria-disabled="true" tabindex="-1"' : '';
-      var actionAttrs = pending ? ' aria-disabled="true" tabindex="-1"' : '';
-      var summary = post.summary ? '<p class="ledger__summary">' + escapeHtml(post.summary) + '</p>' : '';
-      return [
-        '<li class="ledger__item" data-status="', escapeHtml(post.status), '">',
-        '<div>',
-        '<div class="ledger__meta">', metaTemplate(post, pending), '</div>',
-        '<h3 class="ledger__title"><a class="', titleClass, '" href="', escapeHtml(href), '"', titleAttrs, '>', escapeHtml(post.title), '</a></h3>',
-        summary,
-        '</div>',
-        '<div class="ledger__action">',
-        '<a class="', actionClass, '" href="', escapeHtml(href), '"', actionAttrs, '>', pending ? 'Pending' : 'Open', '</a>',
-        '</div>',
-        '</li>'
-      ].join('');
-    }
-
-    function renderLedger(posts) {
-      if (!posts.length) {
-        ledgerEl.innerHTML = '<li class="ledger__placeholder">표시할 기록이 없습니다.</li>';
-        return;
-      }
-      ledgerEl.innerHTML = posts.map(ledgerItemTemplate).join('');
-    }
-
-    fetch('index.json')
-      .then(function (response) { return response.json(); })
-      .then(function (raw) {
-        if (!Array.isArray(raw) || !raw.length) {
-          renderLedger([]);
-          return;
-        }
-        var posts = sortPosts(raw.map(normalize));
-        renderLedger(posts);
-      })
-      .catch(function () {
-        renderLedger([]);
-      });
-  })();
-</script>
-<script defer src="/assets/js/site.js?v=5b25e7d9"></script>
+<script defer src="/assets/js/site.js?v=abbf8b06"></script>
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
   <div class="footer-inner">

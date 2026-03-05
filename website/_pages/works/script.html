@@ -1,0 +1,47 @@
+<script>
+  (function () {
+    var listEl = document.getElementById('practice-project-list');
+    if (!listEl) return;
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function projectTemplate(project, index) {
+      var num = project.number || String(index + 1).padStart(2, '0');
+      var title = project.title || ('Project ' + num);
+      var year = project.year || '----';
+      var summary = project.summary || '';
+      var href = project.href || '/works/project/';
+      return (
+        '<article class="practice-project-item">' +
+          '<p class="practice-project-item__num">P' + escapeHtml(num) + '</p>' +
+          '<h3 class="practice-project-item__title">' + escapeHtml(title) + '</h3>' +
+          '<p class="practice-project-item__summary">' + escapeHtml(summary) + '</p>' +
+          '<div class="practice-project-item__meta">' +
+            '<span>' + escapeHtml(year) + '</span>' +
+            '<a href="' + escapeHtml(href) + '">Open</a>' +
+          '</div>' +
+        '</article>'
+      );
+    }
+
+    fetch('/works/projects.json')
+      .then(function (response) { return response.json(); })
+      .then(function (projects) {
+        if (!Array.isArray(projects) || projects.length === 0) {
+          listEl.innerHTML = '<p class="practice-project-list__empty">등록된 프로젝트가 아직 없습니다.</p>';
+          return;
+        }
+        listEl.innerHTML = projects.map(projectTemplate).join('');
+      })
+      .catch(function () {
+        listEl.innerHTML = '<p class="practice-project-list__empty">프로젝트 데이터 로딩에 실패했습니다.</p>';
+      });
+  })();
+</script>
