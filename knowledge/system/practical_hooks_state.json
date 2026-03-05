@@ -513,12 +513,8 @@
     "task_20260305_192138": {
       "goal": "Archive index ledger JS fix (home tone alignment) + visual check",
       "files": [
-        "website/archive/index.html",
-        "website/about/woosunho/index.html",
-        "website/archive/essay-004-art-of-waiting/index.html",
-        "website/index.html",
-        "website/practice/atelier.html",
-        "website/product/index.html"
+        "website/_pages/archive/script.html",
+        "website/archive/index.html"
       ],
       "checks": [
         "python3 core/scripts/practical_hooks.py mobile-check --urls http://127.0.0.1:9712/archive/ --widths 390",
@@ -527,17 +523,33 @@
       ],
       "stop_conditions": "hash drift detected | validation failed | permission budget exceeded",
       "hash_seal": {
-        "/Users/97layer/97layerOS/website/archive/index.html": "edbba7261aed0a84e27b2c230379b7377e0207a5",
-        "/Users/97layer/97layerOS/website/about/woosunho/index.html": "fa30fd685a9b70271ce90c8e2e830ee000b7e978",
-        "/Users/97layer/97layerOS/website/archive/essay-004-art-of-waiting/index.html": "905baf68dd19f859f39e898191818e15bc8186f2",
-        "/Users/97layer/97layerOS/website/index.html": "8b86212861534b03dbc5def5b609aee852a2562f",
-        "/Users/97layer/97layerOS/website/practice/atelier.html": "bb1009aa3999a0bad71f24dd045f1dc1ce157061",
-        "/Users/97layer/97layerOS/website/product/index.html": "45d0f374f053629b4016a4099ebb4a5354f030cd"
+        "/Users/97layer/97layerOS/website/_pages/archive/script.html": "a0d1cc0797f7cf7fd5815720674becc906ef3d55",
+        "/Users/97layer/97layerOS/website/archive/index.html": "1547b7e9b23dd72954d82966c1354434296cb586"
       },
       "permission_requests": 0,
       "max_permission_prompts": 1,
       "created_at": "2026-03-05T19:21:38",
-      "updated_at": "2026-03-05T19:49:12"
+      "updated_at": "2026-03-05T20:12:02"
+    },
+    "task_20260305_201616": {
+      "goal": "Guard section build outputs against source drift",
+      "files": [
+        "core/scripts/build_sections.py",
+        "website/_templates/section-page.html"
+      ],
+      "checks": [
+        "python3 core/scripts/build.py --components --bust",
+        "python3 core/scripts/code_audit.py"
+      ],
+      "stop_conditions": "hash drift detected | validation failed | permission budget exceeded",
+      "hash_seal": {
+        "/Users/97layer/97layerOS/core/scripts/build_sections.py": "f2ce6f523123571479731d3348145225ee52a49d",
+        "/Users/97layer/97layerOS/website/_templates/section-page.html": "7ebe31229d3970b332bd05d35ca1fa4b327a5f34"
+      },
+      "permission_requests": 0,
+      "max_permission_prompts": 1,
+      "created_at": "2026-03-05T20:16:16",
+      "updated_at": "2026-03-05T20:16:58"
     }
   }
 }

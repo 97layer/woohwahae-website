@@ -10,6 +10,7 @@ Usage:
 import hashlib
 import json
 import os
+import re
 import sys
 
 from pathlib import Path
@@ -30,6 +31,7 @@ PAGES_DIR = WEB / "_pages"
 # JS 해시 계산
 _js_path = WEB / "assets" / "js" / "site.js"
 _js_hash = hashlib.md5(_js_path.read_bytes()).hexdigest()[:8] if _js_path.exists() else "00000000"
+_template_path = TMPL_DIR / "section-page.html"
 
 # 페이지 → 출력 경로 맵
 PAGE_MAP = {
@@ -43,6 +45,28 @@ def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8") if path.exists() else ""
 
 
+def _source_hash(paths, extra="") -> str:
+    h = hashlib.sha1()
+    for path in paths:
+        if path.exists():
+            h.update(path.read_bytes())
+        else:
+            h.update(f"<missing:{path}>".encode("utf-8"))
+    if extra:
+        h.update(extra.encode("utf-8"))
+    return h.hexdigest()[:12]
+
+
+def _extract_marker(text: str):
+    match = re.search(
+        r"<!--\s*GENERATED:\s*section=([\w-]+)\s+source_hash=([a-f0-9]+)\s*-->",
+        text or "",
+    )
+    if not match:
+        return None
+    return match.group(1), match.group(2)
+
+
 def build_page(page_id: str, out_path: Path) -> None:
     page_dir = PAGES_DIR / page_id
     meta = json.loads(_read(page_dir / "meta.json"))
@@ -52,6 +76,16 @@ def build_page(page_id: str, out_path: Path) -> None:
     body = _read(page_dir / "body.html")
     page_script = _read(page_dir / "script.html").strip() or None
     concept_board = meta.get("concept_board")
+    source_hash = _source_hash(
+        [
+            _template_path,
+            page_dir / "meta.json",
+            page_dir / "controls.html",
+            page_dir / "body.html",
+            page_dir / "script.html",
+        ],
+        extra=_js_hash,
+    )
 
     if not body.strip():
         print(f"경고: {page_id}/body.html 비어있음 (본문 없음)")
@@ -73,7 +107,19 @@ def build_page(page_id: str, out_path: Path) -> None:
         body=body,
         page_script=page_script,
         js_hash=_js_hash,
+        page_id=page_id,
+        source_hash=source_hash,
     )
+
+    if out_path.exists():
+        existing = _read(out_path)
+        marker = _extract_marker(existing)
+        if marker and marker[0] == page_id and marker[1] == source_hash:
+            if existing != rendered:
+                msg = f"경고: {out_path.relative_to(ROOT)} 출력이 소스와 불일치합니다. _pages 소스를 수정하세요."
+                if os.getenv("BUILD_SECTIONS_FAIL_ON_DRIFT", "").lower() in {"1", "true", "yes"}:
+                    raise SystemExit(msg)
+                print(msg)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(rendered, encoding="utf-8")
