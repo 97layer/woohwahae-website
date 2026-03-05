@@ -6867,128 +6867,107 @@ body.page-archive-ledger .footer-legal span {
   transform: translateY(-7px) rotate(-45deg);
 }
 
+/* ── 네비 오버레이 — 풀스크린, 모바일 우선, 타이핑 모션 ── */
 .nav-overlay {
   display: flex;
   position: fixed;
   inset: 0;
-  left: auto;
-  width: min(540px, 100%);
-  /* 원래의 사이드 패널 너비 */
-  z-index: 9999;
-  background: var(--bg-glass);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  padding: clamp(100px, 12vh, 160px) var(--space-md) var(--space-md);
+  z-index: 9998;
+  background: var(--bg);
+  padding: clamp(80px, 14vh, 140px) clamp(2rem, 8vw, 6rem) clamp(2rem, 6vh, 4rem);
   flex-direction: column;
+  justify-content: center;
   transform: translateX(100%);
-  /* 오른쪽에서 슬라이드 */
-  opacity: 0;
   pointer-events: none;
-  transition: transform 0.8s var(--ease), opacity 0.8s var(--ease);
+  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   overflow-y: auto;
-  box-shadow: -20px 0 60px rgba(26, 26, 26, 0.05);
-  /* 경계감 강조 */
 }
 
-/* 질감 레이어 제거 */
-
 .nav-overlay.open {
-  transform: translateY(0);
-  opacity: 1;
+  transform: translateX(0);
   pointer-events: auto;
 }
 
 .nav-overlay__grid {
   display: flex;
   flex-direction: column;
-  gap: 3.2rem;
+  gap: clamp(2rem, 5vh, 3.2rem);
   width: 100%;
+  max-width: 680px;
 }
 
 .nav-overlay__sector {
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  /* 여백 확보 */
-  gap: 2rem;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  border-left: 1px solid rgba(26, 26, 26, 0.02);
-  padding-left: 1.5rem;
-}
-
-.nav-overlay.open .nav-overlay__sector {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.nav-overlay.open .nav-overlay__sector:nth-child(1) {
-  transition-delay: 0.1s;
-}
-
-.nav-overlay.open .nav-overlay__sector:nth-child(2) {
-  transition-delay: 0.18s;
-}
-
-.nav-overlay.open .nav-overlay__sector:nth-child(3) {
-  transition-delay: 0.26s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .nav-overlay__label {
   margin: 0;
   border: none;
-  padding-top: 4px;
+  overflow: hidden;
 }
 
 .nav-overlay__label a {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-faint);
+  font-size: clamp(1.6rem, 6vw, 2.6rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
   text-decoration: none;
-  opacity: 0.45;
-  padding-top: 2px;
   display: block;
+  white-space: nowrap;
+  clip-path: inset(0 100% 0 0);
 }
 
-.nav-overlay__sector:hover .nav-overlay__label a {
-  opacity: 1;
-  color: var(--text);
+.nav-overlay.open .nav-overlay__sector:nth-child(1) .nav-overlay__label a {
+  animation: nav-type-in 0.55s steps(18) 0.12s forwards;
+}
+.nav-overlay.open .nav-overlay__sector:nth-child(2) .nav-overlay__label a {
+  animation: nav-type-in 0.55s steps(18) 0.38s forwards;
+}
+.nav-overlay.open .nav-overlay__sector:nth-child(3) .nav-overlay__label a {
+  animation: nav-type-in 0.55s steps(14) 0.64s forwards;
+}
+
+@keyframes nav-type-in {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
 }
 
 .nav-overlay__subs {
   display: flex;
   flex-wrap: wrap;
-  /* 좁은 공간에서 유연하게 흐르도록 */
-  gap: 0.7rem 1.4rem;
+  gap: 0.4rem 1.2rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
+.nav-overlay.open .nav-overlay__sector:nth-child(1) .nav-overlay__subs { opacity: 1; transition-delay: 0.72s; }
+.nav-overlay.open .nav-overlay__sector:nth-child(2) .nav-overlay__subs { opacity: 1; transition-delay: 0.98s; }
+.nav-overlay.open .nav-overlay__sector:nth-child(3) .nav-overlay__subs { opacity: 1; transition-delay: 1.22s; }
+
 .nav-overlay__subs a {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 2.2vw, 0.82rem);
   font-weight: 300;
-  color: var(--text);
+  letter-spacing: 0.06em;
+  color: var(--text-sub);
   text-decoration: none;
-  border-bottom: 1px solid transparent !important;
-  opacity: 0.45;
-  /* 더 미니멀하게 */
-  transition: opacity 0.3s ease, border-color 0.3s ease;
   display: flex;
   align-items: baseline;
-  gap: 0.6rem;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
 }
 
 .nav-overlay__subs a span {
-  font-size: 0.65rem;
-  opacity: 0.5;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-size: 0.62rem;
+  opacity: 0.45;
+  letter-spacing: 0.02em;
 }
 
 .nav-overlay__subs a:hover {
-  opacity: 1;
-  border-bottom-color: var(--text) !important;
+  color: var(--text);
 }
 
 /* 인증 영역은 현재 불필요하므로 숨김 처리 (요청 시 노출) */
@@ -6998,14 +6977,7 @@ body.page-archive-ledger .footer-legal span {
 }
 
 @media (max-width: 768px) {
-  .nav-overlay {
-    padding-top: 100px;
-    width: 85%;
-    /* 모바일에서는 좀 더 넓게 */
-  }
-
   .nav-overlay__sector {
-    grid-template-columns: 1fr;
     gap: 0.8rem;
   }
 
@@ -8854,20 +8826,30 @@ body.is-loaded .home-hero__nav {
   }
 }
 
-/* ─── Footer ─── */
+/* ─── Footer: Dynamic Island Style ─── */
 .site-footer {
   position: sticky;
-  bottom: 0;
+  bottom: var(--space-md);
+  /* 바닥에서 띄움 */
   z-index: -1;
-  background: var(--footer-bg);
-  border-top: none;
-  padding: 4rem 0 2rem;
-  margin-top: 0;
+  background: var(--bg-glass, rgba(234, 234, 234, 0.65));
+  -webkit-backdrop-filter: blur(28px) saturate(110%);
+  backdrop-filter: blur(28px) saturate(110%);
+  border: 1px solid rgba(26, 26, 26, 0.04);
+  border-radius: 40px;
+  /* Dynamic Island 곡률 */
+
+  width: calc(100% - (var(--space-md) * 2));
+  max-width: var(--max-wide);
+  margin: 0 auto 0;
+  padding: 1.8rem 2.2rem;
+
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
+/* Reveal 효과를 위한 body 스택 높이 확보 */
 body {
-  /* site-footer reveal - body acts as the stack that slides up */
   background: var(--bg);
   min-height: 100vh;
   display: flex;
@@ -8880,16 +8862,16 @@ main {
   background: var(--bg);
   position: relative;
   z-index: 10;
+  /* 푸터가 드러날 충분한 공간 확보 */
+  padding-bottom: 2rem;
 }
 
 
 .footer-inner {
-  max-width: var(--max-wide);
-  margin: 0 auto;
-  padding: 0 var(--space-md);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.8rem;
 }
 
 .footer-wordmark {
@@ -8910,9 +8892,10 @@ main {
 
 .footer-mid {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 /* 모든 footer 링크 — 전역 a border-bottom 상속 차단 */
@@ -8966,7 +8949,8 @@ main {
   flex-wrap: wrap;
   margin-top: 0.3rem;
   padding-top: 0.6rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(26, 26, 26, 0.03);
+  /* 내부 구분선 미세화 */
   opacity: 0.7;
   transition: opacity var(--duration) var(--ease-out);
 }
@@ -14078,9 +14062,10 @@ html[data-nav-dir="back"] ::view-transition-new(root) {
 }
 
 .site-footer {
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-  padding: 2rem 0;
+  background: var(--bg-glass, rgba(234, 234, 234, 0.7));
+  border-top: none;
+  padding: 1.8rem 2.2rem;
+  border-radius: 40px;
 }
 
 .site-footer a {
@@ -16791,10 +16776,11 @@ body.page-home {
 /* 홈페이지 전용 푸터 — Architectural Horizon (2026-03-05) */
 /* 홈페이지 전용 푸터 스타일 오버라이드 제거 (표준 Sticky Reveal 복구) */
 .page-home .site-footer {
-  position: relative;
-  z-index: 55;
-  bottom: auto;
-  background: var(--bg);
+  position: sticky;
+  z-index: -1;
+  bottom: var(--space-md);
+  background: var(--bg-glass, rgba(234, 234, 234, 0.65));
+  border-top: none;
 }
 
 /* ── 모바일 홈 우선 레이아웃 (2026-03-05) ── */
@@ -19703,8 +19689,13 @@ body.time-night .home-preloader {
 }
 
 @keyframes logo-assemble {
-  0%   { opacity: 0; }
-  100% { opacity: 0.65; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0.65;
+  }
 }
 
 /* 퇴장 — opacity-only 페이드 (1.4s 호흡) */
@@ -19713,8 +19704,13 @@ body.is-loaded .home-preloader__logo {
 }
 
 @keyframes logo-disperse {
-  0%   { opacity: 0.65; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0.65;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ============================================================
