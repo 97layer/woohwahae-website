@@ -12637,28 +12637,42 @@ body.page-about {
 }
 
 .about-preface__text {
-  padding: var(--space-lg) 0 var(--space-lg);
+  padding: var(--space-md) 0 var(--space-md);
   border-left: 1px solid var(--line);
   padding-left: var(--space-md);
-  margin-top: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.about-preface__text p {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: var(--fw-light);
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+  line-height: 1.85;
+  margin-bottom: 0.75em;
+}
+
+.about-preface__text p:last-child {
+  margin-bottom: 0;
 }
 
 .about-preface__sig {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: var(--fw-light);
-  letter-spacing: 0.06em;
-  color: var(--text-sub);
-  margin-top: var(--space-md);
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-top: var(--space-sm);
 }
 
 .about-preface__stats {
-  margin-top: var(--space-md);
-  padding-top: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-xs);
   border-top: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.05rem;
 }
 
 @media (max-width: 640px) {
