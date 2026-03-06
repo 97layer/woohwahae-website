@@ -46,15 +46,24 @@ def dispatch_efficiency(last: int = 0) -> Dict[str, Any]:
     executed   = sum(1 for r in rows if r.get("executed"))
     complexity = Counter(r.get("complexity", "unknown") for r in rows)
 
+    # simple_task = 올바른 smoke 라우팅 (미실행 아님, 정상 처리)
+    correct_route   = sum(1 for r in rows if r.get("reason") == "simple_task")
+    true_not_exec   = total - executed - correct_route   # 진짜 미실행 (hard_stop 등)
+    correct_exec_pct = round((executed + correct_route) / total * 100, 1)  # 올바르게 처리된 비율
+
     # smoke = Gemini API 미호출 → 절약된 full-council 비율
     smoke_save_pct   = round(smoke / total * 100, 1)
     fallback_pct     = round(fallbacks / total * 100, 1)
     execution_pct    = round(executed / total * 100, 1)
+    hard_stops       = sum(1 for r in rows if "hard_stop" in r.get("reason",""))
 
     return {
         "total": total,
         "executed": executed,
         "execution_rate_pct": execution_pct,
+        "correct_route_count": correct_route,   # simple_task = 정상 smoke 처리
+        "correct_handling_pct": correct_exec_pct,  # executed + correct_route
+        "hard_stop_count": hard_stops,
         "fallback_count": fallbacks,
         "fallback_rate_pct": fallback_pct,
         "smoke_count": smoke,
@@ -84,18 +93,23 @@ def council_efficiency(last: int = 0) -> Dict[str, Any]:
     statuses  = Counter(r.get("consensus", {}).get("status", "")  for r in rows)
     decisions = Counter(r.get("consensus", {}).get("decision", "") for r in rows)
 
-    ready         = statuses.get("ready", 0)
-    degraded      = statuses.get("degraded", 0)
-    degraded_lite = statuses.get("degraded-lite", 0)
-    go            = decisions.get("go", 0)
-    clarify       = decisions.get("needs_clarification", 0)
+    ready           = statuses.get("ready", 0)
+    degraded        = statuses.get("degraded", 0)
+    degraded_lite   = statuses.get("degraded-lite", 0)
+    skipped_network = statuses.get("skipped_network", 0)  # pre-check으로 절약된 호출
+    go              = decisions.get("go", 0)
+    clarify         = decisions.get("needs_clarification", 0)
 
-    # effective hit rate: ready일 때만 Claude+Gemini 양쪽 토큰 사용
-    # degraded = 1개 모델만 소비 (절반)
-    # effective_cost = ready*2 + (degraded+lite)*1  (상대 단위)
-    effective_cost   = ready * 2 + (degraded + degraded_lite) * 1
-    max_cost         = total * 2
-    cost_efficiency  = round((max_cost - effective_cost) / max_cost * 100, 1)
+    # 실질 호출 건수 (skipped_network 제외) — API 토큰이 실제 소비된 건
+    real_calls = total - skipped_network
+
+    # effective_cost: ready=2 (양쪽), degraded=1 (한쪽), skipped=0 (API 미호출)
+    effective_cost  = ready * 2 + (degraded + degraded_lite) * 1
+    max_cost        = real_calls * 2 if real_calls > 0 else 1
+    cost_efficiency = round((max_cost - effective_cost) / max_cost * 100, 1)
+
+    # ready_rate = 실질 호출 중 양쪽 성공
+    real_ready_rate = round(ready / real_calls * 100, 1) if real_calls > 0 else 0.0
 
     # clarification 중 실제 재시도된 비율 추정
     # (pending 로그에서 동일 task_hash 2회 이상 = 재시도)
@@ -106,8 +120,12 @@ def council_efficiency(last: int = 0) -> Dict[str, Any]:
 
     return {
         "total": total,
+        "real_calls": real_calls,                    # 실제 API 호출 건수
+        "skipped_network_count": skipped_network,    # pre-check으로 절약된 건
+        "skipped_network_pct": round(skipped_network / total * 100, 1) if total else 0.0,
         "ready_count": ready,
         "ready_rate_pct": round(ready / total * 100, 1),
+        "ready_of_real_pct": real_ready_rate,        # 실질 호출 중 ready 비율
         "degraded_count": degraded + degraded_lite,
         "degraded_rate_pct": round((degraded + degraded_lite) / total * 100, 1),
         "go_count": go,
@@ -115,10 +133,10 @@ def council_efficiency(last: int = 0) -> Dict[str, Any]:
         "clarification_count": clarify,
         "clarification_rate_pct": round(clarify / total * 100, 1),
         "clarification_retried": retried,
-        "clarification_retry_rate_pct": retry_rate_pct,   # 재시도된 건
-        "clarification_dead_pct": round(100 - retry_rate_pct, 1),  # 버려진 건
+        "clarification_retry_rate_pct": retry_rate_pct,
+        "clarification_dead_pct": round(100 - retry_rate_pct, 1),
         "wasted_council_calls_pct": round((degraded + degraded_lite) / total * 100, 1),
-        "cost_efficiency_pct": cost_efficiency,   # 낮을수록 낭비 많음
+        "cost_efficiency_pct": cost_efficiency,
         "grade": _grade_council(ready / total, (degraded + degraded_lite) / total),
     }
 
@@ -167,22 +185,25 @@ def composite_score(disp: Dict, cncl: Dict, doc: Dict) -> Dict[str, Any]:
     # doctor: 0~100 점수를 그대로
     doc_score = doc.get("latest_score", 0) if doc else 0
 
-    # council: 낭비 없을수록 높음
-    # - ready_rate(30) + (1-degraded_rate)(30) + go_rate(20) + retry_of_clarify(20)
+    # council: skipped_network 제외한 실질 호출 기준으로 계산
+    # ready_of_real(30) + (1-degraded_rate)(30) + go_rate(20) + retry_of_clarify(20)
     if cncl:
-        rr = cncl.get("ready_rate_pct", 0) / 100
+        rr = cncl.get("ready_of_real_pct", cncl.get("ready_rate_pct", 0)) / 100
         dr = 1 - cncl.get("degraded_rate_pct", 100) / 100
         gr = cncl.get("go_rate_pct", 0) / 100
         rt = cncl.get("clarification_retry_rate_pct", 0) / 100
-        council_score = (rr * 30 + dr * 30 + gr * 20 + rt * 20)
+        # skipped_network 보너스: pre-check 절약 비율만큼 가중
+        sk_bonus = min(cncl.get("skipped_network_pct", 0) / 100 * 10, 5)  # 최대 +5
+        council_score = min(rr * 30 + dr * 30 + gr * 20 + rt * 20 + sk_bonus, 100)
     else:
         council_score = 0
 
-    # dispatch: fallback 낮고 smoke 높고 실행률 높을수록 좋음
+    # dispatch: fallback 낮고 smoke 높고 올바른 처리율 높을수록 좋음
     if disp:
         fb  = 1 - min(disp.get("fallback_rate_pct", 0) / 20, 1.0)   # 20%+ = 0
         sm  = min(disp.get("smoke_save_pct", 0) / 60, 1.0)           # 60%+ = 만점
-        ex  = disp.get("execution_rate_pct", 0) / 100
+        # correct_handling_pct = executed + simple_task(올바른 smoke)
+        ex  = disp.get("correct_handling_pct", disp.get("execution_rate_pct", 0)) / 100
         dispatch_score = (fb * 40 + sm * 30 + ex * 30)
     else:
         dispatch_score = 0
@@ -232,15 +253,17 @@ def print_report(last: int = 0) -> Dict[str, Any]:
         "",
         "┌─ Plan Dispatch ──────────────────────────────",
         f"│  총 요청:          {g(disp,'total','int')}건",
-        f"│  실행률:           {g(disp,'execution_rate_pct','pct')}",
+        f"│  올바른 처리율:    {g(disp,'correct_handling_pct','pct')}  (실행 {g(disp,'executed','int')} + smoke {g(disp,'correct_route_count','int')})",
         f"│  폴백률:           {g(disp,'fallback_rate_pct','pct')}  ← 낮을수록 좋음",
+        f"│  hard_stop:        {g(disp,'hard_stop_count','int')}건",
         f"│  smoke 절약률:     {g(disp,'smoke_save_pct','pct')}  ← 높을수록 Gemini 호출 절약",
         f"│  복잡도:           {disp.get('complexity',{})}",
         f"│  등급:             {g(disp,'grade')}",
         "│",
         "├─ Plan Council ───────────────────────────────",
-        f"│  총 호출:          {g(cncl,'total','int')}건",
-        f"│  ready(양쪽 성공): {g(cncl,'ready_rate_pct','pct')}  ({g(cncl,'ready_count','int')}건)",
+        f"│  총 호출:          {g(cncl,'total','int')}건  (실질 API {g(cncl,'real_calls','int')}건)",
+        f"│  skipped_network:  {g(cncl,'skipped_network_pct','pct')}  ({g(cncl,'skipped_network_count','int')}건) ← pre-check 절약",
+        f"│  ready(양쪽 성공): {g(cncl,'ready_rate_pct','pct')} / 실질 {g(cncl,'ready_of_real_pct','pct')}",
         f"│  degraded(낭비):   {g(cncl,'wasted_council_calls_pct','pct')}  ({g(cncl,'degraded_count','int')}건) ← API 연결 실패",
         f"│  go 승인률:        {g(cncl,'go_rate_pct','pct')}",
         f"│  clarification:    {g(cncl,'clarification_rate_pct','pct')}  ({g(cncl,'clarification_count','int')}건)",

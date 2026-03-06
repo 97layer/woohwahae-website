@@ -151,6 +151,20 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
+def _fast_net_reachable(timeout: float = 0.3) -> bool:
+    """
+    0.3초 이내 TCP 연결 가능 여부만 확인하는 선검증.
+    run_council() 최상단에서 호출하여 네트워크 차단 시 API 호출 자체를 건너뜀.
+    """
+    for host, port in _NETCHECK_TARGETS:
+        try:
+            with socket.create_connection((host, port), timeout=timeout):
+                return True
+        except Exception:  # noqa: BLE001
+            continue
+    return False
+
+
 def _network_probe() -> Dict[str, Any]:
     """
     Lightweight DNS/TCP probe for model endpoints.
@@ -554,6 +568,33 @@ def _append_report(payload: Dict[str, Any]) -> None:
 
 
 def run_council(task: str, mode: str, save: bool = True) -> Dict[str, Any]:
+    # 선검증: 네트워크 차단 시 API 호출 없이 즉시 반환 (타임아웃 낭비 제거)
+    if _NETCHECK_ENABLED and not _fast_net_reachable():
+        payload = {
+            "timestamp": _now_iso(),
+            "mode": mode,
+            "task": task,
+            "claude": {"ok": False, "error": "pre-check: network unreachable", "plan": None},
+            "gemini": {"ok": False, "error": "pre-check: network unreachable", "plan": None},
+            "consensus": {
+                "status": "skipped_network",
+                "decision": "skip",
+                "models_used": [],
+                "intent": task[:120],
+                "steps": [],
+                "risks": ["네트워크 차단 환경. API 호출 건너뜀."],
+                "checks": [],
+            },
+            "runtime": {
+                "reliability": 0.0,
+                "tier": "blocked",
+                "gate": "skip",
+            },
+        }
+        if save:
+            _append_report(payload)
+        return payload
+
     claude_plan, claude_error = _call_claude(task)
     gemini_plan, gemini_error = _call_gemini(task)
     consensus = _build_consensus(task, claude_plan, gemini_plan)
