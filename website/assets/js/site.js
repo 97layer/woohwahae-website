@@ -429,7 +429,7 @@
     if (path === '/' || path === '/index.html') return;
 
     var active = '';
-    if (path.indexOf('/archive') === 0 || path.indexOf('/essay-') !== -1 || path.indexOf('/journal-') !== -1 || path.indexOf('/lookbook') !== -1 || path.indexOf('/playlist') !== -1) active = 'archive';
+    if (path.indexOf('/archive') === 0 || path.indexOf('/log-') !== -1 || path.indexOf('/lookbook') !== -1 || path.indexOf('/playlist') !== -1) active = 'archive';
     else if (path.indexOf('/works') === 0 || path.indexOf('/practice') === 0) active = 'works';
     else if (path.indexOf('/about') === 0) active = 'about';
     else if (path.indexOf('/lab') === 0) active = 'lab';
@@ -463,19 +463,16 @@
     document.body.classList.add('has-subnav');
   })();
 
-  /* ─── Archive Ledger (Index / Notes / Curation) ─── */
+  /* ─── Archive Ledger (Index / Log / Curation) ─── */
   (function () {
     var ledgerEl = document.getElementById('archive-ledger');
     if (!ledgerEl) return;
 
     var TYPE_LABELS = {
-      essay: 'Essay',
-      journal: 'Journal',
+      log: 'Log',
       lookbook: 'Lookbook',
       playlist: 'Playlist'
     };
-
-    var CURATION_RE = /(합니다|됩니다|입니다|하세요|드립니다)/;
 
     function escapeHtml(value) {
       return String(value || '')
@@ -496,28 +493,32 @@
 
     function normalizeType(value) {
       var type = String(value || '').trim().toLowerCase();
-      if (type === 'journal' || type === 'lookbook' || type === 'playlist') return type;
-      return 'essay';
+      if (type === 'lookbook' || type === 'playlist') return type;
+      return 'log';
     }
 
     function issueDisplay(value, index) {
       var raw = String(value || '').trim();
-      if (!raw) return String(index + 1).padStart(3, '0');
+      // LOG #NN 형식이 이미 있으면 그대로 사용, 없으면 숫자만 추출해서 패딩
+      if (raw.indexOf('LOG #') === 0) return raw;
       var hit = raw.match(/(\d{1,4})/);
       if (!hit) return String(index + 1).padStart(3, '0');
       return hit[1].padStart(3, '0');
     }
 
-    function toneFromText(text) {
-      if (!text) return 'log';
-      return CURATION_RE.test(text) ? 'curation' : 'log';
+    function issueValue(value) {
+      var raw = String(value || '').trim();
+      var hit = raw.match(/(\d{1,4})/);
+      if (!hit) return 0;
+      return parseInt(hit[1], 10) || 0;
     }
 
     function resolveTone(post) {
-      var preview = String(post.preview || '').trim();
-      if (preview) return toneFromText(preview);
-      var title = String(post.title || '').trim();
-      if (title) return toneFromText(title);
+      // 데이터 타입에 따른 명확한 분류 (HTML/Nav 시스템과 동기화)
+      var t = String(post.type || '').trim().toLowerCase();
+      // '시선 / 청음' (Visual / Sound)에 해당하는 타입은 Curation
+      if (t === 'lookbook' || t === 'playlist') return 'curation';
+      // '사유 / 기록' (Working / Living)에 해당하는 타입은 Log
       return 'log';
     }
 
@@ -536,7 +537,7 @@
         date: post.date || '',
         dateValue: dateValue(post.date),
         type: type,
-        typeLabel: TYPE_LABELS[type] || TYPE_LABELS.essay,
+        typeLabel: TYPE_LABELS[type] || TYPE_LABELS.log,
         issue: post.issue || ('Issue ' + String(index + 1).padStart(3, '0')),
         issueDisplay: issueDisplay(post.issue, index),
         readMin: typeof post.readMin === 'number' ? post.readMin : null,
@@ -552,16 +553,26 @@
       });
     }
 
+    function sortByIssue(posts) {
+      return posts.slice().sort(function (a, b) {
+        var diff = issueValue(b.issue) - issueValue(a.issue);
+        if (diff !== 0) return diff;
+        if (b.dateValue !== a.dateValue) return b.dateValue - a.dateValue;
+        return a.index - b.index;
+      });
+    }
+
     function isPending(post) {
       return post.status === 'pending' || post.url === '#';
     }
 
     function metaTemplate(post, pending) {
-      var parts = [
-        '<span class="ledger__serial">', escapeHtml(post.issueDisplay), '</span>',
-        '<span class="ledger__type">', escapeHtml(post.typeLabel), '</span>',
-        '<span class="ledger__date">', escapeHtml(post.date), '</span>'
-      ];
+      var parts = [];
+
+      parts.push('<span class="ledger__serial">' + escapeHtml(post.issueDisplay) + '</span>');
+      parts.push('<span class="ledger__type">' + escapeHtml(post.typeLabel) + '</span>');
+      parts.push('<span class="ledger__date">' + escapeHtml(post.date) + '</span>');
+
       if (pending) {
         parts.push('<span class="pill is-pending">Pending</span>');
       }
@@ -598,33 +609,65 @@
       ledgerEl.innerHTML = posts.map(ledgerItemTemplate).join('');
     }
 
-    function resolveView() {
-      var attr = (document.body.getAttribute('data-archive-view') || '').trim().toLowerCase();
-      if (attr) {
-        if (attr === 'notes') return 'log';
-        return attr;
+    var allPosts = [];
+    var filterWrap = document.getElementById('archive-filter');
+
+    function updateActiveFilter(view) {
+      if (!filterWrap) return;
+      var btns = filterWrap.querySelectorAll('.filter-btn');
+      btns.forEach(function (btn) {
+        var v = btn.getAttribute('data-view');
+        btn.classList.toggle('is-active', v === view);
+      });
+    }
+
+    function normalizeView(view) {
+      var v = String(view || 'all').trim().toLowerCase();
+      if (v === 'notes') v = 'log';
+      return v || 'all';
+    }
+
+    function applyView(view) {
+      var filtered = allPosts;
+      var target = normalizeView(view);
+      if (target === 'log') {
+        filtered = sortByIssue(allPosts.filter(function (p) { return p.tone === 'log'; }));
+      } else if (target === 'curation') {
+        filtered = sortPosts(allPosts.filter(function (p) { return p.tone === 'curation'; }));
       }
+      renderLedger(filtered);
+      updateActiveFilter(target);
+    }
+
+    if (filterWrap) {
+      filterWrap.addEventListener('click', function (e) {
+        var btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        var view = btn.getAttribute('data-view');
+        applyView(view);
+      });
+    }
+
+    function resolveInitialView() {
+      var attr = normalizeView(document.body.getAttribute('data-archive-view'));
+      if (attr === 'log') return 'log';
+      if (attr === 'curation') return 'curation';
+
       var path = window.location.pathname || '';
-      if (path.indexOf('/archive/notes') === 0) return 'log';
+      if (path.indexOf('/archive/log') === 0) return 'log';
       if (path.indexOf('/archive/curation') === 0) return 'curation';
-      return '';
+      return 'all';
     }
 
     fetch('/archive/index.json')
-      .then(function (response) { return response.json(); })
+      .then(function (r) { return r.json(); })
       .then(function (raw) {
         if (!Array.isArray(raw) || !raw.length) {
           renderLedger([]);
           return;
         }
-        var posts = sortPosts(raw.map(normalize));
-        var view = resolveView();
-        if (view === 'log') {
-          posts = posts.filter(function (post) { return post.tone === 'log'; });
-        } else if (view === 'curation') {
-          posts = posts.filter(function (post) { return post.tone === 'curation'; });
-        }
-        renderLedger(posts);
+        allPosts = sortPosts(raw.map(normalize));
+        applyView(resolveInitialView());
       })
       .catch(function () {
         renderLedger([]);
@@ -718,7 +761,7 @@
 
   /* ─── 읽기 진행 바 (에세이 전용) ─── */
   (function () {
-    if (!document.body.classList.contains('page-essay')) return;
+    if (!document.body.classList.contains('page-log')) return;
     var bar = document.getElementById('read-progress');
     if (!bar) return;
     var ticking = false;
@@ -1010,7 +1053,7 @@
       applyBanners(state);
     }
 
-    fetch('/practice/release-state.json?t=' + Date.now(), { cache: 'no-store' })
+    fetch('/works/release-state.json?t=' + Date.now(), { cache: 'no-store' })
       .then(function (res) {
         if (!res.ok) throw new Error('release-state fetch failed');
         return res.json();

@@ -74,7 +74,7 @@ function renderGrid(posts, category) {
 
     card.innerHTML = `
             <div class="archive-card-meta">
-                <span class="essay-type">${post.type || 'Essay'}</span>
+                <span class="essay-type">${post.type || 'Log'}</span>
                 <span class="essay-date">${post.date}</span>
             </div>
             <h3 class="archive-card-title">${post.title}</h3>

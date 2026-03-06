@@ -1,157 +1,170 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <meta content="{{ description }}" name="description"/>
-  <meta content="{{ title }}" property="og:title"/>
-  <meta content="website" property="og:type"/>
-  <meta content="{{ og_url }}" property="og:url"/>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="{{ description }}" name="description" />
+  <meta content="{{ title }}" property="og:title" />
+  <meta content="website" property="og:type" />
+  <meta content="{{ og_url }}" property="og:url" />
   <title>{{ title }}</title>
   <!-- COMPONENT:head -->
   <!-- /COMPONENT:head -->
 </head>
+
 <body class="{{ body_class }}">
-<!-- GENERATED: section={{ page_id }} source_hash={{ source_hash }} -->
-<!-- COMPONENT:nav -->
-<nav class="site-nav" id="site-nav">
-  <div class="site-nav__top">
-    <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
-      <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
-    </a>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/archive/">Archive</a></li>
-      <li><a href="/works/">Works</a></li>
-      <li><a href="/about/">About</a></li>
-      <li><a href="/lab/">Lab</a></li>
-    </ul>
-    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-controls="nav-overlay" aria-expanded="false">
-      <span></span><span></span>
-    </button>
-  </div>
-  <div class="read-progress" id="read-progress" aria-hidden="true"></div>
-</nav>
-<div class="nav-overlay" id="nav-overlay" aria-hidden="true">
-  <div class="nav-overlay__grid">
-    <div class="nav-overlay__sector">
-      <h3 class="nav-overlay__label"><a href="/archive/">Archive</a></h3>
-      <nav class="nav-overlay__subs">
-        <a href="/archive/notes/">Log <span>사유 / 기록</span></a>
-        <a href="/archive/curation/">Curation <span>시선 / 청음</span></a>
-      </nav>
+  <!-- GENERATED: section={{ page_id }} source_hash={{ source_hash }} -->
+  <!-- COMPONENT:nav -->
+  <nav class="site-nav" id="site-nav">
+    <div class="site-nav__top">
+      <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+        <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/archive/">Archive</a></li>
+        <li><a href="/works/">Works</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/lab/">Lab</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-controls="nav-overlay" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
-    <div class="nav-overlay__sector">
-      <h3 class="nav-overlay__label"><a href="/works/">Works</a></h3>
-      <nav class="nav-overlay__subs">
-        <a href="/works/atelier/">Atelier <span>작업</span></a>
-        <a href="/works/offering/">Offering <span>서비스 / 제품</span></a>
-        <a href="/works/project/">Project <span>협업</span></a>
-      </nav>
-    </div>
-    <div class="nav-overlay__sector">
-      <h3 class="nav-overlay__label"><a href="/about/">About</a></h3>
-      <nav class="nav-overlay__subs">
-        <a href="/about/">About <span>근원</span></a>
-        <a href="/about/woosunho/">Woosunho <span>기획자</span></a>
-      </nav>
-    </div>
-    <div class="nav-overlay__sector">
-      <h3 class="nav-overlay__label"><a href="/lab/">Lab</a></h3>
-      <nav class="nav-overlay__subs"></nav>
-    </div>
-  </div>
-</div>
-<!-- /COMPONENT:nav -->
-<main class="page-main">
-  <div class="page-intro container--wide">
-    {% if section_label %}
-    <p class="section-label">{{ section_label }}</p>
-    {% endif %}
-    {% if headline %}
-    <h1 class="page-title">{{ headline }}</h1>
-    {% endif %}
-    <p class="page-preamble">{{ preamble }}</p>
-    {% if concept_board %}
-    <section class="lab-concept-board" data-reveal aria-label="{{ concept_board.get('aria', '랩 디자인 컨셉') }}">
-      <p class="lab-concept-board__label">{{ concept_board.get('label', '') }}</p>
-      <div class="lab-concept-board__grid">
-        {% for item in concept_board.get('items', []) %}
-        <article class="lab-concept-board__item">
-          <p class="lab-concept-board__num">{{ item.get('num', '') }}</p>
-          <h2 class="lab-concept-board__title">{{ item.get('title', '') }}</h2>
-          <p class="lab-concept-board__copy">{{ item.get('copy', '') }}</p>
-        </article>
-        {% endfor %}
+    <div class="read-progress" id="read-progress" aria-hidden="true"></div>
+  </nav>
+  <div class="nav-overlay" id="nav-overlay" aria-hidden="true">
+    <div class="nav-overlay__grid">
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/archive/">Archive</a></h3>
+        <nav class="nav-overlay__subs">
+          <a href="/archive/log/">Log <span>사유 / 기록</span></a>
+          <a href="/archive/curation/">Curation <span>시선 / 청음</span></a>
+        </nav>
       </div>
-    </section>
-    {% endif %}
-    {% if controls_struct %}
-    <div class="section-controls" data-reveal>
-      <nav class="archive-filter"
-           aria-label="{{ controls_struct.get('aria', '') }}"
-           id="{{ controls_struct.get('id', 'section-controls') }}">
-        {% set items = controls_struct.get('items', []) %}
-        {% if controls_struct.get('layout') == 'inline_search' %}
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/works/">Works</a></h3>
+        <nav class="nav-overlay__subs">
+          <a href="/works/atelier/">Atelier <span>작업</span></a>
+          <a href="/works/offering/">Offering <span>서비스 / 제품</span></a>
+          <a href="/works/project/">Project <span>협업</span></a>
+        </nav>
+      </div>
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/about/">About</a></h3>
+        <nav class="nav-overlay__subs">
+          <a href="/about/">About <span>근원</span></a>
+          <a href="/about/woosunho/">Woosunho <span>기획자</span></a>
+        </nav>
+      </div>
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/lab/">Lab</a></h3>
+        <nav class="nav-overlay__subs"></nav>
+      </div>
+    </div>
+  </div>
+  <!-- /COMPONENT:nav -->
+  <main class="page-main">
+    {% if page_id == 'archive' %}
+    <div class="archive-intro container--wide">
+      <div class="archive-intro__core">
+        <h1 class="archive-title">Archive</h1>
+        <p class="archive-summary">{{ preamble }}</p>
+      </div>
+      <nav class="archive-filter" id="archive-filter">
+        <button class="filter-btn is-active" data-view="all">All</button>
+        <button class="filter-btn" data-view="log">Log</button>
+        <button class="filter-btn" data-view="curation">Curation</button>
+      </nav>
+    </div>
+    {% else %}
+    <div class="page-intro container--wide">
+      {% if section_label %}
+      <p class="section-label">{{ section_label }}</p>
+      {% endif %}
+      {% if headline %}
+      <h1 class="page-title">{{ headline }}</h1>
+      {% endif %}
+      <p class="page-preamble">{{ preamble }}</p>
+      {% if concept_board %}
+      <section class="lab-concept-board" data-reveal aria-label="{{ concept_board.get('aria', '랩 디자인 컨셉') }}">
+        <p class="lab-concept-board__label">{{ concept_board.get('label', '') }}</p>
+        <div class="lab-concept-board__grid">
+          {% for item in concept_board.get('items', []) %}
+          <article class="lab-concept-board__item">
+            <p class="lab-concept-board__num">{{ item.get('num', '') }}</p>
+            <h2 class="lab-concept-board__title">{{ item.get('title', '') }}</h2>
+            <p class="lab-concept-board__copy">{{ item.get('copy', '') }}</p>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+      {% if controls_struct %}
+      <div class="section-controls" data-reveal>
+        <nav class="archive-filter" aria-label="{{ controls_struct.get('aria', '') }}"
+          id="{{ controls_struct.get('id', 'section-controls') }}">
+          {% set items = controls_struct.get('items', []) %}
+          {% if controls_struct.get('layout') == 'inline_search' %}
           {% set first = items[0] if items else None %}
           <div class="archive-filter__item">
             {% if first %}
-              {% if first.get('href') %}
-                <a class="section-chip archive-filter__btn{% if first.get('active') %} is-active{% endif %}"
-                   href="{{ first.get('href') }}">{{ first.get('label') }}</a>
-              {% else %}
-                <button class="section-chip archive-filter__btn{% if first.get('active') %} is-active{% endif %}"
-                        {% if first.get('filter') %}data-filter="{{ first.get('filter') }}"{% endif %}>
-                  {{ first.get('label') }}
-                </button>
-              {% endif %}
+            {% if first.get('href') %}
+            <a class="section-chip archive-filter__btn{% if first.get('active') %} is-active{% endif %}"
+              href="{{ first.get('href') }}">{{ first.get('label') }}</a>
+            {% else %}
+            <button class="section-chip archive-filter__btn{% if first.get('active') %} is-active{% endif %}" {% if
+              first.get('filter') %}data-filter="{{ first.get('filter') }}" {% endif %}>
+              {{ first.get('label') }}
+            </button>
+            {% endif %}
             {% endif %}
             {% if controls_struct.get('search') %}
-              <input class="section-search archive-search"
-                     id="{{ controls_struct.get('search_id', 'archive-search') }}"
-                     type="search"
-                     placeholder="{{ controls_struct.get('search_placeholder', '검색') }}"
-                     autocomplete="off"
-                     spellcheck="false">
+            <input class="section-search archive-search" id="{{ controls_struct.get('search_id', 'archive-search') }}"
+              type="search" placeholder="{{ controls_struct.get('search_placeholder', '검색') }}" autocomplete="off"
+              spellcheck="false">
             {% endif %}
           </div>
           {% for item in items[1:] %}
-            {% if item.get('href') %}
-              <a class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}"
-                 href="{{ item.get('href') }}">{{ item.get('label') }}</a>
-            {% else %}
-              <button class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}"
-                      {% if item.get('filter') %}data-filter="{{ item.get('filter') }}"{% endif %}>
-                {{ item.get('label') }}
-              </button>
-            {% endif %}
+          {% if item.get('href') %}
+          <a class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}"
+            href="{{ item.get('href') }}">{{ item.get('label') }}</a>
+          {% else %}
+          <button class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}" {% if
+            item.get('filter') %}data-filter="{{ item.get('filter') }}" {% endif %}>
+            {{ item.get('label') }}
+          </button>
+          {% endif %}
           {% endfor %}
-        {% else %}
+          {% else %}
           {% for item in items %}
-            {% if item.get('href') %}
-              <a class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}"
-                 href="{{ item.get('href') }}">{{ item.get('label') }}</a>
-            {% else %}
-              <button class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}"
-                      {% if item.get('filter') %}data-filter="{{ item.get('filter') }}"{% endif %}>
-                {{ item.get('label') }}
-              </button>
-            {% endif %}
+          {% if item.get('href') %}
+          <a class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}"
+            href="{{ item.get('href') }}">{{ item.get('label') }}</a>
+          {% else %}
+          <button class="section-chip archive-filter__btn{% if item.get('active') %} is-active{% endif %}" {% if
+            item.get('filter') %}data-filter="{{ item.get('filter') }}" {% endif %}>
+            {{ item.get('label') }}
+          </button>
+          {% endif %}
           {% endfor %}
-        {% endif %}
-        {% if controls_struct.get('show_count') %}
+          {% endif %}
+          {% if controls_struct.get('show_count') %}
           <p class="archive-count" id="{{ controls_struct.get('count_id', 'archive-count') }}"></p>
-        {% endif %}
-      </nav>
-    </div>
-    {% elif controls %}
+          {% endif %}
+        </nav>
+      </div>
+      {% elif controls %}
       {{ controls | safe }}
+      {% endif %}
+    </div>
     {% endif %}
-  </div>
-  {{ body | safe }}
-</main>
-{% if page_script %}{{ page_script | safe }}{% endif %}
-<script defer src="/assets/js/site.js?v={{ js_hash }}"></script>
-<!-- COMPONENT:footer -->
-<!-- /COMPONENT:footer -->
+    {{ body | safe }}
+  </main>
+  {% if page_script %}{{ page_script | safe }}{% endif %}
+  <script defer src="/assets/js/site.js?v={{ js_hash }}"></script>
+  <!-- COMPONENT:footer -->
+  <!-- /COMPONENT:footer -->
 </body>
+
 </html>

@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="영점의 발견 Workbook: 30 questions + reflection pages for slow brands. Digital PDF and Riso print edition. KRW checkout with global support." />
+  <meta property="og:title" content="Zero Point Workbook — WOOHWAHAE" />
+  <meta property="og:description" content="30 questions + reflection pages. Digital PDF (KRW 15,000) and Riso print (KRW 35,000). Global buyers supported via email onboarding." />
+  <meta property="og:type" content="product" />
+  <meta property="og:url" content="https://woohwahae.kr/product/workbook.html" />
+  <meta property="og:image" content="https://woohwahae.kr/assets/media/brand/symbol.png" />
+  <meta property="og:site_name" content="WOOHWAHAE" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Zero Point Workbook — 30 Questions for Slow Brands" />
+  <meta name="twitter:description" content="Digital PDF and Riso print edition. KRW checkout with international customer support." />
+  <meta name="twitter:image" content="https://woohwahae.kr/assets/media/brand/symbol.png" />
+  <title>영점의 발견 — WOOHWAHAE Workbook</title>
+  <!-- COMPONENT:head -->
+  <meta name="theme-color" content="#EAEAEA">
+  <link rel="icon" href="/assets/media/brand/symbol.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap">
+  <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css?v=335cbb7f">
+  <script>(function () { var h = new Date().getHours(); var cls = h < 6 ? 'time-dawn' : h < 18 ? 'time-day' : h < 22 ? 'time-evening' : 'time-night'; var root = document.documentElement; root.classList.remove('time-dawn', 'time-day', 'time-evening', 'time-night'); root.classList.add(cls); })();</script>
+  <!-- /COMPONENT:head -->
+  <style>
+    :root {
+      --bg: #E3E2E0;
+      --text: #1a1a1a;
+      --text-sub: #6b6b6b;
+      --text-faint: #adadad;
+      --border: #d0cfcd;
+      --navy: #1B2D4F;
+      --font-sans: 'Pretendard Variable', Pretendard, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 2rem;
+      --space-lg: 3.5rem;
+      --space-xl: 5rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      line-height: 1.8;
+    }
+
+    /* ── 커버 ── */
+    .wb-cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3rem 2.5rem 2.5rem;
+      max-width: 720px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+    }
+
+    .wb-cover__brand {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+    }
+
+    .wb-cover__title {
+      font-family: var(--font-sans);
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 200;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-top: 3rem;
+    }
+
+    .wb-cover__subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      color: var(--text-sub);
+      margin-top: 1.2rem;
+    }
+
+    .wb-cover__quote {
+      font-family: var(--font-sans);
+      font-size: 1.05rem;
+      color: var(--text-sub);
+      line-height: 1.7;
+      max-width: 480px;
+      padding-top: var(--space-lg);
+      border-top: 1px solid rgba(26,26,26,0.12);
+      margin-top: var(--space-lg);
+    }
+
+    .wb-cover__meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+
+    /* ── 사용법 ── */
+    .wb-intro {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-xl) 2.5rem;
+      border-bottom: 1px solid rgba(26,26,26,0.1);
+    }
+
+    .wb-intro__label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: var(--space-md);
+    }
+
+    .wb-intro__body {
+      font-size: 0.9rem;
+      line-height: 2;
+      color: var(--text-sub);
+      max-width: 520px;
+    }
+
+    .wb-intro__body p + p { margin-top: 1.2em; }
+
+    /* ── 섹션 ── */
+    .wb-section {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-xl) 2.5rem;
+      border-bottom: 1px solid rgba(26,26,26,0.1);
+    }
+
+    .wb-section__header {
+      display: flex;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-bottom: var(--space-lg);
+    }
+
+    .wb-section__num {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      padding-top: 0.35rem;
+      min-width: 2rem;
+    }
+
+    .wb-section__title-group { flex: 1; }
+
+    .wb-section__title {
+      font-family: var(--font-sans);
+      font-size: 1.9rem;
+      font-weight: 200;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .wb-section__desc {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      letter-spacing: 0.06em;
+      margin-top: 0.6rem;
+      line-height: 1.6;
+    }
+
+    /* ── 질문 ── */
+    .wb-question { margin-bottom: var(--space-lg); }
+
+    .wb-question__label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.6rem;
+    }
+
+    .wb-question__text {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.65;
+      color: var(--text);
+      margin-bottom: 1.2rem;
+      max-width: 540px;
+    }
+
+    .wb-question__hint {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      margin-bottom: 1rem;
+    }
+
+    .wb-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .wb-line {
+      border: none;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+      background: transparent;
+      width: 100%;
+      padding: 0.6rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+
+    .wb-line:focus { border-bottom-color: var(--text); }
+
+    /* 단어 입력 (짧은 답) */
+    .wb-word-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .wb-word-row--compact {
+      max-width: 360px;
+    }
+
+    .wb-word {
+      flex: 1;
+      border: none;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+      background: transparent;
+      padding: 0.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--text);
+      outline: none;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .wb-word:focus { border-bottom-color: var(--text); }
+
+    .wb-word::placeholder {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+    }
+
+    /* 영점 체크 */
+    .wb-synthesis {
+      margin-top: var(--space-lg);
+      padding: var(--space-md);
+      border: 1px solid rgba(26,26,26,0.12);
+      background: rgba(255,255,255,0.3);
+    }
+
+    .wb-synthesis__label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.8rem;
+    }
+
+    .wb-synthesis__prompt {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    /* ── 아웃트로 ── */
+    .wb-outro {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-xl) 2.5rem;
+    }
+
+    .wb-outro__title {
+      font-family: var(--font-sans);
+      font-size: 1.6rem;
+      font-weight: 200;
+      color: var(--text);
+      margin-bottom: var(--space-md);
+    }
+
+    .wb-outro__body {
+      font-size: 0.88rem;
+      line-height: 2;
+      color: var(--text-sub);
+      max-width: 500px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .wb-outro__body p + p { margin-top: 1.2em; }
+
+    .wb-outro__contact {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      letter-spacing: 0.1em;
+    }
+
+    .wb-outro__contact a {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .wb-outro__brand {
+      margin-top: var(--space-xl);
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+
+    /* ── 인쇄 최적화 ── */
+    @media print {
+      body { background: white; font-size: 14px; }
+
+      .wb-cover { min-height: auto; page-break-after: always; }
+      .wb-intro { page-break-after: always; }
+      .wb-section { page-break-inside: avoid; }
+
+      .wb-line, .wb-word {
+        border-bottom: 1px solid #ccc;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .wb-synthesis {
+        border: 1px solid #ccc;
+        background: #f9f9f9;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      @page {
+        margin: 2cm 2.5cm;
+        size: A4;
+      }
+    }
+
+    /* ── 모바일 ── */
+    @media (max-width: 640px) {
+      .wb-cover,
+      .wb-intro,
+      .wb-section,
+      .wb-outro { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+      .wb-cover__title { font-size: 2rem; }
+      .wb-section__header { flex-direction: column; gap: 0.5rem; }
+      .wb-word-row { flex-direction: column; gap: 0.8rem; }
+    }
+  </style>
+</head>
+<body class="page-workbook">
+  <!-- COMPONENT:nav -->
+  <nav class="site-nav" id="site-nav">
+    <div class="site-nav__top">
+      <a class="nav-brand" href="/" aria-label="WOOHWAHAE">
+        <img class="nav-symbol" src="/assets/media/brand/symbol.png" alt="WOOHWAHAE">
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/archive/">Archive</a></li>
+        <li><a href="/works/">Works</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/lab/">Lab</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="메뉴" aria-controls="nav-overlay" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+    <div class="read-progress" id="read-progress" aria-hidden="true"></div>
+  </nav>
+  <div class="nav-overlay" id="nav-overlay" aria-hidden="true">
+    <div class="nav-overlay__grid">
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/archive/">Archive</a></h3>
+        <nav class="nav-overlay__subs">
+          <a href="/archive/log/">Log <span>사유 / 기록</span></a>
+          <a href="/archive/curation/">Curation <span>시선 / 청음</span></a>
+        </nav>
+      </div>
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/works/">Works</a></h3>
+        <nav class="nav-overlay__subs">
+          <a href="/works/atelier/">Atelier <span>작업</span></a>
+          <a href="/works/offering/">Offering <span>서비스 / 제품</span></a>
+          <a href="/works/project/">Project <span>협업</span></a>
+        </nav>
+      </div>
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/about/">About</a></h3>
+        <nav class="nav-overlay__subs">
+          <a href="/about/">About <span>근원</span></a>
+          <a href="/about/woosunho/">Woosunho <span>기획자</span></a>
+        </nav>
+      </div>
+      <div class="nav-overlay__sector">
+        <h3 class="nav-overlay__label"><a href="/lab/">Lab</a></h3>
+        <nav class="nav-overlay__subs"></nav>
+      </div>
+    </div>
+  </div>
+  <!-- /COMPONENT:nav -->
+
+  <!-- ══ 커버 ══ -->
+  <div class="wb-cover">
+    <div class="wb-cover__brand">WOOHWAHAE · Workbook No.1</div>
+
+    <div>
+      <h1 class="wb-cover__title">영점의<br>발견</h1>
+      <p class="wb-cover__subtitle">슬로우 브랜드를 위한 질문집</p>
+
+      <p class="wb-cover__quote">
+        "타인의 시선을 기준점으로 삼는 순간,<br>
+        내면의 나침반은 이미 사라집니다."
+      </p>
+    </div>
+
+    <div class="wb-cover__meta">
+      <span>ZERO POINT WORKBOOK</span>
+      <span>WOOHWAHAE · 2026</span>
+    </div>
+  </div>
+
+  <!-- ══ 사용법 ══ -->
+  <div class="wb-intro">
+    <p class="wb-intro__label">이 워크북에 대해</p>
+    <div class="wb-intro__body">
+      <p>이 질문집은 브랜드를 만드는 방법을 알려주지 않습니다. 브랜드가 이미 어디에 있는지를 찾는 과정입니다.</p>
+      <p>빠르게 채우지 마세요. 답이 떠오르지 않으면 그 침묵도 정보입니다. 한 섹션을 끝내고 나면 하루 이상 간격을 두고 다음으로 넘어가기를 권합니다.</p>
+      <p>정답은 없습니다. 가장 솔직한 첫 번째 언어가 가장 가깝습니다.</p>
+    </div>
+  </div>
+
+  <section class="wb-offer" id="purchase" aria-labelledby="wb-offer-title">
+    <p class="wb-offer__label">Workbook Offer</p>
+    <h2 class="wb-offer__title" id="wb-offer-title">총 30개 질문 + 리플렉션 여백 페이지</h2>
+    <p class="wb-offer__desc">
+      5개 섹션, 각 6개 질문으로 구성된 핵심 프롬프트 30문항과
+      섹션별 회고 여백 페이지를 담았습니다. 디지털 PDF 즉시 결제와
+      리소 인쇄본 예약 결제를 모두 지원합니다.
+    </p>
+    <ul class="wb-offer__list">
+      <li>해체 · 영점 · 언어 · 감각 · 리듬 5개 모듈</li>
+      <li>섹션별 영점 체크와 실행 문장 정리칸 제공</li>
+      <li>디지털/인쇄판 동일 콘텐츠, 매체만 다르게 제공</li>
+    </ul>
+    <div class="wb-offer__pricing">
+      <article class="wb-price-card">
+        <p class="wb-price-card__name">Digital PDF</p>
+        <p class="wb-price-card__amount">₩15,000</p>
+        <p class="wb-price-card__meta">즉시 결제 · Instant access · KRW 15,000 (approx. USD 11)</p>
+        <button class="wb-cta wb-cta--primary" type="button" onclick="startWorkbookCheckout('workbook_digital')">구매하기 / Buy Digital</button>
+      </article>
+      <article class="wb-price-card">
+        <p class="wb-price-card__name">Riso Print Edition</p>
+        <p class="wb-price-card__amount">₩35,000</p>
+        <p class="wb-price-card__meta">예약 결제 · Limited-batch print · KRW 35,000 (approx. USD 25)</p>
+        <button class="wb-cta" type="button" onclick="startWorkbookCheckout('workbook_riso')">예약 구매 / Pre-order Print</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="wb-global" id="global-notes" aria-labelledby="wb-global-title">
+    <p class="wb-global__label">Global Checkout Notes</p>
+    <h2 class="wb-global__title" id="wb-global-title">해외 구매자 안내 / For International Buyers</h2>
+    <p class="wb-global__desc">
+      모든 결제는 KRW(원화) 기준으로 처리되며, USD 금액은 참고용 추정치입니다.
+      해외 구매자는 결제 후 이메일로 온보딩 안내를 받습니다.
+    </p>
+    <div class="wb-global__grid">
+      <article class="wb-global__card">
+        <h3>Digital PDF</h3>
+        <p>결제 즉시 접근 가능하며, PDF 저장 가이드는 결제 완료 페이지에서 확인할 수 있습니다.</p>
+      </article>
+      <article class="wb-global__card">
+        <h3>Riso Print Edition</h3>
+        <p>해외 배송은 결제 이후 개별 이메일로 주소/운임을 확정합니다. 제작 및 발송은 통상 10-15영업일이 소요됩니다.</p>
+      </article>
+    </div>
+    <ul class="wb-global__policy">
+      <li><strong>Refund:</strong> Digital은 중복결제/접근 문제 발생 시 7일 이내 환불 지원, Print는 제작 시작 전 전액 환불 가능</li>
+      <li><strong>Support SLA:</strong> 결제/배송 문의는 48시간 이내 1차 회신</li>
+      <li><strong>Contact:</strong> hello@woohwahae.kr · Instagram @woohwahae</li>
+    </ul>
+  </section>
+
+  <!-- ══ Section 1: 해체 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">01</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">해체</h2>
+        <p class="wb-section__desc">지금의 브랜드를 있는 그대로 본다. 비우는 것이 먼저다.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 01 — 01</p>
+      <p class="wb-question__text">지금 내 브랜드의 어떤 모습이 가장 낯설게 느껴지는가?</p>
+      <p class="wb-question__hint">좋고 나쁨이 아닌, 단지 "이게 나인가?" 싶은 것.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 01 — 02</p>
+      <p class="wb-question__text">절대 되고 싶지 않은 브랜드는 어떤 브랜드인가? 구체적으로.</p>
+      <p class="wb-question__hint">추상적인 형용사("싸구려", "촌스러운")보다 실제 브랜드명이나 구체적인 장면이 더 정확하다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 01 — 03</p>
+      <p class="wb-question__text">지금까지 브랜드에서 시도했다가 결국 버린 것들은 무엇인가?</p>
+      <p class="wb-question__hint">버린 이유가 "맞지 않아서"라면, 그 불일치가 단서다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위 세 가지 답변에서 반복되는 감각이나 단어가 있는가?<br>
+        그것이 내 브랜드가 피하고 싶은 것의 윤곽이다.
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="한 문장으로 정리하면:"></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 2: 영점 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">02</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">영점</h2>
+        <p class="wb-section__desc">제거하고 남은 것. 그것이 본질이다.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 02 — 01</p>
+      <p class="wb-question__text">내 브랜드가 존재하지 않는다면 세상에서 무엇이 사라지는가?</p>
+      <p class="wb-question__hint">"아무것도"가 떠오른다면, 아직 답을 찾지 못한 것이다. 더 구체적으로.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 02 — 02</p>
+      <p class="wb-question__text">내 브랜드의 핵심을 단 하나의 동사로 표현한다면?</p>
+      <p class="wb-question__hint">명사("커피", "헤어")가 아닌 동사. 브랜드가 하는 행위.</p>
+      <div class="wb-lines">
+        <input class="wb-line" type="text" placeholder="동사 하나:" />
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 02 — 03</p>
+      <p class="wb-question__text">모든 것을 내려놓고 가장 작은 버전의 내 브랜드만 남긴다면, 그 핵심은 무엇인가?</p>
+      <p class="wb-question__hint">예산도, SNS도, 공간도 없다면. 남는 것이 본질이다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위에서 찾은 동사와 "가장 작은 버전"을 합쳐 한 문장을 만들어본다.<br>
+        "나의 브랜드는 ___을/를 위해 ___한다."
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="나의 브랜드는 ___을/를 위해 ___한다."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 3: 언어 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">03</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">언어</h2>
+        <p class="wb-section__desc">브랜드가 세상에 말하는 방식. 목소리도 아이덴티티다.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 03 — 01</p>
+      <p class="wb-question__text">내 브랜드가 처음 말을 건넨다면, 어떤 문장으로 시작하는가?</p>
+      <p class="wb-question__hint">광고 카피가 아닌, 처음 만난 사람에게 건네는 첫 마디처럼.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="2" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 03 — 02</p>
+      <p class="wb-question__text">내 브랜드가 절대 사용하지 않을 단어 3개는?</p>
+      <p class="wb-question__hint">금지어가 브랜드 경계를 만든다.</p>
+      <div class="wb-word-row">
+        <input class="wb-word" type="text" placeholder="단어 1" />
+        <input class="wb-word" type="text" placeholder="단어 2" />
+        <input class="wb-word" type="text" placeholder="단어 3" />
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 03 — 03</p>
+      <p class="wb-question__text">내 고객이 우리 브랜드를 다른 사람에게 소개할 때 어떤 말을 써주길 바라는가?</p>
+      <p class="wb-question__hint">내가 쓰고 싶은 말이 아닌, 그들이 자연스럽게 쓸 말.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        지금 내 브랜드의 실제 언어(SNS, 메뉴판, 안내문)와 위 답변 사이의 거리는 얼마나 되는가?<br>
+        그 거리가 현재 브랜드의 언어적 부채다.
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="거리: "></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 4: 감각 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">04</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">감각</h2>
+        <p class="wb-section__desc">브랜드는 논리보다 감각으로 기억된다. 시각, 촉각, 분위기.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 04 — 01</p>
+      <p class="wb-question__text">내 브랜드 공간에 처음 들어선 사람이 느끼길 바라는 첫 감각은?</p>
+      <p class="wb-question__hint">시각보다 체온, 공기, 소리 같은 감각이 더 정확할 수 있다.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 04 — 02</p>
+      <p class="wb-question__text">내 브랜드를 색 하나로 표현한다면? 그 이유는?</p>
+      <p class="wb-question__hint">팔레트 이름이 아닌 장면 묘사. "11월 오후 4시 빛의 색" 같은 방식으로.</p>
+      <div class="wb-lines">
+        <input class="wb-line" type="text" placeholder="색: " />
+        <textarea class="wb-line" rows="2" placeholder="이유: "></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 04 — 03</p>
+      <p class="wb-question__text">내 브랜드와 가장 어울리는 시간대와 계절은?</p>
+      <p class="wb-question__hint">에너지 레벨의 문제가 아니라, 빛과 공기의 문제다.</p>
+      <div class="wb-word-row">
+        <input class="wb-word" type="text" placeholder="시간대" />
+        <input class="wb-word" type="text" placeholder="계절" />
+        <input class="wb-word" type="text" placeholder="날씨" />
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위 답변들을 종합해 내 브랜드의 "감각 문장" 하나를 만든다.<br>
+        실제로 사용할 수 있는 브랜드 분위기 기준문.
+      </p>
+      <textarea class="wb-line" rows="2" placeholder="감각 문장: "></textarea>
+    </div>
+  </div>
+
+  <!-- ══ Section 5: 리듬 ══ -->
+  <div class="wb-section">
+    <div class="wb-section__header">
+      <span class="wb-section__num">05</span>
+      <div class="wb-section__title-group">
+        <h2 class="wb-section__title">리듬</h2>
+        <p class="wb-section__desc">속도는 선택이다. 내 브랜드가 따르는 시간의 단위.</p>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 05 — 01</p>
+      <p class="wb-question__text">하루 중 가장 내 브랜드다운 순간은 언제인가?</p>
+      <p class="wb-question__hint">가장 잘 된 날, 가장 나다웠던 그 장면.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 05 — 02</p>
+      <p class="wb-question__text">"빠르게 해야 한다"고 느낄 때, 그 압박은 어디서 오는가?</p>
+      <p class="wb-question__hint">내부에서 오는 기준인가, 외부 비교에서 오는 기준인가.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-question">
+      <p class="wb-question__label">Q 05 — 03</p>
+      <p class="wb-question__text">1년 후 내 브랜드가 지금보다 더 느려져도 괜찮은 이유는?</p>
+      <p class="wb-question__hint">빠름에 대한 반론이 아니라, 느림의 근거를 직접 써보는 것.</p>
+      <div class="wb-lines">
+        <textarea class="wb-line" rows="3" placeholder=""></textarea>
+      </div>
+    </div>
+
+    <div class="wb-synthesis">
+      <p class="wb-synthesis__label">영점 체크</p>
+      <p class="wb-synthesis__prompt">
+        위 세 답변을 읽고 — 지금 내 브랜드의 속도는 내가 원하는 속도인가,<br>
+        아니면 외부에서 부과된 속도인가?
+      </p>
+      <div class="wb-word-row wb-word-row--compact">
+        <input class="wb-word" type="text" placeholder="내가 원하는 속도" />
+        <input class="wb-word" type="text" placeholder="지금 실제 속도" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 아웃트로 ══ -->
+  <div class="wb-outro">
+    <h2 class="wb-outro__title">영점을 찾은 후</h2>
+    <div class="wb-outro__body">
+      <p>이 워크북은 끝이 아닙니다. 지금 적은 답변들은 6개월 후 다시 읽어야 합니다. 그 간격이 브랜드가 어디서 어디로 이동했는지를 보여줍니다.</p>
+      <p>워크북을 마친 후 브랜드 방향에 대해 이야기 나누고 싶다면 연락 주세요. 모든 문의에 답하지는 못하지만, 방향이 맞는 분들과는 대화합니다.</p>
+    </div>
+    <p class="wb-outro__contact">
+      hello@woohwahae.kr &nbsp;·&nbsp;
+      <a href="https://woohwahae.kr/works/offering/">woohwahae.kr</a>
+    </p>
+    <p class="wb-outro__brand">WOOHWAHAE · Zero Point Workbook No.1 · 2026</p>
+  </div>
+
+  <script src="https://js.tosspayments.com/v1/payment"></script>
+  <script defer src="/assets/js/payment.js?v=1a2f99b7"></script>
+  <script>
+    (function () {
+      var ORDER_API = '/commerce/api/v1/orders';
+      var LOCALE = (navigator.language || 'en').toLowerCase();
+      var IS_KO = LOCALE.indexOf('ko') === 0;
+
+      var ORDER_PAYLOADS = {
+        workbook_digital: {
+          productId: 9001,
+          amount: 15000,
+          paymentMethod: 'card',
+          shippingMethod: 'digital',
+          note: 'workbook_digital_from_web'
+        },
+        workbook_riso: {
+          productId: 9002,
+          amount: 35000,
+          paymentMethod: 'card',
+          shippingMethod: 'riso-print',
+          note: 'workbook_riso_from_web'
+        }
+      };
+
+      function shippingAddressTemplate(kind) {
+        return {
+          name: '워크북 주문',
+          phone: '000-0000-0000',
+          address1: kind === 'digital' ? 'digital-delivery' : 'collect-after-payment',
+          address2: '',
+          city: 'Seoul',
+          state: 'KR',
+          zip: '00000',
+          country: 'KR'
+        };
+      }
+
+      async function createWorkbookOrder(productKey) {
+        var payload = ORDER_PAYLOADS[productKey];
+        if (!payload) return null;
+        try {
+          var response = await fetch(ORDER_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: [{ product_id: payload.productId, quantity: 1 }],
+              shipping_address: shippingAddressTemplate(payload.shippingMethod === 'digital' ? 'digital' : 'physical'),
+              shipping_method: payload.shippingMethod,
+              payment_method: payload.paymentMethod,
+              customer_note: payload.note
+            })
+          });
+          if (!response.ok) return null;
+          var data = await response.json();
+          if (data && data.order_number) return String(data.order_number);
+        } catch (error) {
+          console.warn('Workbook order API fallback:', error);
+        }
+        return null;
+      }
+
+      window.startWorkbookCheckout = async function startWorkbookCheckout(productKey) {
+        if (typeof initTossPayment !== 'function') {
+          alert(IS_KO
+            ? '결제 모듈을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
+            : 'Payment module is unavailable right now. Please try again in a moment.');
+          return;
+        }
+        var product = ORDER_PAYLOADS[productKey];
+        if (!product) {
+          alert(IS_KO ? '상품 정보를 찾을 수 없습니다.' : 'Product information is unavailable.');
+          return;
+        }
+
+        if (productKey === 'workbook_riso' && !IS_KO) {
+          var proceed = confirm('International Riso shipping details are confirmed by email after payment. Continue?');
+          if (!proceed) {
+            return;
+          }
+        }
+
+        if (productKey === 'workbook_digital' && !IS_KO) {
+          var digitalProceed = confirm('Digital workbook access guide is shown on payment success page. Continue?');
+          if (!digitalProceed) {
+            return;
+          }
+        }
+
+        var orderNumber = await createWorkbookOrder(productKey);
+        if (orderNumber) {
+          try {
+            localStorage.setItem('woohwahae_last_order_number', orderNumber);
+          } catch (error) {
+            console.warn('localStorage skipped:', error);
+          }
+        }
+
+        initTossPayment(productKey, product.amount, {
+          orderNumber: orderNumber || undefined,
+          customerName: IS_KO ? '워크북 구매자' : 'Workbook Customer'
+        });
+      };
+    })();
+  </script>
+  <script defer src="/assets/js/site.js?v=bb36513f"></script>
+  <!-- COMPONENT:footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-mid">
+        <button class="footer-contact-toggle" id="footer-contact-toggle" aria-expanded="false">
+          Contact <span class="footer-toggle-icon">+</span>
+        </button>
+        <div class="footer-contact-panel" id="footer-contact-panel" aria-hidden="true">
+          <a href="tel:050713932075">0507-1393-2075</a>
+          <a href="mailto:hello@woohwahae.kr">hello@woohwahae.kr</a>
+          <a href="https://instagram.com/woohwahae" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+      <div class="footer-base">
+        <p class="footer-biz">CEO SUNHO JO &middot; BRN 532-05-02854 &middot; 32, Bangujeong 20-gil, Jung-gu, Ulsan</p>
+        <div class="footer-legal">
+          <span>&copy; 2024 WOOHWAHAE</span>
+          <a href="/privacy.html">Privacy</a>
+          <a href="/terms.html">Terms</a>
+          <span class="footer-time" id="footer-time"></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+  (function(){
+    var btn=document.getElementById('footer-contact-toggle');
+    var panel=document.getElementById('footer-contact-panel');
+    if(!btn||!panel)return;
+    btn.addEventListener('click',function(){
+      var open=panel.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded',String(open));
+      panel.setAttribute('aria-hidden',String(!open));
+    });
+  })();
+  </script>
+  <!-- /COMPONENT:footer -->
+</body>
+</html>

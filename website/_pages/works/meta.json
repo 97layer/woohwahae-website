@@ -11,9 +11,9 @@
     "aria": "웍스 섹션",
     "layout": "list",
     "items": [
-      { "label": "001. 아틀리에", "href": "#atelier" },
-      { "label": "002. 오퍼링", "href": "#offering" },
-      { "label": "003. 프로젝트", "href": "#projects" }
+      { "label": "001. 아틀리에", "href": "/works/atelier/" },
+      { "label": "002. 오퍼링", "href": "/works/offering/" },
+      { "label": "003. 프로젝트", "href": "/works/project/" }
     ]
   }
 }
