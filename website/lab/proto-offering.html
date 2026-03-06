@@ -4,181 +4,156 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Orchestrator's Cut (Master Version) — WOOHWAHAE Lab</title>
-<link href="../assets/css/style.css?v=335cbb7f" rel="stylesheet"/>
+<title>Offering (Prototype) — WOOHWAHAE</title>
+<!-- 원본 스타일 로드 -->
+<link href="../assets/css/style.css" rel="stylesheet"/>
 <style>
-        /* 
-       [SYSTEM OVERRIDE: THE ORCHESTRATOR'S CUT]
-       1. Zero-Transparency Policy (Anti-Glassmorphism)
-       2. Asymmetrical Tension
-       3. Slow Physics
-    */
-        :root {
-            --bg: #FAFAF7;
-            --text: #1a1a1a;
-            --line: #E4E3DC;
-            --navy: #1B2D4F;
-            --duration-heavy: 0.8s;
-            --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        /* =========================================
+       [PROTOTYPE] EXTREME EDITORIAL OVERRIDES
+       글래스모피즘 전면 폐기, 솔리드 + 1px 파단선.
+       극단적 활자 스케일 대비 및 고의적 반응 지연.
+       ========================================= */
 
-        /* 1. SOLID NAVIGATION */
-        nav,
-        nav.scrolled {
+        /* 1. 글래스모피즘 파기 탈피: 내비게이션 */
+        nav.scrolled,
+        nav {
             background-color: var(--bg) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             border-bottom: 1px solid var(--line) !important;
             box-shadow: none !important;
-            padding: 1.2rem 2rem !important;
+            padding: var(--space-sm) var(--space-md) !important;
         }
 
-        /* 2. HERO SECTION: VISUAL SPECIMEN & TITLE BATTLE */
-        .master-hero {
-            height: 100vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            padding: 0 4rem;
-            gap: 4rem;
+        /* 2. 기존 Offering Grid 파괴 후 재생산용 리셋 */
+        .mag-row--intro {
+            margin-top: calc(80px + var(--space-lg));
+            border-bottom: 1px solid var(--line);
+            padding-bottom: var(--space-xl);
         }
 
-        .master-specimen {
-            width: 100%;
-            height: 60vh;
-            background: #F2F1EC;
+        .mag-row--intro .mag-heading {
+            font-size: clamp(2.4rem, 5vw, 4.2rem);
+            letter-spacing: -0.05em;
+            /* 자간을 숨막히게 조임 */
+            line-height: 1.05;
+        }
+
+        /* 3. 새로운 Asymmetrical List 구조 (Editorial Style) */
+        .editorial-list {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* CSS Generated "Essence Core" */
-        .essence-core {
-            width: 200px;
-            height: 200px;
-            background: #1a1a1a;
-            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-            box-shadow: 20px 40px 100px rgba(0, 0, 0, 0.15);
-            animation: morphing 10s ease-in-out infinite;
-        }
-
-        @keyframes morphing {
-            0% {
-                border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-                transform: rotate(0deg);
-            }
-
-            34% {
-                border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%;
-            }
-
-            67% {
-                border-radius: 30% 60% 70% 40% / 50% 60% 30% 40%;
-            }
-
-            100% {
-                border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-                transform: rotate(360deg);
-            }
-        }
-
-        .master-content h1 {
-            font-size: clamp(3rem, 10vw, 8rem);
-            font-weight: 200;
-            letter-spacing: -0.06em;
-            line-height: 0.85;
-            margin-bottom: 4rem;
-        }
-
-        /* 3. ASYMMETRICAL OFFERING LIST */
-        .master-offering-list {
+            flex-direction: column;
             border-top: 1px solid var(--text);
-            margin-top: 10rem;
-            margin-bottom: 20rem;
+            /* 상단 강렬한 경계 */
+            margin-top: var(--space-xl);
+            margin-bottom: var(--space-2xl);
         }
 
-        .offering-item {
+        .editorial-item {
             display: grid;
             grid-template-columns: 2fr 8fr;
-            padding: 4rem 0;
+            padding: var(--space-xl) 0;
             border-bottom: 1px solid var(--line);
-            text-decoration: none;
-            color: inherit;
-            transition: background-color var(--duration-heavy) var(--ease-apple);
+            align-items: flex-start;
+            transition: background-color 0.8s var(--ease);
+            cursor: pointer;
         }
 
-        .offering-item:hover {
-            background-color: #F2F1EC;
+        .editorial-item:hover {
+            background-color: var(--bg-dark);
+            /* 명도만 아주 느리게 낮춤 */
         }
 
-        .offering-meta {
-            font-family: 'DM Mono', monospace;
+        /* 4. 활자의 긴장감 구성 - 라벨(초박형), 타이틀(비대화) */
+        .ed-meta {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            font-family: var(--font-mono);
             font-size: 0.55rem;
             letter-spacing: 0.2em;
+            /* 극도로 넓은 자간 */
             color: var(--text-faint);
         }
 
-        .offering-body {
+        .ed-link {
             display: grid;
-            grid-template-columns: 4fr 5fr 1fr;
+            grid-template-columns: 3.5fr 4.5fr 1fr;
             align-items: center;
+            text-decoration: none;
+            border-bottom: none;
         }
 
-        .offering-title {
-            font-size: clamp(2rem, 5vw, 4rem);
+        .ed-title {
+            font-family: var(--font-body);
+            font-size: clamp(3rem, 7vw, 4.8rem);
+            /* 화면을 찢고 나올 정도의 거대함 */
             font-weight: 300;
+            color: var(--text);
+            margin: 0;
             letter-spacing: -0.04em;
-            transition: transform var(--duration-heavy) var(--ease-apple);
+            transition: transform 0.8s var(--ease);
+            transform-origin: left center;
         }
 
-        .offering-item:hover .offering-title {
-            transform: translateX(20px);
+        /* 호버 시 묵직한 질량 이동 */
+        .editorial-item:hover .ed-title {
+            transform: translateX(15px);
         }
 
-        .offering-desc {
-            font-size: 0.9rem;
+        .ed-desc {
+            font-size: 0.85rem;
             color: var(--text-sub);
+            margin: 0;
+            padding-right: var(--space-md);
             max-width: 320px;
-            opacity: 0.6;
-            transition: opacity var(--duration-heavy) var(--ease-apple);
+            line-height: 1.8;
+            letter-spacing: 0.01em;
+            opacity: 0.7;
+            transition: opacity 0.8s var(--ease);
         }
 
-        .offering-item:hover .offering-desc {
+        .editorial-item:hover .ed-desc {
             opacity: 1;
+            /* 호버 시에만 온전한 본질 노출 */
         }
 
-        .offering-arrow {
-            font-family: 'DM Mono', monospace;
+        .ed-arrow {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--stone-dark);  /* Changed from var(--navy) */
             justify-self: end;
             opacity: 0;
             transform: translateX(-20px);
-            transition: all var(--duration-heavy) var(--ease-apple);
+            transition: all 0.8s var(--ease);
         }
 
-        .offering-item:hover .offering-arrow {
+        .editorial-item:hover .ed-arrow {
             opacity: 1;
             transform: translateX(0);
         }
 
-        @media (max-width: 900px) {
-            .master-hero {
+        /* 모바일 반응형 파괴 */
+        @media (max-width: 768px) {
+            .editorial-item {
                 grid-template-columns: 1fr;
-                padding: 120px 2rem;
+                gap: var(--space-md);
+                padding: var(--space-md) 0;
             }
 
-            .offering-item {
+            .ed-link {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: var(--space-sm);
             }
 
-            .offering-body {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
+            .ed-desc {
+                max-width: 100%;
+                margin-top: var(--space-sm);
             }
 
-            .offering-arrow {
+            .ed-arrow {
                 display: none;
+                /* 방해 전파 제거 */
             }
         }
     </style>
@@ -262,55 +237,71 @@
 <!-- wave-bg 추가 -->
 
 <!-- wave-bg 추가 -->
+<!-- Solid Navigation (글래스모피즘 폐기) -->
 <main class="container--wide">
-<!-- Hero Section -->
-<section class="master-hero">
-<div class="master-specimen fade-in">
-<div class="essence-core"></div>
+<!-- 인트로 (기존 대비 자간/행간 타격감 상승) -->
+<div class="mag-row mag-row--intro fade-in">
+<div class="mag-label">
+<p class="section-label">Offering</p>
+<p class="mag-heading">같은 철학의 다른 형태들.</p>
 </div>
-<div class="master-content">
-<p class="section-label fade-in">The Master Direction</p>
-<h1 class="fade-in">Structure<br/>Beyond<br/>Silence.</h1>
-<p class="hero-subtitle fade-in">가장 조용한 방식으로 본질의 무게를 증명합니다. 타협 없는 레이아웃과 감각적 지연.</p>
+<div class="mag-body">
+<p class="lead">하나의 철학에서 출발한 네 가지 방식입니다.</p>
+<p>헤어를 설계하고, 기준을 전수하고, 작업을 함께 하고, 일상을 위한 것들을 고릅니다. 형태는 달라도 질문은 하나입니다.</p>
 </div>
-</section>
-<!-- Offering Re-Layout -->
-<div class="master-offering-list">
-<a class="offering-item fade-in" href="../practice/">
-<div class="offering-meta">001 / INDIVIDUAL</div>
-<div class="offering-body">
-<h2 class="offering-title">Atelier</h2>
-<p class="offering-desc">헤어. 구조를 먼저 읽고 그 사람에게 맞는 형태를 설계합니다.</p>
-<span class="offering-arrow">→</span>
 </div>
-</a>
-<a class="offering-item fade-in" href="../practice/">
-<div class="offering-meta">002 / SYSTEM</div>
-<div class="offering-body">
-<h2 class="offering-title">Consulting</h2>
-<p class="offering-desc">브랜드, 교육, 협업. 방향이 맞는 경우에만 함께합니다.</p>
-<span class="offering-arrow">→</span>
+<!-- 변태적인 Editorial List (Asymmetrical Grid) -->
+<div class="editorial-list fade-in">
+<!-- 001 Atelier -->
+<div class="editorial-item" onclick="location.href='../practice/'">
+<div class="ed-meta">
+<span class="ed-num">001</span>
+<span class="ed-label">FOR INDIVIDUAL</span>
 </div>
-</a>
-<a class="offering-item fade-in" href="../practice/">
-<div class="offering-meta">003 / PROJECT</div>
-<div class="offering-body">
-<h2 class="offering-title">Project</h2>
-<p class="offering-desc">에디토리얼, 협업. 방향성이 맞는 프로젝트에 한합니다.</p>
-<span class="offering-arrow">→</span>
+<div class="ed-link">
+<h3 class="ed-title">Atelier</h3>
+<p class="ed-desc">헤어. 구조를 먼저 읽고 그 사람에게 맞는 형태를 설계합니다.</p>
+<span class="ed-arrow">→</span>
 </div>
-</a>
-<a class="offering-item fade-in" href="../practice/">
-<div class="offering-meta">004 / DAILY</div>
-<div class="offering-body">
-<h2 class="offering-title">Practice</h2>
-<p class="offering-desc">직접 써보고, 오래 쓰고, 다시 찾게 된 것들을 고릅니다.</p>
-<span class="offering-arrow">→</span>
 </div>
-</a>
+<!-- 002 Consulting -->
+<div class="editorial-item" onclick="location.href='../practice/'">
+<div class="ed-meta">
+<span class="ed-num">002</span>
+<span class="ed-label">FOR SYSTEM</span>
+</div>
+<div class="ed-link">
+<h3 class="ed-title">Consulting</h3>
+<p class="ed-desc">브랜드, 교육, 협업. 방향이 맞는 경우에만 함께합니다.</p>
+<span class="ed-arrow">→</span>
+</div>
+</div>
+<!-- 003 Project -->
+<div class="editorial-item" onclick="location.href='../practice/'">
+<div class="ed-meta">
+<span class="ed-num">003</span>
+<span class="ed-label">FOR PROJECT</span>
+</div>
+<div class="ed-link">
+<h3 class="ed-title">Project</h3>
+<p class="ed-desc">모델 작업, 에디토리얼, 협업. 방향성이 맞는 프로젝트에 한합니다.</p>
+<span class="ed-arrow">→</span>
+</div>
+</div>
+<!-- 004 Shop -->
+<div class="editorial-item" onclick="location.href='../practice/'">
+<div class="ed-meta">
+<span class="ed-num">004</span>
+<span class="ed-label">FOR DAILY</span>
+</div>
+<div class="ed-link">
+<h3 class="ed-title">Practice</h3>
+<p class="ed-desc">직접 써보고, 오래 쓰고, 다시 찾게 된 것들을 고릅니다.</p>
+<span class="ed-arrow">→</span>
+</div>
+</div>
 </div>
 </main>
-<script src="../assets/js/main.js?v=91c93355"></script>
 
 <!-- COMPONENT:footer -->
 <footer class="site-footer">
@@ -349,6 +340,6 @@
 })();
 </script>
 <!-- /COMPONENT:footer -->
-<script defer src="/assets/js/site.js?v=bb36513f"></script>
+<script defer src="/assets/js/site.js?v=d5f93078"></script>
 </body>
 </html>
