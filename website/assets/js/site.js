@@ -1106,3 +1106,34 @@
     initFooterToggle();
   }
 })();
+
+
+(function() {
+  const siteNav = document.getElementById('site-nav');
+  if (!siteNav) return;
+
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  function updateHeader() {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      // Scrolling down
+      siteNav.classList.add('site-nav--hidden');
+    } else {
+      // Scrolling up or at the top
+      siteNav.classList.remove('site-nav--hidden');
+    }
+
+    lastScrollY = currentScrollY;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeader);
+      ticking = true;
+    }
+  });
+})();

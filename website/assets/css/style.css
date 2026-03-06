@@ -6974,10 +6974,9 @@ body.nav-open .nav-dim {
   backdrop-filter: blur(28px) saturate(140%);
   -webkit-backdrop-filter: blur(28px) saturate(140%);
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 0 16px;
-  /* 헤더와 정렬 동기화 */
+  padding: 100px 16px 40px;
+  /* 헤더(56px) + 서브내비(약 40px) 영역 회피를 위한 상단 패딩 */
   opacity: 0;
   pointer-events: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
@@ -7055,6 +7054,9 @@ body.nav-open .nav-dim {
   color: var(--text);
   text-decoration: none;
   display: block;
+  position: relative;
+  z-index: 10;
+  /* 클릭 가시성 및 레이어 우선순위 확보 */
   opacity: 0;
   /* 초기 상태 투명 */
   transform: translateX(8px);
@@ -20366,4 +20368,76 @@ body.is-revealing-logo .home-preloader__logo {
 
 .footer-contact-panel a:hover {
   color: var(--text);
+}
+
+/* ── Page header universal — Archive / Works / Lab (2026-03-06) ── */
+body.page-archive .page-intro,
+body.page-practice .page-intro,
+body.page-lab .page-intro {
+  padding-top: 1.8rem;
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+body.page-archive .page-intro .section-label,
+body.page-practice .page-intro .section-label,
+body.page-lab .page-intro .section-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  margin-bottom: 0.55rem;
+  color: var(--text-faint);
+}
+
+body.page-archive .page-intro .page-title,
+body.page-practice .page-intro .page-title,
+body.page-lab .page-intro .page-title {
+  font-size: 1.75rem;
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  margin-bottom: 0.45rem;
+}
+
+body.page-archive .page-intro .page-preamble,
+body.page-practice .page-intro .page-preamble,
+body.page-lab .page-intro .page-preamble {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  line-height: 1.7;
+  color: var(--text-faint);
+  margin: 0 0 0.8rem;
+}
+
+/* ── Archive page-intro filter override ── */
+.page-archive .page-intro .archive-filter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-top: var(--space-sm);
+}
+
+/* ── Global Neutral Monochrome — cool tint (2026-03-06) ── */
+:root,
+:root.time-dawn,
+:root.time-day,
+:root.time-evening,
+:root.time-night {
+  --bg: #EEEEF1;
+  --bg-dark: #E4E4E8;
+  --footer-bg: #E9E9EC;
+  --text: #111111;
+  --text-sub: #444444;
+}
+
+.site-nav {
+  transition: transform 0.3s ease-in-out;
+}
+
+.site-nav--hidden {
+  transform: translateY(-100%);
 }
