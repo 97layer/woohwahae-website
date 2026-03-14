@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/handoff_packet.schema.json",
+  "title": "HandoffPacket",
+  "type": "object",
+  "required": [
+    "generated_at",
+    "company_state",
+    "system_memory",
+    "auth",
+    "write_lease",
+    "founder_view",
+    "founder_summary",
+    "review_room",
+    "parallel_candidates",
+    "active_branches",
+    "counts"
+  ],
+  "properties": {
+    "generated_at": { "type": "string", "format": "date-time" },
+    "company_state": { "$ref": "company_state.schema.json" },
+    "system_memory": { "$ref": "system_memory.schema.json" },
+    "auth": { "$ref": "auth_status.schema.json" },
+    "write_lease": { "$ref": "write_lease.schema.json" },
+    "founder_view": { "$ref": "founder_view.schema.json" },
+    "founder_summary": { "$ref": "founder_summary.schema.json" },
+    "review_room": { "$ref": "review_room_summary.schema.json" },
+    "continuity": {
+      "$ref": "#/$defs/continuity_view"
+    },
+    "active_branches": {
+      "type": "array",
+      "items": { "$ref": "branch.schema.json" }
+    },
+    "parallel_candidates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/parallel_candidate" }
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "branches",
+        "proposals",
+        "agent_jobs",
+        "work_items",
+        "flows",
+        "approvals",
+        "releases",
+        "events",
+        "deploys",
+        "rollbacks",
+        "targets",
+        "preflights",
+        "policies",
+        "gateway_calls",
+        "executes",
+        "verifications",
+        "observations"
+      ],
+      "properties": {
+        "branches": { "type": "integer", "minimum": 0 },
+        "proposals": { "type": "integer", "minimum": 0 },
+        "agent_jobs": { "type": "integer", "minimum": 0 },
+        "work_items": { "type": "integer", "minimum": 0 },
+        "flows": { "type": "integer", "minimum": 0 },
+        "approvals": { "type": "integer", "minimum": 0 },
+        "releases": { "type": "integer", "minimum": 0 },
+        "events": { "type": "integer", "minimum": 0 },
+        "deploys": { "type": "integer", "minimum": 0 },
+        "rollbacks": { "type": "integer", "minimum": 0 },
+        "targets": { "type": "integer", "minimum": 0 },
+        "preflights": { "type": "integer", "minimum": 0 },
+        "policies": { "type": "integer", "minimum": 0 },
+        "gateway_calls": { "type": "integer", "minimum": 0 },
+        "executes": { "type": "integer", "minimum": 0 },
+        "verifications": { "type": "integer", "minimum": 0 },
+        "observations": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "parallel_candidate": {
+      "type": "object",
+      "required": [
+        "text",
+        "kind",
+        "source",
+        "reason",
+        "priority"
+      ],
+      "properties": {
+        "text": { "type": "string" },
+        "kind": { "type": "string" },
+        "source": { "type": "string" },
+        "reason": { "type": "string" },
+        "priority": { "type": "string" },
+        "ref": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "continuity_note": {
+      "type": "object",
+      "required": [
+        "note_id",
+        "kind",
+        "text",
+        "refs",
+        "created_at"
+      ],
+      "properties": {
+        "note_id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["note", "todo", "decision", "risk"]
+        },
+        "text": { "type": "string" },
+        "refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "continuity_record": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "source",
+        "actor",
+        "status",
+        "current_focus",
+        "next_steps",
+        "open_risks",
+        "refs",
+        "notes",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "record_id": { "type": "string" },
+        "source": { "type": "string" },
+        "actor": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["active", "resolved", "stale"]
+        },
+        "current_focus": { "type": "string" },
+        "current_goal": { "type": ["string", "null"] },
+        "next_steps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "open_risks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "handoff_note": { "type": ["string", "null"] },
+        "refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "notes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/continuity_note" }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "resolved_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "continuity_suggestion": {
+      "type": "object",
+      "required": [
+        "suggestion_id",
+        "kind",
+        "summary",
+        "source"
+      ],
+      "properties": {
+        "suggestion_id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["risk", "todo", "route", "thread"]
+        },
+        "summary": { "type": "string" },
+        "ref": { "type": ["string", "null"] },
+        "command": { "type": ["string", "null"] },
+        "source": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "continuity_view": {
+      "type": "object",
+      "required": [
+        "related_threads",
+        "suggestions"
+      ],
+      "properties": {
+        "record": { "$ref": "#/$defs/continuity_record" },
+        "related_threads": {
+          "type": "array",
+          "items": { "$ref": "open_thread.schema.json" }
+        },
+        "suggestions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/continuity_suggestion" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

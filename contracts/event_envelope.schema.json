@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/event_envelope.schema.json",
+  "title": "EventEnvelope",
+  "type": "object",
+  "required": [
+    "event_id",
+    "kind",
+    "actor",
+    "surface",
+    "work_item_id",
+    "stage",
+    "timestamp",
+    "data"
+  ],
+  "properties": {
+    "event_id": { "type": "string" },
+    "kind": { "type": "string" },
+    "actor": { "type": "string" },
+    "surface": { "type": "string" },
+    "work_item_id": { "type": "string" },
+    "stage": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "data": { "type": "object" }
+  },
+  "additionalProperties": false
+}

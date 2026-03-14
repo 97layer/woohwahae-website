@@ -1,0 +1,23 @@
+[Unit]
+Description=Layer OS founder/admin web
+After=network-online.target layer-osd.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=layeros
+Group=layeros
+WorkingDirectory=/srv/layer-os/web/current
+Environment=HOME=/var/lib/layer-os
+Environment=PATH=/srv/layer-os/node/current/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/layer-os/layer-os-web.env
+ExecStart=/srv/layer-os/node/current/bin/node server.js
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+UMask=0027
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

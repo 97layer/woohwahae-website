@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/authority_boundary.schema.json",
+  "title": "AuthorityBoundary",
+  "type": "object",
+  "required": [
+    "authority_roots",
+    "legacy_reference_roots",
+    "legacy_reference_mode",
+    "runtime_state_root",
+    "review_room_state_path",
+    "review_room_write_surface",
+    "external_job_report_surface",
+    "knowledge_write_mode"
+  ],
+  "properties": {
+    "authority_roots": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "legacy_reference_roots": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "legacy_reference_mode": {
+      "type": "string",
+      "const": "reference_only"
+    },
+    "runtime_state_root": { "type": "string" },
+    "review_room_state_path": { "type": "string" },
+    "review_room_write_surface": { "type": "string" },
+    "external_job_report_surface": { "type": "string" },
+    "knowledge_write_mode": {
+      "type": "string",
+      "const": "derived_read_only"
+    }
+  },
+  "additionalProperties": false
+}

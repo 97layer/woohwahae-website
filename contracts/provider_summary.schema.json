@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/provider_summary.schema.json",
+  "title": "ProviderSummary",
+  "type": "object",
+  "required": ["provider", "declared", "dispatch_enabled", "auth_ready", "auth_env_keys", "gateway_adapter", "semantics", "notes"],
+  "properties": {
+    "provider": { "type": "string" },
+    "endpoint": { "type": "string" },
+    "declared": { "type": "boolean" },
+    "dispatch_enabled": { "type": "boolean" },
+    "auth_ready": { "type": "boolean" },
+    "auth_source": { "type": "string" },
+    "auth_env_keys": { "type": "array", "items": { "type": "string" } },
+    "gateway_adapter": { "type": "string" },
+    "semantics": { "type": "string" },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

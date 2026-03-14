@@ -1,0 +1,85 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name woohwahae.kr www.woohwahae.kr;
+
+    server_tokens off;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name admin.woohwahae.kr;
+
+    server_tokens off;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name woohwahae.kr www.woohwahae.kr;
+
+    server_tokens off;
+    ssl_certificate /etc/letsencrypt/live/woohwahae.kr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/woohwahae.kr/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:layer_os_ssl:10m;
+    ssl_session_tickets off;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    location ^~ /api/admin/ {
+        return 308 https://admin.woohwahae.kr$request_uri;
+    }
+
+    location ^~ /admin/ {
+        return 308 https://admin.woohwahae.kr$request_uri;
+    }
+
+    location = /admin {
+        return 308 https://admin.woohwahae.kr/admin;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3081;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name admin.woohwahae.kr;
+
+    server_tokens off;
+    ssl_certificate /etc/letsencrypt/live/woohwahae.kr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/woohwahae.kr/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:layer_os_ssl:10m;
+    ssl_session_tickets off;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    location = / {
+        return 302 https://admin.woohwahae.kr/admin/login;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3081;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}

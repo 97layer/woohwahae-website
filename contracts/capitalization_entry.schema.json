@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/capitalization_entry.schema.json",
+  "title": "CapitalizationEntry",
+  "type": "object",
+  "required": [
+    "entry_id",
+    "created_at",
+    "actor",
+    "source_event_id",
+    "source_kind",
+    "situation",
+    "decision",
+    "cost",
+    "result"
+  ],
+  "properties": {
+    "entry_id": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "actor": { "type": "string" },
+    "source_event_id": { "type": "string" },
+    "source_kind": { "type": "string" },
+    "situation": { "$ref": "#/$defs/facet" },
+    "decision": { "$ref": "#/$defs/facet" },
+    "cost": { "$ref": "#/$defs/facet" },
+    "result": { "$ref": "#/$defs/facet" }
+  },
+  "$defs": {
+    "facet": {
+      "type": "object",
+      "required": ["summary", "items"],
+      "properties": {
+        "summary": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

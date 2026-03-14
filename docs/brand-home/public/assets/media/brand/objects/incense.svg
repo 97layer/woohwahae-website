@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#F0EDE8"/>
+  <!-- incense stick -->
+  <line x1="200" y1="380" x2="200" y2="200" stroke="#8B7355" stroke-width="2"/>
+  <!-- smoke curves -->
+  <path d="M200 200 C195 180, 210 160, 198 140 C186 120, 205 100, 195 80 C185 60, 200 45, 195 30" stroke="#C4B8A8" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <path d="M200 200 C208 175, 192 155, 205 135 C218 115, 195 95, 210 75" stroke="#C4B8A8" stroke-width="1" fill="none" opacity="0.4"/>
+  <!-- holder -->
+  <ellipse cx="200" cy="385" rx="20" ry="5" fill="#A89880"/>
+  <rect x="190" y="380" width="20" height="12" rx="2" fill="#A89880"/>
+</svg>

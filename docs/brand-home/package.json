@@ -1,0 +1,20 @@
+{
+  "name": "brand-home",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "next build && node scripts/patch-next-server-runtime.mjs",
+    "start": "next start -p 8081",
+    "test": "node --test ./components/*.test.mjs ./lib/*.test.mjs ./app/api/admin/runtime/quickwork/route.test.mjs ./app/api/admin/runtime/telegram/route.test.mjs ./app/api/admin/runtime/brand-publish/route.test.mjs ./app/api/admin/runtime/brand-publish/threads/route.test.mjs ./app/api/admin/runtime/source-intake/route.test.mjs ./app/api/admin/runtime/source-intake/drafts/route.test.mjs",
+    "token:dev": "node scripts/dev-session-token.mjs"
+  },
+  "dependencies": {
+    "next": "15.2.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "three": "^0.160.0",
+    "zod": "^4.3.6"
+  }
+}

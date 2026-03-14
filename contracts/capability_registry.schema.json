@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/capability_registry.schema.json",
+  "title": "CapabilityRegistry",
+  "type": "object",
+  "required": ["authority", "default_actor", "bindings"],
+  "properties": {
+    "authority": { "$ref": "authority_boundary.schema.json" },
+    "default_actor": { "type": "string" },
+    "bindings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/capability_binding" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "capability_binding": {
+      "type": "object",
+      "required": ["id", "kind", "source", "active", "removable", "default"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "enum": ["actor", "provider", "gateway_adapter", "verify_adapter", "deploy_adapter", "rollback_adapter"] },
+        "source": { "type": "string" },
+        "active": { "type": "boolean" },
+        "removable": { "type": "boolean" },
+        "default": { "type": "boolean" },
+        "semantics": { "type": "string" },
+        "required_mode": { "type": "string" },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  }
+}

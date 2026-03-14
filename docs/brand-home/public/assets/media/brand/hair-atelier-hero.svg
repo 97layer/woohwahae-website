@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" fill="none">
+  <rect width="1200" height="300" fill="#2C2A25"/>
+  <!-- hair strands flowing -->
+  <path d="M100 280 C150 200, 200 150, 280 120 C360 90, 420 100, 480 130 C540 160, 580 140, 640 110 C700 80, 760 90, 820 120 C880 150, 920 130, 980 100 C1040 70, 1100 90, 1150 120"
+        stroke="#A89880" stroke-width="1" fill="none" opacity="0.3"/>
+  <path d="M80 290 C140 220, 190 170, 270 140 C350 110, 410 120, 470 150 C530 180, 570 160, 630 130 C690 100, 750 110, 810 140 C870 170, 910 150, 970 120 C1030 90, 1090 110, 1140 140"
+        stroke="#A89880" stroke-width="0.8" fill="none" opacity="0.2"/>
+  <path d="M120 270 C160 190, 210 140, 290 110 C370 80, 430 90, 490 120 C550 150, 590 130, 650 100 C710 70, 770 80, 830 110 C890 140, 930 120, 990 90 C1050 60, 1110 80, 1160 110"
+        stroke="#C4B8A8" stroke-width="0.6" fill="none" opacity="0.15"/>
+  <!-- scissors silhouette -->
+  <g transform="translate(560, 100)" opacity="0.15">
+    <!-- blade 1 -->
+    <path d="M-30 -20 C-25 -25, -5 -35, 0 -40 C5 -35, 25 -25, 30 -20" stroke="#FAFAF7" stroke-width="1.5" fill="none"/>
+    <!-- blade 2 -->
+    <path d="M-30 20 C-25 25, -5 35, 0 40 C5 35, 25 25, 30 20" stroke="#FAFAF7" stroke-width="1.5" fill="none"/>
+    <!-- pivot -->
+    <circle cx="0" cy="0" r="3" fill="none" stroke="#FAFAF7" stroke-width="1"/>
+    <!-- handles -->
+    <ellipse cx="-40" cy="-15" rx="12" ry="8" fill="none" stroke="#FAFAF7" stroke-width="1" transform="rotate(-15, -40, -15)"/>
+    <ellipse cx="-40" cy="15" rx="12" ry="8" fill="none" stroke="#FAFAF7" stroke-width="1" transform="rotate(15, -40, 15)"/>
+  </g>
+</svg>

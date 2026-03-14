@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/agent_dispatch_result.schema.json",
+  "title": "AgentDispatchResult",
+  "type": "object",
+  "required": ["job", "policy", "gateway"],
+  "properties": {
+    "job": { "$ref": "agent_job.schema.json" },
+    "policy": { "$ref": "policy_decision.schema.json" },
+    "gateway": { "$ref": "gateway_call.schema.json" }
+  },
+  "additionalProperties": false
+}

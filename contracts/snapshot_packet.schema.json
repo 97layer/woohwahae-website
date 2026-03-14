@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/snapshot_packet.schema.json",
+  "title": "SnapshotPacket",
+  "type": "object",
+  "required": [
+    "generated_at",
+    "company_state",
+    "system_memory",
+    "continuity_records",
+    "auth",
+    "branches",
+    "proposals",
+    "agent_jobs",
+    "work_items",
+    "flows",
+    "approvals",
+    "releases",
+    "deploys",
+    "rollbacks",
+    "targets",
+    "events",
+    "observations",
+    "review_room",
+    "preflights",
+    "policies",
+    "gateway_calls",
+    "executes",
+    "verifications"
+  ],
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "company_state": {
+      "$ref": "company_state.schema.json"
+    },
+    "system_memory": {
+      "$ref": "system_memory.schema.json"
+    },
+    "continuity_records": {
+      "type": "array",
+      "items": {
+        "$ref": "handoff_packet.schema.json#/$defs/continuity_record"
+      }
+    },
+    "session_checkpoint": {
+      "$ref": "#/$defs/session_checkpoint"
+    },
+    "auth": {
+      "$ref": "auth_status.schema.json"
+    },
+    "branches": {
+      "type": "array",
+      "items": {
+        "$ref": "branch.schema.json"
+      }
+    },
+    "proposals": {
+      "type": "array",
+      "items": {
+        "$ref": "proposal_item.schema.json"
+      }
+    },
+    "agent_jobs": {
+      "type": "array",
+      "items": {
+        "$ref": "agent_job.schema.json"
+      }
+    },
+    "work_items": {
+      "type": "array",
+      "items": {
+        "$ref": "work_item.schema.json"
+      }
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "$ref": "flow_run.schema.json"
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "$ref": "approval_item.schema.json"
+      }
+    },
+    "releases": {
+      "type": "array",
+      "items": {
+        "$ref": "release_packet.schema.json"
+      }
+    },
+    "deploys": {
+      "type": "array",
+      "items": {
+        "$ref": "deploy_run.schema.json"
+      }
+    },
+    "rollbacks": {
+      "type": "array",
+      "items": {
+        "$ref": "rollback_run.schema.json"
+      }
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "$ref": "deploy_target.schema.json"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "event_envelope.schema.json"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "observation_record.schema.json"
+      }
+    },
+    "review_room": {
+      "$ref": "review_room.schema.json"
+    },
+    "preflights": {
+      "type": "array",
+      "items": {
+        "$ref": "preflight_record.schema.json"
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "$ref": "policy_decision.schema.json"
+      }
+    },
+    "gateway_calls": {
+      "type": "array",
+      "items": {
+        "$ref": "gateway_call.schema.json"
+      }
+    },
+    "executes": {
+      "type": "array",
+      "items": {
+        "$ref": "execute_run.schema.json"
+      }
+    },
+    "verifications": {
+      "type": "array",
+      "items": {
+        "$ref": "verification_record.schema.json"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "session_checkpoint": {
+      "type": "object",
+      "required": [
+        "checkpoint_id",
+        "source",
+        "actor",
+        "current_focus",
+        "next_steps",
+        "open_risks",
+        "refs",
+        "updated_at"
+      ],
+      "properties": {
+        "checkpoint_id": { "type": "string" },
+        "source": { "type": "string" },
+        "actor": { "type": "string" },
+        "current_focus": { "type": "string" },
+        "current_goal": { "type": ["string", "null"] },
+        "next_steps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "open_risks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "handoff_note": { "type": ["string", "null"] },
+        "note": { "type": ["string", "null"] },
+        "refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

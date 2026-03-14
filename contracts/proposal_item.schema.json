@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/proposal_item.schema.json",
+  "title": "ProposalItem",
+  "type": "object",
+  "required": [
+    "proposal_id",
+    "title",
+    "intent",
+    "summary",
+    "surface",
+    "priority",
+    "risk",
+    "status",
+    "notes",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "proposal_id": { "type": "string" },
+    "branch_id": { "type": "string" },
+    "title": { "type": "string" },
+    "intent": { "type": "string" },
+    "summary": { "type": "string" },
+    "surface": { "type": "string" },
+    "priority": { "type": "string" },
+    "risk": { "type": "string" },
+    "status": { "type": "string" },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "promoted_work_item_id": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

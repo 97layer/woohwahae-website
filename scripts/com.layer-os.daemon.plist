@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.layer-os.daemon</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/97layer/layer OS/scripts/start.sh</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/97layer/layer OS</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/97layer/layer OS/.layer-os/osd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/97layer/layer OS/.layer-os/osd.error.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/97layer</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>LAYER_OS_DATA_DIR</key>
+        <string>.layer-os</string>
+        <key>LAYER_OS_GATEWAY_ADAPTER</key>
+        <string>gemini</string>
+        <key>LAYER_OS_ARCHITECT_AUTODISPATCH</key>
+        <string>true</string>
+    </dict>
+</dict>
+</plist>

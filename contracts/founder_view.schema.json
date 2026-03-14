@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/founder_view.schema.json",
+  "title": "FounderView",
+  "type": "object",
+  "required": ["now", "waiting", "risk"],
+  "properties": {
+    "now": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/founder_item" }
+    },
+    "waiting": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/founder_item" }
+    },
+    "risk": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/founder_item" }
+    },
+    "last_release": { "$ref": "#/$defs/founder_item" },
+    "last_rollback": { "$ref": "#/$defs/founder_item" }
+  },
+  "$defs": {
+    "founder_item": {
+      "type": "object",
+      "required": ["kind", "ref", "work_item_id", "summary", "status", "updated_at"],
+      "properties": {
+        "kind": { "type": "string" },
+        "ref": { "type": "string" },
+        "work_item_id": { "type": "string" },
+        "summary": { "type": "string" },
+        "status": { "type": "string" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

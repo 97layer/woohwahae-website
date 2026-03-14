@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/open_thread.schema.json",
+  "title": "OpenThread",
+  "type": "object",
+  "required": [
+    "thread_id",
+    "question",
+    "status",
+    "pattern_refs",
+    "evidence",
+    "source"
+  ],
+  "properties": {
+    "thread_id": { "type": "string" },
+    "question": { "type": "string" },
+    "status": { "type": "string", "enum": ["open", "resolved", "dismissed"] },
+    "pattern_refs": { "type": "array", "items": { "type": "string" } },
+    "evidence": { "type": "array", "items": { "type": "string" } },
+    "source": { "type": "string", "enum": ["corpus_signal", "review_room_drift", "manual"] }
+  },
+  "additionalProperties": false
+}

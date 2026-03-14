@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/observation_record.schema.json",
+  "title": "ObservationRecord",
+  "type": "object",
+  "required": [
+    "observation_id",
+    "source_channel",
+    "captured_at",
+    "actor",
+    "topic",
+    "refs",
+    "confidence",
+    "raw_excerpt",
+    "normalized_summary"
+  ],
+  "properties": {
+    "observation_id": { "type": "string" },
+    "source_channel": { "type": "string" },
+    "captured_at": { "type": "string", "format": "date-time" },
+    "actor": { "type": "string" },
+    "topic": { "type": "string" },
+    "refs": { "type": "array", "items": { "type": "string" } },
+    "confidence": { "type": "string", "enum": ["low", "medium", "high"] },
+    "raw_excerpt": { "type": "string" },
+    "normalized_summary": { "type": "string" }
+  },
+  "additionalProperties": false
+}

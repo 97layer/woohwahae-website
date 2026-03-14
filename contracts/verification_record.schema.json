@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/verification_record.schema.json",
+  "title": "VerificationRecord",
+  "type": "object",
+  "required": [
+    "record_id",
+    "scope",
+    "command",
+    "status",
+    "notes",
+    "started_at",
+    "finished_at"
+  ],
+  "properties": {
+    "record_id": { "type": "string" },
+    "scope": { "type": "string" },
+    "command": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed"]
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": false
+}

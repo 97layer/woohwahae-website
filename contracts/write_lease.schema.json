@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/write_lease.schema.json",
+  "title": "WriteLease",
+  "type": "object",
+  "required": ["owner", "pid", "status"],
+  "properties": {
+    "owner": { "type": "string" },
+    "pid": { "type": "integer", "minimum": 0 },
+    "status": { "type": "string" },
+    "acquired_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

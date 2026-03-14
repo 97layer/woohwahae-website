@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/auth_status.schema.json",
+  "title": "AuthStatus",
+  "type": "object",
+  "required": [
+    "write_auth_enabled"
+  ],
+  "properties": {
+    "write_auth_enabled": { "type": "boolean" },
+    "updated_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/gateway_call.schema.json",
+  "title": "GatewayCall",
+  "type": "object",
+  "required": [
+    "call_id",
+    "decision_id",
+    "provider",
+    "model",
+    "request_kind",
+    "status",
+    "attempt_count",
+    "token_budget",
+    "notes",
+    "created_at"
+  ],
+  "properties": {
+    "call_id": { "type": "string" },
+    "decision_id": { "type": "string" },
+    "provider": { "type": "string" },
+    "model": { "type": "string" },
+    "request_kind": { "type": "string" },
+    "status": { "type": "string", "enum": ["recorded", "sent", "failed"] },
+    "attempt_count": { "type": "integer", "minimum": 0 },
+    "last_http_status": { "type": ["integer", "null"], "minimum": 100, "maximum": 599 },
+    "last_error": { "type": ["string", "null"] },
+    "response_preview": { "type": ["string", "null"] },
+    "dispatched_at": { "type": ["string", "null"], "format": "date-time" },
+    "token_budget": { "type": "integer", "minimum": 0 },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

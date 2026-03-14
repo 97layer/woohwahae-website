@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/agent_dispatch_profile.schema.json",
+  "title": "AgentDispatchProfile",
+  "type": "object",
+  "required": ["role", "provider", "model", "risk", "novelty", "token_class", "token_budget", "dispatch_ready", "notes"],
+  "properties": {
+    "role": {"type": "string"},
+    "provider": {"type": "string"},
+    "model": {"type": "string"},
+    "risk": {"type": "string"},
+    "novelty": {"type": "string"},
+    "token_class": {"type": "string"},
+    "token_budget": {"type": "integer", "minimum": 0},
+    "dispatch_ready": {"type": "boolean"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

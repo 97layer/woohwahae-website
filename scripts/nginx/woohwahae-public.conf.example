@@ -1,0 +1,71 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name woohwahae.kr www.woohwahae.kr;
+
+    server_tokens off;
+    set $layer_os_forwarded_proto $scheme;
+
+    # When Cloudflare proxies HTTPS traffic over an HTTP origin, keep the
+    # browser on HTTPS while still allowing direct localhost verification.
+    if ($http_x_forwarded_proto = "http") {
+        return 301 https://$host$request_uri;
+    }
+    if ($http_x_forwarded_proto != "") {
+        set $layer_os_forwarded_proto $http_x_forwarded_proto;
+    }
+
+    location ^~ /api/admin/ {
+        return 308 $layer_os_forwarded_proto://admin.woohwahae.kr$request_uri;
+    }
+
+    location ^~ /admin/ {
+        return 308 $layer_os_forwarded_proto://admin.woohwahae.kr$request_uri;
+    }
+
+    location = /admin {
+        return 308 $layer_os_forwarded_proto://admin.woohwahae.kr/admin;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3081;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $layer_os_forwarded_proto;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name admin.woohwahae.kr;
+
+    server_tokens off;
+    set $layer_os_forwarded_proto $scheme;
+
+    if ($http_x_forwarded_proto = "http") {
+        return 301 https://$host$request_uri;
+    }
+    if ($http_x_forwarded_proto != "") {
+        set $layer_os_forwarded_proto $http_x_forwarded_proto;
+    }
+
+    location = / {
+        return 302 $layer_os_forwarded_proto://admin.woohwahae.kr/admin/login;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3081;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $layer_os_forwarded_proto;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}

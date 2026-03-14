@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/work_item.schema.json",
+  "title": "WorkItem",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "intent",
+    "stage",
+    "surface",
+    "pack",
+    "priority",
+    "risk",
+    "requires_approval",
+    "payload",
+    "correlation_id",
+    "created_at"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "branch_id": { "type": "string" },
+    "title": { "type": "string" },
+    "intent": { "type": "string" },
+    "stage": { "type": "string" },
+    "surface": { "type": "string" },
+    "pack": { "type": "string" },
+    "priority": { "type": "string" },
+    "risk": { "type": "string" },
+    "requires_approval": { "type": "boolean" },
+    "payload": { "type": "object" },
+    "correlation_id": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

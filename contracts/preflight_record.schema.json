@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/preflight_record.schema.json",
+  "title": "PreflightRecord",
+  "type": "object",
+  "required": [
+    "record_id",
+    "task",
+    "mode",
+    "status",
+    "decision",
+    "models_used",
+    "steps",
+    "risks",
+    "checks",
+    "generated_at"
+  ],
+  "properties": {
+    "record_id": { "type": "string" },
+    "task": { "type": "string" },
+    "mode": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["ready", "degraded-lite", "needs_clarification"]
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["go", "hold"]
+    },
+    "models_used": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "steps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "risks": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "checks": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "generated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

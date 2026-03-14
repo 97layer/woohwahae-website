@@ -1,0 +1,43 @@
+{
+  "policy": "cli-first",
+  "active": [
+    {
+      "name": "orchestrate",
+      "path": "skills/active/orchestrate/SKILL.md",
+      "imports": []
+    },
+    {
+      "name": "verify",
+      "path": "skills/active/verify/SKILL.md",
+      "imports": []
+    },
+    {
+      "name": "browser",
+      "path": "skills/active/browser/SKILL.md",
+      "imports": [
+        "playwright"
+      ]
+    },
+    {
+      "name": "capture",
+      "path": "skills/active/capture/SKILL.md",
+      "imports": [
+        "screenshot"
+      ]
+    },
+    {
+      "name": "sequence",
+      "path": "skills/active/sequence/SKILL.md",
+      "imports": []
+    },
+    {
+      "name": "balance",
+      "path": "skills/active/balance/SKILL.md",
+      "imports": []
+    }
+  ],
+  "imported": [
+    "playwright",
+    "screenshot"
+  ]
+}

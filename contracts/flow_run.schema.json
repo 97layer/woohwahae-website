@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/flow_run.schema.json",
+  "title": "FlowRun",
+  "type": "object",
+  "required": [
+    "flow_id",
+    "work_item_id",
+    "status",
+    "notes",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "flow_id": { "type": "string", "minLength": 1 },
+    "work_item_id": { "type": "string", "minLength": 1 },
+    "approval_id": { "type": "string" },
+    "policy_decision_id": { "type": "string" },
+    "execute_id": { "type": "string" },
+    "verification_id": { "type": "string" },
+    "release_id": { "type": "string" },
+    "deploy_id": { "type": "string" },
+    "rollback_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["active", "waiting", "released", "rolled_back", "blocked"]
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

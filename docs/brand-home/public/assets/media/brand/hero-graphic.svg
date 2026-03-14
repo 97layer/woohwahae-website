@@ -1,0 +1,130 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+
+  <!-- 스타일 정의 (내장 애니메이션) -->
+  <style>
+    /* 동심원 — 안에서 밖으로 순차 fade-in + 미세 pulse */
+    .hg-ring {
+      opacity: 0;
+      stroke-width: 0.8;
+      animation: hg-ring-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, hg-pulse 6s ease-in-out infinite;
+    }
+    .hg-ring-1 { animation-delay: 0.2s,  3s; }
+    .hg-ring-2 { animation-delay: 0.5s,  3.4s; }
+    .hg-ring-3 { animation-delay: 0.8s,  3.8s; }
+    .hg-ring-4 { animation-delay: 1.1s,  4.2s; }
+
+    @keyframes hg-ring-in {
+      to { opacity: 0.45; }
+    }
+    @keyframes hg-pulse {
+      0%, 100% { opacity: 0.30; }
+      50%       { opacity: 0.55; }
+    }
+
+    /* 나선 — stroke-dashoffset으로 안→밖 드로잉 */
+    .hg-spiral {
+      opacity: 0;
+      stroke-dasharray: 2200;
+      stroke-dashoffset: 2200;
+      animation:
+        hg-spiral-draw 3.6s cubic-bezier(0.25, 0, 0.4, 1) 0.6s forwards,
+        hg-spiral-breathe 7s ease-in-out 4.2s infinite;
+    }
+
+    @keyframes hg-spiral-draw {
+      0%   { stroke-dashoffset: 2200; opacity: 0; }
+      5%   { opacity: 0.8; }
+      100% { stroke-dashoffset: 0;    opacity: 0.75; }
+    }
+    @keyframes hg-spiral-breathe {
+      0%, 100% { opacity: 0.6; }
+      50%       { opacity: 0.85; }
+    }
+
+    /* 중심점 */
+    .hg-now {
+      opacity: 0;
+      transform-origin: 200px 200px;
+      animation:
+        hg-now-appear 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards,
+        hg-now-pulse  4s ease-in-out 0.8s infinite;
+    }
+    @keyframes hg-now-appear {
+      to { opacity: 1; }
+    }
+    @keyframes hg-now-pulse {
+      0%, 100% { transform: scale(1);    opacity: 0.8; }
+      50%       { transform: scale(1.8); opacity: 1;   }
+    }
+
+    /* ECG 파형 — 심전도 리듬 느낌 */
+    .hg-wave {
+      opacity: 0;
+      stroke-width: 1;
+      animation: hg-wave-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards,
+                 hg-wave-shimmer 3s ease-in-out 3s infinite;
+    }
+
+    @keyframes hg-wave-in {
+      from { opacity: 0; stroke-dashoffset: 400; }
+      to { opacity: 0.35; stroke-dashoffset: 0; }
+    }
+
+    @keyframes hg-wave-shimmer {
+      0%, 100% { opacity: 0.30; }
+      50% { opacity: 0.45; }
+    }
+  </style>
+
+  <!-- 동심원 4개 -->
+  <circle class="hg-ring hg-ring-1" cx="200" cy="200" r="44"  fill="none" stroke="currentColor" stroke-width="0.6"/>
+  <circle class="hg-ring hg-ring-2" cx="200" cy="200" r="88"  fill="none" stroke="currentColor" stroke-width="0.6"/>
+  <circle class="hg-ring hg-ring-3" cx="200" cy="200" r="132" fill="none" stroke="currentColor" stroke-width="0.6"/>
+  <circle class="hg-ring hg-ring-4" cx="200" cy="200" r="176" fill="none" stroke="currentColor" stroke-width="0.6"/>
+
+  <!-- 아르키메데스 나선 — 3.5바퀴, r=6→168, 201개 점, smoothstep easing -->
+  <polyline class="hg-spiral" stroke="currentColor" stroke-width="1.2" fill="none"
+    stroke-linecap="round" stroke-linejoin="round"
+    points="
+      200,194 201,194 201,194 202,194 203,194 203,195 204,195 205,195 205,196 206,196
+      206,197 207,197 207,198 208,199 208,200 209,201 209,202 209,203 209,204 209,205
+      209,206 208,207 208,209 207,210 206,211 205,212 204,213 202,214 201,215 199,215
+      198,216 196,216 194,216 192,216 190,215 188,215 186,214 184,212 182,211 180,209
+      178,207 177,205 176,202 175,200 174,197 174,194 174,191 174,187 175,184 176,181
+      178,178 180,175 182,172 185,169 188,167 192,165 195,163 199,162 204,161 208,161
+      213,161 217,162 222,163 226,165 231,167 235,170 239,173 243,177 246,182 249,187
+      251,192 253,198 254,203 254,209 254,216 253,222 251,228 249,234 246,240 242,246
+      237,251 232,256 226,260 220,264 213,267 205,269 198,270 190,271 182,270 174,269
+      166,267 158,264 151,260 144,255 137,249 131,242 126,235 121,227 117,218 115,209
+      113,200 112,190 113,180 114,171 117,161 121,151 126,142 131,134 138,125 146,118
+      155,112 165,106 175,102 186,98 197,96 208,95 220,96 232,97 243,100 254,105
+      265,110 275,117 285,125 294,134 301,144 308,155 313,167 317,180 320,192 321,206
+      321,219 319,233 316,246 311,259 305,271 297,283 288,294 278,304 267,313 254,320
+      241,326 227,331 213,334 198,336 183,336 168,334 153,331 138,326 125,319 111,311
+      99,301 88,290 78,277 69,264 62,250 57,234 53,219 51,202 51,186 53,170
+      56,153 62,137 69,122 77,108 88,94 99,82 113,71 127,62 142,54 158,48
+      175,44 193,41 210,41 227,42 245,46 262,51 278,58 293,67 307,78 321,90
+      332,104 342,119 351,135 357,152 362,169 365,187 366,205 364,223 361,241 356,259
+      349,276 340,292 329,307 317,320 303,332 288,343 271,352 254,359 237,364 218,367
+      200,368
+    "/>
+
+  <!-- 중심점 -->
+  <circle class="hg-now" cx="200" cy="200" r="3" fill="currentColor"/>
+
+  <!-- ECG 파형 — 불규칙 필기체 (y≈300, 진폭 ±20px) -->
+  <polyline class="hg-wave" stroke="currentColor" stroke-width="0.8" fill="none"
+    stroke-linecap="round" stroke-linejoin="round"
+    points="
+      10,300 15,298 20,295 25,288 30,280 35,285 40,295 45,300 50,298 55,292
+      60,282 65,280 70,285 75,295 80,300 85,296 90,288 95,280 100,283 105,293
+      110,300 115,298 120,292 125,282 130,280 135,286 140,296 145,300 150,296
+      155,287 160,280 165,284 170,294 175,300 180,297 185,289 190,281 195,282
+      200,292 205,300 210,297 215,287 220,280 225,284 230,294 235,300 240,296
+      245,288 250,280 255,283 260,293 265,300 270,296 275,288 280,280 285,283
+      290,292 295,300 300,298 305,289 310,281 315,283 320,292 325,300 330,297
+      335,289 340,281 345,283 350,292 355,300 360,296 365,287 370,280 375,284
+      390,294 395,300
+    "/>
+
+</svg>

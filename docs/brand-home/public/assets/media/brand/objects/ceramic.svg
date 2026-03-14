@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#EDE9E3"/>
+  <!-- ceramic bowl -->
+  <ellipse cx="200" cy="250" rx="80" ry="20" fill="none" stroke="#8B7355" stroke-width="1.5"/>
+  <path d="M120 250 C120 250, 130 350, 200 350 C270 350, 280 250, 280 250" fill="none" stroke="#8B7355" stroke-width="1.5"/>
+  <!-- inner rim -->
+  <ellipse cx="200" cy="255" rx="72" ry="16" fill="none" stroke="#A89880" stroke-width="0.8" opacity="0.5"/>
+  <!-- subtle texture lines -->
+  <path d="M145 290 C160 295, 240 295, 255 290" stroke="#C4B8A8" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <path d="M150 310 C165 315, 235 315, 250 310" stroke="#C4B8A8" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <path d="M160 330 C170 333, 230 333, 240 330" stroke="#C4B8A8" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <!-- base -->
+  <ellipse cx="200" cy="350" rx="40" ry="6" fill="none" stroke="#8B7355" stroke-width="1"/>
+</svg>

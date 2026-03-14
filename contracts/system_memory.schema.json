@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/system_memory.schema.json",
+  "title": "SystemMemory",
+  "type": "object",
+  "required": [
+    "current_focus",
+    "next_steps",
+    "open_risks",
+    "updated_at"
+  ],
+  "properties": {
+    "current_focus": { "type": "string" },
+    "current_goal": { "type": ["string", "null"] },
+    "next_steps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "open_risks": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "handoff_note": { "type": ["string", "null"] },
+    "last_operator": { "type": ["string", "null"] },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

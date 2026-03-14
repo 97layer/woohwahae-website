@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/policy_decision.schema.json",
+  "title": "PolicyDecision",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "intent",
+    "scope",
+    "risk",
+    "novelty",
+    "token_class",
+    "requires_approval",
+    "mode",
+    "decision",
+    "reasons",
+    "created_at"
+  ],
+  "properties": {
+    "decision_id": { "type": "string" },
+    "intent": { "type": "string" },
+    "scope": { "type": "string" },
+    "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+    "novelty": { "type": "string", "enum": ["low", "medium", "high"] },
+    "token_class": { "type": "string", "enum": ["tiny", "small", "medium", "large"] },
+    "requires_approval": { "type": "boolean" },
+    "mode": { "type": "string", "enum": ["local", "single", "blocked"] },
+    "decision": { "type": "string", "enum": ["go", "hold"] },
+    "reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

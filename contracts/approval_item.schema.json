@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/approval_item.schema.json",
+  "title": "ApprovalItem",
+  "type": "object",
+  "required": [
+    "approval_id",
+    "work_item_id",
+    "stage",
+    "summary",
+    "risks",
+    "rollback_plan",
+    "decision_surface",
+    "status",
+    "requested_at"
+  ],
+  "properties": {
+    "approval_id": { "type": "string" },
+    "work_item_id": { "type": "string" },
+    "stage": { "type": "string" },
+    "summary": { "type": "string" },
+    "risks": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rollback_plan": { "type": "string" },
+    "decision_surface": { "type": "string" },
+    "status": { "type": "string" },
+    "requested_at": { "type": "string", "format": "date-time" },
+    "resolved_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": false
+}

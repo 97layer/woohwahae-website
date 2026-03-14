@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/knowledge_packet.schema.json",
+  "title": "KnowledgePacket",
+  "type": "object",
+  "required": [
+    "generated_at",
+    "environment_advisory",
+    "authority",
+    "current_focus",
+    "next_steps",
+    "open_risks",
+    "primary_action",
+    "primary_ref",
+    "review_open_count",
+    "review_top_open",
+    "corpus_lessons",
+    "surprising",
+    "observation_links",
+    "proposal_candidates",
+    "open_threads",
+    "action_hints",
+    "action_routes",
+    "active_branches",
+    "parallel_candidates",
+    "default_actor",
+    "actors",
+    "providers",
+    "gateway_semantics"
+  ],
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "environment_advisory": {
+      "$ref": "founder_summary.schema.json#/$defs/environment_advisory"
+    },
+    "authority": {
+      "$ref": "authority_boundary.schema.json"
+    },
+    "current_focus": {
+      "type": "string"
+    },
+    "current_goal": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "open_risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "primary_action": {
+      "type": "string"
+    },
+    "primary_ref": {
+      "type": "string"
+    },
+    "priority_rationale": {
+      "$ref": "founder_summary.schema.json#/$defs/priority_rationale"
+    },
+    "review_open_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "review_top_open": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "corpus_lessons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/corpus_lesson"
+      }
+    },
+    "surprising": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "observation_links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/observation_link"
+      }
+    },
+    "proposal_candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/proposal_candidate"
+      }
+    },
+    "open_threads": {
+      "type": "array",
+      "items": {
+        "$ref": "open_thread.schema.json"
+      }
+    },
+    "action_hints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "action_routes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/action_route"
+      }
+    },
+    "active_branches": {
+      "type": "array",
+      "items": {
+        "$ref": "branch.schema.json"
+      }
+    },
+    "parallel_candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "handoff_packet.schema.json#/$defs/parallel_candidate"
+      }
+    },
+    "default_actor": {
+      "type": "string"
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "providers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gateway_semantics": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "corpus_lesson": {
+      "type": "object",
+      "required": [
+        "entry_id",
+        "source_kind",
+        "summary",
+        "created_at"
+      ],
+      "properties": {
+        "entry_id": {
+          "type": "string"
+        },
+        "source_kind": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "observation_link": {
+      "type": "object",
+      "required": [
+        "link_id",
+        "kind",
+        "summary",
+        "channels",
+        "refs",
+        "count",
+        "latest_at"
+      ],
+      "properties": {
+        "link_id": { "type": "string" },
+        "kind": { "type": "string", "enum": ["ref", "semantic"] },
+        "summary": { "type": "string" },
+        "channels": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "latest_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "action_route": {
+      "type": "object",
+      "required": [
+        "route_id",
+        "kind",
+        "summary",
+        "target_lane",
+        "source"
+      ],
+      "properties": {
+        "route_id": { "type": "string" },
+        "kind": { "type": "string" },
+        "summary": { "type": "string" },
+        "target_lane": { "type": "string", "enum": ["proposal", "review_room", "session_memory", "job"] },
+        "target_ref": { "type": ["string", "null"] },
+        "command": { "type": ["string", "null"] },
+        "source": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "proposal_candidate": {
+      "type": "object",
+      "required": [
+        "candidate_id",
+        "proposal_id",
+        "work_item_id",
+        "title",
+        "intent",
+        "summary",
+        "priority",
+        "risk",
+        "surface",
+        "source",
+        "notes",
+        "link_ids",
+        "thread_ids",
+        "refs",
+        "create_path",
+        "create_command",
+        "promote_path",
+        "promote_command"
+      ],
+      "properties": {
+        "candidate_id": { "type": "string" },
+        "proposal_id": { "type": "string" },
+        "work_item_id": { "type": "string" },
+        "title": { "type": "string" },
+        "intent": { "type": "string" },
+        "summary": { "type": "string" },
+        "priority": { "type": "string" },
+        "risk": { "type": "string" },
+        "surface": { "type": "string", "enum": ["cockpit", "telegram", "api"] },
+        "source": { "type": "string" },
+        "notes": { "type": "array", "items": { "type": "string" } },
+        "link_ids": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "thread_ids": { "type": "array", "items": { "type": "string" } },
+        "refs": { "type": "array", "items": { "type": "string" } },
+        "create_path": { "type": "string" },
+        "create_command": { "type": "string" },
+        "promote_path": { "type": "string" },
+        "promote_command": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/adapter_summary.schema.json",
+  "title": "AdapterSummary",
+  "type": "object",
+  "required": ["gateway", "gateway_semantics", "gateway_dispatch_enabled", "gateway_required_mode", "verify", "deploy", "rollback"],
+  "properties": {
+    "gateway": { "type": "string" },
+    "gateway_semantics": { "type": "string", "enum": ["record_only", "dispatch"] },
+    "gateway_dispatch_enabled": { "type": "boolean" },
+    "gateway_required_mode": { "type": "string", "enum": ["single"] },
+    "verify": { "type": "string" },
+    "deploy": { "type": "string" },
+    "rollback": { "type": "string" }
+  },
+  "additionalProperties": false
+}

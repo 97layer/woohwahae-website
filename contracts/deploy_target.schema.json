@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/deploy_target.schema.json",
+  "title": "DeployTarget",
+  "type": "object",
+  "required": [
+    "target_id",
+    "command"
+  ],
+  "properties": {
+    "target_id": { "type": "string" },
+    "command": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "string", "pattern": "^/" }
+      ],
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "workdir": {
+      "type": ["string", "null"],
+      "pattern": "^/"
+    }
+  },
+  "additionalProperties": false
+}

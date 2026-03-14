@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/daemon_status.schema.json",
+  "title": "DaemonStatus",
+  "type": "object",
+  "required": [
+    "service",
+    "status",
+    "address",
+    "started_at",
+    "uptime_seconds",
+    "memory_health",
+    "deploy_health",
+    "degraded_reasons"
+  ],
+  "properties": {
+    "service": { "type": "string" },
+    "status": { "type": "string", "enum": ["ok", "degraded"] },
+    "address": { "type": "string" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "uptime_seconds": { "type": "integer", "minimum": 0 },
+    "memory_health": { "type": "string" },
+    "deploy_health": { "type": "string" },
+    "degraded_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "architect": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "auto_dispatch",
+        "interval",
+        "promote_limit",
+        "last_idle",
+        "last_considered",
+        "last_created",
+        "last_existing",
+        "last_dispatched",
+        "last_failed"
+      ],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "auto_dispatch": { "type": "boolean" },
+        "interval": { "type": "string" },
+        "promote_limit": { "type": "integer", "minimum": 0 },
+        "last_run_at": { "type": "string", "format": "date-time" },
+        "last_error": { "type": "string" },
+        "last_idle": { "type": "boolean" },
+        "last_considered": { "type": "integer", "minimum": 0 },
+        "last_created": { "type": "integer", "minimum": 0 },
+        "last_existing": { "type": "integer", "minimum": 0 },
+        "last_dispatched": { "type": "integer", "minimum": 0 },
+        "last_failed": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

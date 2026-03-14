@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/agent_job_report_result.schema.json",
+  "title": "AgentJobReportResult",
+  "type": "object",
+  "required": ["job", "event", "follow_up"],
+  "properties": {
+    "job": { "$ref": "agent_job.schema.json" },
+    "event": { "$ref": "event_envelope.schema.json" },
+    "follow_up": {
+      "type": "object",
+      "required": ["mode", "summary"],
+      "properties": {
+        "mode": { "type": "string" },
+        "summary": { "type": "string" },
+        "job_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "capitalization": { "$ref": "capitalization_entry.schema.json" },
+    "chain": {
+      "type": "object",
+      "required": [
+        "parent_job_id",
+        "considered",
+        "created",
+        "existing",
+        "dispatched",
+        "telegram_requested",
+        "created_job_ids",
+        "existing_job_ids"
+      ],
+      "properties": {
+        "parent_job_id": { "type": "string" },
+        "considered": { "type": "integer", "minimum": 0 },
+        "created": { "type": "integer", "minimum": 0 },
+        "existing": { "type": "integer", "minimum": 0 },
+        "dispatched": { "type": "integer", "minimum": 0 },
+        "telegram_requested": { "type": "integer", "minimum": 0 },
+        "created_job_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "existing_job_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/chain_rules.schema.json",
+  "title": "ChainRules",
+  "type": "object",
+  "required": ["rules"],
+  "properties": {
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id",
+          "on_status",
+          "next_kind",
+          "next_role",
+          "next_stage",
+          "surface",
+          "summary",
+          "notes"
+        ],
+        "properties": {
+          "rule_id": { "type": "string" },
+          "on_status": { "type": "string", "enum": ["succeeded", "failed", "canceled"] },
+          "next_kind": { "type": "string" },
+          "next_role": { "type": "string" },
+          "next_stage": { "type": "string", "enum": ["discover", "compose", "experience", "verify", "release"] },
+          "surface": { "type": "string", "enum": ["cockpit", "telegram", "api"] },
+          "summary": { "type": "string" },
+          "auto_dispatch": { "type": "boolean" },
+          "notify_telegram": { "type": "boolean" },
+          "payload": { "type": "object" },
+          "notes": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

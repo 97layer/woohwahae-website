@@ -1,0 +1,21 @@
+bin/
+dist/
+coverage.out
+*.test
+.DS_Store
+.layer-os/
+.cache/
+.gemini/
+.omx/
+.tmp/
+/.tmp-search-verify/
+/.playwright-cli/
+/layer-osctl
+/knowledge/
+/output/
+/임시.md
+# Next.js build output
+**/.next/
+**/.next.bad-*/
+# Node dependencies
+**/node_modules/

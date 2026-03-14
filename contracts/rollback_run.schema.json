@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/rollback_run.schema.json",
+  "title": "RollbackRun",
+  "type": "object",
+  "required": [
+    "rollback_id",
+    "release_id",
+    "target",
+    "status",
+    "notes",
+    "started_at"
+  ],
+  "properties": {
+    "rollback_id": { "type": "string", "minLength": 1 },
+    "release_id": { "type": "string", "minLength": 1 },
+    "deploy_id": { "type": "string" },
+    "target": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["recorded", "succeeded", "failed"]
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

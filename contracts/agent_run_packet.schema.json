@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/agent_run_packet.schema.json",
+  "title": "AgentRunPacket",
+  "type": "object",
+  "required": ["generated_at", "source", "job", "runtime", "knowledge"],
+  "properties": {
+    "generated_at": { "type": "string", "format": "date-time" },
+    "source": { "type": "string" },
+    "job": { "$ref": "agent_job.schema.json" },
+    "runtime": {
+      "type": "object",
+      "required": ["source_of_truth", "dispatch_transport", "report_path", "report_command", "terminal_statuses", "write_auth_required"],
+      "properties": {
+        "source_of_truth": { "type": "string" },
+        "dispatch_transport": { "type": "string" },
+        "report_path": { "type": "string" },
+        "report_command": { "type": "string" },
+        "terminal_statuses": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["succeeded", "failed", "canceled"] }
+        },
+        "write_auth_required": { "type": "boolean" },
+        "write_token_env": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "knowledge": { "$ref": "knowledge_packet.schema.json" },
+    "prompting": { "$ref": "#/$defs/prompting_contract" },
+    "handoff": { "$ref": "handoff_packet.schema.json" },
+    "handoff_summary": { "$ref": "#/$defs/handoff_summary" },
+    "proposal": { "$ref": "proposal_item.schema.json" }
+  },
+  "anyOf": [
+    { "required": ["handoff"] },
+    { "required": ["handoff_summary"] }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "prompting_contract": {
+      "type": "object",
+      "required": [
+        "directive",
+        "cognition_mode",
+        "decision_scope",
+        "autonomy_budget",
+        "mutation_policy",
+        "escalation_triggers",
+        "open_questions"
+      ],
+      "properties": {
+        "directive": { "type": "string" },
+        "cognition_mode": { "type": "string", "enum": ["staff_advisor", "executor"] },
+        "decision_scope": { "type": "string", "enum": ["bounded", "full"] },
+        "autonomy_budget": { "type": "string", "enum": ["manual_only", "single_step", "multi_step"] },
+        "mutation_policy": { "type": "string", "enum": ["read_only", "scoped_write", "full_write"] },
+        "escalation_triggers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "open_questions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "parallel_candidate": {
+      "type": "object",
+      "required": ["text", "kind", "source", "reason", "priority"],
+      "properties": {
+        "text": { "type": "string" },
+        "kind": { "type": "string" },
+        "source": { "type": "string" },
+        "reason": { "type": "string" },
+        "priority": { "type": "string" },
+        "ref": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "review_room_item": {
+      "type": "object",
+      "required": ["text", "kind", "severity", "source", "created_at", "updated_at"],
+      "properties": {
+        "text": { "type": "string" },
+        "kind": { "type": "string" },
+        "severity": { "type": "string" },
+        "source": { "type": "string" },
+        "ref": { "type": ["string", "null"] },
+        "why": { "type": "string" },
+        "why_unresolved": { "type": ["string", "null"] },
+        "contradiction": { "type": ["string", "null"] },
+        "contradictions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "pattern_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": true
+    },
+    "handoff_summary": {
+      "type": "object",
+      "required": [
+        "generated_at",
+        "current_focus",
+        "next_steps",
+        "open_risks",
+        "review_top_open",
+        "active_branches",
+        "parallel_candidates",
+        "auth",
+        "write_lease",
+        "counts"
+      ],
+      "properties": {
+        "generated_at": { "type": "string", "format": "date-time" },
+        "current_focus": { "type": "string" },
+        "next_steps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "open_risks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "review_top_open": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/review_room_item" }
+        },
+        "active_branches": {
+          "type": "array",
+          "items": { "$ref": "branch.schema.json" }
+        },
+        "parallel_candidates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/parallel_candidate" }
+        },
+        "auth": { "$ref": "auth_status.schema.json" },
+        "write_lease": { "$ref": "write_lease.schema.json" },
+        "counts": {
+          "type": "object",
+          "required": [
+            "branches",
+            "proposals",
+            "agent_jobs",
+            "work_items",
+            "flows",
+            "approvals",
+            "releases",
+            "events",
+            "deploys",
+            "rollbacks",
+            "targets",
+            "preflights",
+            "policies",
+            "gateway_calls",
+            "executes",
+            "verifications",
+            "observations"
+          ],
+          "properties": {
+            "branches": { "type": "integer", "minimum": 0 },
+            "proposals": { "type": "integer", "minimum": 0 },
+            "agent_jobs": { "type": "integer", "minimum": 0 },
+            "work_items": { "type": "integer", "minimum": 0 },
+            "flows": { "type": "integer", "minimum": 0 },
+            "approvals": { "type": "integer", "minimum": 0 },
+            "releases": { "type": "integer", "minimum": 0 },
+            "events": { "type": "integer", "minimum": 0 },
+            "deploys": { "type": "integer", "minimum": 0 },
+            "rollbacks": { "type": "integer", "minimum": 0 },
+            "targets": { "type": "integer", "minimum": 0 },
+            "preflights": { "type": "integer", "minimum": 0 },
+            "policies": { "type": "integer", "minimum": 0 },
+            "gateway_calls": { "type": "integer", "minimum": 0 },
+            "executes": { "type": "integer", "minimum": 0 },
+            "verifications": { "type": "integer", "minimum": 0 },
+            "observations": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

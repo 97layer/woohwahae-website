@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/release_packet.schema.json",
+  "title": "ReleasePacket",
+  "type": "object",
+  "required": [
+    "release_id",
+    "work_item_id",
+    "target",
+    "channel",
+    "artifacts",
+    "metrics",
+    "rollback_plan",
+    "approval_refs"
+  ],
+  "properties": {
+    "release_id": { "type": "string" },
+    "work_item_id": { "type": "string" },
+    "target": { "type": "string" },
+    "channel": { "type": "string" },
+    "artifacts": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "metrics": { "type": "object" },
+    "rollback_plan": { "type": "string" },
+    "approval_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "released_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": false
+}

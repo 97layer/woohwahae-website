@@ -1,0 +1,18 @@
+[Unit]
+Description=Layer OS tmux cockpit for %i
+After=network-online.target layer-osd.service layer-os-web.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=%i
+Group=%i
+Environment=HOME=/home/%i
+EnvironmentFile=-/etc/layer-os/tmux.env
+WorkingDirectory=/home/%i
+ExecStart=/usr/local/bin/layer-os-tmux-bootstrap
+ExecReload=/usr/local/bin/layer-os-tmux-bootstrap
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

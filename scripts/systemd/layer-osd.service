@@ -1,0 +1,23 @@
+[Unit]
+Description=Layer OS daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=layeros
+Group=layeros
+WorkingDirectory=/srv/layer-os/current
+Environment=HOME=/var/lib/layer-os
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/layer-os/layer-osd.env
+ExecStart=/srv/layer-os/current/scripts/start.sh
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+UMask=0027
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

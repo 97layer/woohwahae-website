@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/review_room.schema.json",
+  "title": "ReviewRoom",
+  "type": "object",
+  "required": ["source", "accepted", "open", "deferred", "issues"],
+  "properties": {
+    "source": { "type": "string" },
+    "accepted": { "type": "array", "items": { "$ref": "#/$defs/review_room_item" } },
+    "open": { "type": "array", "items": { "$ref": "#/$defs/review_room_item" } },
+    "deferred": { "type": "array", "items": { "$ref": "#/$defs/review_room_item" } },
+    "issues": { "type": "array", "items": { "type": "string" } },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "review_room_rationale": {
+      "type": "object",
+      "required": ["trigger", "reason", "rule"],
+      "properties": {
+        "trigger": { "type": "string" },
+        "reason": { "type": "string" },
+        "rule": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "review_room_resolution": {
+      "type": "object",
+      "required": ["action", "reason", "rule", "resolved_at"],
+      "properties": {
+        "action": { "type": "string" },
+        "reason": { "type": "string" },
+        "rule": { "type": "string" },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "resolved_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "review_room_item": {
+      "type": "object",
+      "required": ["text", "kind", "severity", "source", "created_at", "updated_at"],
+      "properties": {
+        "text": { "type": "string" },
+        "kind": { "type": "string" },
+        "severity": { "type": "string" },
+        "source": { "type": "string" },
+        "ref": { "type": ["string", "null"] },
+        "why": { "type": "string" },
+        "why_unresolved": { "type": ["string", "null"] },
+        "contradiction": { "type": ["string", "null"] },
+        "contradictions": { "type": "array", "items": { "type": "string" } },
+        "pattern_refs": { "type": "array", "items": { "type": "string" } },
+        "rationale": { "$ref": "#/$defs/review_room_rationale" },
+        "resolution": { "$ref": "#/$defs/review_room_resolution" },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

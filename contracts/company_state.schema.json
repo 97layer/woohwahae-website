@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/company_state.schema.json",
+  "title": "CompanyState",
+  "type": "object",
+  "required": [
+    "shell_mode",
+    "approvals_pending",
+    "work_items_active",
+    "memory_health",
+    "deploy_health",
+    "primary_surface",
+    "active_surfaces"
+  ],
+  "properties": {
+    "shell_mode": { "type": "string" },
+    "approvals_pending": { "type": "integer", "minimum": 0 },
+    "work_items_active": { "type": "integer", "minimum": 0 },
+    "last_release_at": { "type": ["string", "null"], "format": "date-time" },
+    "memory_health": { "type": "string" },
+    "deploy_health": { "type": "string" },
+    "primary_surface": { "type": "string" },
+    "active_surfaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "progress": {
+      "type": "object",
+      "required": ["overall_percent", "overall_bar", "overall_status", "axes"],
+      "properties": {
+        "overall_percent": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "overall_bar": { "type": "string" },
+        "overall_status": { "type": "string" },
+        "axes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["axis_id", "label", "percent", "bar", "status", "signals"],
+            "properties": {
+              "axis_id": { "type": "string" },
+              "label": { "type": "string" },
+              "percent": { "type": "integer", "minimum": 0, "maximum": 100 },
+              "bar": { "type": "string" },
+              "status": { "type": "string" },
+              "signals": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

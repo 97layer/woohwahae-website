@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer-os/contracts/telegram_packet.schema.json",
+  "title": "TelegramPacket",
+  "type": "object",
+  "required": [
+    "generated_at",
+    "headline",
+    "body_lines",
+    "primary_action",
+    "primary_ref",
+    "current_focus",
+    "next_steps",
+    "open_risks",
+    "review_open_count",
+    "review_top_open",
+    "founder_notice",
+    "recommended_mode"
+  ],
+  "properties": {
+    "generated_at": { "type": "string", "format": "date-time" },
+    "headline": { "type": "string" },
+    "body_lines": { "type": "array", "items": { "type": "string" } },
+    "primary_action": { "type": "string" },
+    "primary_ref": { "type": "string" },
+    "current_focus": { "type": "string" },
+    "current_goal": { "type": ["string", "null"] },
+    "next_steps": { "type": "array", "items": { "type": "string" } },
+    "open_risks": { "type": "array", "items": { "type": "string" } },
+    "review_open_count": { "type": "integer", "minimum": 0 },
+    "review_top_open": { "type": "array", "items": { "type": "string" } },
+    "founder_notice": { "type": "string" },
+    "recommended_mode": { "type": "string" }
+  },
+  "additionalProperties": false
+}
